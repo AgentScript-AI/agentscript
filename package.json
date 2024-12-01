@@ -1,0 +1,28 @@
+{
+    "name": "chorus",
+    "version": "1.0.0",
+    "repository": "https://github.com/kedrzu/chorus.git",
+    "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "private": true,
+    "scripts": {
+        "monorepo": "node ./nzyme/packages/project-tools/dist/monorepo.js",
+        "watch": "yarn && yarn monorepo && turbo run watch",
+        "dev": "yarn && yarn monorepo && turbo run dev",
+        "clean": "tsc --build --clean",
+        "build": "tsc --build",
+        "start": "yarn --cwd examples/drizzle dev"
+    },
+    "devDependencies": {
+        "lerna": "^8.1.8",
+        "prettier": "^3.3.3",
+        "ts-node": "^10.9.2",
+        "turbo": "^2.2.2",
+        "typescript": "^5.6.3"
+    },
+    "workspaces": [
+        "packages/*",
+        "examples/*",
+        "nzyme/packages/*"
+    ],
+    "packageManager": "yarn@4.1.0"
+}

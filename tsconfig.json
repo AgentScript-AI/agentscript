@@ -1,0 +1,120 @@
+{
+    "extends": "@superadmin/tsconfig/base.json",
+    "include": [],
+    "references": [
+        {
+            "path": "./nzyme/packages/aws-cdk/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/crypto-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/dom-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/esm/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/fetch-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/i18n/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/ioc/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/logging/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/money/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/node-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/project-tools/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/project-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/rollup-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/types/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/typography/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/validate/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/validation/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/vitest-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/vitest/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/vue-ioc/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/vue-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/xml-utils/tsconfig.json"
+        },
+        {
+            "path": "./nzyme/packages/zchema/tsconfig.json"
+        },
+        {
+            "path": "./packages/cli/tsconfig.json"
+        },
+        {
+            "path": "./packages/client/tsconfig.json"
+        },
+        {
+            "path": "./packages/core/tsconfig.json"
+        },
+        {
+            "path": "./packages/devkit/tsconfig.json"
+        },
+        {
+            "path": "./packages/drizzle-core/tsconfig.json"
+        },
+        {
+            "path": "./packages/drizzle-server/tsconfig.json"
+        },
+        {
+            "path": "./packages/drizzle/tsconfig.json"
+        },
+        {
+            "path": "./packages/ioc/tsconfig.json"
+        },
+        {
+            "path": "./packages/runtime-common/tsconfig.json"
+        },
+        {
+            "path": "./packages/runtime-server/tsconfig.json"
+        },
+        {
+            "path": "./packages/schema/tsconfig.json"
+        },
+        {
+            "path": "./packages/server/tsconfig.json"
+        },
+        {
+            "path": "./packages/utils/tsconfig.json"
+        },
+        {
+            "path": "./packages/validation/tsconfig.json"
+        }
+    ]
+}

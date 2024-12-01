@@ -1,0 +1,68 @@
+{
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[csharp]": {
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
+  },
+  "editor.formatOnSave": true,
+  "files.exclude": {
+    "**/.git": true,
+    // "**/dist": true,
+    "**/node_modules/**": true,
+    "**/tsconfig.tsbuildinfo": true
+  },
+  // Allows formatting XML and SVG files by prettier
+  "files.associations": {
+    "*.xml": "html",
+    "*.svg": "html"
+  },
+  "search.exclude": {
+    "**/dist": true,
+    "**/node_modules/**": true,
+    "**/*.code-search": true,
+    "yarn.lock": true,
+    "**/.yarn": true,
+    "**/.pnp.*": true
+  },
+  "search.followSymlinks": true,
+  "terminal.integrated.env.osx": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_OPTIONS": "--max-old-space-size=8192"
+  },
+  "javascript.format.enable": false,
+  "json.format.enable": false,
+  "npm.packageManager": "yarn",
+  "npm.scriptExplorerAction": "run",
+  "typescript.format.enable": false,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.lintTask.enable": true,
+  "eslint.useFlatConfig": false,
+  "eslint.codeAction.showDocumentation": {
+    "enable": true
+  },
+  "eslint.validate": ["javascript", "typescript", "vue"],
+  "figma.autocompleteBlocks": true,
+  "figma.assetExportDirectory": "storefront/storefront-ui/assets",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "workbench.colorCustomizations": {
+    "activityBar.activeBackground": "#ebbbd3",
+    "activityBar.background": "#ebbbd3",
+    "activityBar.foreground": "#15202b",
+    "activityBar.inactiveForeground": "#15202b99",
+    "activityBarBadge.background": "#60942b",
+    "activityBarBadge.foreground": "#e7e7e7",
+    "commandCenter.border": "#15202b99",
+    "sash.hoverBorder": "#ebbbd3",
+    "statusBar.background": "#e093ba",
+    "statusBar.foreground": "#15202b",
+    "statusBarItem.hoverBackground": "#d56ba1",
+    "statusBarItem.remoteBackground": "#e093ba",
+    "statusBarItem.remoteForeground": "#15202b",
+    "titleBar.activeBackground": "#e093ba",
+    "titleBar.activeForeground": "#15202b",
+    "titleBar.inactiveBackground": "#e093ba99",
+    "titleBar.inactiveForeground": "#15202b99"
+  },
+  "peacock.color": "#e093ba"
+}

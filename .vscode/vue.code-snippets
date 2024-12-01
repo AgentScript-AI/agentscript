@@ -1,0 +1,30 @@
+{
+    "VueComponent": {
+        "prefix": "vue-component",
+        "scope": "vue",
+        "body": [
+            "<script lang=\"ts\" setup>",
+            "$0",
+            "</script>",
+            "",
+            "<template>",
+            "$1",
+            "</template>",
+        ],
+    },
+    "VueStyle": {
+        "prefix": "vue-style",
+        "scope": "vue",
+        "body": ["<style lang=\"scss\" module=\"css\">", "$0", "</style>"],
+    },
+    "VueScript": {
+        "prefix": "vue-script",
+        "scope": "vue",
+        "body": ["<script lang=\"ts\" setup>", "$0", "</script>"],
+    },
+    "VueTemplate": {
+        "prefix": "vue-template",
+        "scope": "vue",
+        "body": ["<template>", "$0", "</template>"],
+    },
+}
