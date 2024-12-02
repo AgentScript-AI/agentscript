@@ -10,19 +10,23 @@
         "dev": "yarn && yarn monorepo && turbo run dev",
         "clean": "tsc --build --clean",
         "build": "tsc --build",
-        "start": "yarn --cwd examples/drizzle dev"
+        "start": "yarn --cwd examples/drizzle dev",
+        "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
+        "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",
         "ts-node": "^10.9.2",
         "turbo": "^2.2.2",
-        "typescript": "^5.6.3"
+        "typescript": "^5.7.2"
     },
     "workspaces": [
         "packages/*",
-        "examples/*",
         "nzyme/packages/*"
     ],
-    "packageManager": "yarn@4.1.0"
+    "packageManager": "yarn@4.1.0",
+    "dependencies": {
+        "source-map-support": "^0.5.21"
+    }
 }

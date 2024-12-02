@@ -1,5 +1,5 @@
 {
-    "extends": "@superadmin/tsconfig/base.json",
+    "extends": "@chorus/tsconfig/base.json",
     "include": [],
     "references": [
         {
@@ -75,46 +75,7 @@
             "path": "./nzyme/packages/zchema/tsconfig.json"
         },
         {
-            "path": "./packages/cli/tsconfig.json"
-        },
-        {
-            "path": "./packages/client/tsconfig.json"
-        },
-        {
-            "path": "./packages/core/tsconfig.json"
-        },
-        {
-            "path": "./packages/devkit/tsconfig.json"
-        },
-        {
-            "path": "./packages/drizzle-core/tsconfig.json"
-        },
-        {
-            "path": "./packages/drizzle-server/tsconfig.json"
-        },
-        {
-            "path": "./packages/drizzle/tsconfig.json"
-        },
-        {
-            "path": "./packages/ioc/tsconfig.json"
-        },
-        {
-            "path": "./packages/runtime-common/tsconfig.json"
-        },
-        {
-            "path": "./packages/runtime-server/tsconfig.json"
-        },
-        {
-            "path": "./packages/schema/tsconfig.json"
-        },
-        {
-            "path": "./packages/server/tsconfig.json"
-        },
-        {
-            "path": "./packages/utils/tsconfig.json"
-        },
-        {
-            "path": "./packages/validation/tsconfig.json"
+            "path": "./packages/agent/tsconfig.json"
         }
     ]
 }

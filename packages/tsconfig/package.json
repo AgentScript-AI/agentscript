@@ -1,0 +1,14 @@
+{
+    "name": "@chorus/tsconfig",
+    "version": "1.0.0",
+    "repository": "https://github.com/kedrzu/chorus.git",
+    "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "sideEffects": false,
+    "main": "./base.json",
+    "dependencies": {
+        "@types/node": "^22.7.7",
+        "typescript-plugin-css-modules": "^5.1.0",
+        "typescript-vue-plugin": "^1.8.27",
+        "vite": "^5.4.9"
+    }
+}

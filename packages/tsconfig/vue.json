@@ -1,0 +1,22 @@
+{
+    "extends": "./base.json",
+    "compilerOptions": {
+        "useDefineForClassFields": true,
+        "lib": ["DOM", "DOM.Iterable", "ESNext"],
+        "allowJs": false,
+        "esModuleInterop": false,
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "jsxFactory": "h",
+        "jsxFragmentFactory": "h",
+        "types": ["vue", "vite/client", "@types/node"],
+        "plugins": [
+            {
+                "name": "typescript-vue-plugin"
+            },
+            {
+                "name": "typescript-plugin-css-modules"
+            }
+        ]
+    }
+}

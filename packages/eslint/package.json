@@ -1,0 +1,17 @@
+{
+    "name": "@chorus/eslint",
+    "version": "1.0.0",
+    "repository": "https://github.com/kedrzu/chorus.git",
+    "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "private": true,
+    "sideEffects": false,
+    "dependencies": {
+        "@nzyme/eslint": "*",
+        "@typescript-eslint/eslint-plugin": "^8.10.0",
+        "@typescript-eslint/parser": "^8.10.0",
+        "eslint": "^9.13.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-prettier": "^5.2.1"
+    }
+}

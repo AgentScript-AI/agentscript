@@ -1,0 +1,26 @@
+{
+    "name": "@chorus/agent",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "dev": "nodemon dist/index.js"
+    },
+    "dependencies": {
+        "@langchain/core": "^0.3.19",
+        "@langchain/langgraph": "^0.2.23",
+        "@langchain/openai": "^0.3.14",
+        "@nzyme/ioc": "*",
+        "@nzyme/utils": "*",
+        "@slack/bolt": "^4.1.1",
+        "dotenv": "^16.4.5",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@types/node": "^20.11.24",
+        "nodemon": "^3.1.7",
+        "typescript": "^5.7.2"
+    }
+}
