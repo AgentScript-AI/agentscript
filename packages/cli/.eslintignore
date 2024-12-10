@@ -1,0 +1,4 @@
+node_modules
+dist
+bin/cli.js
+.eslintrc.cjs

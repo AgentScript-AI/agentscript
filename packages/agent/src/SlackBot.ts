@@ -2,12 +2,12 @@ import slack from '@slack/bolt';
 
 import { defineService } from '@nzyme/ioc';
 
-import { AgentFactory } from './AgentFactory.js';
+import { Agent } from './Agent.js';
 
 export const SlackBot = defineService({
     name: 'SlackBot',
     setup({ inject }) {
-        const agentFactory = inject(AgentFactory);
+        const agent = inject(Agent);
 
         const app = new slack.App({
             token: process.env.SLACK_BOT_TOKEN,
@@ -15,8 +15,6 @@ export const SlackBot = defineService({
             appToken: process.env.SLACK_APP_TOKEN,
             port: 3001,
         });
-
-        const agent = agentFactory();
 
         app.message(async ({ message, say }) => {
             if (message.type !== 'message') {

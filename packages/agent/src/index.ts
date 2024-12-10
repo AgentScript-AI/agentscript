@@ -1,12 +1,12 @@
-import { config as configDotenv } from 'dotenv';
 import { install as installSourceMaps } from 'source-map-support';
 
 import { createContainer } from '@nzyme/ioc';
+import { loadEnvVariables } from '@nzyme/project-utils';
 
 import { SlackBot } from './SlackBot.js';
 
 installSourceMaps();
-configDotenv();
+loadEnvVariables();
 
 const container = createContainer();
 const slackBot = container.resolve(SlackBot);

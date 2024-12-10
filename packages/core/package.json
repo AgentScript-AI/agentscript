@@ -1,0 +1,20 @@
+{
+    "name": "@chorus/core",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "@langchain/core": "^0.3.22",
+        "@langchain/openai": "^0.3.14",
+        "@nzyme/ioc": "*",
+        "@nzyme/utils": "*"
+    },
+    "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
+        "@types/node": "^20.11.24",
+        "typescript": "^5.7.2"
+    }
+}

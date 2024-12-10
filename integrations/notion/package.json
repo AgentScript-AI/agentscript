@@ -1,30 +1,28 @@
 {
-    "name": "@chorus/agent",
+    "name": "@chorus/notion",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
-    "scripts": {
-        "dev": "nodemon dist/index.js"
-    },
     "dependencies": {
+        "@chorus/core": "*",
         "@chorus/database": "*",
-        "@chorus/notion": "*",
         "@chorus/rag": "*",
-        "@langchain/core": "^0.3.19",
+        "@langchain/community": "^0.3.17",
+        "@langchain/core": "^0.3.22",
         "@langchain/langgraph": "^0.2.23",
-        "@langchain/openai": "^0.3.14",
+        "@notionhq/client": "^2.2.15",
         "@nzyme/ioc": "*",
-        "@nzyme/project-utils": "*",
-        "@nzyme/types": "*",
         "@nzyme/utils": "*",
-        "@slack/bolt": "^4.1.1",
+        "drizzle-orm": "^0.36.4",
+        "notion-to-md": "^3.1.1",
         "zod": "^3.23.8"
     },
     "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
         "@types/node": "^20.11.24",
-        "nodemon": "^3.1.7",
         "typescript": "^5.7.2"
     }
 }

@@ -1,0 +1,23 @@
+{
+    "extends": "@chorus/tsconfig/base.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+    },
+    "include": ["src"],
+    "references": [
+        {
+            "path": "../core/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/ioc/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/utils/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/project-utils/tsconfig.json"
+        }
+    ]
+}

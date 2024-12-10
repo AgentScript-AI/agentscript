@@ -8,22 +8,16 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../database/tsconfig.json"
+            "path": "../../packages/core/tsconfig.json"
         },
         {
-            "path": "../../integrations/notion/tsconfig.json"
+            "path": "../../packages/database/tsconfig.json"
         },
         {
-            "path": "../rag/tsconfig.json"
+            "path": "../../packages/rag/tsconfig.json"
         },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
-        },
-        {
-            "path": "../../nzyme/packages/project-utils/tsconfig.json"
-        },
-        {
-            "path": "../../nzyme/packages/types/tsconfig.json"
         },
         {
             "path": "../../nzyme/packages/utils/tsconfig.json"

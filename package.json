@@ -14,6 +14,7 @@
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
+        "@chorus/cli": "*",
         "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",
@@ -22,11 +23,13 @@
         "typescript": "^5.7.2"
     },
     "workspaces": [
+        "integrations/*",
         "packages/*",
         "nzyme/packages/*"
     ],
     "packageManager": "yarn@4.1.0",
     "dependencies": {
-        "source-map-support": "^0.5.21"
+        "source-map-support": "^0.5.21",
+        "supabase": "1.226.3"
     }
 }

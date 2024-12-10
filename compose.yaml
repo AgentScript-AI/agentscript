@@ -1,7 +1,10 @@
 name: chorus
 
 services:
-    chroma:
-        image: chromadb/chroma
+    mongodb:
+        image: mongodb/mongodb-atlas-local:latest
         ports:
-            - 8000:8000
+            - 27017:27017
+volumes:
+    data:
+    config:

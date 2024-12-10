@@ -3,6 +3,9 @@
     "include": [],
     "references": [
         {
+            "path": "./integrations/notion/tsconfig.json"
+        },
+        {
             "path": "./nzyme/packages/aws-cdk/tsconfig.json"
         },
         {
@@ -76,6 +79,18 @@
         },
         {
             "path": "./packages/agent/tsconfig.json"
+        },
+        {
+            "path": "./packages/cli/tsconfig.json"
+        },
+        {
+            "path": "./packages/core/tsconfig.json"
+        },
+        {
+            "path": "./packages/database/tsconfig.json"
+        },
+        {
+            "path": "./packages/rag/tsconfig.json"
         }
     ]
 }

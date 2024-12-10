@@ -64,7 +64,7 @@
         "body": [
             "import { defineCommand } from \"@nzyme/ioc\";",
             "",
-            "export type ${0:$TM_FILENAME_BASE}Params = {",
+            "export interface ${0:$TM_FILENAME_BASE}Params {",
             "    $1",
             "}",
             "",

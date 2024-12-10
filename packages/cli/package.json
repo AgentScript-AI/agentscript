@@ -1,0 +1,59 @@
+{
+    "name": "@chorus/cli",
+    "repository": "https://github.com/kedrzu/chorus.git",
+    "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "version": "1.0.0",
+    "type": "module",
+    "bin": {
+        "chorus": "./bin/cli.js"
+    },
+    "scripts": {
+        "eslint": "eslint . --fix --cache",
+        "build": "tsc --build"
+    },
+    "dependencies": {
+        "@chorus/notion": "*",
+        "@nzyme/ioc": "*",
+        "@nzyme/logging": "*",
+        "@nzyme/node-utils": "*",
+        "@nzyme/project-utils": "*",
+        "@nzyme/utils": "*",
+        "@oclif/core": "^4.0.33",
+        "@oclif/plugin-help": "^6.2.18",
+        "@oclif/plugin-version": "^2.2.16",
+        "chalk": "^5.3.0",
+        "consola": "^3.2.3",
+        "dotenv": "^16.4.5",
+        "source-map-support": "^0.5.21",
+        "ts-node": "^10.9.2",
+        "tsx": "^4.19.2"
+    },
+    "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
+        "@types/node": "^22.7.7",
+        "@types/source-map-support": "^0.5.10",
+        "oclif": "^4.15.28"
+    },
+    "files": [
+        "/bin/cli.js",
+        "/dist"
+    ],
+    "oclif": {
+        "bin": "chorus",
+        "commands": {
+            "strategy": "explicit",
+            "target": "./dist/commands.js"
+        },
+        "plugins": [
+            "@oclif/plugin-help",
+            "@oclif/plugin-version"
+        ],
+        "topicSeparator": " "
+    },
+    "depcheck": {
+        "ignoreDeps": [
+            "@oclif/plugin-*"
+        ]
+    }
+}

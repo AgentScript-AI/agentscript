@@ -21,7 +21,7 @@ module.exports = {
                         group: 'internal',
                     },
                     {
-                        pattern: '@superadmin/**',
+                        pattern: '@chorus/**',
                         group: 'internal',
                     },
                     {

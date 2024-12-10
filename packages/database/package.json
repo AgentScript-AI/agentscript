@@ -1,0 +1,27 @@
+{
+    "name": "@chorus/database",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "push": "drizzle-kit push"
+    },
+    "dependencies": {
+        "@chorus/core": "*",
+        "@nzyme/ioc": "*",
+        "@nzyme/utils": "*",
+        "dotenv": "^16.4.7",
+        "drizzle-orm": "^0.36.4",
+        "postgres": "^3.4.5"
+    },
+    "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
+        "@nzyme/project-utils": "*",
+        "@types/node": "^20.11.24",
+        "drizzle-kit": "^0.28.1",
+        "typescript": "^5.7.2"
+    }
+}
