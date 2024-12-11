@@ -8,6 +8,7 @@
     },
     "dependencies": {
         "@chorus/agent": "*",
+        "@chorus/core": "*",
         "@chorus/slack": "*",
         "@nzyme/ioc": "*",
         "@nzyme/project-utils": "*",

@@ -20,7 +20,8 @@
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
         "@slack/bolt": "^4.1.1",
-        "@slack/web-api": "7.6.0"
+        "@slack/web-api": "7.6.0",
+        "@tryfabric/mack": "^1.2.1"
     },
     "devDependencies": {
         "@chorus/eslint": "*",

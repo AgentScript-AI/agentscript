@@ -2,7 +2,8 @@ import slack from '@slack/bolt';
 import { install as installSourceMaps } from 'source-map-support';
 
 import { SlackBot } from '@chorus/agent';
-import { SlackReceiver } from '@chorus/slack';
+import { Chat, EnvVariables } from '@chorus/core';
+import { SlackChat, SlackReceiver } from '@chorus/slack';
 import { createContainer } from '@nzyme/ioc';
 import { loadEnvVariables } from '@nzyme/project-utils';
 import { devServerRuntime } from '@nzyme/rollup-utils';
@@ -18,6 +19,8 @@ const receiver = new slack.HTTPReceiver({
     port: runtime.port,
 });
 
+container.set(EnvVariables, process.env);
+container.set(Chat, SlackChat);
 container.set(SlackReceiver, receiver);
 
 const slackApp = container.resolve(SlackBot);

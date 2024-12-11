@@ -1,19 +1,21 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
+import { EnvVariables } from '@chorus/core';
 import { defineService } from '@nzyme/ioc';
 
 import * as db from './schema.js';
 
 export const DatabaseClient = defineService({
     name: 'DatabaseClient',
-    setup() {
-        const url = String(process.env.DATABASE_URL);
+    setup({ inject }) {
+        const env = inject(EnvVariables);
+        const url = String(env.DATABASE_URL);
         const driver = postgres(url);
 
         return drizzle(driver, {
             schema: db,
-            logger: process.env.DATABASE_LOGGING === 'true',
+            logger: env.DATABASE_LOGGING === 'true',
         });
     },
 });

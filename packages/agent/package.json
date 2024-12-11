@@ -19,7 +19,6 @@
         "@nzyme/types": "*",
         "@nzyme/utils": "*",
         "@slack/bolt": "^4.1.1",
-        "@tryfabric/mack": "^1.2.1",
         "debug": "^4.4.0",
         "zod": "^3.23.8"
     },

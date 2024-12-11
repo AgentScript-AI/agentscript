@@ -1,3 +1,4 @@
+import { EnvVariables } from '@chorus/core';
 import type { Embeddings } from '@langchain/core/embeddings';
 import { OpenAIEmbeddings } from '@langchain/openai';
 
@@ -5,10 +6,12 @@ import { defineService } from '@nzyme/ioc';
 
 export const EmbeddingModel = defineService<Embeddings>({
     name: 'EmbeddingModel',
-    setup() {
+    setup({ inject }) {
+        const env = inject(EnvVariables);
+
         return new OpenAIEmbeddings({
             modelName: 'text-embedding-3-small',
-            apiKey: process.env.OPENAI_API_KEY,
+            apiKey: env.OPENAI_API_KEY,
         });
     },
 });

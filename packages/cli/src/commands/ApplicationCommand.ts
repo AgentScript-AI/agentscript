@@ -1,5 +1,6 @@
 import { Command, Flags } from '@oclif/core';
 
+import { EnvVariables } from '@chorus/core';
 import { createContainer } from '@nzyme/ioc';
 import { Logger, PrettyLoggerFactory } from '@nzyme/logging';
 
@@ -16,6 +17,7 @@ export abstract class ApplicationCommand extends Command {
     override async init() {
         await super.init();
 
+        this.container.set(EnvVariables, process.env);
         this.container.set(Logger, PrettyLoggerFactory);
     }
 

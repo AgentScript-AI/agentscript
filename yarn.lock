@@ -1008,6 +1008,7 @@ __metadata:
   resolution: "@chorus/agent-local@workspace:packages/agent-local"
   dependencies:
     "@chorus/agent": "npm:*"
+    "@chorus/core": "npm:*"
     "@chorus/eslint": "npm:*"
     "@chorus/slack": "npm:*"
     "@chorus/tsconfig": "npm:*"
@@ -1182,6 +1183,7 @@ __metadata:
     "@nzyme/utils": "npm:*"
     "@slack/bolt": "npm:^4.1.1"
     "@slack/web-api": "npm:7.6.0"
+    "@tryfabric/mack": "npm:^1.2.1"
     "@types/node": "npm:^22.7.5"
   languageName: unknown
   linkType: soft

@@ -1,6 +1,6 @@
 import { NotionAPILoader } from '@langchain/community/document_loaders/web/notionapi';
 
-import { Logger } from '@chorus/core';
+import { EnvVariables, Logger } from '@chorus/core';
 import { KnowledgeStore } from '@chorus/rag';
 import { defineCommand } from '@nzyme/ioc';
 
@@ -11,7 +11,7 @@ export interface SyncNotionPageParams {
 export const SyncNotionPage = defineCommand({
     name: 'SyncNotionPage',
     setup({ inject }) {
-        const notionToken = process.env.NOTION_TOKEN;
+        const notionToken = inject(EnvVariables).NOTION_TOKEN;
         const knowledgeStore = inject(KnowledgeStore);
         const logger = inject(Logger);
 

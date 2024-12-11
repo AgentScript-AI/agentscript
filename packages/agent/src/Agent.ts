@@ -1,6 +1,6 @@
 import { HumanMessage } from '@langchain/core/messages';
 
-import { Logger } from '@chorus/core';
+import { Chat, Logger } from '@chorus/core';
 import { type SlackUser, getChannelType } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 import { createStopwatch } from '@nzyme/utils';
@@ -23,6 +23,7 @@ export const Agent = defineService({
     setup({ inject }) {
         const llmProvider = inject(LangModelProvider);
         const toolRegistry = inject(ToolRegistry);
+        const chat = inject(Chat);
         const states = new Map<string, AgentState>();
         const logger = inject(Logger);
 
@@ -91,15 +92,26 @@ export const Agent = defineService({
 
                     state.messages.push(response);
 
-                    if (!response.tool_calls?.length) {
-                        return response.content;
-                    }
-
                     const toolCalls = response.tool_calls;
 
-                    for (const toolCall of toolCalls) {
-                        const toolMessage = await toolRegistry.callTool(toolCall, state);
-                        state.messages.push(toolMessage);
+                    if (toolCalls?.length) {
+                        for (const toolCall of toolCalls) {
+                            const toolMessage = await toolRegistry.callTool(toolCall, state);
+                            state.messages.push(toolMessage);
+                        }
+                    }
+
+                    if (response.content) {
+                        if (typeof response.content === 'string') {
+                            await chat.sendMessage({
+                                channelId: input.channelId,
+                                threadId: input.threadId,
+                                content: response.content,
+                            });
+                        }
+
+                        // TODO: Handle complex response
+                        return;
                     }
                 }
 
