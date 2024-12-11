@@ -1,0 +1,30 @@
+{
+    "extends": "@chorus/tsconfig/base.json",
+    "compilerOptions": {
+        "rootDir": "./src",
+        "outDir": "./dist",
+        "composite": false,
+        "noEmit": true
+    },
+    "include": ["src"],
+    "references": [
+        {
+            "path": "../agent/tsconfig.json"
+        },
+        {
+            "path": "../../integrations/slack/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/ioc/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/project-utils/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/rollup-utils/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/utils/tsconfig.json"
+        }
+    ]
+}

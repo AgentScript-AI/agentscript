@@ -39,6 +39,9 @@ jspm_packages/
 # Optional stylelint cache
 .stylelintcache
 
+# Rollup cache
+.rollup.cache
+
 # Optional REPL history
 .node_repl_history
 

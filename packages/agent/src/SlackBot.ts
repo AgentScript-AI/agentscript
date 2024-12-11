@@ -1,7 +1,7 @@
 import slack from '@slack/bolt';
 import { markdownToBlocks } from '@tryfabric/mack';
 
-import { SlackUsers } from '@chorus/slack';
+import { SlackReceiver, SlackUsers } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 
 import { Agent } from './Agent.js';
@@ -11,15 +11,16 @@ export const SlackBot = defineService({
     setup({ inject }) {
         const agent = inject(Agent);
         const slackUsers = inject(SlackUsers);
+        const slackReceiver = inject(SlackReceiver);
 
-        const app = new slack.App({
+        const slackApp = new slack.App({
+            receiver: slackReceiver,
             token: process.env.SLACK_BOT_TOKEN,
             signingSecret: process.env.SLACK_SIGNING_SECRET,
             appToken: process.env.SLACK_APP_TOKEN,
-            port: 3001,
         });
 
-        app.message(async ({ message, say }) => {
+        slackApp.message(async ({ message, say }) => {
             if (message.type !== 'message') {
                 return;
             }
@@ -49,6 +50,6 @@ export const SlackBot = defineService({
             }
         });
 
-        return app;
+        return slackApp;
     },
 });

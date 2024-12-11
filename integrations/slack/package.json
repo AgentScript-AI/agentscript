@@ -19,6 +19,7 @@
         "@chorus/rag": "*",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
+        "@slack/bolt": "^4.1.1",
         "@slack/web-api": "7.6.0"
     },
     "devDependencies": {

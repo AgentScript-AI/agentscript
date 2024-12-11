@@ -1,4 +1,5 @@
 export * from './SlackClient.js';
+export * from './SlackReceiver.js';
 export * from './SlackUsers.js';
 
 export * from './components/slackActionButton.js';
