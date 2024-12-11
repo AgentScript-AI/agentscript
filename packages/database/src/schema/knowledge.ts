@@ -24,7 +24,7 @@ export const knowledge = pgTable(
         tenantId: bigint('tenant_id', { mode: 'bigint' }).notNull(),
         externalId: text('external_id').notNull(),
         chunk: integer('chunk').notNull(),
-        title: text('title').notNull(),
+        title: text('title'),
         url: text('url').notNull(),
         content: text('content').notNull(),
         vector: vector('vector', { dimensions: 1536 }),

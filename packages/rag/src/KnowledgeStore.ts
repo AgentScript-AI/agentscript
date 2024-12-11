@@ -16,7 +16,7 @@ export interface KnowledgeStoreDocumentParams {
 
 export interface KnowledgeStoreDocumentUpsertParams extends KnowledgeStoreDocumentParams {
     document: Document;
-    title: string;
+    title?: string;
     url: string;
     updatedAt: Date;
 }
@@ -40,7 +40,9 @@ export const KnowledgeStore = defineService({
 
         async function upsertDocument(document: KnowledgeStoreDocumentUpsertParams) {
             const chunks = await splitter.splitDocuments([document.document]);
-            const vectors = await embeddingModel.embedDocuments(chunks.map(c => c.pageContent));
+            const vectors = await embeddingModel.embedDocuments(
+                chunks.map(c => `# ${document.title}\n\n${c.pageContent}`),
+            );
             const syncedAt = new Date();
             const updatedAt = document.updatedAt;
 

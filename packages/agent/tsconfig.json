@@ -8,6 +8,9 @@
     "include": ["src"],
     "references": [
         {
+            "path": "../core/tsconfig.json"
+        },
+        {
             "path": "../database/tsconfig.json"
         },
         {
@@ -15,6 +18,9 @@
         },
         {
             "path": "../rag/tsconfig.json"
+        },
+        {
+            "path": "../../integrations/slack/tsconfig.json"
         },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"

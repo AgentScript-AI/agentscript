@@ -6,6 +6,9 @@
             "path": "./integrations/notion/tsconfig.json"
         },
         {
+            "path": "./integrations/slack/tsconfig.json"
+        },
+        {
             "path": "./nzyme/packages/aws-cdk/tsconfig.json"
         },
         {

@@ -4,10 +4,10 @@ import type { ServiceContext } from '@nzyme/ioc';
 import { defineCommand } from '@nzyme/ioc';
 import type { Immutable } from '@nzyme/types';
 
-import type { AgentState, AgentStateUpdate } from '../AgentState.js';
+import type { AgentState } from '../AgentState.js';
 
 export type ToolInput<T extends z.AnyZodObject = z.AnyZodObject> = z.infer<T>;
-export type ToolResult = void | Promise<void> | AgentStateUpdate | Promise<AgentStateUpdate>;
+export type ToolResult = Promise<unknown>;
 
 export interface ToolFunction<T extends z.AnyZodObject = z.AnyZodObject> {
     (input: ToolInput<T>, state: Immutable<AgentState>): ToolResult;

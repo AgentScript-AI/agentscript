@@ -1,5 +1,7 @@
 import slack from '@slack/bolt';
+import { markdownToBlocks } from '@tryfabric/mack';
 
+import { SlackUsers } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 
 import { Agent } from './Agent.js';
@@ -8,6 +10,7 @@ export const SlackBot = defineService({
     name: 'SlackBot',
     setup({ inject }) {
         const agent = inject(Agent);
+        const slackUsers = inject(SlackUsers);
 
         const app = new slack.App({
             token: process.env.SLACK_BOT_TOKEN,
@@ -25,16 +28,19 @@ export const SlackBot = defineService({
                 return;
             }
 
+            const user = await slackUsers.getUser(message.user);
+
             const response = await agent({
                 channelId: message.channel,
                 threadId: message.thread_ts ?? message.ts,
-                userId: message.user,
-                message: message.text,
+                user,
+                messageId: message.ts,
+                messageContent: message.text,
             });
 
             if (typeof response === 'string') {
                 await say({
-                    text: response,
+                    blocks: await markdownToBlocks(response),
                     thread_ts: message.ts,
                     mrkdwn: true,
                 });

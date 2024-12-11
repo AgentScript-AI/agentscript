@@ -11,6 +11,7 @@
         "clean": "tsc --build --clean",
         "build": "tsc --build",
         "start": "yarn --cwd examples/drizzle dev",
+        "sync:notion": "chorus notion sync",
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {

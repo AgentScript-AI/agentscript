@@ -1,90 +1,153 @@
 import { HumanMessage } from '@langchain/core/messages';
-import { END, MemorySaver, START, StateGraph } from '@langchain/langgraph';
 
+import { Logger } from '@chorus/core';
+import { type SlackUser, getChannelType } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
+import { createStopwatch } from '@nzyme/utils';
 
 import type { AgentState } from './AgentState.js';
-import { AgentStateAnnotation } from './AgentState.js';
 import { LangModelProvider } from './LangModelProvider.js';
 import { ToolRegistry } from './services/ToolRegistry.js';
-import { defineGraphNode } from './utils/defineGraphNode.js';
 import { defineSystemPrompt } from './utils/defineSystemPrompt.js';
 
 export interface AgentInput {
     channelId: string;
     threadId: string;
-    userId: string;
-    message: string;
+    messageId: string;
+    messageContent: string;
+    user: SlackUser;
 }
-
-const CallModel = defineGraphNode({
-    name: 'callModel',
-    state: AgentStateAnnotation,
-    setup: ({ inject }) => {
-        const llmProvider = inject(LangModelProvider);
-        const toolRegistry = inject(ToolRegistry);
-
-        const systemPrompt = defineSystemPrompt([
-            'You are a helpful assistant that can answer questions and help with tasks.',
-            'You work for a startup called Chorus. It is a platform for creating and sharing AI agents.',
-            'You use corporate jargon and acronyms as much as possible.',
-            'Use the tools at your disposal to achieve the task requested.',
-        ]);
-
-        return async state => {
-            const llm = llmProvider().bindTools(toolRegistry.tools);
-            const response = await llm.invoke([systemPrompt, ...state.messages]);
-
-            console.log(response);
-
-            return { messages: [response] };
-        };
-    },
-});
-
-const CallTools = defineGraphNode({
-    name: 'callTools',
-    state: AgentStateAnnotation,
-    setup({ inject }) {
-        const toolRegistry = inject(ToolRegistry);
-
-        return async state => {
-            return { messages: [state.messages] };
-        };
-    },
-});
 
 export const Agent = defineService({
     name: 'Agent',
     setup({ inject }) {
-        const checkpointer = new MemorySaver();
-        const graph = new StateGraph(AgentStateAnnotation);
+        const llmProvider = inject(LangModelProvider);
+        const toolRegistry = inject(ToolRegistry);
+        const states = new Map<string, AgentState>();
+        const logger = inject(Logger);
 
-        graph
-            .addNode(CallModel.name, inject(CallModel))
-            .addEdge(START, CallModel.name)
-            .addEdge(CallModel.name, END);
+        const llm = llmProvider().bindTools(toolRegistry.tools);
 
-        const agent = graph.compile({
-            checkpointer,
-        });
+        // const checkpointer = new MemorySaver();
+        // const graph = new StateGraph(AgentStateAnnotation);
+
+        // graph
+        //     .addNode(CallModel.name, inject(CallModel))
+        //     .addEdge(START, CallModel.name)
+        //     .addEdge(CallModel.name, END);
+
+        // const agent = graph.compile({
+        //     checkpointer,
+        // });
 
         return async (input: AgentInput) => {
-            let state: AgentState = {
-                channelId: input.channelId,
-                messages: [new HumanMessage(input.message)],
-                documents: [],
+            const date = new Date().toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+
+            const channelType = getChannelType(input.channelId);
+            const channelInfo =
+                channelType === 'dm' ? [`You are talking to ${formatUser(input.user)}.`] : [];
+
+            const systemPrompt = defineSystemPrompt([
+                'You are a helpful assistant with access to a set of tools designed to assist in completing tasks.',
+                // 'You do not respond to greetings or small talk.',
+                'Use the tools at your disposal to achieve the task requested.',
+                // 'Use **bold** to highlight important words.',
+                'If you are unsure of the answer, ask the user for clarification.',
+                'Answer strictly using the internal knowledge base and do not make up information.',
+                'You work for a startup called Chorus. It is a platform for creating and sharing AI agents.',
+                'You use corporate jargon and acronyms as much as possible.',
+                `You are currently in the channel ${input.channelId} and thread ${input.threadId}.`,
+                `Today's date is ${date}.`,
+                ...channelInfo,
+            ]);
+
+            const state = retrieveState(input);
+
+            const message = new HumanMessage({
+                id: input.messageId,
+                content: input.messageContent,
+                // name: input.user.name,
+            });
+
+            state.messages.push(message);
+
+            logger.debug('Invoking agent', {
+                threadId: state.threadId,
+                channelId: state.channelId,
+            });
+
+            const stopwatch = createStopwatch();
+
+            try {
+                for (let i = 0; i < 5; i++) {
+                    logger.debug('Invoking LLM');
+
+                    const response = await llm.invoke([systemPrompt, ...state.messages]);
+
+                    state.messages.push(response);
+
+                    if (!response.tool_calls?.length) {
+                        return response.content;
+                    }
+
+                    const toolCalls = response.tool_calls;
+
+                    for (const toolCall of toolCalls) {
+                        const toolMessage = await toolRegistry.callTool(toolCall, state);
+                        state.messages.push(toolMessage);
+                    }
+                }
+
+                throw new Error('Agent failed to complete task');
+            } finally {
+                const duration = stopwatch.format();
+                logger.debug('Agent completed in %s', duration, {
+                    duration,
+                    threadId: state.threadId,
+                    channelId: state.channelId,
+                });
+            }
+        };
+
+        function retrieveState(params: AgentInput) {
+            const id = `${params.channelId}:${params.threadId}`;
+            let state = states.get(id);
+
+            if (state) {
+                return state;
+            }
+
+            state = {
+                id,
+                channelId: params.channelId,
+                threadId: params.threadId,
+                messages: [],
             };
 
-            state = (await agent.invoke(state, {
-                configurable: {
-                    thread_id: input.threadId,
-                },
-            })) as AgentState;
+            states.set(id, state);
 
-            const lastMessage = state.messages[state.messages.length - 1];
+            return state;
+        }
 
-            return lastMessage.content;
-        };
+        function formatUser(user: SlackUser) {
+            if (!user.name) {
+                return user.email || user.id;
+            }
+
+            if (!user.email) {
+                return user.name;
+            }
+
+            if (user.description) {
+                return `${user.name} (${user.email}) - ${user.description}`;
+            }
+
+            return `${user.name} (${user.email})`;
+        }
     },
 });

@@ -1,0 +1,29 @@
+{
+    "name": "@chorus/slack",
+    "version": "1.0.0",
+    "repository": "https://github.com/kedrzu/chorus.git",
+    "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "private": true,
+    "type": "module",
+    "main": "./dist/index.js",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "sideEffects": false,
+    "scripts": {
+        "eslint": "eslint . --fix --cache",
+        "build": "tsc --build"
+    },
+    "dependencies": {
+        "@chorus/core": "*",
+        "@chorus/database": "*",
+        "@chorus/rag": "*",
+        "@nzyme/ioc": "*",
+        "@nzyme/utils": "*",
+        "@slack/web-api": "7.6.0"
+    },
+    "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
+        "@types/node": "^22.7.5"
+    }
+}

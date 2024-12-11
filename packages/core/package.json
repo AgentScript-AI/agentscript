@@ -9,7 +9,9 @@
         "@langchain/core": "^0.3.22",
         "@langchain/openai": "^0.3.14",
         "@nzyme/ioc": "*",
-        "@nzyme/utils": "*"
+        "@nzyme/utils": "*",
+        "pino": "^9.5.0",
+        "pino-pretty": "^13.0.0"
     },
     "devDependencies": {
         "@chorus/eslint": "*",

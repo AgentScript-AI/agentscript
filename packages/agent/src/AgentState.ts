@@ -14,5 +14,11 @@ export const AgentStateAnnotation = Annotation.Root({
     }),
 });
 
-export type AgentState = typeof AgentStateAnnotation.State;
+export interface AgentState {
+    id: string;
+    threadId: string;
+    channelId: string;
+    messages: BaseMessage[];
+}
+
 export type AgentStateUpdate = typeof AgentStateAnnotation.Update;

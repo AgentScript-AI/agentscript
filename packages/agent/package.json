@@ -9,9 +9,11 @@
         "dev": "nodemon dist/index.js"
     },
     "dependencies": {
+        "@chorus/core": "*",
         "@chorus/database": "*",
         "@chorus/notion": "*",
         "@chorus/rag": "*",
+        "@chorus/slack": "*",
         "@langchain/core": "^0.3.19",
         "@langchain/langgraph": "^0.2.23",
         "@langchain/openai": "^0.3.14",
@@ -20,9 +22,12 @@
         "@nzyme/types": "*",
         "@nzyme/utils": "*",
         "@slack/bolt": "^4.1.1",
+        "@tryfabric/mack": "^1.2.1",
+        "debug": "^4.4.0",
         "zod": "^3.23.8"
     },
     "devDependencies": {
+        "@types/debug": "^4",
         "@types/node": "^20.11.24",
         "nodemon": "^3.1.7",
         "typescript": "^5.7.2"
