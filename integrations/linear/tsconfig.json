@@ -8,10 +8,13 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../../nzyme/packages/ioc/tsconfig.json"
+            "path": "../../packages/core/tsconfig.json"
         },
         {
-            "path": "../../nzyme/packages/types/tsconfig.json"
+            "path": "../../packages/database/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/ioc/tsconfig.json"
         },
         {
             "path": "../../nzyme/packages/utils/tsconfig.json"

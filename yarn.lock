@@ -1042,7 +1042,6 @@ __metadata:
     "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
     "@slack/bolt": "npm:^4.1.1"
-    "@tryfabric/mack": "npm:^1.2.1"
     "@types/debug": "npm:^4"
     "@types/node": "npm:^20.11.24"
     debug: "npm:^4.4.0"
@@ -1089,11 +1088,13 @@ __metadata:
     "@langchain/core": "npm:^0.3.22"
     "@langchain/openai": "npm:^0.3.14"
     "@nzyme/ioc": "npm:*"
+    "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
     "@types/node": "npm:^20.11.24"
     pino: "npm:^9.5.0"
     pino-pretty: "npm:^13.0.0"
     typescript: "npm:^5.7.2"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
@@ -1127,6 +1128,21 @@ __metadata:
     eslint-config-prettier: "npm:^9.1.0"
     eslint-plugin-import: "npm:^2.31.0"
     eslint-plugin-prettier: "npm:^5.2.1"
+  languageName: unknown
+  linkType: soft
+
+"@chorus/linear@workspace:integrations/linear":
+  version: 0.0.0-use.local
+  resolution: "@chorus/linear@workspace:integrations/linear"
+  dependencies:
+    "@chorus/core": "npm:*"
+    "@chorus/database": "npm:*"
+    "@chorus/eslint": "npm:*"
+    "@chorus/tsconfig": "npm:*"
+    "@nzyme/ioc": "npm:*"
+    "@nzyme/utils": "npm:*"
+    "@types/node": "npm:^22.7.5"
+    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 

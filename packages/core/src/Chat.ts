@@ -1,13 +1,18 @@
 import { defineInjectable } from '@nzyme/ioc';
 
 export interface Chat {
-    sendMessage(params: ChatMessageParams): Promise<ChatMessageResult>;
+    postMessage(params: ChatPostMessageParams): Promise<ChatMessageResult>;
+    updateMessage(params: ChatUpdateMessageParams): Promise<ChatMessageResult>;
 }
 
-export interface ChatMessageParams {
+export interface ChatPostMessageParams {
     threadId: string;
     channelId: string;
     content: string;
+}
+
+export interface ChatUpdateMessageParams extends ChatPostMessageParams {
+    messageId: string;
 }
 
 export interface ChatMessageResult {

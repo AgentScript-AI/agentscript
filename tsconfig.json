@@ -3,6 +3,9 @@
     "include": [],
     "references": [
         {
+            "path": "./integrations/linear/tsconfig.json"
+        },
+        {
             "path": "./integrations/notion/tsconfig.json"
         },
         {

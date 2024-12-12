@@ -1,14 +1,14 @@
 import { type ToolCall, ToolMessage } from '@langchain/core/messages/tool';
 import type { StructuredToolParams } from '@langchain/core/tools';
+import type z from 'zod';
 
 import { Logger } from '@chorus/core';
+import type { AgentState, ToolDefinition } from '@chorus/core';
+import { CreateLinearTaskTool } from '@chorus/linear';
+import { SearchKnowledgeTool } from '@chorus/rag';
 import { defineService } from '@nzyme/ioc';
 import type { Immutable } from '@nzyme/types';
 import { assertValue, createStopwatch } from '@nzyme/utils';
-
-import type { AgentState } from '../AgentState.js';
-import { SearchKnowledgeTool } from '../tools/SearchKnowledgeTool.js';
-import type { ToolDefinition } from '../utils/defineTool.js';
 
 export const ToolRegistry = defineService({
     name: 'ToolRegistry',
@@ -18,23 +18,26 @@ export const ToolRegistry = defineService({
         const logger = inject(Logger);
 
         registerTool(SearchKnowledgeTool);
+        registerTool(CreateLinearTaskTool);
 
         return {
             tools: toolsDefs,
             callTool,
         };
 
-        function registerTool(tool: ToolDefinition) {
+        function registerTool<TInput extends z.AnyZodObject, TOutput extends z.ZodTypeAny>(
+            tool: ToolDefinition<TInput, TOutput>,
+        ) {
             toolsDefs.push({
                 name: tool.name,
                 description: tool.description,
-                schema: tool.schema,
+                schema: tool.input,
             });
-            toolsMap.set(tool.name, tool);
+            toolsMap.set(tool.name, tool as unknown as ToolDefinition);
         }
 
         async function callTool(call: ToolCall, state: Immutable<AgentState>) {
-            logger.debug('Calling tool', {
+            logger.debug('Calling tool %O', {
                 tool: call.name,
                 args: call.args,
             });

@@ -1,11 +1,11 @@
 import { HumanMessage } from '@langchain/core/messages';
 
+import type { AgentState } from '@chorus/core';
 import { Chat, Logger } from '@chorus/core';
 import { type SlackUser, getChannelType } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 import { createStopwatch } from '@nzyme/utils';
 
-import type { AgentState } from './AgentState.js';
 import { LangModelProvider } from './LangModelProvider.js';
 import { ToolRegistry } from './services/ToolRegistry.js';
 import { defineSystemPrompt } from './utils/defineSystemPrompt.js';
@@ -42,6 +42,12 @@ export const Agent = defineService({
         // });
 
         return async (input: AgentInput) => {
+            const chatMessage = await chat.postMessage({
+                channelId: input.channelId,
+                threadId: input.threadId,
+                content: 'Give me a moment to think... 🤔',
+            });
+
             const date = new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
                 year: 'numeric',
@@ -103,9 +109,10 @@ export const Agent = defineService({
 
                     if (response.content) {
                         if (typeof response.content === 'string') {
-                            await chat.sendMessage({
+                            await chat.updateMessage({
                                 channelId: input.channelId,
                                 threadId: input.threadId,
+                                messageId: chatMessage.messageId,
                                 content: response.content,
                             });
                         }

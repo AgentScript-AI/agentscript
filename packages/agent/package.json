@@ -9,6 +9,7 @@
         "@chorus/core": "*",
         "@chorus/database": "*",
         "@chorus/notion": "*",
+        "@chorus/linear": "*",
         "@chorus/rag": "*",
         "@chorus/slack": "*",
         "@langchain/core": "^0.3.19",
