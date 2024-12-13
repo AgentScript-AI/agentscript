@@ -1031,12 +1031,14 @@ __metadata:
   dependencies:
     "@chorus/core": "npm:*"
     "@chorus/database": "npm:*"
+    "@chorus/linear": "npm:*"
     "@chorus/notion": "npm:*"
     "@chorus/rag": "npm:*"
     "@chorus/slack": "npm:*"
     "@langchain/core": "npm:^0.3.19"
     "@langchain/langgraph": "npm:^0.2.23"
     "@langchain/openai": "npm:^0.3.14"
+    "@nzyme/crypto-utils": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/project-utils": "npm:*"
     "@nzyme/types": "npm:*"
@@ -1087,6 +1089,7 @@ __metadata:
     "@chorus/tsconfig": "npm:*"
     "@langchain/core": "npm:^0.3.22"
     "@langchain/openai": "npm:^0.3.14"
+    "@nzyme/crypto-utils": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
@@ -1131,7 +1134,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@chorus/linear@workspace:integrations/linear":
+"@chorus/linear@npm:*, @chorus/linear@workspace:integrations/linear":
   version: 0.0.0-use.local
   resolution: "@chorus/linear@workspace:integrations/linear"
   dependencies:

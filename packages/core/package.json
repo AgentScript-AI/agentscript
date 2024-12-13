@@ -8,6 +8,7 @@
     "dependencies": {
         "@langchain/core": "^0.3.22",
         "@langchain/openai": "^0.3.14",
+        "@nzyme/crypto-utils": "*",
         "@nzyme/ioc": "*",
         "@nzyme/types": "*",
         "@nzyme/utils": "*",

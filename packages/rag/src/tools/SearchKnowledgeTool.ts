@@ -1,6 +1,6 @@
-import { z } from 'zod';
+import * as z from 'zod';
 
-import { defineTool } from '@chorus/core';
+import { defineTool, randomUid } from '@chorus/core';
 
 import { KnowledgeRetriever } from '../KnowledgeRetriever.js';
 
@@ -11,26 +11,14 @@ export const SearchKnowledgeToolInput = z.object({
         .describe('Provide 3 queries based on the context to get better results.'),
 });
 
-export type SearchKnowledgeToolDocument = z.infer<typeof SearchKnowledgeToolDocument>;
-export const SearchKnowledgeToolDocument = z.object({
-    type: z.string(),
-    title: z.string().nullable(),
-    url: z.string(),
-    content: z.string(),
-});
-
-export type SearchKnowledgeToolOutput = z.infer<typeof SearchKnowledgeToolOutput>;
-export const SearchKnowledgeToolOutput = z.array(SearchKnowledgeToolDocument);
-
 export const SearchKnowledgeTool = defineTool({
     name: 'search_knowledge',
     description: 'Search for information in the knowledge base.',
     input: SearchKnowledgeToolInput,
-    output: SearchKnowledgeToolOutput,
     setup({ inject }) {
         const knowledgeRetriever = inject(KnowledgeRetriever);
 
-        return async input => {
+        return async (input, { state, call }) => {
             const results = await Promise.all(
                 input.queries.map(query => knowledgeRetriever({ query })),
             );
@@ -41,15 +29,29 @@ export const SearchKnowledgeTool = defineTool({
                 resultsMap.set(result.id, result);
             }
 
-            return [...resultsMap.values()]
+            const documents = [...resultsMap.values()]
                 .sort((a, b) => b.similarity - a.similarity)
                 .slice(0, 10)
-                .map<SearchKnowledgeToolDocument>(result => ({
+                .map(result => ({
                     type: result.type,
                     title: result.title,
                     url: result.url,
                     content: result.content,
                 }));
+
+            const content = `These are the documents that I found:\n${JSON.stringify(documents)}`;
+
+            state.events.push({
+                type: 'TOOL_EVENT',
+                timestamp: new Date(),
+                uid: randomUid(),
+                callId: call.uid,
+                content,
+            });
+
+            return {
+                requireResponse: true,
+            };
         };
     },
 });

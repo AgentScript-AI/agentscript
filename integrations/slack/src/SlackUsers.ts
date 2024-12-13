@@ -1,18 +1,12 @@
 import { defineService } from '@nzyme/ioc';
 import { SlackClient } from './SlackClient.js';
-
-export interface SlackUser {
-    id: string;
-    name?: string;
-    email?: string;
-    description?: string;
-}
+import { ChatUser } from '@chorus/core';
 
 export const SlackUsers = defineService({
     name: 'SlackUsers',
     setup({ inject }) {
         const slack = inject(SlackClient);
-        const users = new Map<string, SlackUser>();
+        const users = new Map<string, ChatUser>();
 
         return {
             getUser,
@@ -31,7 +25,7 @@ export const SlackUsers = defineService({
 
             user = {
                 id: id,
-                name: response.user.real_name || response.user.name,
+                name: response.user.real_name || response.user.name || id,
                 email: response.user.profile?.email,
                 description: response.user.profile?.title,
             };

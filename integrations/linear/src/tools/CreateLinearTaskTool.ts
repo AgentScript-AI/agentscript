@@ -1,5 +1,5 @@
-import { Chat, defineTool } from '@chorus/core';
-import { z } from 'zod';
+import { Chat, defineTool, randomUid } from '@chorus/core';
+import * as z from 'zod';
 
 export type LinearTaskStatus = z.infer<typeof LinearTaskStatus>;
 export const LinearTaskStatus = z.enum(['AWAITING_APPROVAL', 'CREATED', 'ERROR']);
@@ -15,11 +15,8 @@ export const LinearTaskInput = z.object({
         ),
 });
 
-export type LinearTaskOutput = z.infer<typeof LinearTaskOutput>;
-export const LinearTaskOutput = z.object({
-    status: LinearTaskStatus,
-    error: z.string().optional().describe('Error message if the task failed'),
-});
+export type LinearTaskData = z.infer<typeof LinearTaskData>;
+export const LinearTaskData = z.object({});
 
 export const CreateLinearTaskTool = defineTool({
     name: 'create_linear_task',
@@ -30,14 +27,21 @@ export const CreateLinearTaskTool = defineTool({
         'Do not include task title or details in the output. ' +
         'Always check knowledge base before asking for more details.',
     input: LinearTaskInput,
-    output: LinearTaskOutput,
     setup({ inject }) {
         const chat = inject(Chat);
 
-        return async (input, state) => {
-            const result: LinearTaskOutput = {
-                status: 'AWAITING_APPROVAL',
-            };
+        return async (input, { state, call }) => {
+            state.events.push({
+                type: 'TOOL_EVENT',
+                timestamp: new Date(),
+                uid: randomUid(),
+                callId: call.uid,
+                content: [
+                    `You requested to create a task in Linear. It needs to be approved by the user before it is created.`,
+                    `<TASK_TITLE>\n${input.title}\n</TASK_TITLE>`,
+                    `<TASK_DETAILS>\n${input.details}\n</TASK_DETAILS>`,
+                ].join('\n'),
+            });
 
             const content = [
                 //
@@ -48,11 +52,22 @@ export const CreateLinearTaskTool = defineTool({
 
             await chat.postMessage({
                 content: content.join('\n'),
-                threadId: state.threadId,
-                channelId: state.channelId,
+                chatId: state.chatId,
+                buttons: [
+                    {
+                        label: 'Create Linear Task',
+                        action: 'create_linear_task',
+                        value: 'create_linear_task',
+                        style: 'primary',
+                    },
+                    {
+                        label: 'Cancel',
+                        action: 'cancel',
+                        value: 'cancel',
+                        style: 'danger',
+                    },
+                ],
             });
-
-            return result;
         };
     },
 });

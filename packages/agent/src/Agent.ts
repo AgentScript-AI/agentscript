@@ -1,21 +1,23 @@
-import { HumanMessage } from '@langchain/core/messages';
+import type { AIMessageChunk } from '@langchain/core/messages';
 
-import type { AgentState } from '@chorus/core';
-import { Chat, Logger } from '@chorus/core';
-import { type SlackUser, getChannelType } from '@chorus/slack';
+import type { AgentMessage, ChatUser, ToolCall } from '@chorus/core';
+import { Chat, Logger, randomUid } from '@chorus/core';
+import { randomString } from '@nzyme/crypto-utils';
 import { defineService } from '@nzyme/ioc';
-import { createStopwatch } from '@nzyme/utils';
+import { createStopwatch, mapNotNull } from '@nzyme/utils';
 
+import { AgentStateStore } from './AgentStateStore.js';
 import { LangModelProvider } from './LangModelProvider.js';
 import { ToolRegistry } from './services/ToolRegistry.js';
+import { convertEventToPrompt } from './utils/convertEventToPrompt.js';
 import { defineSystemPrompt } from './utils/defineSystemPrompt.js';
 
-export interface AgentInput {
-    channelId: string;
-    threadId: string;
+export interface AgentMessageInput {
+    chatId: string;
     messageId: string;
-    messageContent: string;
-    user: SlackUser;
+    timestamp: Date;
+    content: string;
+    user: ChatUser;
 }
 
 export const Agent = defineService({
@@ -24,7 +26,7 @@ export const Agent = defineService({
         const llmProvider = inject(LangModelProvider);
         const toolRegistry = inject(ToolRegistry);
         const chat = inject(Chat);
-        const states = new Map<string, AgentState>();
+        const stateStore = inject(AgentStateStore);
         const logger = inject(Logger);
 
         const llm = llmProvider().bindTools(toolRegistry.tools);
@@ -41,11 +43,27 @@ export const Agent = defineService({
         //     checkpointer,
         // });
 
-        return async (input: AgentInput) => {
+        return {
+            newMessage,
+        };
+
+        async function newMessage(input: AgentMessageInput) {
+            const state = await stateStore.getStateOrCreateByChatId(input.chatId);
+
             const chatMessage = await chat.postMessage({
-                channelId: input.channelId,
-                threadId: input.threadId,
+                chatId: input.chatId,
                 content: 'Give me a moment to think... 🤔',
+            });
+
+            state.events.push({
+                type: 'HUMAN_MESSAGE',
+                uid: randomUid(),
+                timestamp: input.timestamp,
+                content: input.content,
+                message: {
+                    id: input.messageId,
+                    chatId: input.chatId,
+                },
             });
 
             const date = new Date().toLocaleDateString('en-US', {
@@ -55,9 +73,13 @@ export const Agent = defineService({
                 day: 'numeric',
             });
 
-            const channelType = getChannelType(input.channelId);
-            const channelInfo =
-                channelType === 'dm' ? [`You are talking to ${formatUser(input.user)}.`] : [];
+            const channelInfo = chat.getChatInfo(input.chatId);
+            const channelDetails =
+                channelInfo.type === 'DM' ? [`You are talking to ${formatUser(input.user)}.`] : [];
+
+            if (channelInfo.prompt) {
+                channelDetails.push(channelInfo.prompt);
+            }
 
             const systemPrompt = defineSystemPrompt([
                 'You are a helpful assistant with access to a set of tools designed to assist in completing tasks.',
@@ -68,24 +90,12 @@ export const Agent = defineService({
                 'Answer strictly using the internal knowledge base and do not make up information.',
                 'You work for a startup called Chorus. It is a platform for creating and sharing AI agents.',
                 'You use corporate jargon and acronyms as much as possible.',
-                `You are currently in the channel ${input.channelId} and thread ${input.threadId}.`,
                 `Today's date is ${date}.`,
-                ...channelInfo,
+                ...channelDetails,
             ]);
 
-            const state = retrieveState(input);
-
-            const message = new HumanMessage({
-                id: input.messageId,
-                content: input.messageContent,
-                // name: input.user.name,
-            });
-
-            state.messages.push(message);
-
             logger.debug('Invoking agent', {
-                threadId: state.threadId,
-                channelId: state.channelId,
+                chatId: input.chatId,
             });
 
             const stopwatch = createStopwatch();
@@ -94,30 +104,59 @@ export const Agent = defineService({
                 for (let i = 0; i < 5; i++) {
                     logger.debug('Invoking LLM');
 
-                    const response = await llm.invoke([systemPrompt, ...state.messages]);
+                    const prompts = [
+                        systemPrompt,
+                        ...mapNotNull(state.events, convertEventToPrompt),
+                    ];
 
-                    state.messages.push(response);
+                    const response = await llm.invoke(prompts);
 
-                    const toolCalls = response.tool_calls;
-
-                    if (toolCalls?.length) {
-                        for (const toolCall of toolCalls) {
-                            const toolMessage = await toolRegistry.callTool(toolCall, state);
-                            state.messages.push(toolMessage);
-                        }
-                    }
+                    logger.debug('LLM response %O', {
+                        response: response.content,
+                    });
 
                     if (response.content) {
+                        const responseEvent: AgentMessage = {
+                            uid: response.id || randomString(12),
+                            timestamp: new Date(),
+                            type: 'AGENT_MESSAGE',
+                            content: convertResponseContent(response),
+                        };
+
+                        state.events.push(responseEvent);
+
                         if (typeof response.content === 'string') {
                             await chat.updateMessage({
-                                channelId: input.channelId,
-                                threadId: input.threadId,
-                                messageId: chatMessage.messageId,
+                                chatId: input.chatId,
+                                messageId: chatMessage.id,
                                 content: response.content,
                             });
                         }
+                    }
 
-                        // TODO: Handle complex response
+                    let requireResponse = false;
+
+                    const toolCalls = response.tool_calls;
+                    if (toolCalls?.length) {
+                        for (const toolCall of toolCalls) {
+                            const toolEvent: ToolCall = {
+                                type: 'TOOL_CALL',
+                                uid: toolCall.id || randomString(12),
+                                timestamp: new Date(),
+                                tool: toolCall.name,
+                                params: toolCall.args,
+                            };
+
+                            state.events.push(toolEvent);
+                            const toolResult = await toolRegistry.callTool(toolEvent, state);
+
+                            if (toolResult?.requireResponse) {
+                                requireResponse = true;
+                            }
+                        }
+                    }
+
+                    if (!requireResponse) {
                         return;
                     }
                 }
@@ -125,35 +164,26 @@ export const Agent = defineService({
                 throw new Error('Agent failed to complete task');
             } finally {
                 const duration = stopwatch.format();
-                logger.debug('Agent completed in %s', duration, {
-                    duration,
-                    threadId: state.threadId,
-                    channelId: state.channelId,
-                });
+                logger.debug('Agent completed in %s', duration, { duration });
             }
-        };
-
-        function retrieveState(params: AgentInput) {
-            const id = `${params.channelId}:${params.threadId}`;
-            let state = states.get(id);
-
-            if (state) {
-                return state;
-            }
-
-            state = {
-                id,
-                channelId: params.channelId,
-                threadId: params.threadId,
-                messages: [],
-            };
-
-            states.set(id, state);
-
-            return state;
         }
 
-        function formatUser(user: SlackUser) {
+        function convertResponseContent(message: AIMessageChunk) {
+            if (typeof message.content === 'string') {
+                return message.content;
+            }
+
+            return mapNotNull(message.content, content => {
+                switch (content.type) {
+                    case 'image_url':
+                        return String(content.image_url);
+                    case 'text':
+                        return String(content.text);
+                }
+            }).join('\n');
+        }
+
+        function formatUser(user: ChatUser) {
             if (!user.name) {
                 return user.email || user.id;
             }

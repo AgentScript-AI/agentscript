@@ -1,7 +1,12 @@
-import { Chat } from '@chorus/core';
+import { Chat, ChatMessage, ChatPostMessageParams } from '@chorus/core';
 import { defineService } from '@nzyme/ioc';
 import { SlackClient } from './SlackClient.js';
 import { markdownToBlocks } from '@tryfabric/mack';
+
+import { parseChatId } from './utils/parseChatId.js';
+import { identity } from '@nzyme/utils';
+import { slackActionButton } from './components/slackActionButton.js';
+import { slackActions } from './components/slackActions.js';
 
 export const SlackChat = defineService({
     name: 'SlackChat',
@@ -9,12 +14,14 @@ export const SlackChat = defineService({
     setup({ inject }) {
         const slack = inject(SlackClient);
 
-        return {
+        return identity<Chat>({
             async postMessage(message) {
+                const { channelId, threadId } = parseChatId(message.chatId);
+
                 const result = await slack.chat.postMessage({
-                    blocks: await markdownToBlocks(message.content),
-                    channel: message.channelId,
-                    thread_ts: message.threadId,
+                    blocks: await messageToBlocks(message),
+                    channel: channelId,
+                    thread_ts: threadId,
                     mrkdwn: true,
                 });
 
@@ -23,13 +30,16 @@ export const SlackChat = defineService({
                 }
 
                 return {
-                    messageId: result.ts,
+                    chatId: message.chatId,
+                    id: result.ts,
                 };
             },
             async updateMessage(message) {
+                const { channelId, threadId } = parseChatId(message.chatId);
+
                 const result = await slack.chat.update({
-                    blocks: await markdownToBlocks(message.content),
-                    channel: message.channelId,
+                    blocks: await messageToBlocks(message),
+                    channel: channelId,
                     ts: message.messageId,
                 });
 
@@ -38,9 +48,45 @@ export const SlackChat = defineService({
                 }
 
                 return {
-                    messageId: result.ts,
+                    chatId: message.chatId,
+                    id: result.ts,
                 };
             },
-        };
+            getChatInfo(chatId) {
+                const { channelId } = parseChatId(chatId);
+
+                if (channelId.startsWith('D')) {
+                    return {
+                        type: 'DM',
+                    };
+                }
+
+                return {
+                    type: 'CHANNEL',
+                    prompt: `You are currently in the channel ${channelId}.`,
+                };
+            },
+        });
+
+        async function messageToBlocks(message: ChatPostMessageParams) {
+            const blocks = await markdownToBlocks(message.content);
+
+            if (message.buttons) {
+                blocks.push(
+                    slackActions({
+                        elements: message.buttons.map(button =>
+                            slackActionButton({
+                                text: button.label,
+                                action: button.action,
+                                value: button.value,
+                                style: button.style,
+                            }),
+                        ),
+                    }),
+                );
+            }
+
+            return blocks;
+        }
     },
 });

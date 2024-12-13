@@ -1,14 +1,12 @@
-import { type ToolCall, ToolMessage } from '@langchain/core/messages/tool';
 import type { StructuredToolParams } from '@langchain/core/tools';
-import type z from 'zod';
+import type * as z from 'zod';
 
 import { Logger } from '@chorus/core';
-import type { AgentState, ToolDefinition } from '@chorus/core';
+import type { AgentState, ToolCall, ToolDefinition } from '@chorus/core';
 import { CreateLinearTaskTool } from '@chorus/linear';
 import { SearchKnowledgeTool } from '@chorus/rag';
 import { defineService } from '@nzyme/ioc';
-import type { Immutable } from '@nzyme/types';
-import { assertValue, createStopwatch } from '@nzyme/utils';
+import { createStopwatch } from '@nzyme/utils';
 
 export const ToolRegistry = defineService({
     name: 'ToolRegistry',
@@ -25,9 +23,7 @@ export const ToolRegistry = defineService({
             callTool,
         };
 
-        function registerTool<TInput extends z.AnyZodObject, TOutput extends z.ZodTypeAny>(
-            tool: ToolDefinition<TInput, TOutput>,
-        ) {
+        function registerTool<TInput extends z.AnyZodObject>(tool: ToolDefinition<TInput>) {
             toolsDefs.push({
                 name: tool.name,
                 description: tool.description,
@@ -36,40 +32,28 @@ export const ToolRegistry = defineService({
             toolsMap.set(tool.name, tool as unknown as ToolDefinition);
         }
 
-        async function callTool(call: ToolCall, state: Immutable<AgentState>) {
+        async function callTool(call: ToolCall, state: AgentState) {
             logger.debug('Calling tool %O', {
-                tool: call.name,
-                args: call.args,
+                tool: call.tool,
+                args: call.params,
             });
 
             const stopwatch = createStopwatch();
-            const id = assertValue(call.id, 'Tool call ID is required');
-            const tool = toolsMap.get(call.name);
+            const tool = toolsMap.get(call.tool);
             if (!tool) {
-                throw new Error(`Tool ${call.name} not found`);
+                throw new Error(`Tool ${call.tool} not found`);
             }
 
-            const result = await inject(tool)(call.args, state);
+            const input = tool.input.parse(call.params);
+            const result = await inject(tool)(input, { state, call });
 
             logger.debug('Tool call completed', {
-                tool: call.name,
-                args: call.args,
+                tool: call.tool,
+                args: call.params,
                 duration: stopwatch.format(),
             });
 
-            return new ToolMessage({
-                content: serializeResult(result),
-                name: call.name,
-                tool_call_id: id,
-            });
-        }
-
-        function serializeResult(result: unknown) {
-            if (typeof result === 'object') {
-                return JSON.stringify(result);
-            }
-
-            return String(result);
+            return result;
         }
     },
 });

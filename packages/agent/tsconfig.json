@@ -14,6 +14,9 @@
             "path": "../database/tsconfig.json"
         },
         {
+            "path": "../../integrations/linear/tsconfig.json"
+        },
+        {
             "path": "../../integrations/notion/tsconfig.json"
         },
         {
@@ -21,6 +24,9 @@
         },
         {
             "path": "../../integrations/slack/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/crypto-utils/tsconfig.json"
         },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"

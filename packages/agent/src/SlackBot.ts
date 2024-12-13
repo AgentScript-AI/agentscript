@@ -1,7 +1,7 @@
 import slack from '@slack/bolt';
 
 import { EnvVariables } from '@chorus/core';
-import { SlackReceiver, SlackUsers } from '@chorus/slack';
+import { SlackReceiver, SlackUsers, getChatId } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 
 import { Agent } from './Agent.js';
@@ -32,12 +32,12 @@ export const SlackBot = defineService({
 
             const user = await slackUsers.getUser(message.user);
 
-            await agent({
-                channelId: message.channel,
-                threadId: message.thread_ts ?? message.ts,
+            await agent.newMessage({
+                chatId: getChatId(message.channel, message.thread_ts ?? message.ts),
                 user,
                 messageId: message.ts,
-                messageContent: message.text,
+                timestamp: new Date(+message.ts),
+                content: message.text,
             });
         });
 

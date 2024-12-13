@@ -8,6 +8,9 @@
     "include": ["src"],
     "references": [
         {
+            "path": "../../nzyme/packages/crypto-utils/tsconfig.json"
+        },
+        {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },
         {
