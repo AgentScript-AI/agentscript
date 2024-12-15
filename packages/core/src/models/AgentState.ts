@@ -7,4 +7,5 @@ export const AgentState = z.object({
     id: z.string(),
     chatId: z.string(),
     events: z.array(AgentEvent),
+    tools: z.record(z.string(), z.unknown()),
 });

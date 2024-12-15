@@ -12,3 +12,4 @@ export * from './models/ChatMessage.js';
 export * from './models/KnowledgeType.js';
 
 export * from './utils/randomUid.js';
+export * from './utils/toolChatAction.js';

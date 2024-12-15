@@ -18,40 +18,42 @@ export const SearchKnowledgeTool = defineTool({
     setup({ inject }) {
         const knowledgeRetriever = inject(KnowledgeRetriever);
 
-        return async (input, { state, call }) => {
-            const results = await Promise.all(
-                input.queries.map(query => knowledgeRetriever({ query })),
-            );
+        return {
+            async invoke({ input, agent, call }) {
+                const results = await Promise.all(
+                    input.queries.map(query => knowledgeRetriever({ query })),
+                );
 
-            const resultsMap = new Map<bigint, (typeof results)[number][number]>();
+                const resultsMap = new Map<bigint, (typeof results)[number][number]>();
 
-            for (const result of results.flat()) {
-                resultsMap.set(result.id, result);
-            }
+                for (const result of results.flat()) {
+                    resultsMap.set(result.id, result);
+                }
 
-            const documents = [...resultsMap.values()]
-                .sort((a, b) => b.similarity - a.similarity)
-                .slice(0, 10)
-                .map(result => ({
-                    type: result.type,
-                    title: result.title,
-                    url: result.url,
-                    content: result.content,
-                }));
+                const documents = [...resultsMap.values()]
+                    .sort((a, b) => b.similarity - a.similarity)
+                    .slice(0, 10)
+                    .map(result => ({
+                        type: result.type,
+                        title: result.title,
+                        url: result.url,
+                        content: result.content,
+                    }));
 
-            const content = `These are the documents that I found:\n${JSON.stringify(documents)}`;
+                const content = `These are the documents that I found:\n${JSON.stringify(documents)}`;
 
-            state.events.push({
-                type: 'TOOL_EVENT',
-                timestamp: new Date(),
-                uid: randomUid(),
-                callId: call.uid,
-                content,
-            });
+                agent.events.push({
+                    type: 'TOOL_EVENT',
+                    timestamp: new Date(),
+                    uid: randomUid(),
+                    callId: call.uid,
+                    content,
+                });
 
-            return {
-                requireResponse: true,
-            };
+                return {
+                    requireResponse: true,
+                };
+            },
         };
     },
 });

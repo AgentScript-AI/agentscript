@@ -3,7 +3,7 @@ module.exports = {
     env: {
         node: true,
     },
-    extends: [require.resolve('@toyclub/eslint/typescript')],
+    extends: [require.resolve('@chorus/eslint/typescript')],
     parserOptions: {
         project: `${__dirname}/tsconfig.json`,
     },

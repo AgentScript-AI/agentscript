@@ -18,8 +18,10 @@ export const AgentStateStore = defineService({
                         id: chatId,
                         chatId,
                         events: [],
+                        tools: {},
                     };
 
+                    stateById.set(state.id, state);
                     stateByChatId.set(chatId, state);
                 }
 

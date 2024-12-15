@@ -16,6 +16,7 @@
     "dependencies": {
         "@chorus/core": "*",
         "@chorus/database": "*",
+        "@linear/sdk": "^35.0.0",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
         "zod": "^3.23.8"

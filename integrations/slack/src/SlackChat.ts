@@ -1,12 +1,11 @@
-import { Chat, ChatMessage, ChatPostMessageParams } from '@chorus/core';
+import { Chat, ChatBlock, ChatPostMessageParams } from '@chorus/core';
 import { defineService } from '@nzyme/ioc';
 import { SlackClient } from './SlackClient.js';
 import { markdownToBlocks } from '@tryfabric/mack';
-
 import { parseChatId } from './utils/parseChatId.js';
 import { identity } from '@nzyme/utils';
-import { slackActionButton } from './components/slackActionButton.js';
-import { slackActions } from './components/slackActions.js';
+import { SlackBlock } from './types.js';
+import { KnownBlock } from '@slack/web-api';
 
 export const SlackChat = defineService({
     name: 'SlackChat',
@@ -69,24 +68,42 @@ export const SlackChat = defineService({
         });
 
         async function messageToBlocks(message: ChatPostMessageParams) {
-            const blocks = await markdownToBlocks(message.content);
+            const blocks: SlackBlock[] = [];
 
-            if (message.buttons) {
-                blocks.push(
-                    slackActions({
-                        elements: message.buttons.map(button =>
-                            slackActionButton({
-                                text: button.label,
-                                action: button.action,
-                                value: button.value,
-                                style: button.style,
-                            }),
-                        ),
-                    }),
-                );
+            for (const block of message.blocks) {
+                if (typeof block === 'string') {
+                    blocks.push(...(await markdownToBlocks(block)));
+                } else {
+                    blocks.push(mapBlock(block));
+                }
             }
 
             return blocks;
+        }
+
+        function mapBlock(block: ChatBlock): KnownBlock {
+            switch (block.type) {
+                case 'actions':
+                    return {
+                        type: 'actions',
+                        elements: block.elements.map(element => {
+                            return {
+                                type: 'button',
+                                text: {
+                                    type: 'plain_text',
+                                    text: element.text,
+                                },
+                                action_id: element.action,
+                                value: element.value,
+                                style: element.style,
+                            };
+                        }),
+                    };
+                case 'divider':
+                    return {
+                        type: 'divider',
+                    };
+            }
         }
     },
 });

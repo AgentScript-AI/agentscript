@@ -1142,6 +1142,7 @@ __metadata:
     "@chorus/database": "npm:*"
     "@chorus/eslint": "npm:*"
     "@chorus/tsconfig": "npm:*"
+    "@linear/sdk": "npm:^35.0.0"
     "@nzyme/ioc": "npm:*"
     "@nzyme/utils": "npm:*"
     "@types/node": "npm:^22.7.5"
@@ -2187,6 +2188,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-typed-document-node/core@npm:^3.1.0":
+  version: 3.2.0
+  resolution: "@graphql-typed-document-node/core@npm:3.2.0"
+  peerDependencies:
+    graphql: ^0.8.0 || ^0.9.0 || ^0.10.0 || ^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0.0 || ^17.0.0
+  checksum: 10c0/94e9d75c1f178bbae8d874f5a9361708a3350c8def7eaeb6920f2c820e82403b7d4f55b3735856d68e145e86c85cbfe2adc444fdc25519cd51f108697e99346c
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -3191,6 +3201,17 @@ __metadata:
   dependencies:
     npmlog: "npm:^6.0.2"
   checksum: 10c0/206926bff6f36f5c404482941b888adac2da59b1ea12980194cb2306caecef00c360bf195184b3d391dd73c1049d1d65ec045f168bd177a38f83d20f69e48da5
+  languageName: node
+  linkType: hard
+
+"@linear/sdk@npm:^35.0.0":
+  version: 35.0.0
+  resolution: "@linear/sdk@npm:35.0.0"
+  dependencies:
+    "@graphql-typed-document-node/core": "npm:^3.1.0"
+    graphql: "npm:^15.4.0"
+    isomorphic-unfetch: "npm:^3.1.0"
+  checksum: 10c0/912f0184e0b7cce8f30da8918fd9c2c4e35131d8785644f4d6ec893364c4d9516e3a531db7a62060b70f8fb63f3b9238b00ac648316adf532f5aa5751ad68193
   languageName: node
   linkType: hard
 
@@ -11118,6 +11139,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql@npm:^15.4.0":
+  version: 15.9.0
+  resolution: "graphql@npm:15.9.0"
+  checksum: 10c0/0e93f7138daae07dcb0713ce5e2ae7f8039e911b6180f0170c4929664ec32ab8e690a9ea12be2dc4ab18544f9898989765122f30d2d07d38b0ce2a4c839d29bc
+  languageName: node
+  linkType: hard
+
 "graphviz@npm:0.0.9":
   version: 0.0.9
   resolution: "graphviz@npm:0.0.9"
@@ -12176,6 +12204,16 @@ __metadata:
   version: 3.0.1
   resolution: "isobject@npm:3.0.1"
   checksum: 10c0/03344f5064a82f099a0cd1a8a407f4c0d20b7b8485e8e816c39f249e9416b06c322e8dec5b842b6bb8a06de0af9cb48e7bc1b5352f0fadc2f0abac033db3d4db
+  languageName: node
+  linkType: hard
+
+"isomorphic-unfetch@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "isomorphic-unfetch@npm:3.1.0"
+  dependencies:
+    node-fetch: "npm:^2.6.1"
+    unfetch: "npm:^4.2.0"
+  checksum: 10c0/d3b61fca06304db692b7f76bdfd3a00f410e42cfa7403c3b250546bf71589d18cf2f355922f57198e4cc4a9872d3647b20397a5c3edf1a347c90d57c83cf2a89
   languageName: node
   linkType: hard
 
@@ -17645,6 +17683,13 @@ __metadata:
   version: 6.20.0
   resolution: "undici-types@npm:6.20.0"
   checksum: 10c0/68e659a98898d6a836a9a59e6adf14a5d799707f5ea629433e025ac90d239f75e408e2e5ff086afc3cace26f8b26ee52155293564593fbb4a2f666af57fc59bf
+  languageName: node
+  linkType: hard
+
+"unfetch@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "unfetch@npm:4.2.0"
+  checksum: 10c0/a5c0a896a6f09f278b868075aea65652ad185db30e827cb7df45826fe5ab850124bf9c44c4dafca4bf0c55a0844b17031e8243467fcc38dd7a7d435007151f1b
   languageName: node
   linkType: hard
 

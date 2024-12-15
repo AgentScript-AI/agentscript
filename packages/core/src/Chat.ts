@@ -8,17 +8,28 @@ export interface Chat {
     getChatInfo(chatId: string): ChatInfo;
 }
 
-export interface ChatButton {
-    label: string;
+export interface ChatActionButton {
+    type: 'button';
+    text: string;
     action: string;
-    value: unknown;
+    value: string;
     style?: 'primary' | 'danger';
 }
 
+export interface ChatActionsBlock {
+    type: 'actions';
+    elements: ChatActionButton[];
+}
+
+export interface ChatDividerBlock {
+    type: 'divider';
+}
+
+export type ChatBlock = ChatActionsBlock | ChatDividerBlock;
+
 export interface ChatPostMessageParams {
     chatId: string;
-    content: string;
-    buttons?: ChatButton[];
+    blocks: (ChatBlock | string)[];
 }
 
 export interface ChatUpdateMessageParams extends ChatPostMessageParams {

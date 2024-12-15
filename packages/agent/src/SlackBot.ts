@@ -1,6 +1,6 @@
 import slack from '@slack/bolt';
 
-import { EnvVariables } from '@chorus/core';
+import { EnvVariables, TOOL_CHAT_ACTION_TYPE, ToolChatAction } from '@chorus/core';
 import { SlackReceiver, SlackUsers, getChatId } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 
@@ -39,6 +39,13 @@ export const SlackBot = defineService({
                 timestamp: new Date(+message.ts),
                 content: message.text,
             });
+        });
+
+        slackApp.action(TOOL_CHAT_ACTION_TYPE, async ({ action }) => {
+            if (action.type === 'button') {
+                const payload = ToolChatAction.parse(JSON.parse(action.value ?? '{}'));
+                await agent.runToolInteraction(payload);
+            }
         });
 
         return slackApp;

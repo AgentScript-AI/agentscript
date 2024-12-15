@@ -1,6 +1,6 @@
 import type { AIMessageChunk } from '@langchain/core/messages';
 
-import type { AgentMessage, ChatUser, ToolCall } from '@chorus/core';
+import type { AgentMessage, ChatUser, ToolCall, ToolChatAction } from '@chorus/core';
 import { Chat, Logger, randomUid } from '@chorus/core';
 import { randomString } from '@nzyme/crypto-utils';
 import { defineService } from '@nzyme/ioc';
@@ -45,6 +45,7 @@ export const Agent = defineService({
 
         return {
             newMessage,
+            runToolInteraction,
         };
 
         async function newMessage(input: AgentMessageInput) {
@@ -52,7 +53,7 @@ export const Agent = defineService({
 
             const chatMessage = await chat.postMessage({
                 chatId: input.chatId,
-                content: 'Give me a moment to think... 🤔',
+                blocks: ['Give me a moment to think... 🤔'],
             });
 
             state.events.push({
@@ -129,7 +130,7 @@ export const Agent = defineService({
                             await chat.updateMessage({
                                 chatId: input.chatId,
                                 messageId: chatMessage.id,
-                                content: response.content,
+                                blocks: [response.content],
                             });
                         }
                     }
@@ -148,7 +149,10 @@ export const Agent = defineService({
                             };
 
                             state.events.push(toolEvent);
-                            const toolResult = await toolRegistry.callTool(toolEvent, state);
+                            const toolResult = await toolRegistry.invoke({
+                                call: toolEvent,
+                                state,
+                            });
 
                             if (toolResult?.requireResponse) {
                                 requireResponse = true;
@@ -166,6 +170,26 @@ export const Agent = defineService({
                 const duration = stopwatch.format();
                 logger.debug('Agent completed in %s', duration, { duration });
             }
+        }
+
+        async function runToolInteraction(params: ToolChatAction) {
+            const state = await stateStore.getState(params.stateId);
+            if (!state) {
+                throw new Error(`State ${params.stateId} not found`);
+            }
+
+            const toolCall = state.events.find(
+                event => event.type === 'TOOL_CALL' && event.uid === params.toolCallId,
+            ) as ToolCall | undefined;
+            if (!toolCall) {
+                throw new Error(`Tool call ${params.toolCallId} not found`);
+            }
+
+            await toolRegistry.interact({
+                call: toolCall,
+                state,
+                interaction: params.params,
+            });
         }
 
         function convertResponseContent(message: AIMessageChunk) {
