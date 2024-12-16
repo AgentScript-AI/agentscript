@@ -1,6 +1,12 @@
 import type { AIMessageChunk } from '@langchain/core/messages';
 
-import type { AgentMessage, ChatUser, ToolCall, ToolChatAction } from '@chorus/core';
+import type {
+    AgentMessage,
+    ChatMessageWithContent,
+    ChatUser,
+    ToolCall,
+    ToolChatAction,
+} from '@chorus/core';
 import { Chat, Logger, randomUid } from '@chorus/core';
 import { randomString } from '@nzyme/crypto-utils';
 import { defineService } from '@nzyme/ioc';
@@ -11,14 +17,6 @@ import { LangModelProvider } from './LangModelProvider.js';
 import { ToolRegistry } from './services/ToolRegistry.js';
 import { convertEventToPrompt } from './utils/convertEventToPrompt.js';
 import { defineSystemPrompt } from './utils/defineSystemPrompt.js';
-
-export interface AgentMessageInput {
-    chatId: string;
-    messageId: string;
-    timestamp: Date;
-    content: string;
-    user: ChatUser;
-}
 
 export const Agent = defineService({
     name: 'Agent',
@@ -48,24 +46,89 @@ export const Agent = defineService({
             runToolInteraction,
         };
 
-        async function newMessage(input: AgentMessageInput) {
-            const state = await stateStore.getStateOrCreateByChatId(input.chatId);
+        async function newMessage(message: ChatMessageWithContent) {
+            const state = await stateStore.getStateForChat(message.channelId, message.threadId);
+            const messages: ChatMessageWithContent[] = [];
+
+            if (message.messageId !== message.threadId) {
+                // Not a first message in the thread
+                // We need to get old messages in the thread
+                const lastMessageInThread = state.events.findLast(
+                    event =>
+                        event.type === 'HUMAN_MESSAGE' &&
+                        event.message.channelId === message.channelId &&
+                        event.message.threadId === message.threadId,
+                );
+
+                if (lastMessageInThread) {
+                    const thread = await chat.getMessages({
+                        channelId: message.channelId,
+                        threadId: message.threadId,
+                        from: lastMessageInThread.timestamp,
+                    });
+
+                    for (const message of thread) {
+                        messages.push(message);
+                    }
+                }
+            }
 
             const chatMessage = await chat.postMessage({
-                chatId: input.chatId,
+                channelId: message.channelId,
+                threadId: message.threadId,
                 blocks: ['Give me a moment to think... 🤔'],
             });
 
-            state.events.push({
-                type: 'HUMAN_MESSAGE',
-                uid: randomUid(),
-                timestamp: input.timestamp,
-                content: input.content,
-                message: {
-                    id: input.messageId,
-                    chatId: input.chatId,
-                },
-            });
+            const self = await chat.getSelfUser();
+
+            for (const message of messages) {
+                if (!state.users[message.userId]) {
+                    state.users[message.userId] = await chat.getUser(message.userId);
+                }
+
+                // Skip messages that we already have in the state
+                if (
+                    state.events.find(
+                        event =>
+                            event.message &&
+                            event.message.messageId === message.messageId &&
+                            event.message.channelId === message.channelId &&
+                            event.message.threadId === message.threadId,
+                    )
+                ) {
+                    continue;
+                }
+
+                if (self.id === message.userId) {
+                    state.events.push({
+                        type: 'AGENT_MESSAGE',
+                        uid: randomUid(),
+                        timestamp: message.timestamp,
+                        content: message.content,
+                        message: {
+                            channelId: message.channelId,
+                            threadId: message.threadId,
+                            messageId: message.messageId,
+                            userId: message.userId,
+                            timestamp: message.timestamp,
+                        },
+                    });
+                } else {
+                    state.events.push({
+                        type: 'HUMAN_MESSAGE',
+                        uid: randomUid(),
+                        timestamp: message.timestamp,
+                        content: message.content,
+                        message: {
+                            channelId: message.channelId,
+                            threadId: message.threadId,
+                            messageId: message.messageId,
+                            userId: message.userId,
+                            timestamp: message.timestamp,
+                        },
+                    });
+                }
+            }
 
             const date = new Date().toLocaleDateString('en-US', {
                 weekday: 'long',
@@ -74,15 +137,7 @@ export const Agent = defineService({
                 day: 'numeric',
             });
 
-            const channelInfo = chat.getChatInfo(input.chatId);
-            const channelDetails =
-                channelInfo.type === 'DM' ? [`You are talking to ${formatUser(input.user)}.`] : [];
-
-            if (channelInfo.prompt) {
-                channelDetails.push(channelInfo.prompt);
-            }
-
-            const systemPrompt = defineSystemPrompt([
+            const systemPrompt = [
                 'You are a helpful assistant with access to a set of tools designed to assist in completing tasks.',
                 // 'You do not respond to greetings or small talk.',
                 'Use the tools at your disposal to achieve the task requested.',
@@ -91,12 +146,20 @@ export const Agent = defineService({
                 'Answer strictly using the internal knowledge base and do not make up information.',
                 'You work for a startup called Chorus. It is a platform for creating and sharing AI agents.',
                 'You use corporate jargon and acronyms as much as possible.',
+                `Your name is ${self.name}. Whenever there is <@${self.id}> in the conversation, it is you.`,
                 `Today's date is ${date}.`,
-                ...channelDetails,
-            ]);
+            ];
+
+            systemPrompt.push('In the conversation, you are talking to the following people:');
+            const users = Object.values(state.users).filter(user => user.id !== self.id);
+            systemPrompt.push(JSON.stringify(users));
+            systemPrompt.push(
+                `You can mention them using <@USER_ID> (for example <@${users[0].id}>)`,
+            );
 
             logger.debug('Invoking agent', {
-                chatId: input.chatId,
+                channelId: message.channelId,
+                threadId: message.threadId,
             });
 
             const stopwatch = createStopwatch();
@@ -106,7 +169,7 @@ export const Agent = defineService({
                     logger.debug('Invoking LLM');
 
                     const prompts = [
-                        systemPrompt,
+                        defineSystemPrompt(systemPrompt),
                         ...mapNotNull(state.events, convertEventToPrompt),
                     ];
 
@@ -128,8 +191,9 @@ export const Agent = defineService({
 
                         if (typeof response.content === 'string') {
                             await chat.updateMessage({
-                                chatId: input.chatId,
-                                messageId: chatMessage.id,
+                                channelId: message.channelId,
+                                threadId: message.threadId,
+                                messageId: chatMessage.messageId,
                                 blocks: [response.content],
                             });
                         }

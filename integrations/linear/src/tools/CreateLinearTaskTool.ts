@@ -1,8 +1,9 @@
 import * as z from 'zod';
 
-import { Chat, ChatMessage, defineTool, randomUid, toolChatAction } from '@chorus/core';
-import { LinearClient } from '../LinearClient.js';
+import { Chat, ChatMessageInfo, defineTool, randomUid, toolChatAction } from '@chorus/core';
 import { assert } from '@nzyme/utils';
+
+import { LinearClient } from '../LinearClient.js';
 
 export type CreateLinearTaskInput = z.infer<typeof CreateLinearTaskInput>;
 export const CreateLinearTaskInput = z.object({
@@ -17,7 +18,7 @@ export const CreateLinearTaskInput = z.object({
 
 export type CreateLinearTaskState = z.infer<typeof CreateLinearTaskState>;
 export const CreateLinearTaskState = z.object({
-    message: ChatMessage,
+    message: ChatMessageInfo,
     taskId: z.string().optional(),
 });
 
@@ -60,7 +61,8 @@ export const CreateLinearTaskTool = defineTool({
                 };
 
                 const message = await chat.postMessage({
-                    chatId: agent.chatId,
+                    channelId: agent.channelId,
+                    threadId: agent.threadId,
                     blocks: [
                         getMessageContent(input).join('\n'),
                         { type: 'divider' },
@@ -95,7 +97,7 @@ export const CreateLinearTaskTool = defineTool({
                     },
                 };
             },
-            async interact({ input, state, agent, interaction }) {
+            async interact({ input, state, interaction }) {
                 if (interaction.action === 'CREATE_TASK') {
                     const teams = await linear.teams();
 
@@ -109,8 +111,9 @@ export const CreateLinearTaskTool = defineTool({
                     assert(issue, 'Issue not created');
 
                     await chat.updateMessage({
-                        messageId: state.message.id,
-                        chatId: agent.chatId,
+                        messageId: state.message.messageId,
+                        channelId: state.message.channelId,
+                        threadId: state.message.threadId,
                         blocks: [
                             getMessageContent(input).join('\n'),
                             { type: 'divider' },

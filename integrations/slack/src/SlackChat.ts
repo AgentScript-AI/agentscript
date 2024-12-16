@@ -1,26 +1,28 @@
-import { Chat, ChatBlock, ChatPostMessageParams } from '@chorus/core';
-import { defineService } from '@nzyme/ioc';
-import { SlackClient } from './SlackClient.js';
+import type { KnownBlock } from '@slack/web-api';
 import { markdownToBlocks } from '@tryfabric/mack';
-import { parseChatId } from './utils/parseChatId.js';
-import { identity } from '@nzyme/utils';
-import { SlackBlock } from './types.js';
-import { KnownBlock } from '@slack/web-api';
+
+import type { ChatBlock, ChatMessageWithContent, ChatPostMessageParams } from '@chorus/core';
+import { Chat } from '@chorus/core';
+import { defineService } from '@nzyme/ioc';
+import { assertValue, identity } from '@nzyme/utils';
+
+import { SlackClient } from './SlackClient.js';
+import { SlackUsers } from './SlackUsers.js';
+import type { SlackBlock } from './types.js';
 
 export const SlackChat = defineService({
     name: 'SlackChat',
     for: Chat,
     setup({ inject }) {
         const slack = inject(SlackClient);
+        const users = inject(SlackUsers);
 
         return identity<Chat>({
             async postMessage(message) {
-                const { channelId, threadId } = parseChatId(message.chatId);
-
                 const result = await slack.chat.postMessage({
                     blocks: await messageToBlocks(message),
-                    channel: channelId,
-                    thread_ts: threadId,
+                    channel: message.channelId,
+                    thread_ts: message.threadId,
                     mrkdwn: true,
                 });
 
@@ -28,17 +30,20 @@ export const SlackChat = defineService({
                     throw new Error(result.error);
                 }
 
+                const self = await users.getSelfUser();
+
                 return {
-                    chatId: message.chatId,
-                    id: result.ts,
+                    channelId: message.channelId,
+                    threadId: message.threadId,
+                    messageId: result.ts,
+                    userId: self.id,
+                    timestamp: parseTimestamp(result.ts),
                 };
             },
             async updateMessage(message) {
-                const { channelId, threadId } = parseChatId(message.chatId);
-
                 const result = await slack.chat.update({
                     blocks: await messageToBlocks(message),
-                    channel: channelId,
+                    channel: message.channelId,
                     ts: message.messageId,
                 });
 
@@ -46,25 +51,47 @@ export const SlackChat = defineService({
                     throw new Error(result.error);
                 }
 
+                const self = await users.getSelfUser();
+
                 return {
-                    chatId: message.chatId,
-                    id: result.ts,
+                    channelId: message.channelId,
+                    threadId: message.threadId,
+                    messageId: result.ts,
+                    userId: self.id,
+                    timestamp: parseTimestamp(result.ts),
                 };
             },
-            getChatInfo(chatId) {
-                const { channelId } = parseChatId(chatId);
+            async getMessages(params) {
+                const history = await slack.conversations.replies({
+                    channel: params.channelId,
+                    ts: params.threadId,
+                    latest: params.from?.valueOf().toString(),
+                });
 
-                if (channelId.startsWith('D')) {
-                    return {
-                        type: 'DM',
-                    };
+                if (history.error) {
+                    throw new Error(history.error);
                 }
 
-                return {
-                    type: 'CHANNEL',
-                    prompt: `You are currently in the channel ${channelId}.`,
-                };
+                const messages = history.messages ?? [];
+
+                return messages.map<ChatMessageWithContent>(message => ({
+                    channelId: params.channelId,
+                    threadId: params.threadId,
+                    messageId: assertValue(message.ts),
+                    userId: assertValue(message.user),
+                    timestamp: parseTimestamp(assertValue(message.ts)),
+                    content: message.text ?? '',
+                }));
             },
+            getChannelType(channelId) {
+                if (channelId.startsWith('D')) {
+                    return 'DM';
+                }
+
+                return 'CHANNEL';
+            },
+            getUser: users.getUser,
+            getSelfUser: users.getSelfUser,
         });
 
         async function messageToBlocks(message: ChatPostMessageParams) {
@@ -104,6 +131,11 @@ export const SlackChat = defineService({
                         type: 'divider',
                     };
             }
+        }
+
+        function parseTimestamp(ts: string) {
+            const timestamp = Number(ts.split('.')[0]);
+            return new Date(timestamp);
         }
     },
 });

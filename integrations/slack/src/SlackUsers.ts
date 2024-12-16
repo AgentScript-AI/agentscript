@@ -1,15 +1,18 @@
+import type { ChatUser } from '@chorus/core';
 import { defineService } from '@nzyme/ioc';
+
 import { SlackClient } from './SlackClient.js';
-import { ChatUser } from '@chorus/core';
 
 export const SlackUsers = defineService({
     name: 'SlackUsers',
     setup({ inject }) {
         const slack = inject(SlackClient);
         const users = new Map<string, ChatUser>();
+        let self: Promise<ChatUser> | undefined;
 
         return {
             getUser,
+            getSelfUser,
         };
 
         async function getUser(id: string) {
@@ -25,6 +28,7 @@ export const SlackUsers = defineService({
 
             user = {
                 id: id,
+                type: response.user.is_bot ? 'BOT' : 'HUMAN',
                 name: response.user.real_name || response.user.name || id,
                 email: response.user.profile?.email,
                 description: response.user.profile?.title,
@@ -33,6 +37,21 @@ export const SlackUsers = defineService({
             users.set(user.id, user);
 
             return user;
+        }
+
+        async function getSelfUser() {
+            if (self) {
+                return await self;
+            }
+
+            const response = await slack.auth.test();
+            console.log(response);
+            if (!response.user_id) {
+                throw new Error('Failed to get self user');
+            }
+
+            self = getUser(response.user_id);
+            return await self;
         }
     },
 });

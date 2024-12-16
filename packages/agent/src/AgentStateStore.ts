@@ -11,18 +11,21 @@ export const AgentStateStore = defineService({
             getState(id: string) {
                 return Promise.resolve(stateById.get(id));
             },
-            getStateOrCreateByChatId(chatId: string) {
-                let state = stateByChatId.get(chatId);
+            getStateForChat(channelId: string, threadId: string) {
+                const id = `${channelId}:${threadId}`;
+                let state = stateByChatId.get(id);
                 if (!state) {
                     state = {
-                        id: chatId,
-                        chatId,
+                        id,
+                        channelId,
+                        threadId,
                         events: [],
                         tools: {},
+                        users: {},
                     };
 
                     stateById.set(state.id, state);
-                    stateByChatId.set(chatId, state);
+                    stateByChatId.set(id, state);
                 }
 
                 return Promise.resolve(state);
@@ -30,8 +33,8 @@ export const AgentStateStore = defineService({
             updateState(state: AgentState) {
                 const chatIds = new Set<string>();
                 for (const interaction of state.events) {
-                    if ('message' in interaction) {
-                        const chatId = interaction.message?.chatId;
+                    if ('message' in interaction && interaction.message) {
+                        const chatId = `${interaction.message.channelId}:${interaction.message.threadId}`;
                         if (chatId) {
                             chatIds.add(chatId);
                         }

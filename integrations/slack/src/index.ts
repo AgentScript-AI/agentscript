@@ -17,6 +17,3 @@ export * from './components/slackMention.js';
 export * from './components/slackSection.js';
 
 export * from './types.js';
-
-export * from './utils/getChatId.js';
-export * from './utils/parseChatId.js';

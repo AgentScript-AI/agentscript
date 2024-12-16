@@ -1,8 +1,9 @@
 import slack from '@slack/bolt';
 
 import { EnvVariables, TOOL_CHAT_ACTION_TYPE, ToolChatAction } from '@chorus/core';
-import { SlackReceiver, SlackUsers, getChatId } from '@chorus/slack';
+import { SlackReceiver } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
+import { assertValue } from '@nzyme/utils';
 
 import { Agent } from './Agent.js';
 
@@ -11,7 +12,6 @@ export const SlackBot = defineService({
     setup({ inject }) {
         const agent = inject(Agent);
         const env = inject(EnvVariables);
-        const slackUsers = inject(SlackUsers);
         const slackReceiver = inject(SlackReceiver);
 
         const slackApp = new slack.App({
@@ -30,12 +30,14 @@ export const SlackBot = defineService({
                 return;
             }
 
-            const user = await slackUsers.getUser(message.user);
+            const channelId = message.channel;
+            const threadId = message.thread_ts ?? message.ts;
 
             await agent.newMessage({
-                chatId: getChatId(message.channel, message.thread_ts ?? message.ts),
-                user,
                 messageId: message.ts,
+                channelId,
+                threadId,
+                userId: message.user,
                 timestamp: new Date(+message.ts),
                 content: message.text,
             });
@@ -46,6 +48,20 @@ export const SlackBot = defineService({
                 const payload = ToolChatAction.parse(JSON.parse(action.value ?? '{}'));
                 await agent.runToolInteraction(payload);
             }
+        });
+
+        slackApp.event('app_mention', async ({ event }) => {
+            const channelId = event.channel;
+            const threadId = event.thread_ts ?? event.ts;
+
+            await agent.newMessage({
+                messageId: event.ts,
+                channelId,
+                threadId,
+                userId: assertValue(event.user),
+                timestamp: new Date(+event.ts),
+                content: event.text,
+            });
         });
 
         return slackApp;

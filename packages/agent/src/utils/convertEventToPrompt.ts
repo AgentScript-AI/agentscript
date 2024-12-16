@@ -5,10 +5,16 @@ import type { AgentEvent } from '@chorus/core';
 export function convertEventToPrompt(event: AgentEvent) {
     switch (event.type) {
         case 'HUMAN_MESSAGE':
-            return new HumanMessage(event.content);
+            return new HumanMessage({
+                content: event.content,
+                name: event.message.userId,
+            });
 
         case 'AGENT_MESSAGE':
-            return new AIMessage(event.content);
+            return new AIMessage({
+                content: event.content,
+                name: event.message?.userId,
+            });
 
         case 'TOOL_EVENT':
             if (!event.content) {
