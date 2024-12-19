@@ -1041,6 +1041,7 @@ __metadata:
     "@nzyme/crypto-utils": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/project-utils": "npm:*"
+    "@nzyme/slack": "npm:*"
     "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
     "@slack/bolt": "npm:^4.1.1"
@@ -1200,6 +1201,7 @@ __metadata:
     "@chorus/rag": "npm:*"
     "@chorus/tsconfig": "npm:*"
     "@nzyme/ioc": "npm:*"
+    "@nzyme/slack": "npm:*"
     "@nzyme/utils": "npm:*"
     "@slack/bolt": "npm:^4.1.1"
     "@slack/web-api": "npm:7.6.0"
@@ -3760,6 +3762,15 @@ __metadata:
     rollup: "npm:^4.24.0"
     source-map-support: "npm:^0.5.21"
     type-fest: "npm:^4.26.1"
+  languageName: unknown
+  linkType: soft
+
+"@nzyme/slack@npm:*, @nzyme/slack@workspace:nzyme/packages/slack":
+  version: 0.0.0-use.local
+  resolution: "@nzyme/slack@workspace:nzyme/packages/slack"
+  dependencies:
+    "@nzyme/utils": "npm:*"
+    "@slack/web-api": "npm:7.6.0"
   languageName: unknown
   linkType: soft
 

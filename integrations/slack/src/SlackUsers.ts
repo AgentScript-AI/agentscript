@@ -31,7 +31,7 @@ export const SlackUsers = defineService({
                 type: response.user.is_bot ? 'BOT' : 'HUMAN',
                 name: response.user.real_name || response.user.name || id,
                 email: response.user.profile?.email,
-                description: response.user.profile?.title,
+                description: response.user.profile?.title || undefined,
             };
 
             users.set(user.id, user);

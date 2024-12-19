@@ -4,11 +4,12 @@ import { markdownToBlocks } from '@tryfabric/mack';
 import type { ChatBlock, ChatMessageWithContent, ChatPostMessageParams } from '@chorus/core';
 import { Chat } from '@chorus/core';
 import { defineService } from '@nzyme/ioc';
+import type { SlackBlock } from '@nzyme/slack';
 import { assertValue, identity } from '@nzyme/utils';
 
 import { SlackClient } from './SlackClient.js';
 import { SlackUsers } from './SlackUsers.js';
-import type { SlackBlock } from './types.js';
+import { stringifyMessage } from './utils/stringifyMessage.js';
 
 export const SlackChat = defineService({
     name: 'SlackChat',
@@ -80,7 +81,7 @@ export const SlackChat = defineService({
                     messageId: assertValue(message.ts),
                     userId: assertValue(message.user),
                     timestamp: parseTimestamp(assertValue(message.ts)),
-                    content: message.text ?? '',
+                    content: stringifyMessage(message),
                 }));
             },
             getChannelType(channelId) {

@@ -1,4 +1,4 @@
-import type { AIMessageChunk } from '@langchain/core/messages';
+import { type AIMessageChunk, SystemMessage } from '@langchain/core/messages';
 
 import type {
     AgentMessage,
@@ -16,7 +16,6 @@ import { AgentStateStore } from './AgentStateStore.js';
 import { LangModelProvider } from './LangModelProvider.js';
 import { ToolRegistry } from './services/ToolRegistry.js';
 import { convertEventToPrompt } from './utils/convertEventToPrompt.js';
-import { defineSystemPrompt } from './utils/defineSystemPrompt.js';
 
 export const Agent = defineService({
     name: 'Agent',
@@ -60,17 +59,17 @@ export const Agent = defineService({
                         event.message.threadId === message.threadId,
                 );
 
-                if (lastMessageInThread) {
-                    const thread = await chat.getMessages({
-                        channelId: message.channelId,
-                        threadId: message.threadId,
-                        from: lastMessageInThread.timestamp,
-                    });
+                const thread = await chat.getMessages({
+                    channelId: message.channelId,
+                    threadId: message.threadId,
+                    from: lastMessageInThread?.timestamp,
+                });
 
-                    for (const message of thread) {
-                        messages.push(message);
-                    }
+                for (const message of thread) {
+                    messages.push(message);
                 }
+            } else {
+                messages.push(message);
             }
 
             const chatMessage = await chat.postMessage({
@@ -157,6 +156,14 @@ export const Agent = defineService({
                 `You can mention them using <@USER_ID> (for example <@${users[0].id}>)`,
             );
 
+            const threads = new Set<string>(
+                mapNotNull(state.events, event => event.message?.threadId),
+            );
+
+            if (threads.size > 1) {
+                systemPrompt.push('Conversation takes place in multiple threads.');
+            }
+
             logger.debug('Invoking agent', {
                 channelId: message.channelId,
                 threadId: message.threadId,
@@ -168,12 +175,42 @@ export const Agent = defineService({
                 for (let i = 0; i < 5; i++) {
                     logger.debug('Invoking LLM');
 
-                    const prompts = [
-                        defineSystemPrompt(systemPrompt),
-                        ...mapNotNull(state.events, convertEventToPrompt),
-                    ];
+                    const prompts = [`System: ${systemPrompt.join('\n')}`];
 
-                    const response = await llm.invoke(prompts);
+                    for (const event of state.events) {
+                        const message = event.message;
+                        const threadInfo =
+                            threads.size > 1 && message?.threadId
+                                ? `, Thread ${message.threadId}`
+                                : '';
+
+                        switch (event.type) {
+                            case 'HUMAN_MESSAGE':
+                                prompts.push(
+                                    `Human ${event.message.userId}${threadInfo}: ${event.content}`,
+                                );
+                                break;
+
+                            case 'AGENT_MESSAGE': {
+                                const botInfo =
+                                    message?.userId === self.id ? `You` : `Bot ${message?.userId}`;
+
+                                prompts.push(`${botInfo} ${threadInfo}: ${event.content}`);
+                                break;
+                            }
+
+                            case 'TOOL_EVENT':
+                                prompts.push(`Tool: ${event.content}`);
+                                break;
+                        }
+                    }
+
+                    const response = await llm.invoke([
+                        new SystemMessage({
+                            content: systemPrompt.join('\n'),
+                        }),
+                        ...mapNotNull(state.events, convertEventToPrompt),
+                    ]);
 
                     logger.debug('LLM response %O', {
                         response: response.content,

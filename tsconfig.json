@@ -51,6 +51,9 @@
             "path": "./nzyme/packages/rollup-utils/tsconfig.json"
         },
         {
+            "path": "./nzyme/packages/slack/tsconfig.json"
+        },
+        {
             "path": "./nzyme/packages/types/tsconfig.json"
         },
         {

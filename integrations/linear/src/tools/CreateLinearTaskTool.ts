@@ -12,7 +12,8 @@ export const CreateLinearTaskInput = z.object({
         .string()
         .describe(
             'Details of the task with as much detail as possible. ' +
-                'Include the task details, all relevant information (like links, files, screenshots, etc), and expected outcome.',
+                'Include the task details, all relevant information and expected outcome. ' +
+                'Include files, screenshots, etc. that are relevant to the task using markdown links in separate lines.',
         ),
 });
 

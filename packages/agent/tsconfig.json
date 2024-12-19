@@ -35,6 +35,9 @@
             "path": "../../nzyme/packages/project-utils/tsconfig.json"
         },
         {
+            "path": "../../nzyme/packages/slack/tsconfig.json"
+        },
+        {
             "path": "../../nzyme/packages/types/tsconfig.json"
         },
         {

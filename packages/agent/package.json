@@ -18,6 +18,7 @@
         "@nzyme/crypto-utils": "*",
         "@nzyme/ioc": "*",
         "@nzyme/project-utils": "*",
+        "@nzyme/slack": "*",
         "@nzyme/types": "*",
         "@nzyme/utils": "*",
         "@slack/bolt": "^4.1.1",

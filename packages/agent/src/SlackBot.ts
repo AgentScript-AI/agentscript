@@ -1,7 +1,7 @@
 import slack from '@slack/bolt';
 
 import { EnvVariables, TOOL_CHAT_ACTION_TYPE, ToolChatAction } from '@chorus/core';
-import { SlackReceiver } from '@chorus/slack';
+import { SlackReceiver, stringifyMessage } from '@chorus/slack';
 import { defineService } from '@nzyme/ioc';
 import { assertValue } from '@nzyme/utils';
 
@@ -32,6 +32,7 @@ export const SlackBot = defineService({
 
             const channelId = message.channel;
             const threadId = message.thread_ts ?? message.ts;
+            const content = stringifyMessage(message);
 
             await agent.newMessage({
                 messageId: message.ts,
@@ -39,7 +40,7 @@ export const SlackBot = defineService({
                 threadId,
                 userId: message.user,
                 timestamp: new Date(+message.ts),
-                content: message.text,
+                content,
             });
         });
 
@@ -53,6 +54,7 @@ export const SlackBot = defineService({
         slackApp.event('app_mention', async ({ event }) => {
             const channelId = event.channel;
             const threadId = event.thread_ts ?? event.ts;
+            const content = stringifyMessage(event);
 
             await agent.newMessage({
                 messageId: event.ts,
@@ -60,7 +62,7 @@ export const SlackBot = defineService({
                 threadId,
                 userId: assertValue(event.user),
                 timestamp: new Date(+event.ts),
-                content: event.text,
+                content,
             });
         });
 

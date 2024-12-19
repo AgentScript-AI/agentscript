@@ -8,7 +8,9 @@ export type SearchKnowledgeToolInput = z.infer<typeof SearchKnowledgeToolInput>;
 export const SearchKnowledgeToolInput = z.object({
     queries: z
         .array(z.string())
-        .describe('Provide 3 queries based on the context to get better results.'),
+        .describe(
+            "Provide 3 queries based on the context to get better results. Don't include name of the tool in the query.",
+        ),
 });
 
 export const SearchKnowledgeTool = defineTool({
