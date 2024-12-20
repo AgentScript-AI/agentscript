@@ -24,6 +24,7 @@
         "typescript": "^5.7.2"
     },
     "workspaces": [
+        "agentscript/*",
         "integrations/*",
         "packages/*",
         "nzyme/packages/*"

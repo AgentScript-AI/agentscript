@@ -1,0 +1,24 @@
+{
+    "name": "@agentscript/runtime",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "dependencies": {
+        "@duplojs/zod-to-typescript": "^0.2.4",
+        "@langchain/core": "^0.3.22",
+        "@nzyme/ioc": "*",
+        "@nzyme/types": "*",
+        "@nzyme/utils": "*",
+        "acorn": "^8.14.0",
+        "zod": "^3.23.8"
+    },
+    "devDependencies": {
+        "@chorus/eslint": "*",
+        "@chorus/tsconfig": "*",
+        "@types/node": "^20.11.24",
+        "typescript": "^5.7.2",
+        "vitest": "^2.1.8"
+    }
+}

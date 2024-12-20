@@ -3,6 +3,9 @@
     "include": [],
     "references": [
         {
+            "path": "./agentscript/runtime/tsconfig.json"
+        },
+        {
             "path": "./integrations/linear/tsconfig.json"
         },
         {
