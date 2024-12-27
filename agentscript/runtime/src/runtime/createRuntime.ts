@@ -1,6 +1,6 @@
 import { createMemo } from '@nzyme/utils';
 
-import type { Module } from './defineModule.js';
+import type { Module } from '../defineModule.js';
 
 export type RuntimeOptions = {
     modules: {

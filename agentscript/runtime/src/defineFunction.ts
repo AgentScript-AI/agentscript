@@ -2,6 +2,8 @@ import * as z from 'zod';
 
 import type { EmptyObject } from '@nzyme/types';
 
+const FUNCTION_SYMBOL = Symbol('function');
+
 export type FunctionArgs = {
     [name: string]: z.ZodTypeAny;
 };
@@ -31,6 +33,7 @@ export type FunctionDefinition<
     args: TArgs;
     return: TReturn;
     handler: FunctionHandler<TArgs, TReturn>;
+    [FUNCTION_SYMBOL]: true;
 };
 
 export type FunctionHandler<TArgs extends FunctionArgs, TReturn extends z.ZodTypeAny> = (
@@ -46,5 +49,10 @@ export function defineFunction<
         args: options.args ?? ({} as TArgs),
         return: options.return ?? (z.void() as TReturn),
         handler: options.handler,
+        [FUNCTION_SYMBOL]: true,
     };
+}
+
+export function isFunction(value: unknown): value is FunctionDefinition {
+    return typeof value === 'object' && value !== null && FUNCTION_SYMBOL in value;
 }

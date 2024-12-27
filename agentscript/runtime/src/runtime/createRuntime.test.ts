@@ -2,8 +2,8 @@ import { test } from 'vitest';
 import * as z from 'zod';
 
 import { createRuntime } from './createRuntime.js';
-import { defineFunction } from './defineFunction.js';
-import { defineModule } from './defineModule.js';
+import { defineFunction } from '../defineFunction.js';
+import { defineModule } from '../defineModule.js';
 
 test('simple runtime', () => {
     const User = z.object({
