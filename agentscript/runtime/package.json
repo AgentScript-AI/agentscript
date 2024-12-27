@@ -6,6 +6,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@babel/parser": "^7.26.3",
         "@duplojs/zod-to-typescript": "^0.2.4",
         "@langchain/core": "^0.3.22",
         "@nzyme/ioc": "*",

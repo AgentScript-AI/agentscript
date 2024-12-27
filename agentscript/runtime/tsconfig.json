@@ -6,6 +6,7 @@
         "tsBuildInfoFile": "./dist/.tsbuildinfo"
     },
     "include": ["src"],
+    "exclude": ["src/**/*.test.ts"],
     "references": [
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"

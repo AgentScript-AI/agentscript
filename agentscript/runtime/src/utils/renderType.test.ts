@@ -32,13 +32,25 @@ test('date', () => {
     expect(code).toEqual('Date');
 });
 
-test('custom type', () => {
-    const schema = z.object({ name: z.string() });
-    const resolver = createTypeResolver();
-    resolver.add('Foo', schema);
-    const code = renderType(schema, { typeResolver: resolver });
+test('void', () => {
+    const schema = z.void();
+    const code = renderType(schema);
 
-    expect(code).toEqual('Foo');
+    expect(code).toEqual('void');
+});
+
+test('unknown', () => {
+    const schema = z.unknown();
+    const code = renderType(schema);
+
+    expect(code).toEqual('unknown');
+});
+
+test('any', () => {
+    const schema = z.any();
+    const code = renderType(schema);
+
+    expect(code).toEqual('any');
 });
 
 test('custom type nullable', () => {
@@ -116,6 +128,13 @@ describe('object', () => {
         );
     });
 
+    test('nested object', () => {
+        const schema = z.object({ user: z.object({ name: z.string() }) });
+        const code = renderType(schema);
+
+        expect(code).toEqual('{\n  user: {\n    name: string;\n  };\n}');
+    });
+
     test('custom props', () => {
         const child = z.object({ name: z.string() });
         const schema = z.object({ child });
@@ -191,23 +210,80 @@ describe('object', () => {
     });
 });
 
-test('string array', () => {
-    const schema = z.array(z.string());
-    const code = renderType(schema);
+describe('array', () => {
+    test('string array', () => {
+        const schema = z.array(z.string());
+        const code = renderType(schema);
 
-    expect(code).toEqual('string[]');
+        expect(code).toEqual('string[]');
+    });
+
+    test('object array', () => {
+        const schema = z.array(z.object({ name: z.string() }));
+        const code = renderType(schema);
+
+        expect(code).toEqual('{\n  name: string;\n}[]');
+    });
 });
 
-test('object array', () => {
-    const schema = z.array(z.object({ name: z.string() }));
-    const code = renderType(schema);
+describe('union', () => {
+    test('basic', () => {
+        const schema = z.union([z.string(), z.number()]);
+        const code = renderType(schema);
 
-    expect(code).toEqual('{\n  name: string;\n}[]');
-});
+        expect(code).toEqual('string | number');
+    });
 
-test('nested object', () => {
-    const schema = z.object({ user: z.object({ name: z.string() }) });
-    const code = renderType(schema);
+    test('nullable', () => {
+        const schema = z.union([z.string(), z.number()]).nullable();
+        const code = renderType(schema);
 
-    expect(code).toEqual('{\n  user: {\n    name: string;\n  };\n}');
+        expect(code).toEqual('string | number | null');
+    });
+
+    test('optional', () => {
+        const schema = z.union([z.string(), z.number()]).optional();
+        const code = renderType(schema);
+
+        expect(code).toEqual('string | number | undefined');
+    });
+
+    test('nullable and optional', () => {
+        const schema = z.union([z.string(), z.number()]).nullable().optional();
+        const code = renderType(schema);
+
+        expect(code).toEqual('string | number | null | undefined');
+    });
+
+    test('object', () => {
+        const schema = z.union([z.object({ name: z.string() }), z.object({ age: z.number() })]);
+        const code = renderType(schema);
+
+        expect(code).toEqual('{\n  name: string;\n} | {\n  age: number;\n}');
+    });
+
+    test('named object', () => {
+        const user = z.object({ name: z.string() });
+        const resolver = createTypeResolver();
+        resolver.add('User', user);
+
+        const schema = z.union([user, z.object({ age: z.number() })]);
+        const code = renderType(schema, { typeResolver: resolver });
+
+        expect(code).toEqual('User | {\n  age: number;\n}');
+    });
+
+    test('array', () => {
+        const schema = z.union([z.array(z.string()), z.array(z.number())]);
+        const code = renderType(schema);
+
+        expect(code).toEqual('string[] | number[]');
+    });
+
+    test('array of unions', () => {
+        const schema = z.array(z.union([z.string(), z.number()]));
+        const code = renderType(schema);
+
+        expect(code).toEqual('(string | number)[]');
+    });
 });
