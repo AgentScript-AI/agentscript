@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { parseScript } from '../../script/parseScript.js';
 import { createRuntime } from '../createRuntime.js';
 import { executeRuntime } from '../executeRuntime.js';
-import { anyNumber, childFrame, rootFrame, runtimeResult } from './utils.test.js';
+import { anyNumber, childFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
     const script = parseScript([

@@ -6,7 +6,7 @@ import { defineFunction } from '../../defineFunction.js';
 import { parseScript } from '../../script/parseScript.js';
 import { createRuntime } from '../createRuntime.js';
 import { executeRuntime } from '../executeRuntime.js';
-import { anyNumber, childFrame, rootFrame, runtimeResult } from './utils.test.js';
+import { anyNumber, childFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 const add = defineFunction({
     description: 'Add two numbers',
@@ -254,4 +254,34 @@ describe('nested function calls', () => {
         expect(result).toEqual(runtimeResult({ ticks: 3, done: true }));
         expect(runtime.stack).toEqual(expectedStack);
     });
+});
+
+test('module function', async () => {
+    const script = parseScript(['utils.add(1, 2);']);
+
+    const runtime = createRuntime({
+        module: {
+            utils: module,
+        },
+        script,
+    });
+
+    const result = await executeRuntime({ runtime });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                result: 3,
+                children: [
+                    childFrame({ completedAt: anyNumber(), result: 1 }),
+                    childFrame({ completedAt: anyNumber(), result: 2 }),
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
+    expect(runtime.stack).toEqual(expectedStack);
 });

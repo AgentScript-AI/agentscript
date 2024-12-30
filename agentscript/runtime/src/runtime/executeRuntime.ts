@@ -1,17 +1,21 @@
 import { validate } from '@agentscript/schema';
 
+import { RuntimeError } from './RuntimeError.js';
 import type { Runtime } from './createRuntime.js';
 import type { StackFrame } from './stackTypes.js';
+import type { FunctionDefinition } from '../defineFunction.js';
 import { isFunction } from '../defineFunction.js';
+import type { NativeFunction } from './functions.js';
+import { allowedNativeFunctions } from './functions.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type {
     Expression,
     FunctionCall,
+    Identifier,
     Literal,
     Node,
     Statement,
-    Variable,
 } from '../script/astTypes.js';
 
 export interface ExecuteRuntimeOptions extends RuntimeControllerOptions {
@@ -97,8 +101,19 @@ async function runBlockFrame(
     node: Node,
 ) {
     switch (node.type) {
-        case 'VariableDeclaration': {
+        case 'Variable': {
+            const name = node.name;
+
+            if (!block.variables) {
+                block.variables = {};
+            }
+
+            if (name in block.variables) {
+                throw new RuntimeError(`Variable ${name} already exists`);
+            }
+
             if (!node.value) {
+                block.variables[name] = undefined;
                 completeFrame(frame);
                 return true;
             }
@@ -109,16 +124,16 @@ async function runBlockFrame(
                 return false;
             }
 
-            setVariable(block, node.name, valueFrame.result);
+            block.variables[name] = valueFrame.result;
             return completeFrame(frame);
         }
 
-        case 'ExpressionStatement': {
+        case 'Expression': {
             return await runExpression(runtime, controller, block, frame, node.expression);
         }
 
         default:
-            throw new Error(`Unknown node type: ${node.type}`);
+            throw new RuntimeError(`Unknown node type: ${node.type}`);
     }
 }
 
@@ -128,24 +143,12 @@ async function runExpression(
     block: StackFrame,
     frame: StackFrame,
     expression: Expression,
-) {
+): Promise<boolean> {
     if (frame.completedAt) {
         return true;
     }
 
     switch (expression.type) {
-        case 'Literal': {
-            const result = resolveLiteral(expression);
-            frame.result = result;
-            return completeFrame(frame);
-        }
-
-        case 'Variable': {
-            const result = resolveVariable(frame, expression);
-            frame.result = result;
-            return completeFrame(frame);
-        }
-
         case 'Assignment': {
             const rightFrame = getFrame(frame, 0);
 
@@ -160,7 +163,7 @@ async function runExpression(
                 return false;
             }
 
-            if (expression.left.type === 'Variable') {
+            if (expression.left.type === 'Identifier') {
                 setVariable(block, expression.left.name, rightFrame.result);
                 return completeFrame(frame);
             }
@@ -170,6 +173,12 @@ async function runExpression(
 
         case 'FunctionCall': {
             return await runFunctionCall(runtime, controller, block, frame, expression);
+        }
+
+        default: {
+            const result = resolveExpression(runtime, frame, expression);
+            frame.result = result;
+            return completeFrame(frame);
         }
     }
 }
@@ -181,41 +190,112 @@ async function runFunctionCall(
     frame: StackFrame,
     expression: FunctionCall,
 ) {
-    const func = runtime.module[expression.name];
-    if (!func) {
-        throw new Error(`Function ${expression.name} not found`);
+    const func = resolveExpression(runtime, frame, expression.func);
+
+    if (isFunction(func)) {
+        return await runFunctionCustom(runtime, controller, block, frame, expression, func);
     }
 
-    if (!isFunction(func)) {
-        throw new Error(`Function ${expression.name} is not a function`);
+    if (typeof func === 'function') {
+        return await runFunctionNative(
+            runtime,
+            controller,
+            block,
+            frame,
+            expression,
+            func as NativeFunction,
+        );
     }
 
-    const args: Record<string, unknown> = {};
+    throw new RuntimeError(`Expression is not a function`);
+}
+
+async function runFunctionCustom(
+    runtime: Runtime,
+    controller: RuntimeController,
+    block: StackFrame,
+    frame: StackFrame,
+    call: FunctionCall,
+    func: FunctionDefinition,
+) {
+    const args = await runFunctionArgs(runtime, controller, block, frame, call);
+    if (!args) {
+        return false;
+    }
+
     const argProps = func.args ? Object.entries(func.args.props) : [];
+    const argObject: Record<string, unknown> = {};
+
+    for (let i = 0; i < argProps.length; i++) {
+        const arg = args[i];
+        const argName = argProps[i][0];
+
+        argObject[argName] = arg;
+    }
+
+    validate(func.args, args);
+
+    frame.result = await func.handler({ args: argObject });
+    controller.tick();
+
+    return completeFrame(frame);
+}
+
+async function runFunctionNative(
+    runtime: Runtime,
+    controller: RuntimeController,
+    block: StackFrame,
+    frame: StackFrame,
+    call: FunctionCall,
+    func: NativeFunction,
+) {
+    const args = await runFunctionArgs(runtime, controller, block, frame, call);
+    if (!args) {
+        return false;
+    }
+
+    const allowed = allowedNativeFunctions.has(func) || allowedNativeFunctions.has(func.name);
+    if (!allowed) {
+        throw new RuntimeError(`Function ${func.name} is not allowed`);
+    }
+
+    const result = func(...args);
+    if (result instanceof Promise) {
+        frame.result = await result;
+        controller.tick();
+    } else {
+        frame.result = result;
+    }
+
+    return completeFrame(frame);
+}
+
+async function runFunctionArgs(
+    runtime: Runtime,
+    controller: RuntimeController,
+    block: StackFrame,
+    frame: StackFrame,
+    call: FunctionCall,
+) {
+    const args: unknown[] = [];
 
     // todo: run in parallel
-    for (let i = 0; i < expression.arguments.length; i++) {
-        const arg = expression.arguments[i];
-        const argName = argProps[i][0];
+    for (let i = 0; i < call.arguments.length; i++) {
+        const arg = call.arguments[i];
         const argFrame = getFrame(frame, i);
         const done = await runExpression(runtime, controller, block, argFrame, arg);
         if (!done) {
             return false;
         }
 
-        args[argName] = argFrame.result;
+        args.push(argFrame.result);
 
         if (!controller.continue()) {
             return false;
         }
     }
 
-    validate(func.args, args);
-
-    frame.result = await func.handler({ args });
-    controller.tick();
-
-    return completeFrame(frame);
+    return args;
 }
 
 function pushNewFrame(parent: StackFrame) {
@@ -247,7 +327,7 @@ function getFrame(parent: StackFrame, index: number) {
         return frame;
     }
 
-    throw new Error(`Frame index out of bounds: ${index}`);
+    throw new RuntimeError(`Frame index out of bounds: ${index}`);
 }
 
 function completeFrame(frame: StackFrame) {
@@ -256,11 +336,44 @@ function completeFrame(frame: StackFrame) {
 }
 
 function setVariable(frame: StackFrame, name: string, value: unknown) {
-    if (!frame.variables) {
-        frame.variables = {};
-    }
+    do {
+        const variables = frame.variables;
+        if (variables && name in variables) {
+            variables[name] = value;
+            return;
+        }
 
-    frame.variables[name] = value;
+        if (!frame.parent) {
+            throw new RuntimeError(`Variable ${name} not found`);
+        }
+
+        frame = frame.parent;
+    } while (frame);
+}
+
+function resolveExpression(runtime: Runtime, frame: StackFrame, expression: Expression): unknown {
+    switch (expression.type) {
+        case 'Identifier': {
+            return resolveVariable(runtime, frame, expression);
+        }
+
+        case 'Literal': {
+            return resolveLiteral(expression);
+        }
+
+        case 'Member': {
+            const object = resolveExpression(runtime, frame, expression.object);
+            const property =
+                expression.property.type === 'Identifier'
+                    ? expression.property.name
+                    : resolveExpression(runtime, frame, expression.property);
+
+            return (object as Record<string, unknown>)[property as string];
+        }
+
+        default:
+            throw new RuntimeError(`Unsupported expression type: ${expression.type}`);
+    }
 }
 
 function resolveLiteral(expression: Literal) {
@@ -272,18 +385,26 @@ function resolveLiteral(expression: Literal) {
     return value;
 }
 
-function resolveVariable(frame: StackFrame, expression: Variable) {
-    do {
+function resolveVariable(runtime: Runtime, frame: StackFrame, expression: Identifier) {
+    const name = expression.name;
+
+    while (frame) {
         const variables = frame.variables;
-        const name = expression.name;
         if (variables && name in variables) {
             return variables[name];
         }
 
-        if (!frame.parent) {
-            throw new Error(`Variable ${name} not found`);
+        if (frame.parent) {
+            frame = frame.parent;
+            continue;
         }
 
-        frame = frame.parent;
-    } while (frame);
+        break;
+    }
+
+    if (name in runtime.module) {
+        return runtime.module[name];
+    }
+
+    throw new RuntimeError(`Variable ${expression.name} not found`);
 }

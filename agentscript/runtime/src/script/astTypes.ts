@@ -4,13 +4,13 @@ export interface StatementBase {
 }
 
 export interface VariableDeclaration extends StatementBase {
-    type: 'VariableDeclaration';
+    type: 'Variable';
     name: string;
     value?: Expression | undefined;
 }
 
 export interface ExpressionStatement extends StatementBase {
-    type: 'ExpressionStatement';
+    type: 'Expression';
     expression: Expression;
 }
 
@@ -21,7 +21,7 @@ export interface ExpressionBase {
 
 export interface FunctionCall extends ExpressionBase {
     type: 'FunctionCall';
-    name: string;
+    func: Expression;
     arguments: Expression[];
 }
 
@@ -30,9 +30,15 @@ export interface Literal extends ExpressionBase {
     value: unknown;
 }
 
-export interface Variable extends ExpressionBase {
-    type: 'Variable';
+export interface Identifier extends ExpressionBase {
+    type: 'Identifier';
     name: string;
+}
+
+export interface Member extends ExpressionBase {
+    type: 'Member';
+    property: Expression;
+    object: Expression;
 }
 
 export interface Assignment extends ExpressionBase {
@@ -41,7 +47,7 @@ export interface Assignment extends ExpressionBase {
     right: Expression;
 }
 
-export type Expression = FunctionCall | Literal | Variable | Assignment;
+export type Expression = FunctionCall | Literal | Identifier | Member | Assignment;
 
 export type Statement = VariableDeclaration | ExpressionStatement;
 export type Node = Statement | Expression;

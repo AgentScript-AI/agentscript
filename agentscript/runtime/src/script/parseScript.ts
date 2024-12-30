@@ -29,7 +29,7 @@ function parseStatement(statement: babel.Statement): Statement {
             }
 
             return {
-                type: 'VariableDeclaration',
+                type: 'Variable',
                 name: declaration.id.name,
                 value: declaration.init ? parseExpression(declaration.init) : undefined,
                 comment,
@@ -38,7 +38,7 @@ function parseStatement(statement: babel.Statement): Statement {
 
         case 'ExpressionStatement': {
             return {
-                type: 'ExpressionStatement',
+                type: 'Expression',
                 expression: parseExpression(statement.expression),
                 comment,
             };
@@ -66,8 +66,15 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'Identifier':
             return {
-                type: 'Variable',
+                type: 'Identifier',
                 name: expression.name,
+            };
+
+        case 'MemberExpression':
+            return {
+                type: 'Member',
+                property: parseExpression(expression.property as babel.Expression),
+                object: parseExpression(expression.object),
             };
 
         case 'AssignmentExpression': {
@@ -79,13 +86,9 @@ function parseExpression(expression: babel.Expression): Expression {
         }
 
         case 'CallExpression': {
-            if (expression.callee.type !== 'Identifier') {
-                throw new Error('Invalid call expression');
-            }
-
             return {
                 type: 'FunctionCall',
-                name: expression.callee.name,
+                func: parseExpression(expression.callee as babel.Expression),
                 arguments: expression.arguments.map(e => {
                     if (e.type === 'SpreadElement') {
                         // TODO: Implement spread elements
@@ -109,11 +112,13 @@ function parseExpression(expression: babel.Expression): Expression {
 function parseLeftValue(left: babel.LVal): Assignment['left'] {
     const expression = parseExpression(left as babel.Expression);
 
-    if (expression.type !== 'Variable') {
-        throw new Error('Invalid left value');
+    switch (expression.type) {
+        case 'Identifier':
+        case 'Member':
+            return expression;
     }
 
-    return expression;
+    throw new Error(`Invalid left value: ${expression.type}`);
 }
 
 function parseComment(comments: babel.Comment[] | undefined | null): string | undefined {

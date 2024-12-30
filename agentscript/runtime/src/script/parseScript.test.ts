@@ -7,7 +7,7 @@ test('assign variable', () => {
     const script = parseScript('const a = 1');
     const expected: Script = [
         {
-            type: 'VariableDeclaration',
+            type: 'Variable',
             name: 'a',
             value: { type: 'Literal', value: 1 },
         },
@@ -20,10 +20,10 @@ test('call function', () => {
     const script = parseScript('foo()');
     const expected: Script = [
         {
-            type: 'ExpressionStatement',
+            type: 'Expression',
             expression: {
                 type: 'FunctionCall',
-                name: 'foo',
+                func: { type: 'Identifier', name: 'foo' },
                 arguments: [],
             },
         },
@@ -36,10 +36,10 @@ test('call function with arguments', () => {
     const script = parseScript('foo(1, 2, 3)');
     const expected: Script = [
         {
-            type: 'ExpressionStatement',
+            type: 'Expression',
             expression: {
                 type: 'FunctionCall',
-                name: 'foo',
+                func: { type: 'Identifier', name: 'foo' },
                 arguments: [
                     { type: 'Literal', value: 1 },
                     { type: 'Literal', value: 2 },
@@ -56,11 +56,11 @@ test('call function and assign to variable', () => {
     const script = parseScript('const a = foo(1, 2, 3)');
     const expected: Script = [
         {
-            type: 'VariableDeclaration',
+            type: 'Variable',
             name: 'a',
             value: {
                 type: 'FunctionCall',
-                name: 'foo',
+                func: { type: 'Identifier', name: 'foo' },
                 arguments: [
                     { type: 'Literal', value: 1 },
                     { type: 'Literal', value: 2 },
@@ -77,8 +77,16 @@ test('call member function', () => {
     const script = parseScript('foo.bar()');
     const expected: Script = [
         {
-            type: 'ExpressionStatement',
-            expression: { type: 'FunctionCall', name: 'foo.bar', arguments: [] },
+            type: 'Expression',
+            expression: {
+                type: 'FunctionCall',
+                func: {
+                    type: 'Member',
+                    object: { type: 'Identifier', name: 'foo' },
+                    property: { type: 'Identifier', name: 'bar' },
+                },
+                arguments: [],
+            },
         },
     ];
 
@@ -96,34 +104,34 @@ test('multiple statements', () => {
 
     const expected: Script = [
         {
-            type: 'VariableDeclaration',
+            type: 'Variable',
             name: 'a',
             value: { type: 'Literal', value: 1 },
             comment: undefined,
         },
         {
-            type: 'VariableDeclaration',
+            type: 'Variable',
             name: 'b',
             value: {
                 type: 'FunctionCall',
-                name: 'add',
+                func: { type: 'Identifier', name: 'add' },
                 arguments: [
-                    { type: 'Variable', name: 'a' },
+                    { type: 'Identifier', name: 'a' },
                     { type: 'Literal', value: 2 },
                 ],
             },
         },
         {
-            type: 'ExpressionStatement',
+            type: 'Expression',
             comment: 'multiply b by 3',
             expression: {
                 type: 'Assignment',
-                left: { type: 'Variable', name: 'b' },
+                left: { type: 'Identifier', name: 'b' },
                 right: {
                     type: 'FunctionCall',
-                    name: 'multiply',
+                    func: { type: 'Identifier', name: 'multiply' },
                     arguments: [
-                        { type: 'Variable', name: 'b' },
+                        { type: 'Identifier', name: 'b' },
                         { type: 'Literal', value: 3 },
                     ],
                 },
