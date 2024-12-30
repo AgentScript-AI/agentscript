@@ -141,3 +141,24 @@ test('multiple statements', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('object literal', () => {
+    const script = parseScript('const a = { b: 1 }');
+    const expected: Script = [
+        {
+            type: 'Variable',
+            name: 'a',
+            value: {
+                type: 'Object',
+                props: [
+                    {
+                        key: { type: 'Identifier', name: 'b' },
+                        value: { type: 'Literal', value: 1 },
+                    },
+                ],
+            },
+        },
+    ];
+
+    expect(script).toEqual(expected);
+});

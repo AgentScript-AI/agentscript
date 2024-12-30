@@ -47,7 +47,23 @@ export interface Assignment extends ExpressionBase {
     right: Expression;
 }
 
-export type Expression = FunctionCall | Literal | Identifier | Member | Assignment;
+export interface ObjectExpression extends ExpressionBase {
+    type: 'Object';
+    props: ObjectProperty[];
+}
+
+export interface ObjectProperty {
+    key: Expression;
+    value: Expression;
+}
+
+export type Expression =
+    | FunctionCall
+    | Literal
+    | Identifier
+    | Member
+    | Assignment
+    | ObjectExpression;
 
 export type Statement = VariableDeclaration | ExpressionStatement;
 export type Node = Statement | Expression;

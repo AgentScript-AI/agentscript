@@ -130,3 +130,36 @@ test('assign variable', async () => {
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
     expect(runtime.stack).toEqual(expectedStack);
 });
+
+test('member expression', async () => {
+    const script = parseScript([
+        //
+        'const a = { b: 1 };',
+        'const c = a.b;',
+    ]);
+
+    const runtime = createRuntime({
+        module: {},
+        script,
+    });
+
+    const result = await executeRuntime({ runtime });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        variables: { a: { b: 1 }, c: 1 },
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                children: [childFrame({ completedAt: anyNumber(), result: { b: 1 } })],
+            }),
+            childFrame({
+                completedAt: anyNumber(),
+                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
+    expect(runtime.stack).toEqual(expectedStack);
+});

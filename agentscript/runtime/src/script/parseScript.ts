@@ -1,7 +1,7 @@
 import { parse } from '@babel/parser';
 import type * as babel from '@babel/types';
 
-import type { Assignment, Expression, Script, Statement } from './astTypes.js';
+import type { Assignment, Expression, ObjectProperty, Script, Statement } from './astTypes.js';
 
 export function parseScript(script: string | string[]): Script {
     if (Array.isArray(script)) {
@@ -70,6 +70,14 @@ function parseExpression(expression: babel.Expression): Expression {
                 name: expression.name,
             };
 
+        case 'ObjectExpression':
+            return {
+                type: 'Object',
+                props: expression.properties.map(prop =>
+                    parseObjectProperty(prop as babel.ObjectProperty),
+                ),
+            };
+
         case 'MemberExpression':
             return {
                 type: 'Member',
@@ -127,4 +135,11 @@ function parseComment(comments: babel.Comment[] | undefined | null): string | un
     }
 
     return comments.map(c => c.value.trim()).join('\n');
+}
+
+function parseObjectProperty(property: babel.ObjectProperty): ObjectProperty {
+    return {
+        key: parseExpression(property.key as babel.Expression),
+        value: parseExpression(property.value as babel.Expression),
+    };
 }

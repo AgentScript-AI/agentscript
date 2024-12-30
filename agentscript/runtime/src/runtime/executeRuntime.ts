@@ -363,12 +363,21 @@ function resolveExpression(runtime: Runtime, frame: StackFrame, expression: Expr
 
         case 'Member': {
             const object = resolveExpression(runtime, frame, expression.object);
-            const property =
-                expression.property.type === 'Identifier'
-                    ? expression.property.name
-                    : resolveExpression(runtime, frame, expression.property);
+            const property = resolveName(runtime, frame, expression.property);
 
-            return (object as Record<string, unknown>)[property as string];
+            return (object as Record<string, unknown>)[property];
+        }
+
+        case 'Object': {
+            const result: Record<string, unknown> = {};
+            for (const prop of expression.props) {
+                const key = resolveName(runtime, frame, prop.key);
+                const value = resolveExpression(runtime, frame, prop.value);
+
+                result[key] = value;
+            }
+
+            return result;
         }
 
         default:
@@ -383,6 +392,14 @@ function resolveLiteral(expression: Literal) {
     }
 
     return value;
+}
+
+function resolveName(runtime: Runtime, frame: StackFrame, expression: Expression) {
+    if (expression.type === 'Identifier') {
+        return expression.name;
+    }
+
+    return resolveExpression(runtime, frame, expression) as string;
 }
 
 function resolveVariable(runtime: Runtime, frame: StackFrame, expression: Identifier) {
