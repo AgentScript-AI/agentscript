@@ -75,6 +75,14 @@ test('call function and assign to variable', () => {
 
 test('call member function', () => {
     const script = parseScript('foo.bar()');
+    const expected: Script = [
+        {
+            type: 'ExpressionStatement',
+            expression: { type: 'FunctionCall', name: 'foo.bar', arguments: [] },
+        },
+    ];
+
+    expect(script).toEqual(expected);
 });
 
 test('multiple statements', () => {

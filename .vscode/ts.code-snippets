@@ -19,6 +19,11 @@
         "scope": "typescript",
         "body": ["import * as $2 from '$1';"],
     },
+    "ImportTest": {
+        "prefix": "imt",
+        "scope": "typescript",
+        "body": ["import { test } from 'vitest';"],
+    },
     "ImportSvg": {
         "prefix": "import-svg-component",
         "scope": "typescript",
@@ -84,6 +89,12 @@
         "prefix": "inject",
         "scope": "typescript",
         "body": ["const ${1/(.*)/${1:/camelcase}/} = inject(${1});"],
+    },
+
+    "Test": {
+        "prefix": "test",
+        "scope": "typescript",
+        "body": ["test('$1', () => {", "    $2", "})"],
     },
     "StoryObject": {
         "prefix": "story-object",

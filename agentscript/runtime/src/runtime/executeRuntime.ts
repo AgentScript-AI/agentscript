@@ -1,4 +1,4 @@
-import { assertValue } from '@nzyme/utils';
+import { validate } from '@agentscript/schema';
 
 import type { Runtime } from './createRuntime.js';
 import type { StackFrame } from './stackTypes.js';
@@ -13,7 +13,6 @@ import type {
     Statement,
     Variable,
 } from '../script/astTypes.js';
-import { validate } from '@agentscript/schema';
 
 export interface ExecuteRuntimeOptions extends RuntimeControllerOptions {
     runtime: Runtime;
@@ -77,7 +76,7 @@ async function runBlock(
         }
 
         const statement = statements[index];
-        const frameDone = await runFrame(runtime, controller, frame, statement);
+        const frameDone = await runBlockFrame(runtime, controller, block, frame, statement);
 
         if (frame.completedAt) {
             index++;
@@ -90,14 +89,13 @@ async function runBlock(
     return false;
 }
 
-async function runFrame(
+async function runBlockFrame(
     runtime: Runtime,
     controller: RuntimeController,
+    block: StackFrame,
     frame: StackFrame,
     node: Node,
 ) {
-    const parent = assertValue(frame.parent, 'Stack frame has no parent');
-
     switch (node.type) {
         case 'VariableDeclaration': {
             if (!node.value) {
@@ -106,17 +104,17 @@ async function runFrame(
             }
 
             const valueFrame = getFrame(frame, 0);
-            const done = await runExpression(runtime, controller, valueFrame, node.value);
+            const done = await runExpression(runtime, controller, block, valueFrame, node.value);
             if (!done) {
                 return false;
             }
 
-            setVariable(parent, node.name, valueFrame.result);
+            setVariable(block, node.name, valueFrame.result);
             return completeFrame(frame);
         }
 
         case 'ExpressionStatement': {
-            return await runExpression(runtime, controller, frame, node.expression);
+            return await runExpression(runtime, controller, block, frame, node.expression);
         }
 
         default:
@@ -127,6 +125,7 @@ async function runFrame(
 async function runExpression(
     runtime: Runtime,
     controller: RuntimeController,
+    block: StackFrame,
     frame: StackFrame,
     expression: Expression,
 ) {
@@ -147,18 +146,38 @@ async function runExpression(
             return completeFrame(frame);
         }
 
-        case 'FunctionCall': {
-            return await runFunctionCall(runtime, controller, frame, expression);
+        case 'Assignment': {
+            const rightFrame = getFrame(frame, 0);
+
+            const result = await runExpression(
+                runtime,
+                controller,
+                block,
+                rightFrame,
+                expression.right,
+            );
+            if (!result) {
+                return false;
+            }
+
+            if (expression.left.type === 'Variable') {
+                setVariable(block, expression.left.name, rightFrame.result);
+                return completeFrame(frame);
+            }
+
+            throw new Error('Assignment left must be a variable');
         }
 
-        default:
-            throw new Error(`Unknown expression type: ${expression.type}`);
+        case 'FunctionCall': {
+            return await runFunctionCall(runtime, controller, block, frame, expression);
+        }
     }
 }
 
 async function runFunctionCall(
     runtime: Runtime,
     controller: RuntimeController,
+    block: StackFrame,
     frame: StackFrame,
     expression: FunctionCall,
 ) {
@@ -179,7 +198,7 @@ async function runFunctionCall(
         const arg = expression.arguments[i];
         const argName = argProps[i][0];
         const argFrame = getFrame(frame, i);
-        const done = await runExpression(runtime, controller, argFrame, arg);
+        const done = await runExpression(runtime, controller, block, argFrame, arg);
         if (!done) {
             return false;
         }

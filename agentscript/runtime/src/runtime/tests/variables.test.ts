@@ -102,3 +102,31 @@ test('multiple variable declarations', async () => {
     );
     expect(runtime.stack).toEqual(expectedStack);
 });
+
+test('assign variable', async () => {
+    const script = parseScript(['let a = 1', 'a = 2;']);
+    const runtime = createRuntime({
+        module: {},
+        script,
+    });
+
+    const result = await executeRuntime({ runtime });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        variables: { a: 2 },
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+            }),
+            childFrame({
+                completedAt: anyNumber(),
+                children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
+    expect(runtime.stack).toEqual(expectedStack);
+});

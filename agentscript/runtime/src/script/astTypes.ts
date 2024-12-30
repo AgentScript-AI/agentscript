@@ -37,7 +37,7 @@ export interface Variable extends ExpressionBase {
 
 export interface Assignment extends ExpressionBase {
     type: 'Assignment';
-    left: Variable;
+    left: Expression;
     right: Expression;
 }
 
