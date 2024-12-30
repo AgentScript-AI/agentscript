@@ -1,27 +1,28 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 
-export declare namespace Utils {
-    /** Group an array by a given property. */
-    export function groupBy<T>(array: T[], property: keyof T): T[][];
+/** Group an array by a given property. */
+export declare function groupBy<T>(array: T[], property: keyof T): T[][];
 
-    export interface Duration {
-        /** How many years to add or subtract from now. */
-        years?: number;
-        /** How many months to add or subtract from now. */
-        months?: number;
-        /** How many days to add or subtract from now. */
-        days?: number;
-        /** How many hours to add or subtract from now. */
-        hours?: number;
-        /** How many minutes to add or subtract from now. */
-        minutes?: number;
-        /** How many seconds to add or subtract from now. */
-        seconds?: number;
-    }
-
-    /** Add a duration to a date. */
-    export function addToDate(date: Date, duration: Duration): Date;
+export interface Duration {
+    /** How many years to add or subtract from now. */
+    years?: number;
+    /** How many months to add or subtract from now. */
+    months?: number;
+    /** How many days to add or subtract from now. */
+    days?: number;
+    /** How many hours to add or subtract from now. */
+    hours?: number;
+    /** How many minutes to add or subtract from now. */
+    minutes?: number;
+    /** How many seconds to add or subtract from now. */
+    seconds?: number;
 }
+
+/** Add a duration to a date. */
+export declare function addToDate(date: Date, duration: Duration): Date;
+
+/** Use when you need to iterate over array, instead of using a for loop. Always use the return value. */
+export declare function forEach<T, R>(array: T[], callback: (item: T) => R): R[];
 
 export declare namespace Core {
     export interface User {
@@ -44,7 +45,7 @@ export declare namespace Core {
      * Child workflow can peform all kind of tasks, so you can delegate any task to it. Don't do anything yourself when you delegate the task.
      * @returns Execution result summary. You should always use it to update the user about results of the workflow.
      */
-    export function startNewWorkflow(params: NewWorkflowParams): Promise<string>;
+    export function startNewWorkflow(params: NewWorkflowParams): string;
 
     /** Replies to the user in chat. Use it whenever you want to say something. */
     export function replyToUser(message: string): Promise<void>;
@@ -59,7 +60,7 @@ export declare namespace Core {
     /**
      * Summarize a data of any type into a string.
      */
-    export function summarizeAsString(params: SummarizeParams): Promise<string>;
+    export function summarizeAsString(params: SummarizeParams): string;
 
     /**
      * Summarize a data of any type into a list.
@@ -67,7 +68,7 @@ export declare namespace Core {
      * - Convert documents to a list of summaries.
      * - Convert tasks, documents, emails, etc. to a list of task updates.
      */
-    export function summarizeAsList(params: SummarizeParams): Promise<object[]>;
+    export function summarizeAsList(params: SummarizeParams): object[];
 }
 
 export declare namespace Docs {
@@ -88,7 +89,7 @@ export declare namespace Docs {
         updatedAt: Date;
     }
 
-    export function findDocs(params: FindDocsParams): Promise<Document[]>;
+    export function findDocs(params: FindDocsParams): Document[];
 }
 
 export declare namespace Linear {
@@ -108,7 +109,7 @@ export declare namespace Linear {
      * Search for tasks using a natural language query.
      * Do not filter results later, put all the search criteria in the query.
      */
-    export function searchTasks(query: string): Promise<Task[]>;
+    export function searchTasks(query: string): Task[];
 
     export interface CreateTaskParams {
         title: string;
@@ -116,7 +117,7 @@ export declare namespace Linear {
     }
 
     /** Create tasks. */
-    export function createTasks(tasks: CreateTaskParams[]): Promise<Task[]>;
+    export function createTasks(tasks: CreateTaskParams[]): Task[];
 
     export interface UpdateTasksStatusParams {
         /** Tasks to update. */
@@ -133,5 +134,5 @@ export declare namespace Linear {
      * Request updating status of Linear tasks. Request must be first approved by the user.
      * @returns The tasks that were approved and updated.
      */
-    export function updateTasksStatus(params: UpdateTasksStatusParams): Promise<Task[]>;
+    export function updateTasksStatus(params: UpdateTasksStatusParams): Task[];
 }

@@ -130,6 +130,10 @@ async function runExpression(
     frame: StackFrame,
     expression: Expression,
 ) {
+    if (frame.completedAt) {
+        return true;
+    }
+
     switch (expression.type) {
         case 'Literal': {
             const result = resolveLiteral(expression);
@@ -181,6 +185,10 @@ async function runFunctionCall(
         }
 
         args[argName] = argFrame.result;
+
+        if (!controller.continue()) {
+            return false;
+        }
     }
 
     validate(func.args, args);

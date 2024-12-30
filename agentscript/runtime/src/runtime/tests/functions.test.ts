@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript/schema';
 
@@ -28,9 +28,19 @@ const multiply = defineFunction({
     handler: ({ args: { a, b } }) => a * b,
 });
 
+const square = defineFunction({
+    description: 'Square a number',
+    args: {
+        a: s.number(),
+    },
+    return: s.number(),
+    handler: ({ args: { a } }) => a * a,
+});
+
 const module = {
     add,
     multiply,
+    square,
 };
 
 test('single function call', async () => {
@@ -135,4 +145,113 @@ test('multiple function calls', async () => {
         }),
     );
     expect(runtime.stack).toEqual(expectedStack);
+});
+
+describe('nested function calls', () => {
+    const script = parseScript(['add(square(1), square(2));']);
+
+    test('run one tick at a time', async () => {
+        const runtime = createRuntime({
+            module,
+            script,
+        });
+
+        let result = await executeRuntime({ runtime, maxTicks: 1 });
+        let expectedStack = rootFrame({
+            children: [
+                childFrame({
+                    children: [
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 1,
+                            children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                        }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(result).toEqual(runtimeResult({ ticks: 1, done: false }));
+        expect(runtime.stack).toEqual(expectedStack);
+
+        result = await executeRuntime({ runtime, maxTicks: 1 });
+        expectedStack = rootFrame({
+            children: [
+                childFrame({
+                    children: [
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 1,
+                            children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                        }),
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 4,
+                            children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+                        }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(result).toEqual(runtimeResult({ ticks: 1, done: false }));
+
+        result = await executeRuntime({ runtime, maxTicks: 1 });
+        expectedStack = rootFrame({
+            completedAt: anyNumber(),
+            children: [
+                childFrame({
+                    completedAt: anyNumber(),
+                    result: 5,
+                    children: [
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 1,
+                            children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                        }),
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 4,
+                            children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+                        }),
+                    ],
+                }),
+            ],
+        });
+        expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
+        expect(runtime.stack).toEqual(expectedStack);
+    });
+
+    test('run all ticks', async () => {
+        const runtime = createRuntime({
+            module,
+            script,
+        });
+
+        const result = await executeRuntime({ runtime });
+        const expectedStack = rootFrame({
+            completedAt: anyNumber(),
+            children: [
+                childFrame({
+                    completedAt: anyNumber(),
+                    result: 5,
+                    children: [
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 1,
+                            children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                        }),
+                        childFrame({
+                            completedAt: anyNumber(),
+                            result: 4,
+                            children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+                        }),
+                    ],
+                }),
+            ],
+        });
+
+        expect(result).toEqual(runtimeResult({ ticks: 3, done: true }));
+        expect(runtime.stack).toEqual(expectedStack);
+    });
 });
