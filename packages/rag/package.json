@@ -1,21 +1,21 @@
 {
-    "name": "@chorus/rag",
+    "name": "@agentscript/rag",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@chorus/core": "*",
-        "@chorus/database": "*",
+        "@agentscript/core": "*",
+        "@agentscript/database": "*",
         "@langchain/core": "^0.3.22",
         "@langchain/openai": "^0.3.14",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*"
     },
     "devDependencies": {
-        "@chorus/eslint": "*",
-        "@chorus/tsconfig": "*",
+        "@agentscript/eslint": "*",
+        "@agentscript/tsconfig": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2"
     }

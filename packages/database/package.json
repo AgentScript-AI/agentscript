@@ -1,5 +1,5 @@
 {
-    "name": "@chorus/database",
+    "name": "@agentscript/database",
     "version": "0.1.0",
     "private": true,
     "type": "module",
@@ -9,7 +9,7 @@
         "push": "drizzle-kit push"
     },
     "dependencies": {
-        "@chorus/core": "*",
+        "@agentscript/core": "*",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
         "dotenv": "^16.4.7",
@@ -17,8 +17,8 @@
         "postgres": "^3.4.5"
     },
     "devDependencies": {
-        "@chorus/eslint": "*",
-        "@chorus/tsconfig": "*",
+        "@agentscript/eslint": "*",
+        "@agentscript/tsconfig": "*",
         "@nzyme/project-utils": "*",
         "@types/node": "^20.11.24",
         "drizzle-kit": "^0.28.1",

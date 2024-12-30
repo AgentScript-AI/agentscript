@@ -13,6 +13,7 @@ import type {
     Statement,
     Variable,
 } from '../script/astTypes.js';
+import { validate } from '@agentscript/schema';
 
 export interface ExecuteRuntimeOptions extends RuntimeControllerOptions {
     runtime: Runtime;
@@ -166,32 +167,25 @@ async function runFunctionCall(
         throw new Error(`Function ${expression.name} is not a function`);
     }
 
-    const argDefs = Object.entries(func.args);
-    const argValues: Record<string, unknown> = {};
+    const args: Record<string, unknown> = {};
+    const argProps = func.args ? Object.entries(func.args.props) : [];
 
     // todo: run in parallel
     for (let i = 0; i < expression.arguments.length; i++) {
         const arg = expression.arguments[i];
-        const argName = argDefs[i][0];
+        const argName = argProps[i][0];
         const argFrame = getFrame(frame, i);
         const done = await runExpression(runtime, controller, argFrame, arg);
         if (!done) {
             return false;
         }
 
-        argValues[argName] = argFrame.result;
+        args[argName] = argFrame.result;
     }
 
-    const validationPromises: Promise<unknown>[] = [];
-    for (const [name, schema] of argDefs) {
-        const arg = argValues[name];
+    validate(func.args, args);
 
-        validationPromises.push(schema.parseAsync(arg));
-    }
-
-    await Promise.all(validationPromises);
-
-    frame.result = await func.handler({ args: argValues });
+    frame.result = await func.handler({ args });
     controller.tick();
 
     return completeFrame(frame);

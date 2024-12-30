@@ -12,7 +12,7 @@ import {
     vector,
 } from 'drizzle-orm/pg-core';
 
-import { KnowledgeType } from '@chorus/core';
+import { KnowledgeType } from '@agentscript/core';
 
 export const knowledgeType = pgEnum('knowledge_type', KnowledgeType);
 

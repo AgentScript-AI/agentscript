@@ -1,84 +1,78 @@
-import { expect, test, describe } from 'vitest';
-import * as z from 'zod';
+import { describe, expect, test } from 'vitest';
+
+import * as s from '@agentscript/schema';
 
 import { renderType } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
 
 test('string', () => {
-    const schema = z.string();
+    const schema = s.string();
     const code = renderType(schema);
 
     expect(code).toEqual('string');
 });
 
 test('number', () => {
-    const schema = z.number();
+    const schema = s.number();
     const code = renderType(schema);
 
     expect(code).toEqual('number');
 });
 
 test('boolean', () => {
-    const schema = z.boolean();
+    const schema = s.boolean();
     const code = renderType(schema);
 
     expect(code).toEqual('boolean');
 });
 
 test('date', () => {
-    const schema = z.date();
+    const schema = s.date();
     const code = renderType(schema);
 
     expect(code).toEqual('Date');
 });
 
 test('void', () => {
-    const schema = z.void();
+    const schema = s.void();
     const code = renderType(schema);
 
     expect(code).toEqual('void');
 });
 
 test('unknown', () => {
-    const schema = z.unknown();
+    const schema = s.unknown();
     const code = renderType(schema);
 
     expect(code).toEqual('unknown');
 });
 
-test('any', () => {
-    const schema = z.any();
-    const code = renderType(schema);
-
-    expect(code).toEqual('any');
-});
-
 test('custom type nullable', () => {
-    const schema = z.object({ name: z.string() });
+    const schema = s.object({ props: { name: s.string() } });
     const resolver = createTypeResolver();
     resolver.add('Foo', schema);
 
-    const code = renderType(schema.nullable(), { typeResolver: resolver });
+    const code = renderType(s.nullable(schema), { typeResolver: resolver });
 
     expect(code).toEqual('Foo | null');
 });
 
 test('string nullable', () => {
-    const schema = z.string().nullable();
+    const schema = s.string({ nullable: true });
     const code = renderType(schema);
 
     expect(code).toEqual('string | null');
 });
 
 test('string optional', () => {
-    const schema = z.string().optional();
+    const schema = s.string({ optional: true });
     const code = renderType(schema);
 
     expect(code).toEqual('string | undefined');
 });
 
 test('string nullable and optional', () => {
-    const schema = z.string().nullable().optional();
+    const schema = s.string({ nullable: true, optional: true });
     const code = renderType(schema);
 
     expect(code).toEqual('string | null | undefined');
@@ -86,40 +80,46 @@ test('string nullable and optional', () => {
 
 describe('object', () => {
     test('basic', () => {
-        const schema = z.object({ name: z.string() });
+        const schema = s.object({ props: { name: s.string() } });
         const code = renderType(schema);
 
         expect(code).toEqual('{\n  name: string;\n}');
     });
 
     test('nullable', () => {
-        const schema = z.object({ name: z.string() }).nullable();
-        const code = renderType(schema);
+        const schema = s.object({ props: { name: s.string() } });
+        const code = renderType(s.nullable(schema));
 
         expect(code).toEqual('{\n  name: string;\n} | null');
     });
 
     test('optional', () => {
-        const schema = z.object({ name: z.string() }).optional();
-        const code = renderType(schema);
+        const schema = s.object({ props: { name: s.string() } });
+        const code = renderType(s.optional(schema));
 
         expect(code).toEqual('{\n  name: string;\n} | undefined');
     });
 
     test('nullable and optional', () => {
-        const schema = z.object({ name: z.string() }).nullable().optional();
+        const schema = s.object({
+            props: { name: s.string() },
+            nullable: true,
+            optional: true,
+        });
         const code = renderType(schema);
 
         expect(code).toEqual('{\n  name: string;\n} | null | undefined');
     });
 
     test('multiple properties', () => {
-        const schema = z.object({
-            name: z.string(),
-            email: z.string().email().nullable(),
-            age: z.number().optional(),
-            birthDate: z.date().optional(),
-            isActive: z.boolean().optional().nullable(),
+        const schema = s.object({
+            props: {
+                name: s.string(),
+                email: s.string({ email: true, nullable: true }),
+                age: s.number({ optional: true }),
+                birthDate: s.date({ optional: true }),
+                isActive: s.boolean({ optional: true, nullable: true }),
+            },
         });
         const code = renderType(schema);
 
@@ -129,15 +129,23 @@ describe('object', () => {
     });
 
     test('nested object', () => {
-        const schema = z.object({ user: z.object({ name: z.string() }) });
+        const schema = s.object({
+            props: {
+                user: s.object({ props: { name: s.string() } }),
+            },
+        });
         const code = renderType(schema);
 
         expect(code).toEqual('{\n  user: {\n    name: string;\n  };\n}');
     });
 
     test('custom props', () => {
-        const child = z.object({ name: z.string() });
-        const schema = z.object({ child });
+        const child = s.object({
+            props: { name: s.string() },
+        });
+        const schema = s.object({
+            props: { child },
+        });
 
         const resolver = createTypeResolver();
         resolver.add('Child', child);
@@ -148,8 +156,12 @@ describe('object', () => {
     });
 
     test('custom nullable props', () => {
-        const child = z.object({ name: z.string() });
-        const schema = z.object({ child: child.nullable() });
+        const child = s.object({
+            props: { name: s.string() },
+        });
+        const schema = s.object({
+            props: { child: s.nullable(child) },
+        });
 
         const resolver = createTypeResolver();
         resolver.add('Child', child);
@@ -160,8 +172,12 @@ describe('object', () => {
     });
 
     test('custom optional props', () => {
-        const child = z.object({ name: z.string() });
-        const schema = z.object({ child: child.optional() });
+        const child = s.object({
+            props: { name: s.string() },
+        });
+        const schema = s.object({
+            props: { child: s.optional(child) },
+        });
 
         const resolver = createTypeResolver();
         resolver.add('Child', child);
@@ -172,9 +188,11 @@ describe('object', () => {
     });
 
     test('props with description', () => {
-        const schema = z.object({
-            name: z.string().describe('The name of the person'),
-            age: z.number().optional().describe('The age of the person'),
+        const schema = s.object({
+            props: {
+                name: s.string({ description: 'The name of the person' }),
+                age: s.number({ optional: true, description: 'The age of the person' }),
+            },
         });
         const code = renderType(schema);
 
@@ -184,8 +202,12 @@ describe('object', () => {
     });
 
     test('custom props with description', () => {
-        const child = z.object({ name: z.string() });
-        const schema = z.object({ child: child.describe('The child of the person') });
+        const child = s.object({
+            props: { name: s.string() },
+        });
+        const schema = s.object({
+            props: { child: s.extend(child, { description: 'The child of the person' }) },
+        });
 
         const resolver = createTypeResolver();
         resolver.add('Child', child);
@@ -196,9 +218,16 @@ describe('object', () => {
     });
 
     test('custom array props', () => {
-        const child = z.object({ name: z.string() });
-        const parent = z.object({
-            children: z.array(child).describe('The children of the person'),
+        const child = s.object({
+            props: { name: s.string() },
+        });
+        const parent = s.object({
+            props: {
+                children: s.array({
+                    of: child,
+                    description: 'The children of the person',
+                }),
+            },
         });
 
         const resolver = createTypeResolver();
@@ -212,14 +241,14 @@ describe('object', () => {
 
 describe('array', () => {
     test('string array', () => {
-        const schema = z.array(z.string());
+        const schema = s.array(s.string());
         const code = renderType(schema);
 
         expect(code).toEqual('string[]');
     });
 
     test('object array', () => {
-        const schema = z.array(z.object({ name: z.string() }));
+        const schema = s.array(s.object({ props: { name: s.string() } }));
         const code = renderType(schema);
 
         expect(code).toEqual('{\n  name: string;\n}[]');
@@ -228,60 +257,63 @@ describe('array', () => {
 
 describe('union', () => {
     test('basic', () => {
-        const schema = z.union([z.string(), z.number()]);
+        const schema = s.union([s.string(), s.number()]);
         const code = renderType(schema);
 
         expect(code).toEqual('string | number');
     });
 
     test('nullable', () => {
-        const schema = z.union([z.string(), z.number()]).nullable();
-        const code = renderType(schema);
+        const schema = s.union([s.string(), s.number()]);
+        const code = renderType(s.nullable(schema));
 
         expect(code).toEqual('string | number | null');
     });
 
     test('optional', () => {
-        const schema = z.union([z.string(), z.number()]).optional();
-        const code = renderType(schema);
+        const schema = s.union([s.string(), s.number()]);
+        const code = renderType(s.optional(schema));
 
         expect(code).toEqual('string | number | undefined');
     });
 
     test('nullable and optional', () => {
-        const schema = z.union([z.string(), z.number()]).nullable().optional();
-        const code = renderType(schema);
+        const schema = s.union([s.string(), s.number()]);
+        const code = renderType(s.nullable(s.optional(schema)));
 
         expect(code).toEqual('string | number | null | undefined');
     });
 
     test('object', () => {
-        const schema = z.union([z.object({ name: z.string() }), z.object({ age: z.number() })]);
+        const schema = s.union([
+            s.object({ props: { name: s.string() } }),
+            s.object({ props: { age: s.number() } }),
+        ]);
         const code = renderType(schema);
 
         expect(code).toEqual('{\n  name: string;\n} | {\n  age: number;\n}');
     });
 
     test('named object', () => {
-        const user = z.object({ name: z.string() });
+        const user = s.object({ props: { name: s.string() } });
         const resolver = createTypeResolver();
         resolver.add('User', user);
 
-        const schema = z.union([user, z.object({ age: z.number() })]);
+        const schema = s.union([user, s.object({ props: { age: s.number() } })]);
         const code = renderType(schema, { typeResolver: resolver });
 
         expect(code).toEqual('User | {\n  age: number;\n}');
     });
 
     test('array', () => {
-        const schema = z.union([z.array(z.string()), z.array(z.number())]);
+        const schema = s.union([s.array(s.string()), s.array(s.number())]);
         const code = renderType(schema);
 
         expect(code).toEqual('string[] | number[]');
     });
 
     test('array of unions', () => {
-        const schema = z.array(z.union([z.string(), z.number()]));
+        const schema = s.array(s.union([s.string(), s.number()]));
         const code = renderType(schema);
 
         expect(code).toEqual('(string | number)[]');

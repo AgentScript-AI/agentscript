@@ -1,5 +1,5 @@
 {
-    "extends": "@chorus/tsconfig/base.json",
+    "extends": "@agentscript/tsconfig/base.json",
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./dist",

@@ -21,7 +21,7 @@ module.exports = {
                         group: 'internal',
                     },
                     {
-                        pattern: '@chorus/**',
+                        pattern: '@agentscript/**',
                         group: 'internal',
                     },
                     {

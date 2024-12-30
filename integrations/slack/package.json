@@ -1,7 +1,7 @@
 {
-    "name": "@chorus/slack",
+    "name": "@agentscript/slack",
     "version": "1.0.0",
-    "repository": "https://github.com/kedrzu/chorus.git",
+    "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "type": "module",
@@ -14,9 +14,9 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@chorus/core": "*",
-        "@chorus/database": "*",
-        "@chorus/rag": "*",
+        "@agentscript/core": "*",
+        "@agentscript/database": "*",
+        "@agentscript/rag": "*",
         "@nzyme/ioc": "*",
         "@nzyme/slack": "*",
         "@nzyme/utils": "*",
@@ -25,8 +25,8 @@
         "@tryfabric/mack": "^1.2.1"
     },
     "devDependencies": {
-        "@chorus/eslint": "*",
-        "@chorus/tsconfig": "*",
+        "@agentscript/eslint": "*",
+        "@agentscript/tsconfig": "*",
         "@types/node": "^22.7.5"
     }
 }

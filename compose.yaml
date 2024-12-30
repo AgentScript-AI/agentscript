@@ -1,4 +1,4 @@
-name: chorus
+name: agentscript
 
 services:
     mongodb:

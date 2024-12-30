@@ -1,5 +1,5 @@
 {
-    "extends": "@chorus/tsconfig/base.json",
+    "extends": "@agentscript/tsconfig/base.json",
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
@@ -8,6 +8,9 @@
     "include": ["src"],
     "exclude": ["src/**/*.test.ts"],
     "references": [
+        {
+            "path": "../schema/tsconfig.json"
+        },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },

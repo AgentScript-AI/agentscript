@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { defineTool, randomUid } from '@chorus/core';
+import { defineTool, randomUid } from '@agentscript/core';
 
 import { KnowledgeRetriever } from '../KnowledgeRetriever.js';
 

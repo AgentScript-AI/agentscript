@@ -1,5 +1,5 @@
 {
-    "name": "@chorus/tsc",
+    "name": "@agentscript/tsc",
     "version": "1.0.0",
     "type": "module",
     "sideEffects": false,

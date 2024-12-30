@@ -1,57 +1,46 @@
-import * as z from 'zod';
-
-import type { EmptyObject } from '@nzyme/types';
+import * as s from '@agentscript/schema';
 
 const FUNCTION_SYMBOL = Symbol('function');
 
-export type FunctionArgs = {
-    [name: string]: z.ZodTypeAny;
-};
-
-export type FunctionOptions<
-    TArgs extends FunctionArgs = EmptyObject,
-    TReturn extends z.ZodTypeAny = z.ZodType<void>,
-> = {
+export type FunctionOptions<TArgs extends s.ObjectSchemaProps, TReturn extends s.Schema> = {
     description?: string;
     args?: TArgs;
     return?: TReturn;
     handler: FunctionHandler<TArgs, TReturn>;
 };
 
-export type FunctionArgsValue<TArgs extends FunctionArgs> = FunctionArgs extends TArgs
+export type FunctionArgs<TArgs extends s.ObjectSchemaProps> = s.ObjectSchemaProps extends TArgs
     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
       any
-    : {
-          [K in keyof TArgs]: z.infer<TArgs[K]>;
-      };
+    : s.ObjectSchemaPropsValue<TArgs>;
 
 export type FunctionDefinition<
-    TArgs extends FunctionArgs = FunctionArgs,
-    TReturn extends z.ZodTypeAny = z.ZodType<unknown>,
+    TArgs extends s.ObjectSchemaProps = s.ObjectSchemaProps,
+    TReturn extends s.Schema = s.SchemaAny,
 > = {
     description?: string | string[];
-    args: TArgs;
+    args: s.ObjectSchema<{ props: TArgs }>;
     return: TReturn;
     handler: FunctionHandler<TArgs, TReturn>;
     [FUNCTION_SYMBOL]: true;
 };
 
-export type FunctionParams<TArgs extends FunctionArgs> = {
-    args: FunctionArgsValue<TArgs>;
+export type FunctionParams<TArgs extends s.ObjectSchemaProps> = {
+    args: FunctionArgs<TArgs>;
 };
 
-export type FunctionHandler<TArgs extends FunctionArgs, TReturn extends z.ZodTypeAny> = (
+export type FunctionHandler<TArgs extends s.ObjectSchemaProps, TReturn extends s.Schema> = (
     params: FunctionParams<TArgs>,
-) => z.infer<TReturn> | Promise<z.infer<TReturn>>;
+) => s.SchemaValue<TReturn> | Promise<s.SchemaValue<TReturn>>;
 
 export function defineFunction<
-    TArgs extends FunctionArgs = EmptyObject,
-    TReturn extends z.ZodTypeAny = z.ZodVoid,
+    TArgs extends s.ObjectSchemaProps = s.ObjectSchemaProps,
+    TReturn extends s.Schema = s.Schema<void>,
 >(options: FunctionOptions<TArgs, TReturn>): FunctionDefinition<TArgs, TReturn> {
     return {
         description: options.description,
-        args: options.args ?? ({} as TArgs),
-        return: options.return ?? (z.void() as TReturn),
+        args: s.object({ props: options.args ?? {} }) as FunctionDefinition<TArgs, TReturn>['args'],
+        return: options.return ?? (s.void() as TReturn),
         handler: options.handler,
         [FUNCTION_SYMBOL]: true,
     };

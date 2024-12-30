@@ -1,17 +1,17 @@
-import type { z } from 'zod';
+import type * as s from '@agentscript/schema';
 
 export type TypeResolver = ReturnType<typeof createTypeResolver>;
 
 export function createTypeResolver() {
-    const lookup = new Map<object, string>();
+    const lookup = new Map<s.SchemaProto, string>();
 
     return { resolve, add };
 
-    function resolve(schema: z.AnyZodObject) {
-        return lookup.get(schema.shape as object);
+    function resolve(schema: s.ObjectSchema) {
+        return lookup.get(schema.proto);
     }
 
-    function add(name: string, schema: z.AnyZodObject) {
-        lookup.set(schema.shape as object, name);
+    function add(name: string, schema: s.ObjectSchema) {
+        lookup.set(schema.proto, name);
     }
 }

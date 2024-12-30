@@ -1,8 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 
-import { TenantContext } from '@chorus/core';
-import { DatabaseClient, db } from '@chorus/database';
-import { KnowledgeStore } from '@chorus/rag';
+import { TenantContext } from '@agentscript/core';
+import { DatabaseClient, db } from '@agentscript/database';
+import { KnowledgeStore } from '@agentscript/rag';
 import { defineCommand } from '@nzyme/ioc';
 import { findAndRemove } from '@nzyme/utils';
 

@@ -1,7 +1,7 @@
 import { and, cosineDistance, desc, eq, gte, sql } from 'drizzle-orm';
 
-import { Logger, TenantContext } from '@chorus/core';
-import { DatabaseClient, db } from '@chorus/database';
+import { Logger, TenantContext } from '@agentscript/core';
+import { DatabaseClient, db } from '@agentscript/database';
 import { defineService } from '@nzyme/ioc';
 
 import { EmbeddingModel } from './EmbeddingModel.js';

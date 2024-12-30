@@ -22,15 +22,17 @@ export function renderFunction(options: RenderFunctionOptions) {
             : [func.description]
         : [];
 
-    for (const [name, arg] of Object.entries(func.args)) {
-        if (args.length > 0) {
-            args += ', ';
-        }
+    if (func.args) {
+        for (const [name, arg] of Object.entries(func.args.props)) {
+            if (args.length > 0) {
+                args += ', ';
+            }
 
-        args += `${name}: ${renderType(arg, { typeResolver })}`;
+            args += `${name}: ${renderType(arg, { typeResolver })}`;
 
-        if (arg.description) {
-            description.push(`@param ${name} - ${arg.description}`);
+            if (arg.description) {
+                description.push(`@param ${name} - ${arg.description}`);
+            }
         }
     }
 

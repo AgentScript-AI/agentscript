@@ -6,6 +6,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
+        "@agentscript/schema": "*",
         "@babel/parser": "^7.26.3",
         "@duplojs/zod-to-typescript": "^0.2.4",
         "@langchain/core": "^0.3.22",
@@ -16,8 +17,8 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "@chorus/eslint": "*",
-        "@chorus/tsconfig": "*",
+        "@agentscript/eslint": "*",
+        "@agentscript/tsconfig": "*",
         "@nzyme/vitest": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2",

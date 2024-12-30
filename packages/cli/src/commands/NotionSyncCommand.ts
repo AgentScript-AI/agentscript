@@ -1,4 +1,4 @@
-import { SyncNotionPages } from '@chorus/notion';
+import { SyncNotionPages } from '@agentscript/notion';
 
 import { ApplicationCommand } from './ApplicationCommand.js';
 

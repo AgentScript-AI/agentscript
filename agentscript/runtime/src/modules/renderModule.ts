@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as s from '@agentscript/schema';
 
 import { INDENT } from '../constants.js';
 import { type FunctionDefinition, isFunction } from '../defineFunction.js';
@@ -7,7 +7,7 @@ import { renderType } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
 
 export type Module = {
-    [name: string]: z.ZodTypeAny | FunctionDefinition | Module;
+    [name: string]: s.Schema | FunctionDefinition | Module;
 };
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
@@ -24,8 +24,8 @@ export function renderModule(module: Module, indent: string = '') {
             );
         }
 
-        if (value instanceof z.ZodObject) {
-            typeResolver.add(key, value as z.AnyZodObject);
+        if (s.isSchema(value, s.object)) {
+            typeResolver.add(key, value as s.ObjectSchema);
         }
     }
 
@@ -36,15 +36,16 @@ export function renderModule(module: Module, indent: string = '') {
             code += '\n\n';
         }
 
-        if (value instanceof z.ZodObject) {
-            code += `${indent}export interface ${key} ${renderType(value as z.ZodTypeAny, {
-                typeResolver,
-                indent,
-                noResolve: true,
-            })}`;
-        } else if (value instanceof z.ZodType) {
-            // todo: support more types
-            continue;
+        if (s.isSchema(value)) {
+            if (value.base === s.object) {
+                code += `${indent}export interface ${key} ${renderType(value as s.ObjectSchema, {
+                    typeResolver,
+                    indent,
+                    noResolve: true,
+                })}`;
+
+                // todo: support more types
+            }
         } else if (isFunction(value)) {
             code += renderFunction({
                 name: key,

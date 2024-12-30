@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { Chat, ChatMessageInfo, defineTool, randomUid, toolChatAction } from '@chorus/core';
+import { Chat, ChatMessageInfo, defineTool, randomUid, toolChatAction } from '@agentscript/core';
 import { assert } from '@nzyme/utils';
 
 import { LinearClient } from '../LinearClient.js';

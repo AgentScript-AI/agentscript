@@ -1,4 +1,4 @@
-import type { AgentState } from '@chorus/core';
+import type { AgentState } from '@agentscript/core';
 import { defineService } from '@nzyme/ioc';
 
 export const AgentStateStore = defineService({

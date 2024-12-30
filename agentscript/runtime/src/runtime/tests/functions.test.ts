@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
-import * as z from 'zod';
+
+import * as s from '@agentscript/schema';
 
 import { defineFunction } from '../../defineFunction.js';
 import { parseScript } from '../../script/parseScript.js';
@@ -10,20 +11,20 @@ import { anyNumber, childFrame, rootFrame, runtimeResult } from './utils.test.js
 const add = defineFunction({
     description: 'Add two numbers',
     args: {
-        a: z.number(),
-        b: z.number(),
+        a: s.number(),
+        b: s.number(),
     },
-    return: z.number(),
+    return: s.number(),
     handler: ({ args: { a, b } }) => a + b,
 });
 
 const multiply = defineFunction({
     description: 'Multiply two numbers',
     args: {
-        a: z.number(),
-        b: z.number(),
+        a: s.number(),
+        b: s.number(),
     },
-    return: z.number(),
+    return: s.number(),
     handler: ({ args: { a, b } }) => a * b,
 });
 

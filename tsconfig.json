@@ -1,9 +1,12 @@
 {
-    "extends": "@chorus/tsconfig/base.json",
+    "extends": "@agentscript/tsconfig/base.json",
     "include": [],
     "references": [
         {
             "path": "./agentscript/runtime/tsconfig.json"
+        },
+        {
+            "path": "./agentscript/schema/tsconfig.json"
         },
         {
             "path": "./integrations/linear/tsconfig.json"

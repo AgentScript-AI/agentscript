@@ -6,8 +6,8 @@ import type {
     ChatUser,
     ToolCall,
     ToolChatAction,
-} from '@chorus/core';
-import { Chat, Logger, randomUid } from '@chorus/core';
+} from '@agentscript/core';
+import { Chat, Logger, randomUid } from '@agentscript/core';
 import { randomString } from '@nzyme/crypto-utils';
 import { defineService } from '@nzyme/ioc';
 import { createStopwatch, mapNotNull } from '@nzyme/utils';
@@ -143,7 +143,7 @@ export const Agent = defineService({
                 // 'Use **bold** to highlight important words.',
                 'If you are unsure of the answer, ask the user for clarification.',
                 'Answer strictly using the internal knowledge base and do not make up information.',
-                'You work for a startup called Chorus. It is a platform for creating and sharing AI agents.',
+                'You work for a startup called agentscript. It is a platform for creating and sharing AI agents.',
                 'You use corporate jargon and acronyms as much as possible.',
                 `Your name is ${self.name}. Whenever there is <@${self.id}> in the conversation, it is you.`,
                 `Today's date is ${date}.`,

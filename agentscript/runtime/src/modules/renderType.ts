@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as s from '@agentscript/schema';
 
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';
@@ -9,7 +9,7 @@ export interface RenderTypeOptions {
     noResolve?: boolean;
 }
 
-export function renderType(schema: z.ZodTypeAny, options: RenderTypeOptions = {}): string {
+export function renderType(schema: s.Schema, options: RenderTypeOptions = {}): string {
     return renderTypeInternal(
         schema,
         options.indent ?? '',
@@ -20,62 +20,71 @@ export function renderType(schema: z.ZodTypeAny, options: RenderTypeOptions = {}
 }
 
 function renderTypeInternal(
-    schema: z.ZodTypeAny,
+    schema: s.Schema,
     indent: string = '',
     typeResolver?: TypeResolver,
     skipUndefined?: boolean,
     skipResolving?: boolean,
 ): string {
-    if (schema instanceof z.ZodString) {
-        return 'string';
-    } else if (schema instanceof z.ZodNumber) {
-        return 'number';
-    } else if (schema instanceof z.ZodBoolean) {
-        return 'boolean';
-    } else if (schema instanceof z.ZodDate) {
-        return 'Date';
-    } else if (schema instanceof z.ZodVoid) {
-        return 'void';
-    } else if (schema instanceof z.ZodUnknown) {
-        return 'unknown';
-    } else if (schema instanceof z.ZodAny) {
-        return 'any';
-    } else if (schema instanceof z.ZodNullable) {
-        return `${renderTypeInternal(schema.unwrap() as z.ZodTypeAny, indent, typeResolver, skipUndefined)} | null`;
-    } else if (schema instanceof z.ZodOptional) {
-        if (skipUndefined) {
-            return renderTypeInternal(schema.unwrap() as z.ZodTypeAny, indent, typeResolver);
-        }
+    let type = renderInner(schema, indent, typeResolver, skipResolving);
 
-        return `${renderTypeInternal(schema.unwrap() as z.ZodTypeAny, indent, typeResolver)} | undefined`;
+    if (schema.nullable) {
+        type = `${type} | null`;
     }
 
-    if (schema instanceof z.ZodObject) {
-        if (!skipResolving) {
-            const resolved = typeResolver?.resolve(schema as z.AnyZodObject);
-            if (resolved) {
-                return resolved;
-            }
-        }
-
-        return renderObject(schema as z.AnyZodObject, indent, typeResolver);
-    } else if (schema instanceof z.ZodArray) {
-        return renderArray(schema as z.ZodArray<z.ZodTypeAny>, indent, typeResolver);
-    } else if (schema instanceof z.ZodUnion) {
-        return renderUnion(schema, indent, typeResolver);
+    if (schema.optional && !skipUndefined && schema.base !== s.void) {
+        type = `${type} | undefined`;
     }
 
-    throw new Error(`Unsupported schema: ${schema.constructor.name}`);
+    return type;
 }
 
-function renderObject(schema: z.AnyZodObject, indent: string, typeResolver?: TypeResolver) {
-    const shape = schema.shape as z.ZodRawShape;
+function renderInner(
+    schema: s.Schema,
+    indent: string,
+    typeResolver?: TypeResolver,
+    skipResolving?: boolean,
+) {
+    switch (schema.base) {
+        case s.string:
+            return 'string';
+        case s.number:
+            return 'number';
+        case s.boolean:
+            return 'boolean';
+        case s.date:
+            return 'Date';
+        case s.void:
+            return 'void';
+        case s.unknown:
+            return 'unknown';
+        case s.object:
+            if (!skipResolving) {
+                const resolved = typeResolver?.resolve(schema as s.ObjectSchema);
+                if (resolved) {
+                    return resolved;
+                }
+            }
+
+            return renderObject(schema as s.ObjectSchema, indent, typeResolver);
+        case s.array:
+            return renderArray(schema as s.ArraySchema, indent, typeResolver);
+
+        case s.union:
+            return renderUnion(schema as s.UnionSchema, indent, typeResolver);
+        default:
+            throw new Error(`Unsupported schema`);
+    }
+}
+
+function renderObject(schema: s.ObjectSchema, indent: string, typeResolver?: TypeResolver) {
+    const props = schema.props;
     const propsIndent = indent + INDENT;
 
     let code = '{\n';
     // eslint-disable-next-line prefer-const
-    for (let [key, value] of Object.entries(shape)) {
-        const optional = value.isOptional();
+    for (let [key, value] of Object.entries(props)) {
+        const optional = value.optional;
         if (optional) {
             key += '?';
         }
@@ -94,20 +103,14 @@ function renderObject(schema: z.AnyZodObject, indent: string, typeResolver?: Typ
     return code;
 }
 
-function renderArray(
-    schema: z.ZodArray<z.ZodTypeAny>,
-    indent: string,
-    typeResolver?: TypeResolver,
-) {
-    if (schema.element instanceof z.ZodUnion) {
-        return `(${renderUnion(schema.element, indent, typeResolver)})[]`;
+function renderArray(schema: s.ArraySchema, indent: string, typeResolver?: TypeResolver) {
+    if (schema.of.base === s.union) {
+        return `(${renderUnion(schema.of as s.UnionSchema, indent, typeResolver)})[]`;
     }
 
-    return `${renderTypeInternal(schema.element, indent, typeResolver)}[]`;
+    return `${renderTypeInternal(schema.of, indent, typeResolver)}[]`;
 }
 
-function renderUnion(schema: z.ZodTypeAny, indent: string, typeResolver?: TypeResolver) {
-    return (schema as z.ZodUnion<readonly [z.ZodTypeAny, ...z.ZodTypeAny[]]>).options
-        .map(option => renderTypeInternal(option, indent, typeResolver))
-        .join(' | ');
+function renderUnion(schema: s.UnionSchema, indent: string, typeResolver?: TypeResolver) {
+    return schema.of.map(option => renderTypeInternal(option, indent, typeResolver)).join(' | ');
 }

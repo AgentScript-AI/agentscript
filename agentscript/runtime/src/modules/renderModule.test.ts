@@ -1,14 +1,17 @@
 import { expect, test } from 'vitest';
-import * as z from 'zod';
+
+import * as s from '@agentscript/schema';
 
 import { defineFunction } from '../defineFunction.js';
 import { renderModule } from './renderModule.js';
 import { joinLines } from '../utils/joinLines.js';
 
 test('simple module', () => {
-    const User = z.object({
-        name: z.string(),
-        email: z.string().email(),
+    const User = s.object({
+        props: {
+            name: s.string(),
+            email: s.string(),
+        },
     });
 
     const module = {
@@ -29,9 +32,11 @@ test('simple module', () => {
 });
 
 test('nested module', () => {
-    const User = z.object({
-        name: z.string(),
-        email: z.string().email(),
+    const User = s.object({
+        props: {
+            name: s.string(),
+            email: s.string(),
+        },
     });
 
     const module = {
@@ -55,14 +60,21 @@ test('nested module', () => {
 });
 
 test('nested object', () => {
-    const User = z.object({
-        name: z.string(),
-        email: z.string().email(),
+    const User = s.object({
+        props: {
+            name: s.string(),
+            email: s.string(),
+        },
     });
 
-    const Company = z.object({
-        name: z.string(),
-        employees: z.array(User).describe('The employees of the company'),
+    const Company = s.object({
+        props: {
+            name: s.string(),
+            employees: s.array({
+                of: User,
+                description: 'The employees of the company',
+            }),
+        },
     });
 
     const module = {
@@ -89,23 +101,29 @@ test('nested object', () => {
 });
 
 test('module with function', () => {
-    const User = z.object({
-        name: z.string(),
-        email: z.string().email(),
+    const User = s.object({
+        props: {
+            name: s.string(),
+            email: s.string(),
+        },
     });
 
     const getUser = defineFunction({
         description: 'Get a user',
         args: {
-            id: z.string().describe('The id of the user'),
+            id: s.string({
+                description: 'The id of the user',
+            }),
         },
-        return: User.describe('The user'),
-        handler: ({ id }) => {
-            return Promise.resolve({
+        return: s.extend(User, {
+            description: 'The user',
+        }),
+        handler: ({ args: { id } }) => {
+            return {
                 id,
                 name: 'John',
                 email: 'john@example.com',
-            });
+            };
         },
     });
 

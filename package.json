@@ -1,7 +1,7 @@
 {
-    "name": "chorus",
+    "name": "agentscript",
     "version": "1.0.0",
-    "repository": "https://github.com/kedrzu/chorus.git",
+    "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "scripts": {
@@ -11,11 +11,11 @@
         "clean": "tsc --build --clean",
         "build": "tsc --build",
         "start": "yarn --cwd examples/drizzle dev",
-        "sync:notion": "chorus notion sync",
+        "sync:notion": "agentscript notion sync",
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
-        "@chorus/cli": "*",
+        "@agentscript/cli": "*",
         "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",
