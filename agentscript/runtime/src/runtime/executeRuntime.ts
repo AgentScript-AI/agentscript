@@ -145,6 +145,9 @@ async function runExpression(
         case 'FunctionCall': {
             return await runFunctionCall(runtime, controller, frame, expression);
         }
+
+        default:
+            throw new Error(`Unknown expression type: ${expression.type}`);
     }
 }
 
