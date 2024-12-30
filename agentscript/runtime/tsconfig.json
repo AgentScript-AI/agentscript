@@ -16,6 +16,9 @@
         },
         {
             "path": "../../nzyme/packages/utils/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/vitest/tsconfig.json"
         }
     ]
 }

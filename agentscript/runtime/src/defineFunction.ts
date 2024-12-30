@@ -18,7 +18,7 @@ export type FunctionOptions<
     handler: FunctionHandler<TArgs, TReturn>;
 };
 
-export type FunctionParams<TArgs extends FunctionArgs> = FunctionArgs extends TArgs
+export type FunctionArgsValue<TArgs extends FunctionArgs> = FunctionArgs extends TArgs
     ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
       any
     : {
@@ -36,8 +36,12 @@ export type FunctionDefinition<
     [FUNCTION_SYMBOL]: true;
 };
 
+export type FunctionParams<TArgs extends FunctionArgs> = {
+    args: FunctionArgsValue<TArgs>;
+};
+
 export type FunctionHandler<TArgs extends FunctionArgs, TReturn extends z.ZodTypeAny> = (
-    args: FunctionParams<TArgs>,
+    params: FunctionParams<TArgs>,
 ) => z.infer<TReturn> | Promise<z.infer<TReturn>>;
 
 export function defineFunction<

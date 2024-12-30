@@ -24,6 +24,7 @@ __metadata:
     "@nzyme/ioc": "npm:*"
     "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
+    "@nzyme/vitest": "npm:*"
     "@types/node": "npm:^20.11.24"
     acorn: "npm:^8.14.0"
     typescript: "npm:^5.7.2"

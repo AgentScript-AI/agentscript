@@ -73,6 +73,10 @@ test('call function and assign to variable', () => {
     expect(script).toEqual(expected);
 });
 
+test('call member function', () => {
+    const script = parseScript('foo.bar()');
+});
+
 test('multiple statements', () => {
     const script = parseScript([
         //

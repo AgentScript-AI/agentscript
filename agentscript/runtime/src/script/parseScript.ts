@@ -37,14 +37,9 @@ function parseStatement(statement: babel.Statement): Statement {
         }
 
         case 'ExpressionStatement': {
-            const expression = parseExpression(statement.expression);
-            if (!expression) {
-                throw new Error('Invalid expression statement');
-            }
-
             return {
                 type: 'ExpressionStatement',
-                expression,
+                expression: parseExpression(statement.expression),
                 comment,
             };
         }

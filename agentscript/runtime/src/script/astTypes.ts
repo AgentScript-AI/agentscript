@@ -27,7 +27,7 @@ export interface FunctionCall extends ExpressionBase {
 
 export interface Literal extends ExpressionBase {
     type: 'Literal';
-    value: string | number | boolean | null | undefined;
+    value: unknown;
 }
 
 export interface Variable extends ExpressionBase {
@@ -42,6 +42,7 @@ export interface Assignment extends ExpressionBase {
 }
 
 export type Expression = FunctionCall | Literal | Variable | Assignment;
-export type Statement = VariableDeclaration | ExpressionStatement;
 
+export type Statement = VariableDeclaration | ExpressionStatement;
+export type Node = Statement | Expression;
 export type Script = Statement[];

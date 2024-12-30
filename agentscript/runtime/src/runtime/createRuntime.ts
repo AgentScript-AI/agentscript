@@ -1,34 +1,23 @@
-import { createMemo } from '@nzyme/utils';
-
-import type { Module } from '../defineModule.js';
+import type { StackFrame } from './stackTypes.js';
+import type { Module } from '../modules/renderModule.js';
+import type { Script } from '../script/astTypes.js';
 
 export type RuntimeOptions = {
-    modules: {
-        [name: string]: Module;
-    };
+    module: Module;
+    script: Script;
+    stack?: StackFrame;
 };
 
 export type Runtime = ReturnType<typeof createRuntime>;
 
 export function createRuntime(options: RuntimeOptions) {
-    const code = createMemo(render);
-
-    return {
-        modules: options.modules,
-        code,
+    const stack: StackFrame = options.stack ?? {
+        startedAt: Date.now(),
     };
 
-    function render() {
-        let code = '';
-
-        for (const [name, module] of Object.entries(options.modules)) {
-            if (code.length > 0) {
-                code += '\n\n';
-            }
-
-            code += module.render(name);
-        }
-
-        return code;
-    }
+    return {
+        module: options.module,
+        script: options.script,
+        stack,
+    };
 }
