@@ -1,13 +1,7 @@
 {
-    "extends": "@agentscript/tsconfig/base.json",
+    "extends": "@agentscript.ai/tsconfig/base.json",
     "include": [],
     "references": [
-        {
-            "path": "./agentscript/runtime/tsconfig.json"
-        },
-        {
-            "path": "./agentscript/schema/tsconfig.json"
-        },
         {
             "path": "./integrations/linear/tsconfig.json"
         },
@@ -96,6 +90,9 @@
             "path": "./packages/agent/tsconfig.json"
         },
         {
+            "path": "./packages/bundle/tsconfig.json"
+        },
+        {
             "path": "./packages/cli/tsconfig.json"
         },
         {
@@ -106,6 +103,12 @@
         },
         {
             "path": "./packages/rag/tsconfig.json"
+        },
+        {
+            "path": "./packages/runtime/tsconfig.json"
+        },
+        {
+            "path": "./packages/schema/tsconfig.json"
         }
     ]
 }

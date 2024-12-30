@@ -15,7 +15,7 @@
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
-        "@agentscript/cli": "*",
+        "@agentscript.ai/cli": "*",
         "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",
@@ -24,7 +24,6 @@
         "typescript": "^5.7.2"
     },
     "workspaces": [
-        "agentscript/*",
         "integrations/*",
         "packages/*",
         "nzyme/packages/*"

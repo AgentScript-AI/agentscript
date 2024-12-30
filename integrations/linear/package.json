@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/linear",
+    "name": "@agentscript.ai/linear",
     "version": "1.0.0",
     "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -14,16 +14,16 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript/core": "*",
-        "@agentscript/database": "*",
+        "@agentscript.ai/core": "*",
+        "@agentscript.ai/database": "*",
         "@linear/sdk": "^35.0.0",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^22.7.5"
     }
 }

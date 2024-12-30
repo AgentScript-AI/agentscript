@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/cli",
+    "name": "@agentscript.ai/cli",
     "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "version": "1.0.0",
@@ -12,7 +12,7 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript/notion": "*",
+        "@agentscript.ai/notion": "*",
         "@nzyme/ioc": "*",
         "@nzyme/logging": "*",
         "@nzyme/node-utils": "*",
@@ -29,8 +29,8 @@
         "tsx": "^4.19.2"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^22.7.7",
         "@types/source-map-support": "^0.5.10",
         "oclif": "^4.15.28"

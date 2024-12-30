@@ -1,6 +1,6 @@
-import type { StackFrame } from './stackTypes.js';
+import type { StackFrame } from './runtimeTypes.js';
 import type { Module } from '../modules/renderModule.js';
-import type { Script } from '../script/astTypes.js';
+import type { Script } from '../parser/astTypes.js';
 
 export type RuntimeOptions = {
     module: Module;

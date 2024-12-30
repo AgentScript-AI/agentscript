@@ -1,14 +1,14 @@
 {
-    "name": "@agentscript/notion",
+    "name": "@agentscript.ai/notion",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript/core": "*",
-        "@agentscript/database": "*",
-        "@agentscript/rag": "*",
+        "@agentscript.ai/core": "*",
+        "@agentscript.ai/database": "*",
+        "@agentscript.ai/rag": "*",
         "@langchain/community": "^0.3.17",
         "@langchain/core": "^0.3.22",
         "@langchain/langgraph": "^0.2.23",
@@ -20,8 +20,8 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2"
     }

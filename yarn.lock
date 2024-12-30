@@ -12,15 +12,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agentscript/agent-local@workspace:packages/agent-local":
+"@agentscript.ai/agent-local@workspace:packages/agent-local":
   version: 0.0.0-use.local
-  resolution: "@agentscript/agent-local@workspace:packages/agent-local"
+  resolution: "@agentscript.ai/agent-local@workspace:packages/agent-local"
   dependencies:
-    "@agentscript/agent": "npm:*"
-    "@agentscript/core": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/slack": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/agent": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/slack": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/project-utils": "npm:*"
     "@nzyme/rollup-utils": "npm:*"
@@ -34,16 +34,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/agent@npm:*, @agentscript/agent@workspace:packages/agent":
+"@agentscript.ai/agent@npm:*, @agentscript.ai/agent@workspace:packages/agent":
   version: 0.0.0-use.local
-  resolution: "@agentscript/agent@workspace:packages/agent"
+  resolution: "@agentscript.ai/agent@workspace:packages/agent"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/database": "npm:*"
-    "@agentscript/linear": "npm:*"
-    "@agentscript/notion": "npm:*"
-    "@agentscript/rag": "npm:*"
-    "@agentscript/slack": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/database": "npm:*"
+    "@agentscript.ai/linear": "npm:*"
+    "@agentscript.ai/notion": "npm:*"
+    "@agentscript.ai/rag": "npm:*"
+    "@agentscript.ai/slack": "npm:*"
     "@langchain/core": "npm:^0.3.19"
     "@langchain/langgraph": "npm:^0.2.23"
     "@langchain/openai": "npm:^0.3.14"
@@ -62,13 +62,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/cli@npm:*, @agentscript/cli@workspace:packages/cli":
+"@agentscript.ai/cli@npm:*, @agentscript.ai/cli@workspace:packages/cli":
   version: 0.0.0-use.local
-  resolution: "@agentscript/cli@workspace:packages/cli"
+  resolution: "@agentscript.ai/cli@workspace:packages/cli"
   dependencies:
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/notion": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/notion": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/logging": "npm:*"
     "@nzyme/node-utils": "npm:*"
@@ -91,12 +91,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/core@npm:*, @agentscript/core@workspace:packages/core":
+"@agentscript.ai/core@npm:*, @agentscript.ai/core@workspace:packages/core":
   version: 0.0.0-use.local
-  resolution: "@agentscript/core@workspace:packages/core"
+  resolution: "@agentscript.ai/core@workspace:packages/core"
   dependencies:
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@langchain/core": "npm:^0.3.22"
     "@langchain/openai": "npm:^0.3.14"
     "@nzyme/crypto-utils": "npm:*"
@@ -111,13 +111,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/database@npm:*, @agentscript/database@workspace:packages/database":
+"@agentscript.ai/database@npm:*, @agentscript.ai/database@workspace:packages/database":
   version: 0.0.0-use.local
-  resolution: "@agentscript/database@workspace:packages/database"
+  resolution: "@agentscript.ai/database@workspace:packages/database"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/project-utils": "npm:*"
     "@nzyme/utils": "npm:*"
@@ -130,9 +130,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/eslint@npm:*, @agentscript/eslint@workspace:packages/eslint":
+"@agentscript.ai/eslint@npm:*, @agentscript.ai/eslint@workspace:packages/eslint":
   version: 0.0.0-use.local
-  resolution: "@agentscript/eslint@workspace:packages/eslint"
+  resolution: "@agentscript.ai/eslint@workspace:packages/eslint"
   dependencies:
     "@nzyme/eslint": "npm:*"
     "@typescript-eslint/eslint-plugin": "npm:^8.10.0"
@@ -144,14 +144,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/linear@npm:*, @agentscript/linear@workspace:integrations/linear":
+"@agentscript.ai/linear@npm:*, @agentscript.ai/linear@workspace:integrations/linear":
   version: 0.0.0-use.local
-  resolution: "@agentscript/linear@workspace:integrations/linear"
+  resolution: "@agentscript.ai/linear@workspace:integrations/linear"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/database": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/database": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@linear/sdk": "npm:^35.0.0"
     "@nzyme/ioc": "npm:*"
     "@nzyme/utils": "npm:*"
@@ -160,15 +160,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/notion@npm:*, @agentscript/notion@workspace:integrations/notion":
+"@agentscript.ai/notion@npm:*, @agentscript.ai/notion@workspace:integrations/notion":
   version: 0.0.0-use.local
-  resolution: "@agentscript/notion@workspace:integrations/notion"
+  resolution: "@agentscript.ai/notion@workspace:integrations/notion"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/database": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/rag": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/database": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/rag": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@langchain/community": "npm:^0.3.17"
     "@langchain/core": "npm:^0.3.22"
     "@langchain/langgraph": "npm:^0.2.23"
@@ -183,14 +183,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/rag@npm:*, @agentscript/rag@workspace:packages/rag":
+"@agentscript.ai/rag@npm:*, @agentscript.ai/rag@workspace:packages/rag":
   version: 0.0.0-use.local
-  resolution: "@agentscript/rag@workspace:packages/rag"
+  resolution: "@agentscript.ai/rag@workspace:packages/rag"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/database": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/database": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@langchain/core": "npm:^0.3.22"
     "@langchain/openai": "npm:^0.3.14"
     "@nzyme/ioc": "npm:*"
@@ -200,34 +200,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/runtime@workspace:agentscript/runtime":
+"@agentscript.ai/runtime@npm:*, @agentscript.ai/runtime@workspace:packages/runtime":
   version: 0.0.0-use.local
-  resolution: "@agentscript/runtime@workspace:agentscript/runtime"
+  resolution: "@agentscript.ai/runtime@workspace:packages/runtime"
   dependencies:
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/schema": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/schema": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@babel/parser": "npm:^7.26.3"
-    "@duplojs/zod-to-typescript": "npm:^0.2.4"
-    "@langchain/core": "npm:^0.3.22"
     "@nzyme/ioc": "npm:*"
     "@nzyme/types": "npm:*"
     "@nzyme/utils": "npm:*"
     "@nzyme/vitest": "npm:*"
     "@types/node": "npm:^20.11.24"
-    acorn: "npm:^8.14.0"
     typescript: "npm:^5.7.2"
     vitest: "npm:^2.1.8"
-    zod: "npm:^3.23.8"
   languageName: unknown
   linkType: soft
 
-"@agentscript/schema@npm:*, @agentscript/schema@workspace:agentscript/schema":
+"@agentscript.ai/schema@npm:*, @agentscript.ai/schema@workspace:packages/schema":
   version: 0.0.0-use.local
-  resolution: "@agentscript/schema@workspace:agentscript/schema"
+  resolution: "@agentscript.ai/schema@workspace:packages/schema"
   dependencies:
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@nzyme/utils": "npm:*"
     "@nzyme/zchema": "npm:*"
     "@types/node": "npm:^22.7.7"
@@ -235,15 +231,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/slack@npm:*, @agentscript/slack@workspace:integrations/slack":
+"@agentscript.ai/slack@npm:*, @agentscript.ai/slack@workspace:integrations/slack":
   version: 0.0.0-use.local
-  resolution: "@agentscript/slack@workspace:integrations/slack"
+  resolution: "@agentscript.ai/slack@workspace:integrations/slack"
   dependencies:
-    "@agentscript/core": "npm:*"
-    "@agentscript/database": "npm:*"
-    "@agentscript/eslint": "npm:*"
-    "@agentscript/rag": "npm:*"
-    "@agentscript/tsconfig": "npm:*"
+    "@agentscript.ai/core": "npm:*"
+    "@agentscript.ai/database": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/rag": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
     "@nzyme/ioc": "npm:*"
     "@nzyme/slack": "npm:*"
     "@nzyme/utils": "npm:*"
@@ -254,15 +250,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript/tsc@workspace:packages/tsc":
+"@agentscript.ai/tsc@workspace:packages/tsc":
   version: 0.0.0-use.local
-  resolution: "@agentscript/tsc@workspace:packages/tsc"
+  resolution: "@agentscript.ai/tsc@workspace:packages/tsc"
   languageName: unknown
   linkType: soft
 
-"@agentscript/tsconfig@npm:*, @agentscript/tsconfig@workspace:packages/tsconfig":
+"@agentscript.ai/tsconfig@npm:*, @agentscript.ai/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
-  resolution: "@agentscript/tsconfig@workspace:packages/tsconfig"
+  resolution: "@agentscript.ai/tsconfig@workspace:packages/tsconfig"
   dependencies:
     "@types/node": "npm:^22.7.7"
     typescript-plugin-css-modules: "npm:^5.1.0"
@@ -1296,17 +1292,6 @@ __metadata:
   version: 0.10.2
   resolution: "@drizzle-team/brocli@npm:0.10.2"
   checksum: 10c0/3d8b99d680f0b14fea32b45c59b938b6665e0840cc67f04801b1aa3c6747da3c7d01c00e321645034fa100abdba7e0c20ce07cf46fc2ca769ee4cafd97562484
-  languageName: node
-  linkType: hard
-
-"@duplojs/zod-to-typescript@npm:^0.2.4":
-  version: 0.2.4
-  resolution: "@duplojs/zod-to-typescript@npm:0.2.4"
-  dependencies:
-    typescript: "npm:5.5.4"
-  peerDependencies:
-    zod: ">=3.23.8 <4.0.0"
-  checksum: 10c0/8efe0467399d6ce452bdb03645b54d66b17c9b13e6a8ca2ef77df662f147e4cba2c3753d77d4d46cf8ba0ab5eaab688676e76c700c85845aaf43c2b29bc4d988
   languageName: node
   linkType: hard
 
@@ -6627,11 +6612,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"agentscript.ai@workspace:packages/bundle":
+  version: 0.0.0-use.local
+  resolution: "agentscript.ai@workspace:packages/bundle"
+  dependencies:
+    "@agentscript.ai/cli": "npm:*"
+    "@agentscript.ai/eslint": "npm:*"
+    "@agentscript.ai/runtime": "npm:*"
+    "@agentscript.ai/schema": "npm:*"
+    "@agentscript.ai/tsconfig": "npm:*"
+  languageName: unknown
+  linkType: soft
+
 "agentscript@workspace:.":
   version: 0.0.0-use.local
   resolution: "agentscript@workspace:."
   dependencies:
-    "@agentscript/cli": "npm:*"
+    "@agentscript.ai/cli": "npm:*"
     "@types/source-map-support": "npm:^0.5.10"
     lerna: "npm:^8.1.8"
     prettier: "npm:^3.3.3"
@@ -17756,16 +17753,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:5.5.4":
-  version: 5.5.4
-  resolution: "typescript@npm:5.5.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/422be60f89e661eab29ac488c974b6cc0a660fb2228003b297c3d10c32c90f3bcffc1009b43876a082515a3c376b1eefcce823d6e78982e6878408b9a923199c
-  languageName: node
-  linkType: hard
-
 "typescript@npm:>=3 < 6, typescript@npm:^5.7.2":
   version: 5.7.2
   resolution: "typescript@npm:5.7.2"
@@ -17783,16 +17770,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/863cc06070fa18a0f9c6a83265fb4922a8b51bf6f2c6760fb0b73865305ce617ea4bc6477381f9f4b7c3a8cb4a455b054f5469e6e41307733fe6a2bd9aae82f8
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>":
-  version: 5.5.4
-  resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=d69c25"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/10dd9881baba22763de859e8050d6cb6e2db854197495c6f1929b08d1eb2b2b00d0b5d9b0bcee8472f1c3f4a7ef6a5d7ebe0cfd703f853aa5ae465b8404bc1ba
   languageName: node
   linkType: hard
 

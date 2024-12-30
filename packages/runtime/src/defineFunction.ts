@@ -1,4 +1,4 @@
-import * as s from '@agentscript/schema';
+import * as s from '@agentscript.ai/schema';
 
 const FUNCTION_SYMBOL = Symbol('function');
 

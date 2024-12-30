@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { parseScript } from '../../script/parseScript.js';
+import { parseScript } from '../../parser/parseScript.js';
 import { createRuntime } from '../createRuntime.js';
 import { executeRuntime } from '../executeRuntime.js';
 import { anyNumber, childFrame, rootFrame, runtimeResult } from './testUtils.js';

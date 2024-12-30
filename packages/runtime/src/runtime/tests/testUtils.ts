@@ -1,7 +1,7 @@
 import { expect } from 'vitest';
 
 import type { RuntimeResult } from '../executeRuntime.js';
-import type { StackFrame } from '../stackTypes.js';
+import type { StackFrame } from '../runtimeTypes.js';
 
 export function rootFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
     return {

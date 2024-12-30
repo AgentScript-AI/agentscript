@@ -1,7 +1,7 @@
 import { NotionAPILoader } from '@langchain/community/document_loaders/web/notionapi';
 
-import { EnvVariables, Logger } from '@agentscript/core';
-import { KnowledgeStore } from '@agentscript/rag';
+import { EnvVariables, Logger } from '@agentscript.ai/core';
+import { KnowledgeStore } from '@agentscript.ai/rag';
 import { defineCommand } from '@nzyme/ioc';
 
 export interface SyncNotionPageParams {

@@ -1,5 +1,5 @@
 {
-    "extends": "@agentscript/tsconfig/base.json",
+    "extends": "@agentscript.ai/tsconfig/base.json",
     "compilerOptions": {
         "rootDir": "./src",
         "outDir": "./dist",

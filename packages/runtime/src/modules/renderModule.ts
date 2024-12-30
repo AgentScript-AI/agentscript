@@ -1,4 +1,4 @@
-import * as s from '@agentscript/schema';
+import * as s from '@agentscript.ai/schema';
 
 import { INDENT } from '../constants.js';
 import { type FunctionDefinition, isFunction } from '../defineFunction.js';

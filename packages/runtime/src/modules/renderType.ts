@@ -1,4 +1,4 @@
-import * as s from '@agentscript/schema';
+import * as s from '@agentscript.ai/schema';
 
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';

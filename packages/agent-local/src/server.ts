@@ -1,9 +1,9 @@
 import slack from '@slack/bolt';
 import { install as installSourceMaps } from 'source-map-support';
 
-import { SlackBot } from '@agentscript/agent';
-import { Chat, EnvVariables } from '@agentscript/core';
-import { SlackChat, SlackReceiver } from '@agentscript/slack';
+import { SlackBot } from '@agentscript.ai/agent';
+import { Chat, EnvVariables } from '@agentscript.ai/core';
+import { SlackChat, SlackReceiver } from '@agentscript.ai/slack';
 import { createContainer } from '@nzyme/ioc';
 import { loadEnvVariables } from '@nzyme/project-utils';
 import { devServerRuntime } from '@nzyme/rollup-utils';

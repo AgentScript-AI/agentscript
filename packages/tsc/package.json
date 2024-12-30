@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/tsc",
+    "name": "@agentscript.ai/tsc",
     "version": "1.0.0",
     "type": "module",
     "sideEffects": false,

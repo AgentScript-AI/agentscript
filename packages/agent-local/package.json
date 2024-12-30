@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/agent-local",
+    "name": "@agentscript.ai/agent-local",
     "version": "0.1.0",
     "private": true,
     "type": "module",
@@ -7,9 +7,9 @@
         "dev": "node --loader ts-node/esm src/index.ts"
     },
     "dependencies": {
-        "@agentscript/agent": "*",
-        "@agentscript/core": "*",
-        "@agentscript/slack": "*",
+        "@agentscript.ai/agent": "*",
+        "@agentscript.ai/core": "*",
+        "@agentscript.ai/slack": "*",
         "@nzyme/ioc": "*",
         "@nzyme/project-utils": "*",
         "@nzyme/rollup-utils": "*",
@@ -19,8 +19,8 @@
         "ts-node": "^10.9.2"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^20.11.24",
         "@types/source-map-support": "^0.5.10",
         "typescript": "^5.7.2"

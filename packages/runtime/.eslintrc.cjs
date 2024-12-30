@@ -1,6 +1,6 @@
 module.exports = {
     root: true,
-    extends: [require.resolve('@agentscript/eslint/typescript')],
+    extends: [require.resolve('@agentscript.ai/eslint/typescript')],
     parserOptions: {
         project: [
             `${__dirname}/tsconfig.json`,

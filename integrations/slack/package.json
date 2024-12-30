@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/slack",
+    "name": "@agentscript.ai/slack",
     "version": "1.0.0",
     "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -14,9 +14,9 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript/core": "*",
-        "@agentscript/database": "*",
-        "@agentscript/rag": "*",
+        "@agentscript.ai/core": "*",
+        "@agentscript.ai/database": "*",
+        "@agentscript.ai/rag": "*",
         "@nzyme/ioc": "*",
         "@nzyme/slack": "*",
         "@nzyme/utils": "*",
@@ -25,8 +25,8 @@
         "@tryfabric/mack": "^1.2.1"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^22.7.5"
     }
 }

@@ -1,6 +1,6 @@
 import { LinearClient as Linear } from '@linear/sdk';
 
-import { EnvVariables } from '@agentscript/core';
+import { EnvVariables } from '@agentscript.ai/core';
 import { defineService } from '@nzyme/ioc';
 
 export const LinearClient = defineService({

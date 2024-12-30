@@ -1,8 +1,8 @@
-import { validate } from '@agentscript/schema';
+import { validate } from '@agentscript.ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
 import type { Runtime } from './createRuntime.js';
-import type { StackFrame } from './stackTypes.js';
+import type { StackFrame } from './runtimeTypes.js';
 import type { FunctionDefinition } from '../defineFunction.js';
 import { isFunction } from '../defineFunction.js';
 import type { NativeFunction } from './functions.js';
@@ -16,7 +16,7 @@ import type {
     Literal,
     Node,
     Statement,
-} from '../script/astTypes.js';
+} from '../parser/astTypes.js';
 
 export interface ExecuteRuntimeOptions extends RuntimeControllerOptions {
     runtime: Runtime;
@@ -342,7 +342,6 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
             variables[name] = value;
             return;
         }
-
         if (!frame.parent) {
             throw new RuntimeError(`Variable ${name} not found`);
         }

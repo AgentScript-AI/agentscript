@@ -1,6 +1,6 @@
 import { Client } from '@notionhq/client';
 
-import { EnvVariables } from '@agentscript/core';
+import { EnvVariables } from '@agentscript.ai/core';
 import { defineService } from '@nzyme/ioc';
 
 export const NotionClient = defineService({

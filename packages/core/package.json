@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/core",
+    "name": "@agentscript.ai/core",
     "version": "0.1.0",
     "private": true,
     "type": "module",
@@ -17,8 +17,8 @@
         "zod": "^3.23.8"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2"
     }

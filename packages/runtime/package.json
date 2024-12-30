@@ -1,24 +1,20 @@
 {
-    "name": "@agentscript/runtime",
+    "name": "@agentscript.ai/runtime",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript/schema": "*",
+        "@agentscript.ai/schema": "*",
         "@babel/parser": "^7.26.3",
-        "@duplojs/zod-to-typescript": "^0.2.4",
-        "@langchain/core": "^0.3.22",
         "@nzyme/ioc": "*",
         "@nzyme/types": "*",
-        "@nzyme/utils": "*",
-        "acorn": "^8.14.0",
-        "zod": "^3.23.8"
+        "@nzyme/utils": "*"
     },
     "devDependencies": {
-        "@agentscript/eslint": "*",
-        "@agentscript/tsconfig": "*",
+        "@agentscript.ai/eslint": "*",
+        "@agentscript.ai/tsconfig": "*",
         "@nzyme/vitest": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2",

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import * as s from '@agentscript/schema';
+import * as s from '@agentscript.ai/schema';
 
 import { defineFunction } from '../defineFunction.js';
 import { renderModule } from './renderModule.js';

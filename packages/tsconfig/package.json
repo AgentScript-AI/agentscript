@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript/tsconfig",
+    "name": "@agentscript.ai/tsconfig",
     "version": "1.0.0",
     "repository": "https://github.com/kedrzu/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",

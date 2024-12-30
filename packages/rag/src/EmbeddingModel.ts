@@ -1,4 +1,4 @@
-import { EnvVariables } from '@agentscript/core';
+import { EnvVariables } from '@agentscript.ai/core';
 import type { Embeddings } from '@langchain/core/embeddings';
 import { OpenAIEmbeddings } from '@langchain/openai';
 

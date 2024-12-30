@@ -1,4 +1,4 @@
-import type * as s from '@agentscript/schema';
+import type * as s from '@agentscript.ai/schema';
 
 export type TypeResolver = ReturnType<typeof createTypeResolver>;
 

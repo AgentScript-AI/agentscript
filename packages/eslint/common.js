@@ -21,7 +21,7 @@ module.exports = {
                         group: 'internal',
                     },
                     {
-                        pattern: '@agentscript/**',
+                        pattern: '@agentscript.ai/**',
                         group: 'internal',
                     },
                     {

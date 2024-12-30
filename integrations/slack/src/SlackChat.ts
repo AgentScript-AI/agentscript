@@ -1,8 +1,12 @@
 import type { KnownBlock } from '@slack/web-api';
 import { markdownToBlocks } from '@tryfabric/mack';
 
-import type { ChatBlock, ChatMessageWithContent, ChatPostMessageParams } from '@agentscript/core';
-import { Chat } from '@agentscript/core';
+import type {
+    ChatBlock,
+    ChatMessageWithContent,
+    ChatPostMessageParams,
+} from '@agentscript.ai/core';
+import { Chat } from '@agentscript.ai/core';
 import { defineService } from '@nzyme/ioc';
 import type { SlackBlock } from '@nzyme/slack';
 import { assertValue, identity } from '@nzyme/utils';
