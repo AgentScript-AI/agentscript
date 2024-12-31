@@ -21,10 +21,10 @@ test('call function', () => {
     const expected: Script = [
         {
             type: 'Expression',
-            expression: {
+            expr: {
                 type: 'FunctionCall',
                 func: { type: 'Identifier', name: 'foo' },
-                arguments: [],
+                args: [],
             },
         },
     ];
@@ -37,10 +37,10 @@ test('call function with arguments', () => {
     const expected: Script = [
         {
             type: 'Expression',
-            expression: {
+            expr: {
                 type: 'FunctionCall',
                 func: { type: 'Identifier', name: 'foo' },
-                arguments: [
+                args: [
                     { type: 'Literal', value: 1 },
                     { type: 'Literal', value: 2 },
                     { type: 'Literal', value: 3 },
@@ -61,7 +61,7 @@ test('call function and assign to variable', () => {
             value: {
                 type: 'FunctionCall',
                 func: { type: 'Identifier', name: 'foo' },
-                arguments: [
+                args: [
                     { type: 'Literal', value: 1 },
                     { type: 'Literal', value: 2 },
                     { type: 'Literal', value: 3 },
@@ -78,14 +78,14 @@ test('call member function', () => {
     const expected: Script = [
         {
             type: 'Expression',
-            expression: {
+            expr: {
                 type: 'FunctionCall',
                 func: {
                     type: 'Member',
-                    object: { type: 'Identifier', name: 'foo' },
-                    property: { type: 'Identifier', name: 'bar' },
+                    obj: { type: 'Identifier', name: 'foo' },
+                    prop: { type: 'Identifier', name: 'bar' },
                 },
-                arguments: [],
+                args: [],
             },
         },
     ];
@@ -115,7 +115,7 @@ test('multiple statements', () => {
             value: {
                 type: 'FunctionCall',
                 func: { type: 'Identifier', name: 'add' },
-                arguments: [
+                args: [
                     { type: 'Identifier', name: 'a' },
                     { type: 'Literal', value: 2 },
                 ],
@@ -124,13 +124,13 @@ test('multiple statements', () => {
         {
             type: 'Expression',
             comment: 'multiply b by 3',
-            expression: {
+            expr: {
                 type: 'Assignment',
                 left: { type: 'Identifier', name: 'b' },
                 right: {
                     type: 'FunctionCall',
                     func: { type: 'Identifier', name: 'multiply' },
-                    arguments: [
+                    args: [
                         { type: 'Identifier', name: 'b' },
                         { type: 'Literal', value: 3 },
                     ],
@@ -142,7 +142,7 @@ test('multiple statements', () => {
     expect(script).toEqual(expected);
 });
 
-test('object literal', () => {
+test('object expression', () => {
     const script = parseScript('const a = { b: 1 }');
     const expected: Script = [
         {
@@ -156,6 +156,43 @@ test('object literal', () => {
                         value: { type: 'Literal', value: 1 },
                     },
                 ],
+            },
+        },
+    ];
+
+    expect(script).toEqual(expected);
+});
+
+test('array expression', () => {
+    const script = parseScript('const a = [1, 2, 3]');
+    const expected: Script = [
+        {
+            type: 'Variable',
+            name: 'a',
+            value: {
+                type: 'Array',
+                items: [
+                    { type: 'Literal', value: 1 },
+                    { type: 'Literal', value: 2 },
+                    { type: 'Literal', value: 3 },
+                ],
+            },
+        },
+    ];
+
+    expect(script).toEqual(expected);
+});
+
+test('create date', () => {
+    const script = parseScript('const a = new Date()');
+    const expected: Script = [
+        {
+            type: 'Variable',
+            name: 'a',
+            value: {
+                type: 'New',
+                func: { type: 'Identifier', name: 'Date' },
+                args: [],
             },
         },
     ];

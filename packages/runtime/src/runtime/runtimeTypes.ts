@@ -4,7 +4,7 @@ export interface StackFrame {
     variables?: Record<string, unknown>;
     parent?: StackFrame;
     error?: string;
-    result?: unknown;
+    value?: unknown;
     children?: StackFrame[];
 }
 

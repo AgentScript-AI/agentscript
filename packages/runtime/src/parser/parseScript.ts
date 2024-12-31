@@ -39,7 +39,7 @@ function parseStatement(statement: babel.Statement): Statement {
         case 'ExpressionStatement': {
             return {
                 type: 'Expression',
-                expression: parseExpression(statement.expression),
+                expr: parseExpression(statement.expression),
                 comment,
             };
         }
@@ -70,20 +70,20 @@ function parseExpression(expression: babel.Expression): Expression {
                 name: expression.name,
             };
 
-        case 'ObjectExpression':
-            return {
-                type: 'Object',
-                props: expression.properties.map(prop =>
-                    parseObjectProperty(prop as babel.ObjectProperty),
-                ),
-            };
-
         case 'MemberExpression':
             return {
                 type: 'Member',
-                property: parseExpression(expression.property as babel.Expression),
-                object: parseExpression(expression.object),
+                prop: parseExpression(expression.property as babel.Expression),
+                obj: parseExpression(expression.object),
             };
+
+        case 'CallExpression': {
+            return {
+                type: 'FunctionCall',
+                func: parseExpression(expression.callee as babel.Expression),
+                args: expression.arguments.map(parseArgument),
+            };
+        }
 
         case 'AssignmentExpression': {
             return {
@@ -93,23 +93,31 @@ function parseExpression(expression: babel.Expression): Expression {
             };
         }
 
-        case 'CallExpression': {
+        case 'ObjectExpression':
             return {
-                type: 'FunctionCall',
-                func: parseExpression(expression.callee as babel.Expression),
-                arguments: expression.arguments.map(e => {
-                    if (e.type === 'SpreadElement') {
-                        // TODO: Implement spread elements
-                        throw new Error('Spread element not supported');
+                type: 'Object',
+                props: expression.properties.map(prop =>
+                    parseObjectProperty(prop as babel.ObjectProperty),
+                ),
+            };
+
+        case 'ArrayExpression':
+            return {
+                type: 'Array',
+                items: expression.elements.map(e => {
+                    if (e === null) {
+                        return { type: 'Literal', value: null };
                     }
 
-                    if (e.type === 'ArgumentPlaceholder') {
-                        // TODO: Implement argument placeholders
-                        throw new Error('Argument placeholder not supported');
-                    }
-
-                    return parseExpression(e);
+                    return parseArgument(e);
                 }),
+            };
+
+        case 'NewExpression': {
+            return {
+                type: 'New',
+                func: parseExpression(expression.callee as babel.Expression),
+                args: expression.arguments.map(parseArgument),
             };
         }
     }
@@ -142,4 +150,20 @@ function parseObjectProperty(property: babel.ObjectProperty): ObjectProperty {
         key: parseExpression(property.key as babel.Expression),
         value: parseExpression(property.value as babel.Expression),
     };
+}
+
+function parseArgument(
+    arg: babel.Expression | babel.SpreadElement | babel.ArgumentPlaceholder,
+): Expression {
+    if (arg.type === 'SpreadElement') {
+        // TODO: Implement spread elements
+        throw new Error('Spread element not supported');
+    }
+
+    if (arg.type === 'ArgumentPlaceholder') {
+        // TODO: Implement argument placeholders
+        throw new Error('Argument placeholder not supported');
+    }
+
+    return parseExpression(arg);
 }

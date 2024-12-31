@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { parseScript } from '../../parser/parseScript.js';
 import { createRuntime } from '../createRuntime.js';
 import { executeRuntime } from '../executeRuntime.js';
-import { anyNumber, childFrame, rootFrame, runtimeResult } from './testUtils.js';
+import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
     const script = parseScript([
@@ -33,7 +33,7 @@ test('single variable declaration', async () => {
         children: [
             childFrame({
                 completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
             }),
         ],
     });
@@ -82,11 +82,11 @@ test('multiple variable declarations', async () => {
             //
             childFrame({
                 completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
             }),
             childFrame({
                 completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+                children: [childFrame({ completedAt: anyNumber(), value: 2 })],
             }),
         ],
     });
@@ -116,13 +116,11 @@ test('assign variable', async () => {
         completedAt: anyNumber(),
         variables: { a: 2 },
         children: [
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+            completedFrame({
+                children: [completedFrame({ value: 1 })],
             }),
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 2 })],
+            completedFrame({
+                children: [completedFrame({ value: 2 })],
             }),
         ],
     });
@@ -149,15 +147,68 @@ test('member expression', async () => {
         completedAt: anyNumber(),
         variables: { a: { b: 1 }, c: 1 },
         children: [
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: { b: 1 } })],
+            completedFrame({
+                children: [
+                    completedFrame({
+                        value: { b: 1 },
+                        children: [completedFrame({ value: 1 })],
+                    }),
+                ],
             }),
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), result: 1 })],
+            completedFrame({
+                children: [
+                    completedFrame({
+                        value: 1,
+                        children: [
+                            completedFrame({
+                                value: { b: 1 },
+                            }),
+                        ],
+                    }),
+                ],
             }),
         ],
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
+    expect(runtime.stack).toEqual(expectedStack);
+});
+
+test('array.length', async () => {
+    const script = parseScript([
+        //
+        'const a = [1, 2, 3];',
+        'a.length;',
+    ]);
+
+    const runtime = createRuntime({
+        module: {},
+        script,
+    });
+
+    const result = await executeRuntime({ runtime });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        children: [
+            completedFrame({
+                children: [
+                    completedFrame({
+                        value: [1, 2, 3],
+                        children: [
+                            completedFrame({ value: 1 }),
+                            completedFrame({ value: 2 }),
+                            completedFrame({ value: 3 }),
+                        ],
+                    }),
+                ],
+            }),
+            completedFrame({
+                value: 3,
+                children: [completedFrame({ value: [1, 2, 3] })],
+            }),
+        ],
+        variables: { a: [1, 2, 3] },
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));

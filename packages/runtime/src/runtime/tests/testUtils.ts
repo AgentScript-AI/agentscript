@@ -22,6 +22,13 @@ export function childFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
     };
 }
 
+export function completedFrame(frame: Omit<StackFrame, 'startedAt' | 'completedAt'>): StackFrame {
+    return {
+        ...childFrame(frame),
+        completedAt: anyNumber(),
+    };
+}
+
 export function anyNumber() {
     return expect.any(Number) as number;
 }
