@@ -2,7 +2,7 @@ import { validate } from '@agentscript.ai/schema';
 import type { Constructor } from '@nzyme/types';
 
 import { RuntimeError } from './RuntimeError.js';
-import type { Runtime } from './createRuntime.js';
+import type { Workflow } from './createWorkflow.js';
 import type { StackFrame } from './runtimeTypes.js';
 import type { FunctionDefinition } from '../defineFunction.js';
 import { isFunction } from '../defineFunction.js';
@@ -10,6 +10,7 @@ import type { NativeFunction } from './functions.js';
 import { allowedNativeConstructors, allowedNativeFunctions } from './functions.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
+import type { Runtime } from '../defineRuntime.js';
 import type {
     ArrayExpression,
     Expression,
@@ -32,8 +33,8 @@ const allowedNativeIdentifiers = new Set([
     'Boolean',
 ]);
 
-export interface ExecuteRuntimeOptions extends RuntimeControllerOptions {
-    runtime: Runtime;
+export interface ExecuteWorkflowOptions<TRuntime extends Runtime> extends RuntimeControllerOptions {
+    workflow: Workflow<TRuntime>;
 }
 
 export interface RuntimeResult {
@@ -41,8 +42,10 @@ export interface RuntimeResult {
     done: boolean;
 }
 
-export async function executeRuntime(options: ExecuteRuntimeOptions): Promise<RuntimeResult> {
-    const { runtime } = options;
+export async function executeWorkflow<TRuntime extends Runtime>(
+    options: ExecuteWorkflowOptions<TRuntime>,
+): Promise<RuntimeResult> {
+    const { workflow: runtime } = options;
     const controller = createRuntimeControler(options);
     const stack = runtime.stack;
     const script = runtime.script;
@@ -63,7 +66,7 @@ export async function executeRuntime(options: ExecuteRuntimeOptions): Promise<Ru
 }
 
 async function runBlock(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     statements: Statement[],
@@ -108,7 +111,7 @@ async function runBlock(
 }
 
 async function runBlockFrame(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -152,7 +155,7 @@ async function runBlockFrame(
 }
 
 async function runExpression(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -223,7 +226,7 @@ async function runExpression(
 }
 
 async function runMemberExpression(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -259,7 +262,7 @@ async function runMemberExpression(
 }
 
 async function runObjectExpression(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -300,7 +303,7 @@ async function runObjectExpression(
 }
 
 async function runArrayExpression(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -317,7 +320,7 @@ async function runArrayExpression(
 }
 
 async function runFunctionCall(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -355,7 +358,7 @@ async function runFunctionCall(
 }
 
 async function runFunctionCustom(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -386,7 +389,7 @@ async function runFunctionCustom(
 }
 
 async function runFunctionNative(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -416,7 +419,7 @@ async function runFunctionNative(
 }
 
 async function runNewExpression(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -441,7 +444,7 @@ async function runNewExpression(
 }
 
 async function runExpressionArray(
-    runtime: Runtime,
+    runtime: Workflow,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -520,7 +523,7 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
     } while (frame);
 }
 
-function resolveExpression(runtime: Runtime, frame: StackFrame, expression: Expression): unknown {
+function resolveExpression(runtime: Workflow, frame: StackFrame, expression: Expression): unknown {
     switch (expression.type) {
         case 'Identifier': {
             return resolveIdentifier(runtime, frame, expression);
@@ -551,7 +554,7 @@ function resolveLiteral(expression: Literal) {
     return value;
 }
 
-function resolveName(runtime: Runtime, frame: StackFrame, expression: Expression) {
+function resolveName(runtime: Workflow, frame: StackFrame, expression: Expression) {
     if (expression.type === 'Identifier') {
         return expression.name;
     }
@@ -559,7 +562,7 @@ function resolveName(runtime: Runtime, frame: StackFrame, expression: Expression
     return resolveExpression(runtime, frame, expression) as string;
 }
 
-function resolveIdentifier(runtime: Runtime, frame: StackFrame, expression: Identifier) {
+function resolveIdentifier(runtime: Workflow, frame: StackFrame, expression: Identifier) {
     const name = expression.name;
 
     while (frame) {
@@ -576,8 +579,8 @@ function resolveIdentifier(runtime: Runtime, frame: StackFrame, expression: Iden
         break;
     }
 
-    if (name in runtime.module) {
-        return runtime.module[name];
+    if (name in runtime.runtime) {
+        return runtime.runtime[name];
     }
 
     if (allowedNativeIdentifiers.has(name)) {

@@ -1,8 +1,8 @@
 import { expect, test } from 'vitest';
 
 import { parseScript } from '../../parser/parseScript.js';
-import { createRuntime } from '../createRuntime.js';
-import { executeRuntime } from '../executeRuntime.js';
+import { createWorkflow } from '../createWorkflow.js';
+import { executeWorkflow } from '../executeWorkflow.js';
 import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
@@ -11,12 +11,12 @@ test('single variable declaration', async () => {
         'const a = 1;',
     ]);
 
-    const runtime = createRuntime({
-        module: {},
+    const workflow = createWorkflow({
+        runtime: {},
         script,
     });
 
-    let result = await executeRuntime({ runtime });
+    let result = await executeWorkflow({ workflow });
 
     expect(result).toEqual(
         runtimeResult({
@@ -38,9 +38,9 @@ test('single variable declaration', async () => {
         ],
     });
 
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 
-    result = await executeRuntime({ runtime });
+    result = await executeWorkflow({ workflow });
 
     expect(result).toEqual(
         runtimeResult({
@@ -48,7 +48,7 @@ test('single variable declaration', async () => {
             done: true,
         }),
     );
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 });
 
 test('multiple variable declarations', async () => {
@@ -58,12 +58,12 @@ test('multiple variable declarations', async () => {
         'const b = 2;',
     ]);
 
-    const runtime = createRuntime({
-        module: {},
+    const workflow = createWorkflow({
+        runtime: {},
         script,
     });
 
-    let result = await executeRuntime({ runtime });
+    let result = await executeWorkflow({ workflow });
 
     expect(result).toEqual(
         runtimeResult({
@@ -91,26 +91,26 @@ test('multiple variable declarations', async () => {
         ],
     });
 
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 
-    result = await executeRuntime({ runtime });
+    result = await executeWorkflow({ workflow });
     expect(result).toEqual(
         runtimeResult({
             ticks: 0,
             done: true,
         }),
     );
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 });
 
 test('assign variable', async () => {
     const script = parseScript(['let a = 1', 'a = 2;']);
-    const runtime = createRuntime({
-        module: {},
+    const workflow = createWorkflow({
+        runtime: {},
         script,
     });
 
-    const result = await executeRuntime({ runtime });
+    const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -126,7 +126,7 @@ test('assign variable', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 });
 
 test('member expression', async () => {
@@ -136,12 +136,12 @@ test('member expression', async () => {
         'const c = a.b;',
     ]);
 
-    const runtime = createRuntime({
-        module: {},
+    const workflow = createWorkflow({
+        runtime: {},
         script,
     });
 
-    const result = await executeRuntime({ runtime });
+    const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -171,7 +171,7 @@ test('member expression', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 });
 
 test('array.length', async () => {
@@ -181,12 +181,12 @@ test('array.length', async () => {
         'a.length;',
     ]);
 
-    const runtime = createRuntime({
-        module: {},
+    const workflow = createWorkflow({
+        runtime: {},
         script,
     });
 
-    const result = await executeRuntime({ runtime });
+    const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -212,5 +212,5 @@ test('array.length', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(runtime.stack).toEqual(expectedStack);
+    expect(workflow.stack).toEqual(expectedStack);
 });
