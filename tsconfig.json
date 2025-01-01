@@ -78,9 +78,6 @@
             "path": "./nzyme/packages/zchema/tsconfig.json"
         },
         {
-            "path": "./packages/bundle/tsconfig.json"
-        },
-        {
             "path": "./packages/runtime/tsconfig.json"
         },
         {

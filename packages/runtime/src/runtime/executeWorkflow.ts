@@ -19,7 +19,6 @@ import type {
     Literal,
     MemberExpression,
     NewExpression,
-    Node,
     ObjectExpression,
     Statement,
 } from '../parser/astTypes.js';
@@ -33,18 +32,40 @@ const allowedNativeIdentifiers = new Set([
     'Boolean',
 ]);
 
+/**
+ * Options for the {@link executeWorkflow} function.
+ */
 export interface ExecuteWorkflowOptions<TRuntime extends Runtime> extends RuntimeControllerOptions {
+    /**
+     * Workflow to execute.
+     */
     workflow: Workflow<TRuntime>;
 }
 
-export interface RuntimeResult {
+/**
+ * Result of the {@link executeWorkflow} function.
+ */
+export interface ExecuteWorkflowResult {
+    /**
+     * Number of ticks executed.
+     * A tick is a single async execution in the workflow.
+     */
     ticks: number;
+    /**
+     * Whether the workflow is done for now.
+     * If it is `false`, the workflow is not done and the caller should call {@link executeWorkflow} again.
+     */
     done: boolean;
 }
 
+/**
+ * Execute a workflow.
+ * @param options - Options for the workflow.
+ * @returns Result of the workflow execution.
+ */
 export async function executeWorkflow<TRuntime extends Runtime>(
     options: ExecuteWorkflowOptions<TRuntime>,
-): Promise<RuntimeResult> {
+): Promise<ExecuteWorkflowResult> {
     const { workflow: runtime } = options;
     const controller = createRuntimeControler(options);
     const stack = runtime.stack;
@@ -115,11 +136,11 @@ async function runBlockFrame(
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
-    node: Node,
+    statement: Statement,
 ) {
-    switch (node.type) {
+    switch (statement.type) {
         case 'Variable': {
-            const name = node.name;
+            const name = statement.name;
 
             if (!block.variables) {
                 block.variables = {};
@@ -129,14 +150,20 @@ async function runBlockFrame(
                 throw new RuntimeError(`Variable ${name} already exists`);
             }
 
-            if (!node.value) {
+            if (!statement.value) {
                 block.variables[name] = undefined;
                 completeFrame(frame);
                 return true;
             }
 
             const valueFrame = getFrame(frame, 0);
-            const done = await runExpression(runtime, controller, block, valueFrame, node.value);
+            const done = await runExpression(
+                runtime,
+                controller,
+                block,
+                valueFrame,
+                statement.value,
+            );
             if (!done) {
                 return false;
             }
@@ -146,11 +173,11 @@ async function runBlockFrame(
         }
 
         case 'Expression': {
-            return await runExpression(runtime, controller, block, frame, node.expr);
+            return await runExpression(runtime, controller, block, frame, statement.expr);
         }
 
         default:
-            throw new RuntimeError(`Unknown node type: ${node.type}`);
+            throw new RuntimeError(`Unknown statement type: ${(statement as Statement).type}`);
     }
 }
 

@@ -15,7 +15,6 @@
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
-        "@agentscript.ai/cli": "*",
         "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",

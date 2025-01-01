@@ -3,6 +3,11 @@ import type * as babel from '@babel/types';
 
 import type { Assignment, Expression, ObjectProperty, Script, Statement } from './astTypes.js';
 
+/**
+ * Parse a script into an AST.
+ * @param script - Script to parse.
+ * @returns AST.
+ */
 export function parseScript(script: string | string[]): Script {
     if (Array.isArray(script)) {
         script = script.join('\n');

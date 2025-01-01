@@ -1,6 +1,6 @@
 import { expect } from 'vitest';
 
-import type { RuntimeResult } from '../executeWorkflow.js';
+import type { ExecuteWorkflowResult } from '../executeWorkflow.js';
 import type { StackFrame } from '../runtimeTypes.js';
 
 export function rootFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
@@ -10,7 +10,7 @@ export function rootFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
     };
 }
 
-export function runtimeResult(result: RuntimeResult): RuntimeResult {
+export function runtimeResult(result: ExecuteWorkflowResult): ExecuteWorkflowResult {
     return result;
 }
 

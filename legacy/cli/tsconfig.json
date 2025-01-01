@@ -4,8 +4,7 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "tsBuildInfoFile": "./dist/.tsbuildinfo",
-        "types": ["@types/node"],
-        "composite": false
+        "types": ["@types/node"]
     },
     "include": ["src"],
     "references": [
