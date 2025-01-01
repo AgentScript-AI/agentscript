@@ -13,12 +13,13 @@ export interface KnowledgeRetrieverParams {
 
 export const KnowledgeRetriever = defineService({
     name: 'KnowledgeRetriever',
-    setup({ inject }) {
-        const databaseClient = inject(DatabaseClient);
-        const tenantContext = inject(TenantContext);
-        const embeddingModel = inject(EmbeddingModel);
-        const logger = inject(Logger);
-
+    deps: {
+        databaseClient: DatabaseClient,
+        tenantContext: TenantContext,
+        embeddingModel: EmbeddingModel,
+        logger: Logger,
+    },
+    setup({ databaseClient, tenantContext, embeddingModel, logger }) {
         return async (params: KnowledgeRetrieverParams) => {
             logger.debug('Querying "%s"', params.query, params);
 

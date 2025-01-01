@@ -8,8 +8,10 @@ import * as db from './schema.js';
 
 export const DatabaseClient = defineService({
     name: 'DatabaseClient',
-    setup({ inject }) {
-        const env = inject(EnvVariables);
+    deps: {
+        env: EnvVariables,
+    },
+    setup({ env }) {
         const url = String(env.DATABASE_URL);
         const driver = postgres(url);
 

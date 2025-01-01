@@ -1,4 +1,4 @@
-import type { HeapSerialized } from './heapTypes.js';
+import type { HeapSerialized, HeapSerializedValue } from './heapTypes.js';
 
 export function createHeapSerializer() {
     const heap: HeapSerialized = [];
@@ -39,30 +39,31 @@ export function createHeapSerializer() {
             case 'symbol':
                 heap.push(['sym', value.toString()]);
                 break;
-            case 'object':
+            case 'object': {
+                let serialized: [string, ...number[]];
+
                 if (Array.isArray(value)) {
-                    heap.push(['arr', ...value.map(push)]);
-                    break;
+                    serialized = ['arr'];
+                    for (const item of value) {
+                        serialized.push(push(item));
+                    }
+                } else if (value instanceof Set) {
+                    serialized = ['set'];
+                    for (const item of value) {
+                        serialized.push(push(item));
+                    }
+                } else if (value instanceof Date) {
+                    serialized = ['date', push(value.toISOString())];
+                } else {
+                    serialized = ['obj'];
+                    for (const [key, val] of Object.entries(value)) {
+                        serialized.push(key, push(val));
+                    }
                 }
 
-                if (value instanceof Set) {
-                    heap.push(['set', ...Array.from(value).map(push)]);
-                    break;
-                }
-
-                if (value instanceof Date) {
-                    heap.push(['date', value.toISOString()]);
-                    break;
-                }
-
-                heap.push([
-                    'obj',
-                    Object.fromEntries(
-                        Object.entries(value).map(([key, value]) => [key, push(value)]),
-                    ),
-                ]);
-
+                heap.push(serialized as HeapSerializedValue);
                 break;
+            }
             default:
                 throw new Error(`Unsupported type: ${typeof value}`);
         }

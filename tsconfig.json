@@ -3,15 +3,6 @@
     "include": [],
     "references": [
         {
-            "path": "./integrations/linear/tsconfig.json"
-        },
-        {
-            "path": "./integrations/notion/tsconfig.json"
-        },
-        {
-            "path": "./integrations/slack/tsconfig.json"
-        },
-        {
             "path": "./nzyme/packages/aws-cdk/tsconfig.json"
         },
         {
@@ -87,22 +78,7 @@
             "path": "./nzyme/packages/zchema/tsconfig.json"
         },
         {
-            "path": "./packages/agent/tsconfig.json"
-        },
-        {
             "path": "./packages/bundle/tsconfig.json"
-        },
-        {
-            "path": "./packages/cli/tsconfig.json"
-        },
-        {
-            "path": "./packages/core/tsconfig.json"
-        },
-        {
-            "path": "./packages/database/tsconfig.json"
-        },
-        {
-            "path": "./packages/rag/tsconfig.json"
         },
         {
             "path": "./packages/runtime/tsconfig.json"

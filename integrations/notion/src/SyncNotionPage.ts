@@ -10,10 +10,13 @@ export interface SyncNotionPageParams {
 
 export const SyncNotionPage = defineCommand({
     name: 'SyncNotionPage',
-    setup({ inject }) {
-        const notionToken = inject(EnvVariables).NOTION_TOKEN;
-        const knowledgeStore = inject(KnowledgeStore);
-        const logger = inject(Logger);
+    deps: {
+        env: EnvVariables,
+        knowledgeStore: KnowledgeStore,
+        logger: Logger,
+    },
+    setup({ env, knowledgeStore, logger }) {
+        const notionToken = env.NOTION_TOKEN;
 
         return async (params: SyncNotionPageParams) => {
             // Loading a page (including child pages all as separate documents)

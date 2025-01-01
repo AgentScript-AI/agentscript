@@ -3,13 +3,11 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
+        "composite": false
     },
     "include": ["src"],
     "references": [
-        {
-            "path": "../core/tsconfig.json"
-        },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },

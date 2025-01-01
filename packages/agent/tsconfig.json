@@ -3,28 +3,11 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
+        "composite": false
     },
     "include": ["src"],
     "references": [
-        {
-            "path": "../core/tsconfig.json"
-        },
-        {
-            "path": "../database/tsconfig.json"
-        },
-        {
-            "path": "../../integrations/linear/tsconfig.json"
-        },
-        {
-            "path": "../../integrations/notion/tsconfig.json"
-        },
-        {
-            "path": "../rag/tsconfig.json"
-        },
-        {
-            "path": "../../integrations/slack/tsconfig.json"
-        },
         {
             "path": "../../nzyme/packages/crypto-utils/tsconfig.json"
         },

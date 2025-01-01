@@ -23,11 +23,12 @@ export interface KnowledgeStoreDocumentUpsertParams extends KnowledgeStoreDocume
 
 export const KnowledgeStore = defineService({
     name: 'KnowledgeStore',
-    setup({ inject }) {
-        const embeddingModel = inject(EmbeddingModel);
-        const databaseClient = inject(DatabaseClient);
-        const tenantContext = inject(TenantContext);
-
+    deps: {
+        embeddingModel: EmbeddingModel,
+        databaseClient: DatabaseClient,
+        tenantContext: TenantContext,
+    },
+    setup({ embeddingModel, databaseClient, tenantContext }) {
         const splitter = RecursiveCharacterTextSplitter.fromLanguage('markdown', {
             chunkSize: 1000,
             chunkOverlap: 200,

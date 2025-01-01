@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { defineInjectable } from '@nzyme/ioc';
+import { defineInterface } from '@nzyme/ioc';
 
 import type { ChatMessageInfo, ChatMessageWithContent } from './models/ChatMessage.js';
 
@@ -59,6 +59,6 @@ export const ChatUser = z.object({
     description: z.string().optional(),
 });
 
-export const Chat = defineInjectable<Chat>({
+export const Chat = defineInterface<Chat>({
     name: 'Chat',
 });

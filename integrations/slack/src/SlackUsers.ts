@@ -5,8 +5,10 @@ import { SlackClient } from './SlackClient.js';
 
 export const SlackUsers = defineService({
     name: 'SlackUsers',
-    setup({ inject }) {
-        const slack = inject(SlackClient);
+    deps: {
+        slack: SlackClient,
+    },
+    setup({ slack }) {
         const users = new Map<string, ChatUser>();
         let self: Promise<ChatUser> | undefined;
 

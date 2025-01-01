@@ -9,15 +9,6 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../agent/tsconfig.json"
-        },
-        {
-            "path": "../core/tsconfig.json"
-        },
-        {
-            "path": "../../integrations/slack/tsconfig.json"
-        },
-        {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },
         {

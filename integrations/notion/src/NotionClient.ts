@@ -5,9 +5,10 @@ import { defineService } from '@nzyme/ioc';
 
 export const NotionClient = defineService({
     name: 'NotionClient',
-    setup({ inject }) {
-        const env = inject(EnvVariables);
-
+    deps: {
+        env: EnvVariables,
+    },
+    setup({ env }) {
         return new Client({
             auth: env.NOTION_TOKEN,
         });

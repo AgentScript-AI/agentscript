@@ -1,7 +1,7 @@
-import { defineInjectable } from '@nzyme/ioc';
+import { defineInterface } from '@nzyme/ioc';
 
 export type EnvVariables = Record<string, string | undefined>;
 
-export const EnvVariables = defineInjectable<EnvVariables>({
+export const EnvVariables = defineInterface<EnvVariables>({
     name: 'EnvVariables',
 });

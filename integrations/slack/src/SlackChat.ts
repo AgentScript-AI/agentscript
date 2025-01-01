@@ -17,11 +17,12 @@ import { stringifyMessage } from './utils/stringifyMessage.js';
 
 export const SlackChat = defineService({
     name: 'SlackChat',
-    for: Chat,
-    setup({ inject }) {
-        const slack = inject(SlackClient);
-        const users = inject(SlackUsers);
-
+    implements: Chat,
+    deps: {
+        slack: SlackClient,
+        users: SlackUsers,
+    },
+    setup({ slack, users }) {
         return identity<Chat>({
             async postMessage(message) {
                 const result = await slack.chat.postMessage({

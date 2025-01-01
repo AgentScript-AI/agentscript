@@ -11,13 +11,14 @@ import { SyncNotionPage } from './SyncNotionPage.js';
 
 export const SyncNotionPages = defineCommand({
     name: 'SyncNotionPages',
-    setup({ inject }) {
-        const notionClient = inject(NotionClient);
-        const database = inject(DatabaseClient);
-        const tenantContext = inject(TenantContext);
-        const syncNotionPage = inject(SyncNotionPage);
-        const knowledgeStore = inject(KnowledgeStore);
-
+    deps: {
+        notionClient: NotionClient,
+        database: DatabaseClient,
+        tenantContext: TenantContext,
+        syncNotionPage: SyncNotionPage,
+        knowledgeStore: KnowledgeStore,
+    },
+    setup({ notionClient, database, tenantContext, syncNotionPage, knowledgeStore }) {
         return async () => {
             const [pagesInNotion, pagesInDatabase] = await Promise.all([
                 loadNotionPages(),

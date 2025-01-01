@@ -5,9 +5,10 @@ import { defineService } from '@nzyme/ioc';
 
 export const LinearClient = defineService({
     name: 'LinearClient',
-    setup({ inject }) {
-        const env = inject(EnvVariables);
-
+    deps: {
+        env: EnvVariables,
+    },
+    setup({ env }) {
         return new Linear({
             apiKey: env.LINEAR_API_KEY,
         });

@@ -1,6 +1,5 @@
 import type { z } from 'zod';
 
-import type { ServiceContext } from '@nzyme/ioc';
 import { defineService } from '@nzyme/ioc';
 
 import type { ToolCall } from './models/AgentEvent.js';
@@ -66,12 +65,16 @@ export function defineTool<
     TState extends ToolState = undefined,
     TInteraction extends ToolInteraction = undefined,
 >(definition: ToolParams<TInput, TState, TInteraction>) {
-    return defineService({
+    const service = defineService({
         name: definition.name,
+        setup: definition.setup,
+    });
+
+    return {
+        ...service,
         description: definition.description,
         input: definition.input,
         state: definition.state,
         interaction: definition.interaction,
-        setup: definition.setup,
-    });
+    };
 }

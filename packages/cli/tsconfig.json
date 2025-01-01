@@ -4,13 +4,11 @@
         "outDir": "./dist",
         "rootDir": "./src",
         "tsBuildInfoFile": "./dist/.tsbuildinfo",
-        "types": ["@types/node"]
+        "types": ["@types/node"],
+        "composite": false
     },
     "include": ["src"],
     "references": [
-        {
-            "path": "../../integrations/notion/tsconfig.json"
-        },
         {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },

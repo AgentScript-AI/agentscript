@@ -9,9 +9,6 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../cli/tsconfig.json"
-        },
-        {
             "path": "../runtime/tsconfig.json"
         },
         {
