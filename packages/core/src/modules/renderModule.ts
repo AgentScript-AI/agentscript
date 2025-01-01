@@ -3,7 +3,7 @@ import * as s from '@agentscript.ai/schema';
 import { INDENT } from '../constants.js';
 import { isFunction } from '../defineFunction.js';
 import { renderFunction } from './renderFunction.js';
-import { renderType } from './renderType.js';
+import { renderTypeNamed } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
 import type { RuntimeModule } from '../defineRuntime.js';
 
@@ -32,30 +32,30 @@ export function renderModule(module: RuntimeModule, indent: string = '') {
 
     let code = '';
 
-    for (const [key, value] of Object.entries(module)) {
+    for (const [name, value] of Object.entries(module)) {
         if (code.length > 0) {
             code += '\n\n';
         }
 
         if (s.isSchema(value)) {
             if (value.base === s.object) {
-                code += `${indent}export interface ${key} ${renderType(value as s.ObjectSchema, {
-                    typeResolver,
+                code += renderTypeNamed(value, {
+                    name,
                     indent,
-                    noResolve: true,
-                })}`;
+                    typeResolver,
+                });
 
                 // todo: support more types
             }
         } else if (isFunction(value)) {
             code += renderFunction({
-                name: key,
+                name,
                 func: value,
                 indent,
                 typeResolver,
             });
         } else if (typeof value === 'object' && value !== null) {
-            code += `${indent}declare namespace ${key} {\n`;
+            code += `${indent}declare namespace ${name} {\n`;
             code += renderModule(value, indent + INDENT);
             code += `\n${indent}}`;
         }

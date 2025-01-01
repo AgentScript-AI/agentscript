@@ -3,20 +3,50 @@ import * as s from '@agentscript.ai/schema';
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';
 
+/**
+ * Options for {@link renderTypeInline}.
+ */
 export interface RenderTypeOptions {
+    /**
+     * Indentation to use.
+     */
     indent?: string;
+    /**
+     * Type resolver to use.
+     */
     typeResolver?: TypeResolver;
-    noResolve?: boolean;
 }
 
-export function renderType(schema: s.Schema, options: RenderTypeOptions = {}): string {
-    return renderTypeInternal(
-        schema,
-        options.indent ?? '',
-        options.typeResolver,
-        false,
-        options.noResolve ?? false,
-    );
+/**
+ * Options for {@link renderTypeNamed}.
+ */
+export interface RenderTypeNamedOptions extends RenderTypeOptions {
+    /**
+     * Name of the type.
+     */
+    name: string;
+}
+
+/**
+ * Render a schema as TypeScript code.
+ * @param schema - Schema to render.
+ * @param options - Options for the schema.
+ * @returns Rendered schema.
+ */
+export function renderTypeNamed(schema: s.Schema, options: RenderTypeNamedOptions): string {
+    const { name, indent = '', typeResolver } = options;
+    const type = renderTypeInternal(schema, indent, typeResolver, false, true);
+    return `${indent}export interface ${name} ${type}`;
+}
+
+/**
+ * Render a schema as inline TypeScript type.
+ * @param schema - Schema to render.
+ * @param options - Options for the schema.
+ * @returns Rendered schema.
+ */
+export function renderTypeInline(schema: s.Schema, options: RenderTypeOptions = {}): string {
+    return renderTypeInternal(schema, options.indent ?? '', options.typeResolver, false, false);
 }
 
 function renderTypeInternal(
@@ -60,7 +90,7 @@ function renderInner(
             return 'unknown';
         case s.object:
             if (!skipResolving) {
-                const resolved = typeResolver?.resolve(schema as s.ObjectSchema);
+                const resolved = typeResolver?.getName(schema as s.ObjectSchema);
                 if (resolved) {
                     return resolved;
                 }

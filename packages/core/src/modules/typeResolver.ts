@@ -1,17 +1,30 @@
 import type * as s from '@agentscript.ai/schema';
 
+/**
+ * Type resolver.
+ */
 export type TypeResolver = ReturnType<typeof createTypeResolver>;
 
+/**
+ * Create a type resolver.
+ * @returns Type resolver.
+ */
 export function createTypeResolver() {
-    const lookup = new Map<s.SchemaProto, string>();
+    const bySchema = new Map<s.SchemaProto, string>();
+    const byName = new Map<string, s.Schema>();
 
-    return { resolve, add };
+    return { getName, getSchema, add };
 
-    function resolve(schema: s.ObjectSchema) {
-        return lookup.get(schema.proto);
+    function getName(schema: s.Schema) {
+        return bySchema.get(schema.proto);
     }
 
-    function add(name: string, schema: s.ObjectSchema) {
-        lookup.set(schema.proto, name);
+    function getSchema(name: string) {
+        return byName.get(name);
+    }
+
+    function add(name: string, schema: s.Schema) {
+        bySchema.set(schema.proto, name);
+        byName.set(name, schema);
     }
 }

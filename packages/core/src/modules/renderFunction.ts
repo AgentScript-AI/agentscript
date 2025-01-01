@@ -1,6 +1,6 @@
 import type { FunctionDefinition } from '../defineFunction.js';
 import { renderComment } from './renderComment.js';
-import { renderType } from './renderType.js';
+import { renderTypeInline, renderTypeNamed } from './renderType.js';
 import type { TypeResolver } from './typeResolver.js';
 
 interface RenderFunctionOptions {
@@ -10,11 +10,35 @@ interface RenderFunctionOptions {
     typeResolver: TypeResolver;
 }
 
+/**
+ * Render a function as TypeScript code.
+ * @param options - Options for the function.
+ * @returns Rendered function.
+ */
 export function renderFunction(options: RenderFunctionOptions) {
     const { func, name, indent = '', typeResolver } = options;
 
     let code = '';
     let args = '';
+
+    if (func.types) {
+        for (const [typeName, typeSchema] of Object.entries(func.types)) {
+            const existingName = typeResolver.getName(typeSchema);
+            if (existingName) {
+                continue;
+            }
+
+            const uniqueName = findUniqueName(typeName, typeResolver);
+            typeResolver.add(uniqueName, typeSchema);
+
+            code += renderTypeNamed(typeSchema, {
+                name: uniqueName,
+                indent,
+                typeResolver,
+            });
+            code += '\n\n';
+        }
+    }
 
     const description = func.description
         ? Array.isArray(func.description)
@@ -28,7 +52,7 @@ export function renderFunction(options: RenderFunctionOptions) {
                 args += ', ';
             }
 
-            args += `${name}: ${renderType(arg, { typeResolver })}`;
+            args += `${name}: ${renderTypeInline(arg, { typeResolver })}`;
 
             if (arg.description) {
                 description.push(`@param ${name} - ${arg.description}`);
@@ -45,9 +69,21 @@ export function renderFunction(options: RenderFunctionOptions) {
         code += `${comment}\n`;
     }
 
-    const returnType = renderType(func.return, { typeResolver });
+    const returnType = renderTypeInline(func.return, { typeResolver });
 
     code += `${indent}export function ${name}(${args}): ${returnType};`;
 
     return code;
+}
+
+function findUniqueName(name: string, typeResolver: TypeResolver) {
+    let uniqueName = name;
+    let i = 2;
+
+    while (typeResolver.getSchema(uniqueName)) {
+        uniqueName = name + i;
+        i++;
+    }
+
+    return uniqueName;
 }

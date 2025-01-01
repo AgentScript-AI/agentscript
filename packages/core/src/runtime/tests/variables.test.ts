@@ -6,14 +6,14 @@ import { executeWorkflow } from '../executeWorkflow.js';
 import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
-    const script = parseScript([
+    const ast = parseScript([
         //
         'const a = 1;',
     ]);
 
     const workflow = createWorkflow({
         runtime: {},
-        script,
+        ast,
     });
 
     let result = await executeWorkflow({ workflow });
@@ -52,7 +52,7 @@ test('single variable declaration', async () => {
 });
 
 test('multiple variable declarations', async () => {
-    const script = parseScript([
+    const ast = parseScript([
         //
         'const a = 1;',
         'const b = 2;',
@@ -60,7 +60,7 @@ test('multiple variable declarations', async () => {
 
     const workflow = createWorkflow({
         runtime: {},
-        script,
+        ast,
     });
 
     let result = await executeWorkflow({ workflow });
@@ -104,10 +104,10 @@ test('multiple variable declarations', async () => {
 });
 
 test('assign variable', async () => {
-    const script = parseScript(['let a = 1', 'a = 2;']);
+    const ast = parseScript(['let a = 1', 'a = 2;']);
     const workflow = createWorkflow({
         runtime: {},
-        script,
+        ast,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -130,7 +130,7 @@ test('assign variable', async () => {
 });
 
 test('member expression', async () => {
-    const script = parseScript([
+    const ast = parseScript([
         //
         'const a = { b: 1 };',
         'const c = a.b;',
@@ -138,7 +138,7 @@ test('member expression', async () => {
 
     const workflow = createWorkflow({
         runtime: {},
-        script,
+        ast,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -175,7 +175,7 @@ test('member expression', async () => {
 });
 
 test('array.length', async () => {
-    const script = parseScript([
+    const ast = parseScript([
         //
         'const a = [1, 2, 3];',
         'a.length;',
@@ -183,7 +183,7 @@ test('array.length', async () => {
 
     const workflow = createWorkflow({
         runtime: {},
-        script,
+        ast,
     });
 
     const result = await executeWorkflow({ workflow });

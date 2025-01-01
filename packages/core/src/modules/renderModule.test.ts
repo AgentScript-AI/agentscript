@@ -1,4 +1,4 @@
-import { expect, test } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript.ai/schema';
 
@@ -100,7 +100,7 @@ test('nested object', () => {
     );
 });
 
-test('module with function', () => {
+describe('functions', () => {
     const User = s.object({
         props: {
             name: s.string(),
@@ -118,6 +118,9 @@ test('module with function', () => {
         return: s.extend(User, {
             description: 'The user',
         }),
+        types: {
+            User,
+        },
         handler: ({ args: { id } }) => {
             return {
                 id,
@@ -127,26 +130,211 @@ test('module with function', () => {
         },
     });
 
-    const module = {
-        User,
-        getUser,
-    };
+    test('define types explicitly', () => {
+        const module = {
+            User,
+            getUser,
+        };
 
-    const rendered = renderModule(module);
+        const rendered = renderModule(module);
 
-    expect(rendered).toEqual(
-        joinLines([
-            'export interface User {',
-            '  name: string;',
-            '  email: string;',
-            '}',
-            '',
-            '/**',
-            ' * Get a user',
-            ' * @param id - The id of the user',
-            ' * @returns The user',
-            ' */',
-            'export function getUser(id: string): User;',
-        ]),
-    );
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User;',
+            ]),
+        );
+    });
+
+    test('define types implicitly', () => {
+        const module = {
+            // type is inferred from function return type
+            getUser,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User;',
+            ]),
+        );
+    });
+
+    test('define types implicitly and use twice', () => {
+        const module = {
+            // type is inferred from function return type
+            getUser,
+            getUser2: getUser,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User;',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser2(id: string): User;',
+            ]),
+        );
+    });
+
+    test('renamed type before function', () => {
+        const module = {
+            User2: User,
+            getUser,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User2 {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User2;',
+            ]),
+        );
+    });
+
+    test('renamed type after function', () => {
+        const module = {
+            getUser,
+            // type is not duplicated
+            User2: User,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User2;',
+                '',
+                'export interface User2 {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+            ]),
+        );
+    });
+
+    test('name collision before function', () => {
+        const User2 = s.object({
+            props: {
+                id: s.string(),
+                name: s.string(),
+            },
+        });
+
+        const module = {
+            User: User2,
+            getUser,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User {',
+                '  id: string;',
+                '  name: string;',
+                '}',
+                '',
+                'export interface User2 {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User2;',
+            ]),
+        );
+    });
+
+    test('name collision after function', () => {
+        const User2 = s.object({
+            props: {
+                id: s.string(),
+                name: s.string(),
+            },
+        });
+
+        const module = {
+            getUser,
+            User: User2,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface User2 {',
+                '  name: string;',
+                '  email: string;',
+                '}',
+                '',
+                '/**',
+                ' * Get a user',
+                ' * @param id - The id of the user',
+                ' * @returns The user',
+                ' */',
+                'export function getUser(id: string): User2;',
+                '',
+                'export interface User {',
+                '  id: string;',
+                '  name: string;',
+                '}',
+            ]),
+        );
+    });
 });
