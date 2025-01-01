@@ -6,6 +6,7 @@
     "type": "module",
     "exports": {
         ".": "./dist/core.js",
+        "./anthropic": "./dist/anthropic.js",
         "./schema": "./dist/schema.js"
     },
     "sideEffects": false,
@@ -14,8 +15,8 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript.ai/cli": "*",
-        "@agentscript.ai/runtime": "*",
+        "@agentscript.ai/anthropic": "*",
+        "@agentscript.ai/core": "*",
         "@agentscript.ai/schema": "*"
     },
     "devDependencies": {

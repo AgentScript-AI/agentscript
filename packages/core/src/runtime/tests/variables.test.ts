@@ -38,7 +38,7 @@ test('single variable declaration', async () => {
         ],
     });
 
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 
     result = await executeWorkflow({ workflow });
 
@@ -48,7 +48,7 @@ test('single variable declaration', async () => {
             done: true,
         }),
     );
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 });
 
 test('multiple variable declarations', async () => {
@@ -91,7 +91,7 @@ test('multiple variable declarations', async () => {
         ],
     });
 
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 
     result = await executeWorkflow({ workflow });
     expect(result).toEqual(
@@ -100,7 +100,7 @@ test('multiple variable declarations', async () => {
             done: true,
         }),
     );
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 });
 
 test('assign variable', async () => {
@@ -126,7 +126,7 @@ test('assign variable', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 });
 
 test('member expression', async () => {
@@ -171,7 +171,7 @@ test('member expression', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 });
 
 test('array.length', async () => {
@@ -212,5 +212,5 @@ test('array.length', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.stack).toEqual(expectedStack);
+    expect(workflow.state).toEqual(expectedStack);
 });

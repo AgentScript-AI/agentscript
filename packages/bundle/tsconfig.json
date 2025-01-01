@@ -9,7 +9,10 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../runtime/tsconfig.json"
+            "path": "../anthropic/tsconfig.json"
+        },
+        {
+            "path": "../core/tsconfig.json"
         },
         {
             "path": "../schema/tsconfig.json"

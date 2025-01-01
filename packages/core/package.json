@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript.ai/runtime",
+    "name": "@agentscript.ai/core",
     "version": "0.1.0",
     "private": true,
     "type": "module",

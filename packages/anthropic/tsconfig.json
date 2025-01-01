@@ -1,0 +1,24 @@
+{
+    "extends": "@agentscript.ai/tsconfig/base.json",
+    "compilerOptions": {
+        "outDir": "./dist",
+        "rootDir": "./src",
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
+        "types": ["@types/node"]
+    },
+    "include": ["src"],
+    "references": [
+        {
+            "path": "../core/tsconfig.json"
+        },
+        {
+            "path": "../utils/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/ioc/tsconfig.json"
+        },
+        {
+            "path": "../../nzyme/packages/utils/tsconfig.json"
+        }
+    ]
+}

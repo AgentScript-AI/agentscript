@@ -68,8 +68,8 @@ export async function executeWorkflow<TRuntime extends Runtime>(
 ): Promise<ExecuteWorkflowResult> {
     const { workflow: runtime } = options;
     const controller = createRuntimeControler(options);
-    const stack = runtime.stack;
-    const script = runtime.script;
+    const stack = runtime.state;
+    const script = runtime.ast;
 
     if (stack.completedAt) {
         return { ticks: controller.ticks, done: true };

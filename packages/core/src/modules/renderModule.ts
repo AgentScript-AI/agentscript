@@ -1,20 +1,21 @@
 import * as s from '@agentscript.ai/schema';
 
 import { INDENT } from '../constants.js';
-import { type FunctionDefinition, isFunction } from '../defineFunction.js';
+import { isFunction } from '../defineFunction.js';
 import { renderFunction } from './renderFunction.js';
 import { renderType } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
-
-export type Module = {
-    [name: string]: s.Schema | FunctionDefinition | Module;
-};
+import type { RuntimeModule } from '../defineRuntime.js';
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
-export function renderModule(module: Module, indent: string = '') {
-    // todo: check if name is valid
-
+/**
+ * Render a runtime module as TypeScript code.
+ * @param module - Runtime module to render.
+ * @param indent - Indentation to use.
+ * @returns Rendered module.
+ */
+export function renderModule(module: RuntimeModule, indent: string = '') {
     const typeResolver = createTypeResolver();
 
     for (const [key, value] of Object.entries(module)) {
