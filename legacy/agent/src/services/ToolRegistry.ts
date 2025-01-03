@@ -1,16 +1,16 @@
 import type { StructuredToolParams } from '@langchain/core/tools';
 import type * as z from 'zod';
 
-import { Logger } from '@agentscript.ai/core';
+import { Logger } from '@agentscript-ai/core';
 import type {
     AgentState,
     ToolCall,
     ToolDefinition,
     ToolInteraction,
     ToolState,
-} from '@agentscript.ai/core';
-import { CreateLinearTaskTool } from '@agentscript.ai/linear';
-import { SearchKnowledgeTool } from '@agentscript.ai/rag';
+} from '@agentscript-ai/core';
+import { CreateLinearTaskTool } from '@agentscript-ai/linear';
+import { SearchKnowledgeTool } from '@agentscript-ai/rag';
 import { defineService } from '@nzyme/ioc';
 import { createStopwatch } from '@nzyme/utils';
 

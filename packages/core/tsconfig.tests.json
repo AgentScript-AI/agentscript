@@ -1,5 +1,5 @@
 {
-    "extends": "@agentscript.ai/tsconfig/tests.json",
+    "extends": "@agentscript-ai/tsconfig/tests.json",
     "compilerOptions": {
         "rootDir": "."
     },

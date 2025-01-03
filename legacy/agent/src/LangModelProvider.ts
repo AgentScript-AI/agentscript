@@ -2,7 +2,7 @@ import { BaseCallbackHandler } from '@langchain/core/callbacks/base';
 import type { Serialized } from '@langchain/core/load/serializable';
 import { ChatOpenAI } from '@langchain/openai';
 
-import { EnvVariables, Logger } from '@agentscript.ai/core';
+import { EnvVariables, Logger } from '@agentscript-ai/core';
 import { defineService } from '@nzyme/ioc';
 
 export const LangModelProvider = defineService({

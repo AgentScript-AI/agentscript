@@ -1,5 +1,5 @@
 {
-    "name": "agentscript.ai",
+    "name": "agentscript-ai",
     "version": "1.0.0",
     "repository": "https://github.com/agentscript/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -16,14 +16,14 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript.ai/anthropic": "*",
-        "@agentscript.ai/core": "*",
-        "@agentscript.ai/schema": "*",
-        "@agentscript.ai/tools": "*",
-        "@agentscript.ai/utils": "*"
+        "@agentscript-ai/anthropic": "*",
+        "@agentscript-ai/core": "*",
+        "@agentscript-ai/schema": "*",
+        "@agentscript-ai/tools": "*",
+        "@agentscript-ai/utils": "*"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*"
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*"
     }
 }

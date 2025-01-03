@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript.ai/duckduckgo",
+    "name": "@agentscript-ai/duckduckgo",
     "version": "1.0.0",
     "repository": "https://github.com/agentscript/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -13,13 +13,13 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript.ai/core": "*",
-        "@agentscript.ai/schema": "*",
-        "@agentscript.ai/utils": "*"
+        "@agentscript-ai/core": "*",
+        "@agentscript-ai/schema": "*",
+        "@agentscript-ai/utils": "*"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*",
         "@types/node": "^22.7.7",
         "vitest": "^2.1.3"
     }

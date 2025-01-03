@@ -1,4 +1,4 @@
-import type { ChatUser } from '@agentscript.ai/core';
+import type { ChatUser } from '@agentscript-ai/core';
 import { defineService } from '@nzyme/ioc';
 
 import { SlackClient } from './SlackClient.js';

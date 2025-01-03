@@ -1,7 +1,7 @@
 import slack from '@slack/bolt';
 
-import { EnvVariables, TOOL_CHAT_ACTION_TYPE, ToolChatAction } from '@agentscript.ai/core';
-import { SlackReceiver, stringifyMessage } from '@agentscript.ai/slack';
+import { EnvVariables, TOOL_CHAT_ACTION_TYPE, ToolChatAction } from '@agentscript-ai/core';
+import { SlackReceiver, stringifyMessage } from '@agentscript-ai/slack';
 import { defineService } from '@nzyme/ioc';
 import { assertValue } from '@nzyme/utils';
 

@@ -17,11 +17,15 @@ module.exports = {
                 // https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/order.md#pathgroups-array-of-objects
                 pathGroups: [
                     {
-                        pattern: '@nzyme/**',
+                        pattern: 'agentscript-ai',
                         group: 'internal',
                     },
                     {
-                        pattern: '@agentscript.ai/**',
+                        pattern: 'agentscript-ai/**',
+                        group: 'internal',
+                    },
+                    {
+                        pattern: '@agentscript-ai/**',
                         group: 'internal',
                     },
                     {

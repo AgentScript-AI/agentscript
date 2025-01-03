@@ -6,8 +6,8 @@ import type {
     ChatUser,
     ToolCall,
     ToolChatAction,
-} from '@agentscript.ai/core';
-import { Chat, Logger, randomUid } from '@agentscript.ai/core';
+} from '@agentscript-ai/core';
+import { Chat, Logger, randomUid } from '@agentscript-ai/core';
 import { randomString } from '@nzyme/crypto-utils';
 import { defineService } from '@nzyme/ioc';
 import { createStopwatch, mapNotNull } from '@nzyme/utils';

@@ -1,4 +1,4 @@
-import { validate } from '@agentscript.ai/schema';
+import { validate } from '@agentscript-ai/schema';
 import type { Constructor } from '@nzyme/types';
 
 import { RuntimeError } from './RuntimeError.js';

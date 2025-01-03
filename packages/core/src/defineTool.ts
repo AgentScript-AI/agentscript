@@ -1,4 +1,4 @@
-import * as s from '@agentscript.ai/schema';
+import * as s from '@agentscript-ai/schema';
 
 const TOOL_SYMBOL = Symbol('tool');
 

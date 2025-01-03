@@ -5,8 +5,8 @@ import type {
     ChatBlock,
     ChatMessageWithContent,
     ChatPostMessageParams,
-} from '@agentscript.ai/core';
-import { Chat } from '@agentscript.ai/core';
+} from '@agentscript-ai/core';
+import { Chat } from '@agentscript-ai/core';
 import { defineService } from '@nzyme/ioc';
 import type { SlackBlock } from '@nzyme/slack';
 import { assertValue, identity } from '@nzyme/utils';

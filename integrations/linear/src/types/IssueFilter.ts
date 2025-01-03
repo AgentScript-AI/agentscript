@@ -1,4 +1,4 @@
-import * as s from '@agentscript.ai/schema';
+import * as s from '@agentscript-ai/schema';
 
 interface IssueFilterOptions {
     statuses: string[];

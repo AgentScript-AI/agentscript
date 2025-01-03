@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript.ai/database",
+    "name": "@agentscript-ai/database",
     "version": "0.1.0",
     "private": true,
     "type": "module",
@@ -9,7 +9,7 @@
         "push": "drizzle-kit push"
     },
     "dependencies": {
-        "@agentscript.ai/core": "*",
+        "@agentscript-ai/core": "*",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*",
         "dotenv": "^16.4.7",
@@ -17,8 +17,8 @@
         "postgres": "^3.4.5"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*",
         "@nzyme/project-utils": "*",
         "@types/node": "^20.11.24",
         "drizzle-kit": "^0.28.1",

@@ -1,1 +1,1 @@
-export * from '@agentscript.ai/anthropic';
+export * from '@agentscript-ai/anthropic';

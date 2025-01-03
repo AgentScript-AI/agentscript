@@ -1,7 +1,7 @@
 import { add } from 'date-fns';
 
-import { defineTool } from '@agentscript.ai/core';
-import * as s from '@agentscript.ai/schema';
+import { defineTool } from '@agentscript-ai/core';
+import * as s from '@agentscript-ai/schema';
 
 import { Duration } from './types/Duration.js';
 

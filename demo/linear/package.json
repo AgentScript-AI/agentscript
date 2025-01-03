@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript.ai/demo-linear",
+    "name": "@agentscript-ai/demo-linear",
     "version": "1.0.0",
     "repository": "https://github.com/agentscript/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -14,12 +14,12 @@
         "start": "dotenv -e ../../.env -- node dist/index.js"
     },
     "dependencies": {
-        "@agentscript.ai/linear": "*",
-        "agentscript.ai": "*"
+        "@agentscript-ai/linear": "*",
+        "agentscript-ai": "*"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*",
         "@types/node": "^22.7.7",
         "dotenv-cli": "^8.0.0"
     }

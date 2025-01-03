@@ -1,6 +1,6 @@
 import { Anthropic } from '@anthropic-ai/sdk';
 
-import { LanguageModel } from '@agentscript.ai/core';
+import { LanguageModel } from '@agentscript-ai/core';
 import type { Injected } from '@nzyme/ioc';
 import { constValue, defineService } from '@nzyme/ioc';
 

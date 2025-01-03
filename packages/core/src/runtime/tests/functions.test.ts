@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vitest';
 
-import * as s from '@agentscript.ai/schema';
+import * as s from '@agentscript-ai/schema';
 
 import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';

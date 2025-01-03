@@ -4655,6 +4655,12 @@ export type InitiativeUpdateInput = {
   targetDateResolution?: InputMaybe<DateResolutionType>;
   /** Whether the initiative has been trashed. */
   trashed?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] The n-weekly frequency at which to prompt for updates. When not set, reminders are inherited from workspace. */
+  updateReminderFrequencyInWeeks?: InputMaybe<Scalars['Float']['input']>;
+  /** [Internal] The day at which to prompt for updates. */
+  updateRemindersDay?: InputMaybe<Day>;
+  /** [Internal] The hour at which to prompt for updates. */
+  updateRemindersHour?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** An integration with an external service. */
@@ -12791,6 +12797,12 @@ export type ProjectUpdateInput = {
   teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Whether the project has been trashed. */
   trashed?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] The n-weekly frequency at which to prompt for updates. When not set, reminders are inherited from workspace. */
+  updateReminderFrequencyInWeeks?: InputMaybe<Scalars['Float']['input']>;
+  /** [Internal] The day at which to prompt for updates. */
+  updateRemindersDay?: InputMaybe<Day>;
+  /** [Internal] The hour at which to prompt for updates. */
+  updateRemindersHour?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Holds information about when a user has interacted with a project update. */

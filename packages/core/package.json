@@ -1,13 +1,13 @@
 {
-    "name": "@agentscript.ai/core",
+    "name": "@agentscript-ai/core",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript.ai/schema": "*",
-        "@agentscript.ai/utils": "*",
+        "@agentscript-ai/schema": "*",
+        "@agentscript-ai/utils": "*",
         "@babel/parser": "^7.26.3",
         "@nzyme/ioc": "*",
         "@nzyme/types": "*",
@@ -15,8 +15,8 @@
         "debug": "^4.4.0"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*",
         "@nzyme/vitest": "*",
         "@types/debug": "^4",
         "@types/node": "^20.11.24",

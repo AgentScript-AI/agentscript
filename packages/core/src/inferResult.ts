@@ -1,5 +1,5 @@
-import { getCurrentDatePrompt } from '@agentscript.ai/utils';
-import { type Schema, coerce } from '@agentscript.ai/schema';
+import { getCurrentDatePrompt } from '@agentscript-ai/utils';
+import { type Schema, coerce } from '@agentscript-ai/schema';
 
 import type { LanguageModel } from './llm/LanguageModel.js';
 import { renderTypeInline } from './modules/renderType.js';

@@ -1,8 +1,8 @@
 import { and, eq } from 'drizzle-orm';
 
-import { TenantContext } from '@agentscript.ai/core';
-import { DatabaseClient, db } from '@agentscript.ai/database';
-import { KnowledgeStore } from '@agentscript.ai/rag';
+import { TenantContext } from '@agentscript-ai/core';
+import { DatabaseClient, db } from '@agentscript-ai/database';
+import { KnowledgeStore } from '@agentscript-ai/rag';
 import { defineCommand } from '@nzyme/ioc';
 import { findAndRemove } from '@nzyme/utils';
 

@@ -1,7 +1,7 @@
 import type { Embeddings } from '@langchain/core/embeddings';
 import { OpenAIEmbeddings } from '@langchain/openai';
 
-import { EnvVariables } from '@agentscript.ai/core';
+import { EnvVariables } from '@agentscript-ai/core';
 import { defineService } from '@nzyme/ioc';
 
 export const EmbeddingModel = defineService<Embeddings>({

@@ -1,21 +1,21 @@
 {
-    "name": "@agentscript.ai/rag",
+    "name": "@agentscript-ai/rag",
     "version": "0.1.0",
     "private": true,
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript.ai/core": "*",
-        "@agentscript.ai/database": "*",
+        "@agentscript-ai/core": "*",
+        "@agentscript-ai/database": "*",
         "@langchain/core": "^0.3.22",
         "@langchain/openai": "^0.3.14",
         "@nzyme/ioc": "*",
         "@nzyme/utils": "*"
     },
     "devDependencies": {
-        "@agentscript.ai/eslint": "*",
-        "@agentscript.ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "*",
+        "@agentscript-ai/tsconfig": "*",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2"
     }

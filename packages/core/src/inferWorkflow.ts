@@ -1,6 +1,6 @@
 import createDebug from 'debug';
 
-import { getCurrentDatePrompt } from '@agentscript.ai/utils';
+import { getCurrentDatePrompt } from '@agentscript-ai/utils';
 
 import type { Runtime } from './defineRuntime.js';
 import type { LanguageModel } from './llm/LanguageModel.js';

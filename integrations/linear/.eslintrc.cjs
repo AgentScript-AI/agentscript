@@ -3,7 +3,7 @@ module.exports = {
     env: {
         node: true,
     },
-    extends: [require.resolve('@agentscript.ai/eslint/typescript')],
+    extends: [require.resolve('@agentscript-ai/eslint/typescript')],
     parserOptions: {
         project: [
             `${__dirname}/tsconfig.json`,

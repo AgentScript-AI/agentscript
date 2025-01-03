@@ -1,7 +1,7 @@
 import { and, cosineDistance, desc, eq, gte, sql } from 'drizzle-orm';
 
-import { Logger, TenantContext } from '@agentscript.ai/core';
-import { DatabaseClient, db } from '@agentscript.ai/database';
+import { Logger, TenantContext } from '@agentscript-ai/core';
+import { DatabaseClient, db } from '@agentscript-ai/database';
 import { defineService } from '@nzyme/ioc';
 
 import { EmbeddingModel } from './EmbeddingModel.js';

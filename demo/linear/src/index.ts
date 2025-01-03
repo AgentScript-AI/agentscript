@@ -1,9 +1,7 @@
-import { defineRuntime, defineTool, executeWorkflow, inferWorkflow } from 'agentscript.ai';
-import { AnthropicModel } from 'agentscript.ai/anthropic';
-import * as s from 'agentscript.ai/schema';
-import { summarizeData, addToDate } from 'agentscript.ai/tools';
-
-import { LinearClient, searchIssues } from '@agentscript.ai/linear';
+import { LinearClient, searchIssues } from '@agentscript-ai/linear';
+import { defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript-ai';
+import { AnthropicModel } from 'agentscript-ai/anthropic';
+import { addToDate, summarizeData } from 'agentscript-ai/tools';
 
 const llm = AnthropicModel({
     model: 'claude-3-5-sonnet-latest',

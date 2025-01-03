@@ -1,6 +1,6 @@
-import { defineTool, defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript.ai';
-import { AnthropicModel } from 'agentscript.ai/anthropic';
-import * as s from 'agentscript.ai/schema';
+import { defineTool, defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript-ai';
+import { AnthropicModel } from 'agentscript-ai/anthropic';
+import * as s from 'agentscript-ai/schema';
 
 import { loadEnvVariables } from '@nzyme/project-utils';
 

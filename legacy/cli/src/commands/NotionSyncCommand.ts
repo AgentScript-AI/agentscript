@@ -1,4 +1,4 @@
-import { SyncNotionPages } from '@agentscript.ai/notion';
+import { SyncNotionPages } from '@agentscript-ai/notion';
 
 import { ApplicationCommand } from './ApplicationCommand.js';
 

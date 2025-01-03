@@ -1,6 +1,6 @@
 import * as z from 'zod';
 
-import { defineTool, randomUid } from '@agentscript.ai/core';
+import { defineTool, randomUid } from '@agentscript-ai/core';
 
 import { KnowledgeRetriever } from '../KnowledgeRetriever.js';
 

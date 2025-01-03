@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 
-import { LanguageModel, defineTool, inferResult } from '@agentscript.ai/core';
-import * as s from '@agentscript.ai/schema';
+import { LanguageModel, defineTool, inferResult } from '@agentscript-ai/core';
+import * as s from '@agentscript-ai/schema';
 import { defineService } from '@nzyme/ioc';
 
 import { LinearClient } from '../LinearClient.js';

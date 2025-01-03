@@ -1,6 +1,6 @@
 import { AIMessage, HumanMessage, SystemMessage } from '@langchain/core/messages';
 
-import type { AgentEvent } from '@agentscript.ai/core';
+import type { AgentEvent } from '@agentscript-ai/core';
 
 export function convertEventToPrompt(event: AgentEvent) {
     switch (event.type) {

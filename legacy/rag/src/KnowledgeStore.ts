@@ -2,9 +2,9 @@ import type { Document } from '@langchain/core/documents';
 import { RecursiveCharacterTextSplitter } from '@langchain/textsplitters';
 import { and, eq, gte } from 'drizzle-orm';
 
-import type { KnowledgeType } from '@agentscript.ai/core';
-import { TenantContext } from '@agentscript.ai/core';
-import { DatabaseClient, db } from '@agentscript.ai/database';
+import type { KnowledgeType } from '@agentscript-ai/core';
+import { TenantContext } from '@agentscript-ai/core';
+import { DatabaseClient, db } from '@agentscript-ai/database';
 import { defineService } from '@nzyme/ioc';
 
 import { EmbeddingModel } from './EmbeddingModel.js';

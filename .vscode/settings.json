@@ -21,7 +21,8 @@
         "**/*.code-search": true,
         "yarn.lock": true,
         "**/.yarn": true,
-        "**/.pnp.*": true
+        "**/.pnp.*": true,
+        "**/legacy": true
     },
     "search.followSymlinks": true,
     "terminal.integrated.env.osx": {

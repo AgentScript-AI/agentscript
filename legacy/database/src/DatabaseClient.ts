@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 
-import { EnvVariables } from '@agentscript.ai/core';
+import { EnvVariables } from '@agentscript-ai/core';
 import { defineService } from '@nzyme/ioc';
 
 import * as db from './schema.js';

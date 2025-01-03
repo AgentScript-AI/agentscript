@@ -1,1 +1,1 @@
-export * from '@agentscript.ai/core';
+export * from '@agentscript-ai/core';

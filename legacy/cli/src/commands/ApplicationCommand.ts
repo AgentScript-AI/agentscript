@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core';
 
-import { EnvVariables } from '@agentscript.ai/core';
+import { EnvVariables } from '@agentscript-ai/core';
 import { createContainer } from '@nzyme/ioc';
 import { Logger, PrettyLoggerFactory } from '@nzyme/logging';
 

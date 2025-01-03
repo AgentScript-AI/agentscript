@@ -1,4 +1,4 @@
-# @agentscript.ai/agent
+# @agentscript-ai/agent
 
 A Slack bot powered by LangGraph JS and ChromaDB for maintaining conversation state.
 

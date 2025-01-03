@@ -1,4 +1,4 @@
-import * as s from '@agentscript.ai/schema';
+import * as s from '@agentscript-ai/schema';
 
 import { INDENT } from '../constants.js';
 import { isTool } from '../defineTool.js';

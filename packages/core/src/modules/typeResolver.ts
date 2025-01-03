@@ -1,4 +1,4 @@
-import type * as s from '@agentscript.ai/schema';
+import type * as s from '@agentscript-ai/schema';
 
 /**
  * Type resolver.

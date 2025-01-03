@@ -1,4 +1,4 @@
-import type { Schema } from '@agentscript.ai/schema';
+import type { Schema } from '@agentscript-ai/schema';
 
 import type { ToolDefinition } from './defineTool.js';
 
