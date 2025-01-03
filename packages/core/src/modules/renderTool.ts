@@ -46,8 +46,8 @@ export function renderTool(options: RenderToolOptions) {
             : [func.description]
         : [];
 
-    if (func.args) {
-        for (const [name, arg] of Object.entries(func.args.props)) {
+    if (func.input) {
+        for (const [name, arg] of Object.entries(func.input.props)) {
             if (args.length > 0) {
                 args += ', ';
             }
@@ -60,8 +60,8 @@ export function renderTool(options: RenderToolOptions) {
         }
     }
 
-    if (func.return.description) {
-        description.push(`@returns ${func.return.description}`);
+    if (func.output.description) {
+        description.push(`@returns ${func.output.description}`);
     }
 
     const comment = renderComment(description, indent);
@@ -69,7 +69,7 @@ export function renderTool(options: RenderToolOptions) {
         code += `${comment}\n`;
     }
 
-    const returnType = renderTypeInline(func.return, { typeResolver });
+    const returnType = renderTypeInline(func.output, { typeResolver });
 
     code += `${indent}export function ${name}(${args}): ${returnType};`;
 

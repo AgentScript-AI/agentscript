@@ -380,7 +380,7 @@ async function runFunctionCustom(
         return false;
     }
 
-    const argProps = func.args ? Object.entries(func.args.props) : [];
+    const argProps = func.input ? Object.entries(func.input.props) : [];
     const argObject: Record<string, unknown> = {};
 
     for (let i = 0; i < argProps.length; i++) {
@@ -390,9 +390,9 @@ async function runFunctionCustom(
         argObject[argName] = arg;
     }
 
-    validate(func.args, args);
+    validate(func.input, args);
 
-    frame.value = await func.handler({ args: argObject });
+    frame.value = await func.handler({ input: argObject });
     controller.tick();
 
     return completeFrame(frame);

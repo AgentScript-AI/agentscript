@@ -1,7 +1,8 @@
+import { defineService } from '@nzyme/ioc';
+
 import { LanguageModel, defineTool } from '@agentscript-ai/core';
 import * as s from '@agentscript-ai/schema';
 import { getCurrentDatePrompt } from '@agentscript-ai/utils';
-import { defineService } from '@nzyme/ioc';
 
 /**
  * Tool to summarize any data.
@@ -14,7 +15,7 @@ export const summarizeData = defineService({
     setup({ llm }) {
         return defineTool({
             description: 'Summarize any data',
-            args: {
+            input: {
                 data: s.unknown({
                     description: 'The data to summarize. Can be in any format.',
                 }),
@@ -25,8 +26,8 @@ export const summarizeData = defineService({
                     ],
                 }),
             },
-            return: s.string(),
-            async handler({ args: { data, prompt } }) {
+            output: s.string(),
+            async handler({ input: { data, prompt } }) {
                 const result = await llm.invoke({
                     systemPrompt: [
                         `Your task is to summarize the following data based on the user prompt:`,

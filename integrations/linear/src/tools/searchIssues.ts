@@ -1,8 +1,8 @@
+import { defineService } from '@nzyme/ioc';
 import createDebug from 'debug';
 
 import { LanguageModel, defineTool, inferResult } from '@agentscript-ai/core';
 import * as s from '@agentscript-ai/schema';
-import { defineService } from '@nzyme/ioc';
 
 import { LinearClient } from '../LinearClient.js';
 import type { GetIssuesQuery, GetIssuesQueryVariables, GetWorkflowStatesQuery } from '../gql.js';
@@ -35,12 +35,12 @@ export const searchIssues = defineService({
                 'Search for issues using a natural language query.',
                 'Do not filter results later, put all the search criteria in the query.',
             ],
-            args: SearchIssuesQuery.props,
-            return: s.array(Issue),
+            input: SearchIssuesQuery.props,
+            output: s.array(Issue),
             types: {
                 Issue,
             },
-            async handler({ args: { query } }) {
+            async handler({ input: { query } }) {
                 const workflowStates = await loadWorkflowStates();
                 const issueFilterSchema = createIssueFilter({
                     statuses: workflowStates,

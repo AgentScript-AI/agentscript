@@ -10,13 +10,13 @@ import { Duration } from './types/Duration.js';
  */
 export const addToDate = defineTool({
     description: 'Add a duration to a date.',
-    args: {
+    input: {
         date: s.date(),
         duration: Duration,
     },
-    return: s.date(),
+    output: s.date(),
     types: {
         Duration,
     },
-    handler: ({ args: { date, duration } }) => add(date, duration),
+    handler: ({ input: { date, duration } }) => add(date, duration),
 });

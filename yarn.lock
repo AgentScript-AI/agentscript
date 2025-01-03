@@ -5498,21 +5498,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"agentscript@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "agentscript@workspace:."
-  dependencies:
-    "@types/source-map-support": "npm:^0.5.10"
-    lerna: "npm:^8.1.8"
-    prettier: "npm:^3.3.3"
-    source-map-support: "npm:^0.5.21"
-    supabase: "npm:1.226.3"
-    ts-node: "npm:^10.9.2"
-    turbo: "npm:^2.2.2"
-    typescript: "npm:^5.7.2"
-  languageName: unknown
-  linkType: soft
-
 "aggregate-error@npm:^3.0.0":
   version: 3.1.0
   resolution: "aggregate-error@npm:3.1.0"
@@ -15702,6 +15687,21 @@ __metadata:
   checksum: 10c0/98d3bc2b784eff71b997cfc2be97c00e2f100ee38adc2f8ada7b9b9ecbbc96937f667a6a247a45491807b3f2adef3c73d1f5df40d71771bff0c2d8c0cca9b369
   languageName: node
   linkType: hard
+
+"root-workspace-0b6124@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "root-workspace-0b6124@workspace:."
+  dependencies:
+    "@types/source-map-support": "npm:^0.5.10"
+    lerna: "npm:^8.1.8"
+    prettier: "npm:^3.3.3"
+    source-map-support: "npm:^0.5.21"
+    supabase: "npm:1.226.3"
+    ts-node: "npm:^10.9.2"
+    turbo: "npm:^2.2.2"
+    typescript: "npm:^5.7.2"
+  languageName: unknown
+  linkType: soft
 
 "run-async@npm:^2.4.0":
   version: 2.4.1

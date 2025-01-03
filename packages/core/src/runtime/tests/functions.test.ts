@@ -11,31 +11,31 @@ import { defineRuntime } from '../../defineRuntime.js';
 
 const add = defineTool({
     description: 'Add two numbers',
-    args: {
+    input: {
         a: s.number(),
         b: s.number(),
     },
-    return: s.number(),
-    handler: ({ args: { a, b } }) => a + b,
+    output: s.number(),
+    handler: ({ input: { a, b } }) => a + b,
 });
 
 const multiply = defineTool({
     description: 'Multiply two numbers',
-    args: {
+    input: {
         a: s.number(),
         b: s.number(),
     },
-    return: s.number(),
-    handler: ({ args: { a, b } }) => a * b,
+    output: s.number(),
+    handler: ({ input: { a, b } }) => a * b,
 });
 
 const square = defineTool({
     description: 'Square a number',
-    args: {
+    input: {
         a: s.number(),
     },
-    return: s.number(),
-    handler: ({ args: { a } }) => a * a,
+    output: s.number(),
+    handler: ({ input: { a } }) => a * a,
 });
 
 const runtime = defineRuntime({

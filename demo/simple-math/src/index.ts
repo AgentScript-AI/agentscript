@@ -1,58 +1,66 @@
-import { defineTool, defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript-ai';
+import { loadEnvVariables } from '@nzyme/project-utils';
+
+import {
+    defineRuntime,
+    defineTool,
+    executeWorkflow,
+    inferWorkflow,
+    ToolDefinition,
+} from 'agentscript-ai';
 import { AnthropicModel } from 'agentscript-ai/anthropic';
 import * as s from 'agentscript-ai/schema';
-
-import { loadEnvVariables } from '@nzyme/project-utils';
 
 loadEnvVariables();
 
 const add = defineTool({
     description: 'Add two numbers',
-    args: {
+    input: {
         a: s.number(),
         b: s.number(),
     },
-    return: s.number(),
-    handler: ({ args }) => args.a + args.b,
+    output: s.number(),
+    handler: ({ input }) => input.a + input.b,
 });
 
 const multiply = defineTool({
     description: 'Multiply two numbers',
-    args: {
+    input: {
         a: s.number(),
         b: s.number(),
     },
-    return: s.number(),
-    handler: ({ args }) => args.a * args.b,
+    output: s.number(),
+    handler: ({ input }) => input.a * input.b,
 });
 
 const divide = defineTool({
     description: 'Divide two numbers',
-    args: {
+    input: {
         a: s.number(),
         b: s.number(),
     },
-    return: s.number(),
-    handler: ({ args }) => args.a / args.b,
+    output: s.number(),
+    handler: ({ input }) => input.a / input.b,
 });
 
 const square = defineTool({
     description: 'Square a number',
-    args: {
+    input: {
         a: s.number(),
     },
-    return: s.number(),
-    handler: ({ args }) => args.a * args.a,
+    output: s.number(),
+    handler: ({ input }) => input.a * input.a,
 });
 
 const squareRoot = defineTool({
     description: 'Square root of a number',
-    args: {
+    input: {
         a: s.number(),
     },
-    return: s.number(),
-    handler: ({ args }) => Math.sqrt(args.a),
+    output: s.number(),
+    handler: ({ input }) => Math.sqrt(input.a),
 });
+
+const t: ToolDefinition = divide;
 
 const runtime = defineRuntime({
     add,

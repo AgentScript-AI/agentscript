@@ -110,18 +110,18 @@ describe('functions', () => {
 
     const getUser = defineTool({
         description: 'Get a user',
-        args: {
+        input: {
             id: s.string({
                 description: 'The id of the user',
             }),
         },
-        return: s.extend(User, {
+        output: s.extend(User, {
             description: 'The user',
         }),
         types: {
             User,
         },
-        handler: ({ args: { id } }) => {
+        handler: ({ input: { id } }) => {
             return {
                 id,
                 name: 'John',
