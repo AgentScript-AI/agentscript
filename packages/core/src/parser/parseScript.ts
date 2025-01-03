@@ -5,22 +5,25 @@ import type { Assignment, Expression, ObjectProperty, Script, Statement } from '
 
 /**
  * Parse a script into an AST.
- * @param script - Script to parse.
+ * @param code - Script to parse.
  * @returns AST.
  */
-export function parseScript(script: string | string[]): Script {
-    if (Array.isArray(script)) {
-        script = script.join('\n');
+export function parseScript(code: string | string[]): Script {
+    if (Array.isArray(code)) {
+        code = code.join('\n');
     }
 
-    const ast = parse(script);
-    const result: Script = [];
+    const ast = parse(code);
+    const parsed: Statement[] = [];
 
     for (const node of ast.program.body) {
-        result.push(parseStatement(node as babel.Statement));
+        parsed.push(parseStatement(node as babel.Statement));
     }
 
-    return result;
+    return {
+        code: code,
+        ast: parsed,
+    };
 }
 
 function parseStatement(statement: babel.Statement): Statement {

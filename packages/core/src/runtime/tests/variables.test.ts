@@ -6,14 +6,14 @@ import { executeWorkflow } from '../executeWorkflow.js';
 import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
-    const ast = parseScript([
+    const script = parseScript([
         //
         'const a = 1;',
     ]);
 
     const workflow = createWorkflow({
-        runtime: {},
-        ast,
+        runtime: { tools: {} },
+        script,
     });
 
     let result = await executeWorkflow({ workflow });
@@ -38,7 +38,8 @@ test('single variable declaration', async () => {
         ],
     });
 
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 
     result = await executeWorkflow({ workflow });
 
@@ -48,19 +49,20 @@ test('single variable declaration', async () => {
             done: true,
         }),
     );
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('multiple variable declarations', async () => {
-    const ast = parseScript([
+    const script = parseScript([
         //
         'const a = 1;',
         'const b = 2;',
     ]);
 
     const workflow = createWorkflow({
-        runtime: {},
-        ast,
+        runtime: { tools: {} },
+        script,
     });
 
     let result = await executeWorkflow({ workflow });
@@ -91,7 +93,8 @@ test('multiple variable declarations', async () => {
         ],
     });
 
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 
     result = await executeWorkflow({ workflow });
     expect(result).toEqual(
@@ -100,14 +103,15 @@ test('multiple variable declarations', async () => {
             done: true,
         }),
     );
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('assign variable', async () => {
-    const ast = parseScript(['let a = 1', 'a = 2;']);
+    const script = parseScript(['let a = 1', 'a = 2;']);
     const workflow = createWorkflow({
-        runtime: {},
-        ast,
+        runtime: { tools: {} },
+        script,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -126,19 +130,20 @@ test('assign variable', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('member expression', async () => {
-    const ast = parseScript([
+    const script = parseScript([
         //
         'const a = { b: 1 };',
         'const c = a.b;',
     ]);
 
     const workflow = createWorkflow({
-        runtime: {},
-        ast,
+        runtime: { tools: {} },
+        script,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -171,19 +176,20 @@ test('member expression', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('array.length', async () => {
-    const ast = parseScript([
+    const script = parseScript([
         //
         'const a = [1, 2, 3];',
         'a.length;',
     ]);
 
     const workflow = createWorkflow({
-        runtime: {},
-        ast,
+        runtime: { tools: {} },
+        script,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -212,5 +218,6 @@ test('array.length', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });

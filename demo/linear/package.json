@@ -15,7 +15,8 @@
     },
     "dependencies": {
         "@agentscript-ai/linear": "*",
-        "agentscript-ai": "*"
+        "agentscript-ai": "*",
+        "chalk": "^5.4.1"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "*",

@@ -219,6 +219,15 @@ export type Expression =
 export type Statement = VariableDeclaration | ExpressionStatement;
 
 /**
- * Script AST.
+ * Script object.
  */
-export type Script = Statement[];
+export interface Script {
+    /**
+     * Code of the script.
+     */
+    code?: string;
+    /**
+     * AST of the script.
+     */
+    ast: Statement[];
+}

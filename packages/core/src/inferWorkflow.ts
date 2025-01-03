@@ -1,7 +1,5 @@
 import createDebug from 'debug';
 
-import { getCurrentDatePrompt } from '@agentscript-ai/utils';
-
 import type { Runtime } from './defineRuntime.js';
 import type { LanguageModel } from './llm/LanguageModel.js';
 import { renderRuntime } from './modules/renderRuntime.js';
@@ -59,10 +57,11 @@ const debug = createDebug('agentscript:inferWorkflow');
 export async function inferWorkflow<TRuntime extends Runtime>(
     params: InferWorkflowParams<TRuntime>,
 ): Promise<Workflow<TRuntime>> {
-    const definitions = renderRuntime(params.runtime);
+    const runtime = params.runtime;
+    const definitions = renderRuntime(runtime);
 
     const systemPrompt = createTypedPrompt({
-        prompts: [params.systemPrompt, SYSTEM_PROMPT, getCurrentDatePrompt()],
+        prompts: [params.systemPrompt, SYSTEM_PROMPT],
         definitions,
     });
 
@@ -76,11 +75,10 @@ export async function inferWorkflow<TRuntime extends Runtime>(
     debug('plan', plan);
     debug('code', code);
 
-    const ast = parseScript(code);
+    const script = parseScript(code);
     const workflow = createWorkflow({
-        runtime: params.runtime,
-        ast,
-        code,
+        runtime,
+        script,
         plan,
     });
 

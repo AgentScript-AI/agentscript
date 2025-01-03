@@ -1,5 +1,6 @@
-import { validate, validateOrThrow } from '@agentscript-ai/schema';
 import type { Constructor } from '@nzyme/types';
+
+import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
 import type { Workflow } from './createWorkflow.js';
@@ -10,7 +11,7 @@ import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
-import type { Runtime } from '../defineRuntime.js';
+import type { Runtime, RuntimeInput, RuntimeOutput } from '../defineRuntime.js';
 import type {
     ArrayExpression,
     Expression,
@@ -23,15 +24,27 @@ import type {
     Statement,
 } from '../parser/astTypes.js';
 
+type ExecuteWorkflowInputOptions<TRuntime extends Runtime> =
+    RuntimeInput<TRuntime> extends undefined
+        ? {
+              /** Input for the workflow. */
+              input?: undefined;
+          }
+        : {
+              /** Input for the workflow. */
+              input: RuntimeInput<TRuntime>;
+          };
+
 /**
  * Options for the {@link executeWorkflow} function.
  */
-export interface ExecuteWorkflowOptions<TRuntime extends Runtime> extends RuntimeControllerOptions {
+export type ExecuteWorkflowOptions<TRuntime extends Runtime> = {
     /**
      * Workflow to execute.
      */
     workflow: Workflow<TRuntime>;
-}
+} & ExecuteWorkflowInputOptions<TRuntime> &
+    RuntimeControllerOptions;
 
 /**
  * Result of the {@link executeWorkflow} function.
@@ -57,20 +70,42 @@ export interface ExecuteWorkflowResult {
 export async function executeWorkflow<TRuntime extends Runtime>(
     options: ExecuteWorkflowOptions<TRuntime>,
 ): Promise<ExecuteWorkflowResult> {
-    const { workflow: runtime } = options;
-    const controller = createRuntimeControler(options);
-    const stack = runtime.state;
-    const script = runtime.ast;
+    const { workflow } = options;
 
-    if (stack.completedAt) {
+    const controller = createRuntimeControler(options);
+    if (!workflow.state) {
+        workflow.state = {
+            complete: false,
+            root: { startedAt: Date.now() },
+        };
+
+        if (workflow.runtime.output) {
+            workflow.state.root.variables = {
+                result: undefined,
+            };
+        }
+    }
+
+    const root = workflow.state.root;
+    const script = workflow.script.ast;
+
+    if (root.completedAt) {
         return { ticks: controller.ticks, done: true };
     }
 
-    const result = await runBlock(runtime, controller, stack, script);
+    const result = await runBlock(workflow, controller, root, script);
 
-    const frames = stack.children;
+    const frames = root.children;
     if (frames?.length === script.length && frames[frames.length - 1].completedAt) {
-        completeFrame(stack);
+        completeFrame(root);
+        workflow.state.complete = true;
+
+        if (workflow.runtime.output) {
+            const result = root.variables?.result;
+            validateOrThrow(workflow.runtime.output, result);
+            workflow.state.output = result as RuntimeOutput<TRuntime>;
+        }
+
         return { ticks: controller.ticks, done: true };
     }
 
@@ -583,7 +618,7 @@ function resolveName(runtime: Workflow, frame: StackFrame, expression: Expressio
     return resolveExpression(runtime, frame, expression) as string;
 }
 
-function resolveIdentifier(runtime: Workflow, frame: StackFrame, expression: Identifier) {
+function resolveIdentifier(workflow: Workflow, frame: StackFrame, expression: Identifier) {
     const name = expression.name;
 
     while (frame) {
@@ -600,8 +635,9 @@ function resolveIdentifier(runtime: Workflow, frame: StackFrame, expression: Ide
         break;
     }
 
-    if (name in runtime.runtime) {
-        return runtime.runtime[name];
+    const tools = workflow.runtime.tools;
+    if (name in tools) {
+        return tools[name];
     }
 
     if (allowedNativeIdentifiers.has(name)) {

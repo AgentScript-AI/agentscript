@@ -39,9 +39,11 @@ const square = defineTool({
 });
 
 const runtime = defineRuntime({
-    add,
-    multiply,
-    square,
+    tools: {
+        add,
+        multiply,
+        square,
+    },
 });
 
 test('single function call', async () => {
@@ -50,7 +52,7 @@ test('single function call', async () => {
         'add(1, 2);',
     ]);
 
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
 
     const result = await executeWorkflow({ workflow });
     const expectedStack = rootFrame({
@@ -68,7 +70,8 @@ test('single function call', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('multiple function calls', async () => {
@@ -79,7 +82,7 @@ test('multiple function calls', async () => {
         'const d = multiply(c, 3);',
     ]);
 
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
 
     let result = await executeWorkflow({ workflow, maxTicks: 3 });
     const expectedStack = rootFrame({
@@ -130,7 +133,8 @@ test('multiple function calls', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 2, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 
     result = await executeWorkflow({ workflow, maxTicks: 1 });
     expect(result).toEqual(
@@ -139,14 +143,15 @@ test('multiple function calls', async () => {
             done: true,
         }),
     );
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 describe('nested function calls', () => {
     const script = parseScript(['add(square(1), square(2));']);
 
     test('run one tick at a time', async () => {
-        const workflow = createWorkflow({ runtime, ast: script });
+        const workflow = createWorkflow({ runtime, script });
 
         let result = await executeWorkflow({ workflow, maxTicks: 1 });
         let expectedStack = rootFrame({
@@ -164,7 +169,8 @@ describe('nested function calls', () => {
         });
 
         expect(result).toEqual(runtimeResult({ ticks: 1, done: false }));
-        expect(workflow.state).toEqual(expectedStack);
+        expect(workflow.state?.root).toEqual(expectedStack);
+        expect(workflow.state?.complete).toBe(false);
 
         result = await executeWorkflow({ workflow, maxTicks: 1 });
         expectedStack = rootFrame({
@@ -211,11 +217,12 @@ describe('nested function calls', () => {
             ],
         });
         expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
-        expect(workflow.state).toEqual(expectedStack);
+        expect(workflow.state?.root).toEqual(expectedStack);
+        expect(workflow.state?.complete).toBe(true);
     });
 
     test('run all ticks', async () => {
-        const workflow = createWorkflow({ runtime, ast: script });
+        const workflow = createWorkflow({ runtime, script });
 
         const result = await executeWorkflow({ workflow });
         const expectedStack = rootFrame({
@@ -241,7 +248,8 @@ describe('nested function calls', () => {
         });
 
         expect(result).toEqual(runtimeResult({ ticks: 3, done: true }));
-        expect(workflow.state).toEqual(expectedStack);
+        expect(workflow.state?.root).toEqual(expectedStack);
+        expect(workflow.state?.complete).toBe(true);
     });
 });
 
@@ -250,9 +258,11 @@ test('module function', async () => {
 
     const workflow = createWorkflow({
         runtime: {
-            utils: runtime,
+            tools: {
+                utils: runtime.tools,
+            },
         },
-        ast: script,
+        script,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -272,7 +282,8 @@ test('module function', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('new Date()', async () => {
@@ -280,7 +291,7 @@ test('new Date()', async () => {
 
     const workflow = createWorkflow({
         runtime,
-        ast: script,
+        script,
     });
 
     const result = await executeWorkflow({ workflow });
@@ -295,13 +306,14 @@ test('new Date()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('toString()', async () => {
     const script = parseScript('true.toString()');
 
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -315,12 +327,13 @@ test('toString()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('Number()', async () => {
     const script = parseScript('Number("1")');
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
 
     const result = await executeWorkflow({ workflow });
 
@@ -335,12 +348,13 @@ test('Number()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('Boolean()', async () => {
     const script = parseScript('Boolean("true")');
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -354,12 +368,13 @@ test('Boolean()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('String()', async () => {
     const script = parseScript('String(1)');
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -373,7 +388,8 @@ test('String()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('array.push()', async () => {
@@ -383,7 +399,7 @@ test('array.push()', async () => {
         'a.push(4);',
     ]);
 
-    const workflow = createWorkflow({ runtime, ast: script });
+    const workflow = createWorkflow({ runtime, script });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -413,7 +429,8 @@ test('array.push()', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('more than two arguments are turned into a single arg', async () => {
@@ -430,8 +447,11 @@ test('more than two arguments are turned into a single arg', async () => {
         },
     });
 
-    const script = parseScript('add({ a: 1, b: 2, c: 3 })');
-    const workflow = createWorkflow({ runtime: { add }, ast: script });
+    const runtime = defineRuntime({
+        tools: { add },
+    });
+    const ast = parseScript('add({ a: 1, b: 2, c: 3 })');
+    const workflow = createWorkflow({ runtime, script: ast });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -456,7 +476,8 @@ test('more than two arguments are turned into a single arg', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
 });
 
 test('explicit single arg', async () => {
@@ -474,8 +495,11 @@ test('explicit single arg', async () => {
         },
     });
 
-    const script = parseScript('add({ a: 1, b: 2 })');
-    const workflow = createWorkflow({ runtime: { add }, ast: script });
+    const ast = parseScript('add({ a: 1, b: 2 })');
+    const runtime = defineRuntime({
+        tools: { add },
+    });
+    const workflow = createWorkflow({ runtime, script: ast });
     const result = await executeWorkflow({ workflow });
 
     const expectedStack = rootFrame({
@@ -483,7 +507,7 @@ test('explicit single arg', async () => {
         children: [
             childFrame({
                 completedAt: anyNumber(),
-                value: 6,
+                value: 3,
                 children: [
                     childFrame({
                         completedAt: anyNumber(),
@@ -499,5 +523,42 @@ test('explicit single arg', async () => {
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state).toEqual(expectedStack);
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
+});
+
+test('runtime output', async () => {
+    const runtime = defineRuntime({
+        tools: { add },
+        output: s.number(),
+    });
+
+    const ast = parseScript('result = add(1, 2)');
+    const workflow = createWorkflow({ runtime, script: ast });
+    const result = await executeWorkflow({ workflow });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                children: [
+                    childFrame({
+                        completedAt: anyNumber(),
+                        value: 3,
+                        children: [
+                            childFrame({ completedAt: anyNumber(), value: 1 }),
+                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        variables: { result: 3 },
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 1, done: true }));
+    expect(workflow.state?.root).toEqual(expectedStack);
+    expect(workflow.state?.complete).toBe(true);
+    expect(workflow.state?.output).toBe(3);
 });

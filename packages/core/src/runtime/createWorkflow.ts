@@ -1,35 +1,9 @@
 import type { StackFrame } from './runtimeTypes.js';
-import type { Runtime } from '../defineRuntime.js';
+import type { Runtime, RuntimeOutput } from '../defineRuntime.js';
 import type { Script } from '../parser/astTypes.js';
 
 /**
- * Options for {@link createWorkflow}.
- */
-export type WorkflowOptions<TRuntime extends Runtime> = {
-    /**
-     * AgentScript runtime to use.
-     */
-    runtime: TRuntime;
-    /**
-     * AgentScript script AST to execute.
-     */
-    ast: Script;
-    /**
-     * Code for the workflow.
-     */
-    code?: string;
-    /**
-     * Plan for the workflow.
-     */
-    plan?: string;
-    /**
-     * State of the workflow.
-     */
-    state?: StackFrame;
-};
-
-/**
- *
+ * Workflow to be executed.
  */
 export type Workflow<TRuntime extends Runtime = Runtime> = {
     /**
@@ -37,13 +11,9 @@ export type Workflow<TRuntime extends Runtime = Runtime> = {
      */
     runtime: TRuntime;
     /**
-     * AgentScript script AST to execute.
+     * AgentScript script to execute.
      */
-    ast: Script;
-    /**
-     * Code for the workflow.
-     */
-    code?: string;
+    script: Script;
     /**
      * Plan for the workflow.
      */
@@ -51,26 +21,54 @@ export type Workflow<TRuntime extends Runtime = Runtime> = {
     /**
      * State of the workflow.
      */
-    state: StackFrame;
+    state?: WorkflowState<TRuntime>;
+};
+
+type WorkflowStateBase = {
+    /**
+     * Root frame of the workflow execution stack.
+     * Execution progress is stored here.
+     */
+    root: StackFrame;
+};
+
+type WorkflowStateComplete<TRuntime extends Runtime> = {
+    /**
+     * Whether the workflow is complete.
+     */
+    complete: true;
+
+    /**
+     * Output of the workflow.
+     */
+    output: RuntimeOutput<TRuntime>;
+};
+
+type WorkflowStateIncomplete = {
+    /**
+     * Whether the workflow is complete.
+     */
+    complete: false;
+
+    /**
+     * Output of the workflow.
+     */
+    output?: undefined;
 };
 
 /**
+ * State of the workflow.
+ */
+export type WorkflowState<TRuntime extends Runtime> = WorkflowStateBase &
+    (WorkflowStateComplete<TRuntime> | WorkflowStateIncomplete);
+
+/**
  * Create a new workflow.
- * @param options - Workflow options.
+ * @param workflow - Workflow options.
  * @returns New workflow.
  */
 export function createWorkflow<TRuntime extends Runtime>(
-    options: WorkflowOptions<TRuntime>,
+    workflow: Workflow<TRuntime>,
 ): Workflow<TRuntime> {
-    const state: StackFrame = options.state ?? {
-        startedAt: Date.now(),
-    };
-
-    return {
-        runtime: options.runtime,
-        ast: options.ast,
-        code: options.code,
-        plan: options.plan,
-        state,
-    };
+    return workflow;
 }
