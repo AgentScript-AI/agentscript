@@ -3,6 +3,18 @@
     "include": [],
     "references": [
         {
+            "path": "./demo/linear/tsconfig.json"
+        },
+        {
+            "path": "./demo/simple-math/tsconfig.json"
+        },
+        {
+            "path": "./integrations/duckduckgo/tsconfig.json"
+        },
+        {
+            "path": "./integrations/linear/tsconfig.json"
+        },
+        {
             "path": "./nzyme/packages/aws-cdk/tsconfig.json"
         },
         {
@@ -87,10 +99,13 @@
             "path": "./packages/core/tsconfig.json"
         },
         {
-            "path": "./packages/demo/tsconfig.json"
+            "path": "./packages/schema/tsconfig.json"
         },
         {
-            "path": "./packages/schema/tsconfig.json"
+            "path": "./packages/template/tsconfig.json"
+        },
+        {
+            "path": "./packages/tools/tsconfig.json"
         },
         {
             "path": "./packages/utils/tsconfig.json"

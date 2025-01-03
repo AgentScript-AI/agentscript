@@ -1,20 +1,28 @@
-import type { Constructor } from '@nzyme/types';
-
+/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 /* eslint-disable @typescript-eslint/unbound-method */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type NativeFunction = (...args: any[]) => unknown;
+import { Console } from 'console';
 
-const allowedFunctions: (NativeFunction | string)[] = [
+/**
+ * Native function type.
+ */
+export type NativeFunction = Function;
+
+/**
+ * Set of allowed native functions.
+ */
+export const allowedNativeFunctions = new Set<NativeFunction | string>([
     'toString',
     Number,
     String,
     Boolean,
+    Console.prototype.log,
     Array.prototype.push,
     Array.prototype.pop,
     Array.prototype.shift,
     Array.prototype.unshift,
     Array.prototype.slice,
     Array.prototype.splice,
+    Date.prototype.constructor,
     Date.prototype.getTime,
     Date.prototype.getDate,
     Date.prototype.getDay,
@@ -31,11 +39,17 @@ const allowedFunctions: (NativeFunction | string)[] = [
     Date.prototype.toTimeString,
     Date.prototype.toLocaleDateString,
     Date.prototype.toLocaleTimeString,
-];
+]);
 
-export const allowedNativeFunctions = new Set(allowedFunctions);
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-const allowedConstructors: Function[] = [Date.prototype.constructor];
-
-export const allowedNativeConstructors = new Set(allowedConstructors as Constructor[]);
+/**
+ * Set of allowed native identifiers.
+ */
+export const allowedNativeIdentifiers = new Set([
+    'console',
+    'Date',
+    'Array',
+    'Object',
+    'String',
+    'Number',
+    'Boolean',
+]);

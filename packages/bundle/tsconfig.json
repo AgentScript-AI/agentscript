@@ -16,6 +16,12 @@
         },
         {
             "path": "../schema/tsconfig.json"
+        },
+        {
+            "path": "../tools/tsconfig.json"
+        },
+        {
+            "path": "../utils/tsconfig.json"
         }
     ]
 }

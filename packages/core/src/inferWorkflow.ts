@@ -1,8 +1,13 @@
-import type { Runtime } from '../defineRuntime.js';
-import type { LanguageModel } from '../llm/LanguageModel.js';
-import { renderRuntime } from '../modules/renderRuntime.js';
-import { parseScript } from '../parser/parseScript.js';
-import { type Workflow, createWorkflow } from '../runtime/createWorkflow.js';
+import createDebug from 'debug';
+
+import { getCurrentDatePrompt } from '@agentscript.ai/utils';
+
+import type { Runtime } from './defineRuntime.js';
+import type { LanguageModel } from './llm/LanguageModel.js';
+import { renderRuntime } from './modules/renderRuntime.js';
+import { parseScript } from './parser/parseScript.js';
+import { type Workflow, createWorkflow } from './runtime/createWorkflow.js';
+import { createTypedPrompt } from './utils/createTypedPrompt.js';
 
 /**
  * Parameters for {@link inferWorkflow}.
@@ -44,6 +49,8 @@ Don't explain the code later.`;
 
 const RESPONSE_REGEX = /^([\s\S]*)```(\w*)?\n([\s\S]*)\n```/m;
 
+const debug = createDebug('agentscript:inferWorkflow');
+
 /**
  * Infer a workflow from a given prompt.
  * @param params - Parameters for {@link inferWorkflow}.
@@ -52,13 +59,22 @@ const RESPONSE_REGEX = /^([\s\S]*)```(\w*)?\n([\s\S]*)\n```/m;
 export async function inferWorkflow<TRuntime extends Runtime>(
     params: InferWorkflowParams<TRuntime>,
 ): Promise<Workflow<TRuntime>> {
-    const systemPrompt = createSystemPrompt(params);
+    const definitions = renderRuntime(params.runtime);
+
+    const systemPrompt = createTypedPrompt({
+        prompts: [params.systemPrompt, SYSTEM_PROMPT, getCurrentDatePrompt()],
+        definitions,
+    });
+
     const response = await params.llm.invoke({
         systemPrompt,
         messages: [{ role: 'user', content: params.prompt }],
     });
 
     const { plan, code } = parseResponse(response.content);
+
+    debug('plan', plan);
+    debug('code', code);
 
     const ast = parseScript(code);
     const workflow = createWorkflow({
@@ -69,17 +85,6 @@ export async function inferWorkflow<TRuntime extends Runtime>(
     });
 
     return workflow;
-}
-
-function createSystemPrompt(params: InferWorkflowParams) {
-    const definitions = renderRuntime(params.runtime);
-    let prompt = `${SYSTEM_PROMPT}\n\n\`\`\`typescript\n${definitions}\n\`\`\``;
-
-    if (params.systemPrompt) {
-        prompt += `${params.systemPrompt}\n\n`;
-    }
-
-    return prompt;
 }
 
 function parseResponse(response: string) {

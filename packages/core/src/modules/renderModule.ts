@@ -1,8 +1,8 @@
 import * as s from '@agentscript.ai/schema';
 
 import { INDENT } from '../constants.js';
-import { isFunction } from '../defineFunction.js';
-import { renderFunction } from './renderFunction.js';
+import { isTool } from '../defineTool.js';
+import { renderTool } from './renderTool.js';
 import { renderTypeNamed } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
 import type { RuntimeModule } from '../defineRuntime.js';
@@ -47,8 +47,8 @@ export function renderModule(module: RuntimeModule, indent: string = '') {
 
                 // todo: support more types
             }
-        } else if (isFunction(value)) {
-            code += renderFunction({
+        } else if (isTool(value)) {
+            code += renderTool({
                 name,
                 func: value,
                 indent,

@@ -55,6 +55,12 @@ function parseStatement(statement: babel.Statement): Statement {
 
 function parseExpression(expression: babel.Expression): Expression {
     switch (expression.type) {
+        case 'Identifier':
+            return {
+                type: 'Identifier',
+                name: expression.name,
+            };
+
         case 'NullLiteral':
             return {
                 type: 'Literal',
@@ -69,11 +75,15 @@ function parseExpression(expression: babel.Expression): Expression {
                 value: expression.value,
             };
 
-        case 'Identifier':
-            return {
-                type: 'Identifier',
-                name: expression.name,
-            };
+        case 'UnaryExpression':
+            if (expression.operator === '-' && expression.argument.type === 'NumericLiteral') {
+                return {
+                    type: 'Literal',
+                    value: -expression.argument.value,
+                };
+            }
+
+            break;
 
         case 'MemberExpression':
             return {

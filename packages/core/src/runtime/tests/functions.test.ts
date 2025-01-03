@@ -2,14 +2,14 @@ import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript.ai/schema';
 
-import { defineFunction } from '../../defineFunction.js';
+import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
 import { createWorkflow } from '../createWorkflow.js';
 import { executeWorkflow } from '../executeWorkflow.js';
 import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
 import { defineRuntime } from '../../defineRuntime.js';
 
-const add = defineFunction({
+const add = defineTool({
     description: 'Add two numbers',
     args: {
         a: s.number(),
@@ -19,7 +19,7 @@ const add = defineFunction({
     handler: ({ args: { a, b } }) => a + b,
 });
 
-const multiply = defineFunction({
+const multiply = defineTool({
     description: 'Multiply two numbers',
     args: {
         a: s.number(),
@@ -29,7 +29,7 @@ const multiply = defineFunction({
     handler: ({ args: { a, b } }) => a * b,
 });
 
-const square = defineFunction({
+const square = defineTool({
     description: 'Square a number',
     args: {
         a: s.number(),

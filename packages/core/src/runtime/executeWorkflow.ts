@@ -4,10 +4,10 @@ import type { Constructor } from '@nzyme/types';
 import { RuntimeError } from './RuntimeError.js';
 import type { Workflow } from './createWorkflow.js';
 import type { StackFrame } from './runtimeTypes.js';
-import type { FunctionDefinition } from '../defineFunction.js';
-import { isFunction } from '../defineFunction.js';
-import type { NativeFunction } from './functions.js';
-import { allowedNativeConstructors, allowedNativeFunctions } from './functions.js';
+import type { ToolDefinition } from '../defineTool.js';
+import { isTool } from '../defineTool.js';
+import type { NativeFunction } from './common.js';
+import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type { Runtime } from '../defineRuntime.js';
@@ -22,15 +22,6 @@ import type {
     ObjectExpression,
     Statement,
 } from '../parser/astTypes.js';
-
-const allowedNativeIdentifiers = new Set([
-    'Date',
-    'Array',
-    'Object',
-    'String',
-    'Number',
-    'Boolean',
-]);
 
 /**
  * Options for the {@link executeWorkflow} function.
@@ -365,20 +356,12 @@ async function runFunctionCall(
         obj = undefined;
     }
 
-    if (isFunction(func)) {
+    if (isTool(func)) {
         return await runFunctionCustom(runtime, controller, block, frame, expression, func);
     }
 
     if (typeof func === 'function') {
-        return await runFunctionNative(
-            runtime,
-            controller,
-            block,
-            frame,
-            expression,
-            func as NativeFunction,
-            obj,
-        );
+        return await runFunctionNative(runtime, controller, block, frame, expression, func, obj);
     }
 
     throw new RuntimeError(`Expression is not a function`);
@@ -390,7 +373,7 @@ async function runFunctionCustom(
     block: StackFrame,
     frame: StackFrame,
     call: FunctionCall,
-    func: FunctionDefinition,
+    func: ToolDefinition,
 ) {
     const args = await runExpressionArray(runtime, controller, block, frame, call.args);
     if (!args) {
@@ -434,7 +417,7 @@ async function runFunctionNative(
         throw new RuntimeError(`Function ${func.name} is not allowed`);
     }
 
-    const result = func.apply(thisArg, args);
+    const result = func.apply(thisArg, args) as unknown;
     if (result instanceof Promise) {
         frame.value = await result;
         controller.tick();
@@ -457,7 +440,7 @@ async function runNewExpression(
         throw new RuntimeError(`Expression is not a function`);
     }
 
-    if (!allowedNativeConstructors.has(constructor)) {
+    if (!allowedNativeFunctions.has(constructor)) {
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 

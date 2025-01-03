@@ -1,6 +1,6 @@
 import type { Schema } from '@agentscript.ai/schema';
 
-import type { FunctionDefinition } from './defineFunction.js';
+import type { ToolDefinition } from './defineTool.js';
 
 /**
  * AgentScript runtime.
@@ -13,7 +13,7 @@ export type Runtime = RuntimeModule & {
  * AgentScript runtime module.
  */
 export type RuntimeModule = {
-    readonly [name: string]: Schema | FunctionDefinition | RuntimeModule;
+    readonly [name: string]: Schema | ToolDefinition | RuntimeModule;
 };
 
 /**

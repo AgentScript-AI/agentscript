@@ -1,4 +1,4 @@
-import { defineFunction, defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript.ai';
+import { defineTool, defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript.ai';
 import { AnthropicModel } from 'agentscript.ai/anthropic';
 import * as s from 'agentscript.ai/schema';
 
@@ -6,7 +6,7 @@ import { loadEnvVariables } from '@nzyme/project-utils';
 
 loadEnvVariables();
 
-const add = defineFunction({
+const add = defineTool({
     description: 'Add two numbers',
     args: {
         a: s.number(),
@@ -16,7 +16,7 @@ const add = defineFunction({
     handler: ({ args }) => args.a + args.b,
 });
 
-const multiply = defineFunction({
+const multiply = defineTool({
     description: 'Multiply two numbers',
     args: {
         a: s.number(),
@@ -26,7 +26,7 @@ const multiply = defineFunction({
     handler: ({ args }) => args.a * args.b,
 });
 
-const divide = defineFunction({
+const divide = defineTool({
     description: 'Divide two numbers',
     args: {
         a: s.number(),
@@ -36,7 +36,7 @@ const divide = defineFunction({
     handler: ({ args }) => args.a / args.b,
 });
 
-const square = defineFunction({
+const square = defineTool({
     description: 'Square a number',
     args: {
         a: s.number(),
@@ -45,7 +45,7 @@ const square = defineFunction({
     handler: ({ args }) => args.a * args.a,
 });
 
-const squareRoot = defineFunction({
+const squareRoot = defineTool({
     description: 'Square root of a number',
     args: {
         a: s.number(),

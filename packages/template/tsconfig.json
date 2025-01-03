@@ -9,10 +9,10 @@
     "include": ["src"],
     "references": [
         {
-            "path": "../../nzyme/packages/project-utils/tsconfig.json"
+            "path": "../core/tsconfig.json"
         },
         {
-            "path": "../bundle/tsconfig.json"
+            "path": "../schema/tsconfig.json"
         }
     ]
 }

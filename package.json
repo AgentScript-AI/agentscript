@@ -23,8 +23,9 @@
         "typescript": "^5.7.2"
     },
     "workspaces": [
-        "integrations/*",
         "packages/*",
+        "demo/*",
+        "integrations/*",
         "nzyme/packages/*"
     ],
     "packageManager": "yarn@4.1.0",

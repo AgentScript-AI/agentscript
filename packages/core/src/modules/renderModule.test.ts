@@ -2,7 +2,7 @@ import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript.ai/schema';
 
-import { defineFunction } from '../defineFunction.js';
+import { defineTool } from '../defineTool.js';
 import { renderModule } from './renderModule.js';
 import { joinLines } from '../utils/joinLines.js';
 
@@ -108,7 +108,7 @@ describe('functions', () => {
         },
     });
 
-    const getUser = defineFunction({
+    const getUser = defineTool({
         description: 'Get a user',
         args: {
             id: s.string({

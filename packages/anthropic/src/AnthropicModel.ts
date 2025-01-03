@@ -1,7 +1,13 @@
 import { Anthropic } from '@anthropic-ai/sdk';
 
 import { LanguageModel } from '@agentscript.ai/core';
+import type { Injected } from '@nzyme/ioc';
 import { constValue, defineService } from '@nzyme/ioc';
+
+/**
+ * Anthropic language model.
+ */
+export type AnthropicModel = Injected<typeof AnthropicModel>;
 
 /**
  * Anthropic language model.
@@ -22,7 +28,9 @@ export const AnthropicModel = defineService({
             invoke: async params => {
                 const response = await anthropic.messages.create({
                     model,
-                    system: params.systemPrompt,
+                    system: Array.isArray(params.systemPrompt)
+                        ? params.systemPrompt.join('\n')
+                        : params.systemPrompt,
                     messages: params.messages.map(message => ({
                         role: message.role,
                         content: message.content,

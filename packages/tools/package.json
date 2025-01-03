@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript.ai/demo",
+    "name": "@agentscript.ai/tools",
     "version": "1.0.0",
     "repository": "https://github.com/agentscript/agentscript.git",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
@@ -10,12 +10,15 @@
     "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
-        "build": "tsc --build",
-        "start": "node dist/index.js"
+        "build": "tsc --build"
     },
     "dependencies": {
-        "@nzyme/project-utils": "*",
-        "agentscript.ai": "*"
+        "@agentscript.ai/core": "*",
+        "@agentscript.ai/schema": "*",
+        "@agentscript.ai/utils": "*",
+        "@nzyme/ioc": "*",
+        "@nzyme/utils": "*",
+        "date-fns": "^4.1.0"
     },
     "devDependencies": {
         "@agentscript.ai/eslint": "*",

@@ -1,0 +1,42 @@
+query getIssues($filter: IssueFilter, $comments: Boolean!, $description: Boolean!) {
+    issues(filter: $filter) {
+        nodes {
+            identifier
+            url
+            title
+            state {
+                name
+                type
+            }
+            creator {
+                ...User
+            }
+            createdAt
+            updatedAt
+            description @include(if: $description)
+            comments @include(if: $comments) {
+                nodes {
+                    id
+                    user {
+                        ...User
+                    }
+                    body
+                }
+            }
+        }
+    }
+}
+
+query getWorkflowStates {
+    workflowStates {
+        nodes {
+            name
+        }
+    }
+}
+
+fragment User on User {
+    id
+    name
+    email
+}

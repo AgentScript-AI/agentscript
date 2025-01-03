@@ -2,6 +2,7 @@ import * as s from '@agentscript.ai/schema';
 
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';
+import { renderComment } from './renderComment.js';
 
 /**
  * Options for {@link renderTypeInline}.
@@ -88,6 +89,8 @@ function renderInner(
             return 'void';
         case s.unknown:
             return 'unknown';
+        case s.enum:
+            return renderEnum(schema as s.EnumSchema);
         case s.object:
             if (!skipResolving) {
                 const resolved = typeResolver?.getName(schema as s.ObjectSchema);
@@ -103,7 +106,7 @@ function renderInner(
         case s.union:
             return renderUnion(schema as s.UnionSchema, indent, typeResolver);
         default:
-            throw new Error(`Unsupported schema`);
+            throw new Error(`Unsupported schema ${schema.base.name}`);
     }
 }
 
@@ -121,7 +124,11 @@ function renderObject(schema: s.ObjectSchema, indent: string, typeResolver?: Typ
 
         const description = value.description;
         if (description) {
-            code += `${propsIndent}/** ${description} */\n`;
+            const comment = renderComment(description, propsIndent);
+            if (comment) {
+                code += comment;
+                code += '\n';
+            }
         }
 
         const type = renderTypeInternal(value, propsIndent, typeResolver, optional);
@@ -143,4 +150,8 @@ function renderArray(schema: s.ArraySchema, indent: string, typeResolver?: TypeR
 
 function renderUnion(schema: s.UnionSchema, indent: string, typeResolver?: TypeResolver) {
     return schema.of.map(option => renderTypeInternal(option, indent, typeResolver)).join(' | ');
+}
+
+function renderEnum(schema: s.EnumSchema) {
+    return schema.values.map(option => `"${option}"`).join(' | ');
 }

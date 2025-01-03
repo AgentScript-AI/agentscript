@@ -47,6 +47,13 @@ test('unknown', () => {
     expect(code).toEqual('unknown');
 });
 
+test('enum', () => {
+    const schema = s.enum(['foo', 'bar']);
+    const code = renderTypeInline(schema);
+
+    expect(code).toEqual('"foo" | "bar"');
+});
+
 test('custom type nullable', () => {
     const schema = s.object({ props: { name: s.string() } });
     const resolver = createTypeResolver();

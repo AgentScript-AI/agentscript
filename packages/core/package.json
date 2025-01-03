@@ -7,15 +7,18 @@
     "types": "dist/index.d.ts",
     "dependencies": {
         "@agentscript.ai/schema": "*",
+        "@agentscript.ai/utils": "*",
         "@babel/parser": "^7.26.3",
         "@nzyme/ioc": "*",
         "@nzyme/types": "*",
-        "@nzyme/utils": "*"
+        "@nzyme/utils": "*",
+        "debug": "^4.4.0"
     },
     "devDependencies": {
         "@agentscript.ai/eslint": "*",
         "@agentscript.ai/tsconfig": "*",
         "@nzyme/vitest": "*",
+        "@types/debug": "^4",
         "@types/node": "^20.11.24",
         "typescript": "^5.7.2",
         "vitest": "^2.1.8"

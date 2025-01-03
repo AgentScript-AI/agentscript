@@ -8,8 +8,9 @@ import type { Message } from './llmTypes.js';
 export interface LanguageModelInvokeParams {
     /**
      * System prompt to use.
+     * Can be passed as array of strings to allow for multi-line system prompts.
      */
-    systemPrompt?: string;
+    systemPrompt?: string | string[];
     /**
      * Messages to use
      */

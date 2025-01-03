@@ -7,7 +7,8 @@
     "exports": {
         ".": "./dist/core.js",
         "./anthropic": "./dist/anthropic.js",
-        "./schema": "./dist/schema.js"
+        "./schema": "./dist/schema.js",
+        "./tools": "./dist/tools.js"
     },
     "sideEffects": false,
     "scripts": {
@@ -17,7 +18,9 @@
     "dependencies": {
         "@agentscript.ai/anthropic": "*",
         "@agentscript.ai/core": "*",
-        "@agentscript.ai/schema": "*"
+        "@agentscript.ai/schema": "*",
+        "@agentscript.ai/tools": "*",
+        "@agentscript.ai/utils": "*"
     },
     "devDependencies": {
         "@agentscript.ai/eslint": "*",

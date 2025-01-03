@@ -12,6 +12,9 @@
             "path": "../schema/tsconfig.json"
         },
         {
+            "path": "../utils/tsconfig.json"
+        },
+        {
             "path": "../../nzyme/packages/ioc/tsconfig.json"
         },
         {

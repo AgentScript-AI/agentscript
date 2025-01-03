@@ -16,6 +16,19 @@ test('assign variable', () => {
     expect(script).toEqual(expected);
 });
 
+test('assign variable with negative value', () => {
+    const script = parseScript('const a = -1');
+    const expected: Script = [
+        {
+            type: 'Variable',
+            name: 'a',
+            value: { type: 'Literal', value: -1 },
+        },
+    ];
+
+    expect(script).toEqual(expected);
+});
+
 test('call function', () => {
     const script = parseScript('foo()');
     const expected: Script = [

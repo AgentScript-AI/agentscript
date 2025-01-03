@@ -1,21 +1,21 @@
-import type { FunctionDefinition } from '../defineFunction.js';
+import type { ToolDefinition } from '../defineTool.js';
 import { renderComment } from './renderComment.js';
 import { renderTypeInline, renderTypeNamed } from './renderType.js';
 import type { TypeResolver } from './typeResolver.js';
 
-interface RenderFunctionOptions {
-    func: FunctionDefinition;
+interface RenderToolOptions {
+    func: ToolDefinition;
     name: string;
     indent?: string;
     typeResolver: TypeResolver;
 }
 
 /**
- * Render a function as TypeScript code.
- * @param options - Options for the function.
- * @returns Rendered function.
+ * Render a tool as TypeScript code.
+ * @param options - Options for the tool.
+ * @returns Rendered tool.
  */
-export function renderFunction(options: RenderFunctionOptions) {
+export function renderTool(options: RenderToolOptions) {
     const { func, name, indent = '', typeResolver } = options;
 
     let code = '';
