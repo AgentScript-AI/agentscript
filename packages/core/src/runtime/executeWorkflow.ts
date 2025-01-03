@@ -1,4 +1,4 @@
-import { validate } from '@agentscript-ai/schema';
+import { validate, validateOrThrow } from '@agentscript-ai/schema';
 import type { Constructor } from '@nzyme/types';
 
 import { RuntimeError } from './RuntimeError.js';
@@ -380,20 +380,31 @@ async function runFunctionCustom(
         return false;
     }
 
-    const argProps = func.input ? Object.entries(func.input.props) : [];
-    const argObject: Record<string, unknown> = {};
+    let argObject: Record<string, unknown>;
 
-    for (let i = 0; i < argProps.length; i++) {
-        const arg = args[i];
-        const argName = argProps[i][0];
+    if (func.singleArg) {
+        argObject = args[0] as Record<string, unknown>;
+    } else {
+        argObject = {};
+        const argProps = Object.entries(func.input.props);
 
-        argObject[argName] = arg;
+        for (let i = 0; i < argProps.length; i++) {
+            const arg = args[i];
+            const argName = argProps[i][0];
+
+            argObject[argName] = arg;
+        }
     }
 
-    validate(func.input, args);
+    validateOrThrow(func.input, argObject);
 
-    frame.value = await func.handler({ input: argObject });
-    controller.tick();
+    const result: unknown = func.handler({ input: argObject });
+    if (result instanceof Promise) {
+        frame.value = await result;
+        controller.tick();
+    } else {
+        frame.value = result;
+    }
 
     return completeFrame(frame);
 }

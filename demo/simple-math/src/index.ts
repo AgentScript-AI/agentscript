@@ -60,8 +60,6 @@ const squareRoot = defineTool({
     handler: ({ input }) => Math.sqrt(input.a),
 });
 
-const t: ToolDefinition = divide;
-
 const runtime = defineRuntime({
     add,
     multiply,

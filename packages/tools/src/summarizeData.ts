@@ -15,17 +15,19 @@ export const summarizeData = defineService({
     setup({ llm }) {
         return defineTool({
             description: 'Summarize any data',
-            input: {
-                data: s.unknown({
-                    description: 'The data to summarize. Can be in any format.',
-                }),
-                prompt: s.string({
-                    description: [
-                        'The prompt to use to summarize the data.',
-                        'Describe the expected outcome.',
-                    ],
-                }),
-            },
+            input: s.object({
+                props: {
+                    data: s.unknown({
+                        description: 'The data to summarize. Can be in any format.',
+                    }),
+                    prompt: s.string({
+                        description: [
+                            'The prompt to use to summarize the data.',
+                            'Describe the expected outcome.',
+                        ],
+                    }),
+                },
+            }),
             output: s.string(),
             async handler({ input: { data, prompt } }) {
                 const result = await llm.invoke({

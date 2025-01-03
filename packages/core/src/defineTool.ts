@@ -68,6 +68,10 @@ export type ToolDefinition<
      */
     input: TIn;
     /**
+     * Whether the tool has a single argument.
+     */
+    singleArg: boolean;
+    /**
      * Schema of the return value of the tool.
      */
     output: TOut;
@@ -114,6 +118,7 @@ export function defineTool<
     TOut extends s.Schema = s.Schema<void>,
 >(options: ToolOptions<TIn, TOut>): ToolDefinition<ToolInputSchema<TIn>, TOut> {
     let input: ToolInputSchema<TIn>;
+    let singleArg = false;
 
     if (!options.input) {
         input = s.object({ props: {} }) as ToolInputSchema<TIn>;
@@ -123,13 +128,18 @@ export function defineTool<
         }
 
         input = options.input as ToolInputSchema<TIn>;
+        // if a full schema is provided, we assume it's a single argument
+        singleArg = true;
     } else {
         input = s.object({ props: options.input }) as ToolInputSchema<TIn>;
+        // make the tool singleArg if there are more than 2 arguments
+        singleArg = Object.keys(options.input).length > 2;
     }
 
     return {
         description: options.description,
         input,
+        singleArg,
         output: options.output ?? (s.void() as TOut),
         types: options.types,
         handler: options.handler as ToolHandler<ToolInputSchema<TIn>, TOut>,

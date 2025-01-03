@@ -10,14 +10,6 @@ import { GetIssuesDocument, GetWorkflowStatesDocument } from '../gql.js';
 import { Issue } from '../types/Issue.js';
 import { createIssueFilter } from '../types/IssueFilter.js';
 
-const SearchIssuesQuery = s.object({
-    props: {
-        query: s.unknown({
-            description: 'Descriptive query in object format.',
-        }),
-    },
-});
-
 const debug = createDebug('agentscript:linear:searchIssues');
 
 /**
@@ -35,7 +27,11 @@ export const searchIssues = defineService({
                 'Search for issues using a natural language query.',
                 'Do not filter results later, put all the search criteria in the query.',
             ],
-            input: SearchIssuesQuery.props,
+            input: {
+                query: s.unknown({
+                    description: 'Descriptive query in object format.',
+                }),
+            },
             output: s.array(Issue),
             types: {
                 Issue,

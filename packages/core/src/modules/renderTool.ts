@@ -1,5 +1,7 @@
+import { toPascalCase } from '@nzyme/utils';
 import type { ToolDefinition } from '../defineTool.js';
 import { renderComment } from './renderComment.js';
+import { renderDocDirective } from './renderDocDirective.js';
 import { renderTypeInline, renderTypeNamed } from './renderType.js';
 import type { TypeResolver } from './typeResolver.js';
 
@@ -16,13 +18,13 @@ interface RenderToolOptions {
  * @returns Rendered tool.
  */
 export function renderTool(options: RenderToolOptions) {
-    const { func, name, indent = '', typeResolver } = options;
+    const { func: tool, name, indent = '', typeResolver } = options;
 
     let code = '';
     let args = '';
 
-    if (func.types) {
-        for (const [typeName, typeSchema] of Object.entries(func.types)) {
+    if (tool.types) {
+        for (const [typeName, typeSchema] of Object.entries(tool.types)) {
             const existingName = typeResolver.getName(typeSchema);
             if (existingName) {
                 continue;
@@ -40,14 +42,30 @@ export function renderTool(options: RenderToolOptions) {
         }
     }
 
-    const description = func.description
-        ? Array.isArray(func.description)
-            ? func.description
-            : [func.description]
+    const description = tool.description
+        ? Array.isArray(tool.description)
+            ? tool.description
+            : [tool.description]
         : [];
 
-    if (func.input) {
-        for (const [name, arg] of Object.entries(func.input.props)) {
+    if (tool.singleArg) {
+        let inputTypeName = typeResolver.getName(tool.input);
+        if (!inputTypeName) {
+            inputTypeName = toPascalCase(tool.input.name || `${name}Params`);
+            inputTypeName = findUniqueName(inputTypeName, typeResolver);
+            typeResolver.add(inputTypeName, tool.input);
+
+            code += renderTypeNamed(tool.input, {
+                name: inputTypeName,
+                indent,
+                typeResolver,
+            });
+            code += '\n\n';
+        }
+
+        args = `params: ${inputTypeName}`;
+    } else {
+        for (const [name, arg] of Object.entries(tool.input.props)) {
             if (args.length > 0) {
                 args += ', ';
             }
@@ -55,13 +73,13 @@ export function renderTool(options: RenderToolOptions) {
             args += `${name}: ${renderTypeInline(arg, { typeResolver })}`;
 
             if (arg.description) {
-                description.push(`@param ${name} - ${arg.description}`);
+                description.push(renderDocDirective(`param ${name} -`, arg.description));
             }
         }
     }
 
-    if (func.output.description) {
-        description.push(`@returns ${func.output.description}`);
+    if (tool.output.description) {
+        description.push(renderDocDirective('returns', tool.output.description));
     }
 
     const comment = renderComment(description, indent);
@@ -69,7 +87,7 @@ export function renderTool(options: RenderToolOptions) {
         code += `${comment}\n`;
     }
 
-    const returnType = renderTypeInline(func.output, { typeResolver });
+    const returnType = renderTypeInline(tool.output, { typeResolver });
 
     code += `${indent}export function ${name}(${args}): ${returnType};`;
 

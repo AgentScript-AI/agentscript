@@ -3,6 +3,7 @@ import * as s from '@agentscript-ai/schema';
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';
 import { renderComment } from './renderComment.js';
+import { normalizeText } from '../utils/normalizeText.js';
 
 /**
  * Options for {@link renderTypeInline}.
@@ -124,7 +125,7 @@ function renderObject(schema: s.ObjectSchema, indent: string, typeResolver?: Typ
 
         const description = value.description;
         if (description) {
-            const comment = renderComment(description, propsIndent);
+            const comment = renderComment(normalizeText(description), propsIndent);
             if (comment) {
                 code += comment;
                 code += '\n';

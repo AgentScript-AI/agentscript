@@ -100,7 +100,7 @@ test('nested object', () => {
     );
 });
 
-describe('functions', () => {
+describe('tools', () => {
     const User = s.object({
         props: {
             name: s.string(),
@@ -334,6 +334,126 @@ describe('functions', () => {
                 '  id: string;',
                 '  name: string;',
                 '}',
+            ]),
+        );
+    });
+
+    test('more than 2 params', () => {
+        const tool = defineTool({
+            description: 'Get a foobar',
+            input: {
+                a: s.number({ description: 'The first number' }),
+                b: s.number({ description: 'The second number' }),
+                c: s.number({ description: 'The third number' }),
+            },
+            output: s.number(),
+            handler({ input }) {
+                return input.a + input.b + input.c;
+            },
+        });
+
+        const module = {
+            tool,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface ToolParams {',
+                '  /** The first number */',
+                '  a: number;',
+                '  /** The second number */',
+                '  b: number;',
+                '  /** The third number */',
+                '  c: number;',
+                '}',
+                '',
+                '/** Get a foobar */',
+                'export function tool(params: ToolParams): number;',
+            ]),
+        );
+    });
+
+    test('explicit input schema', () => {
+        const input = s.object({
+            props: {
+                a: s.number({ description: 'The first number' }),
+                b: s.number({ description: 'The second number' }),
+                c: s.number({ description: 'The third number' }),
+            },
+        });
+
+        const tool = defineTool({
+            description: 'Get a foobar',
+            input: input,
+            output: s.number(),
+            handler({ input }) {
+                return input.a + input.b + input.c;
+            },
+        });
+
+        const module = {
+            tool,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface ToolParams {',
+                '  /** The first number */',
+                '  a: number;',
+                '  /** The second number */',
+                '  b: number;',
+                '  /** The third number */',
+                '  c: number;',
+                '}',
+                '',
+                '/** Get a foobar */',
+                'export function tool(params: ToolParams): number;',
+            ]),
+        );
+    });
+
+    test('explicit input schema with name', () => {
+        const input = s.object({
+            name: 'Params',
+            props: {
+                a: s.number({ description: 'The first number' }),
+                b: s.number({ description: 'The second number' }),
+                c: s.number({ description: 'The third number' }),
+            },
+        });
+
+        const tool = defineTool({
+            description: 'Get a foobar',
+            input: input,
+            output: s.number(),
+            handler({ input }) {
+                return input.a + input.b + input.c;
+            },
+        });
+
+        const module = {
+            tool,
+        };
+
+        const rendered = renderModule(module);
+
+        expect(rendered).toEqual(
+            joinLines([
+                'export interface Params {',
+                '  /** The first number */',
+                '  a: number;',
+                '  /** The second number */',
+                '  b: number;',
+                '  /** The third number */',
+                '  c: number;',
+                '}',
+                '',
+                '/** Get a foobar */',
+                'export function tool(params: Params): number;',
             ]),
         );
     });

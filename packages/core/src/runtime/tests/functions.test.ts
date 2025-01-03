@@ -16,7 +16,7 @@ const add = defineTool({
         b: s.number(),
     },
     output: s.number(),
-    handler: ({ input: { a, b } }) => a + b,
+    handler: ({ input: { a, b } }) => Promise.resolve(a + b),
 });
 
 const multiply = defineTool({
@@ -26,7 +26,7 @@ const multiply = defineTool({
         b: s.number(),
     },
     output: s.number(),
-    handler: ({ input: { a, b } }) => a * b,
+    handler: ({ input: { a, b } }) => Promise.resolve(a * b),
 });
 
 const square = defineTool({
@@ -35,7 +35,7 @@ const square = defineTool({
         a: s.number(),
     },
     output: s.number(),
-    handler: ({ input: { a } }) => a * a,
+    handler: ({ input: { a } }) => Promise.resolve(a * a),
 });
 
 const runtime = defineRuntime({
@@ -410,6 +410,92 @@ test('array.push()', async () => {
             }),
         ],
         variables: { a: [1, 2, 3, 4] },
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
+    expect(workflow.state).toEqual(expectedStack);
+});
+
+test('more than two arguments are turned into a single arg', async () => {
+    const add = defineTool({
+        description: 'Add three numbers',
+        input: {
+            a: s.number(),
+            b: s.number(),
+            c: s.number(),
+        },
+        output: s.number(),
+        handler({ input }) {
+            return input.a + input.b + input.c;
+        },
+    });
+
+    const script = parseScript('add({ a: 1, b: 2, c: 3 })');
+    const workflow = createWorkflow({ runtime: { add }, ast: script });
+    const result = await executeWorkflow({ workflow });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                value: 6,
+                children: [
+                    childFrame({
+                        completedAt: anyNumber(),
+                        value: { a: 1, b: 2, c: 3 },
+                        children: [
+                            childFrame({ completedAt: anyNumber(), value: 1 }),
+                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            childFrame({ completedAt: anyNumber(), value: 3 }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
+    expect(workflow.state).toEqual(expectedStack);
+});
+
+test('explicit single arg', async () => {
+    const add = defineTool({
+        description: 'Add three numbers',
+        input: s.object({
+            props: {
+                a: s.number(),
+                b: s.number(),
+            },
+        }),
+        output: s.number(),
+        handler({ input }) {
+            return input.a + input.b;
+        },
+    });
+
+    const script = parseScript('add({ a: 1, b: 2 })');
+    const workflow = createWorkflow({ runtime: { add }, ast: script });
+    const result = await executeWorkflow({ workflow });
+
+    const expectedStack = rootFrame({
+        completedAt: anyNumber(),
+        children: [
+            childFrame({
+                completedAt: anyNumber(),
+                value: 6,
+                children: [
+                    childFrame({
+                        completedAt: anyNumber(),
+                        value: { a: 1, b: 2 },
+                        children: [
+                            childFrame({ completedAt: anyNumber(), value: 1 }),
+                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
     });
 
     expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));

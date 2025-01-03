@@ -4,11 +4,7 @@
  * @param indent - The indent to use.
  * @returns The rendered comment.
  */
-export function renderComment(comment: string | string[], indent: string = '') {
-    if (typeof comment === 'string') {
-        comment = [comment];
-    }
-
+export function renderComment(comment: string[], indent: string = '') {
     if (comment.length === 0) {
         return '';
     }
