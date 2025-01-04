@@ -1,12 +1,7 @@
 import { loadEnvVariables } from '@nzyme/project-utils';
+import chalk from 'chalk';
 
-import {
-    defineRuntime,
-    defineTool,
-    executeWorkflow,
-    inferWorkflow,
-    ToolDefinition,
-} from 'agentscript-ai';
+import { defineRuntime, defineTool, executeWorkflow, inferWorkflow } from 'agentscript-ai';
 import { AnthropicModel } from 'agentscript-ai/anthropic';
 import * as s from 'agentscript-ai/schema';
 
@@ -61,11 +56,13 @@ const squareRoot = defineTool({
 });
 
 const runtime = defineRuntime({
-    add,
-    multiply,
-    divide,
-    square,
-    squareRoot,
+    tools: {
+        add,
+        multiply,
+        divide,
+        square,
+        squareRoot,
+    },
 });
 
 const llm = AnthropicModel({
@@ -80,10 +77,22 @@ const workflow = await inferWorkflow({
     prompt: 'Calculate the square root of 16',
 });
 
-console.log('workflow plan', workflow.plan);
-console.log('workflow code', workflow.code);
+// We have the workflow ready, but it's not yet executed
+console.log(chalk.green('Generated plan:'));
+console.log(workflow.plan);
+console.log();
 
-const result = await executeWorkflow({ workflow });
+console.log(chalk.green('Generated code:'));
+console.log(workflow.script.code);
+console.log();
 
-console.log('workflow result', result);
-console.log('workflow state', workflow.state);
+// Now execute the workflow
+await executeWorkflow({ workflow });
+
+// We can now inspect the workflow variables and output
+console.log(chalk.green('Workflow variables:'));
+console.log(workflow.state?.root.variables);
+console.log();
+
+console.log(chalk.green('Workflow output:'));
+console.log(workflow.state?.output);
