@@ -5,14 +5,7 @@
         "rootDir": "./src",
         "tsBuildInfoFile": "./dist/.tsbuildinfo"
     },
-    "include": ["src"],
+    "include": ["src", "src/LanguageModel.ts"],
     "exclude": ["src/**/*.test.ts"],
-    "references": [
-        {
-            "path": "../schema/tsconfig.json"
-        },
-        {
-            "path": "../utils/tsconfig.json"
-        }
-    ]
+    "references": []
 }

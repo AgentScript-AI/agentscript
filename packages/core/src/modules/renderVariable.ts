@@ -1,9 +1,9 @@
 import type * as s from '@agentscript-ai/schema';
+import { normalizeText } from '@agentscript-ai/utils';
 
 import { renderComment } from './renderComment.js';
 import { renderTypeInline } from './renderType.js';
 import type { TypeResolver } from './typeResolver.js';
-import { normalizeText } from '../utils/normalizeText.js';
 
 /**
  * Parameters for {@link renderVariable}.

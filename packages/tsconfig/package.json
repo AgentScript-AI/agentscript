@@ -1,6 +1,7 @@
 {
     "name": "@agentscript-ai/tsconfig",
-    "version": "0.1.0",
+    "version": "0.0.0",
+    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -12,9 +13,6 @@
     "sideEffects": false,
     "main": "./base.json",
     "dependencies": {
-        "@types/node": "^22.7.7",
-        "typescript-plugin-css-modules": "^5.1.0",
-        "typescript-vue-plugin": "^1.8.27",
-        "vite": "^5.4.9"
+        "@types/node": "^22.10.5"
     }
 }

@@ -1,7 +1,5 @@
 import { defineInterface } from '@nzyme/ioc';
 
-import type { Message } from './llmTypes.js';
-
 /**
  * Parameters for {@link LanguageModel.invoke}.
  */
@@ -14,7 +12,21 @@ export interface LanguageModelInvokeParams {
     /**
      * Messages to use
      */
-    messages: Message[];
+    messages: LanguageModelMessage[];
+}
+
+/**
+ * LLM message.
+ */
+export interface LanguageModelMessage {
+    /**
+     * Role of the message.
+     */
+    role: 'user' | 'assistant';
+    /**
+     * Content of the message.
+     */
+    content: string;
 }
 
 /**
@@ -29,7 +41,7 @@ export interface LanguageModel {
      * Invoke the language model.
      * @returns Response from the language model.
      */
-    invoke(params: LanguageModelInvokeParams): Promise<Message>;
+    invoke(params: LanguageModelInvokeParams): Promise<LanguageModelMessage>;
 }
 
 /**

@@ -1,6 +1,7 @@
 {
     "name": "@agentscript-ai/eslint",
-    "version": "0.1.0",
+    "version": "0.0.0",
+    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -11,12 +12,8 @@
     },
     "sideEffects": false,
     "dependencies": {
-        "@nzyme/eslint": "^0.2.0",
-        "@typescript-eslint/eslint-plugin": "^8.10.0",
-        "@typescript-eslint/parser": "^8.10.0",
-        "eslint": "^9.13.0",
-        "eslint-config-prettier": "^9.1.0",
-        "eslint-plugin-import": "^2.31.0",
-        "eslint-plugin-prettier": "^5.2.1"
+        "@nzyme/eslint": "^0.3.0",
+        "eslint": "^9.17.0",
+        "eslint-plugin-import": "^2.31.0"
     }
 }

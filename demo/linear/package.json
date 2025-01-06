@@ -23,7 +23,7 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "*",
         "@agentscript-ai/tsconfig": "*",
-        "@types/node": "^22.7.7",
+        "@types/node": "^22.10.5",
         "dotenv-cli": "^8.0.0"
     }
 }

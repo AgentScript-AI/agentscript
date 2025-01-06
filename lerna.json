@@ -1,4 +1,6 @@
 {
-    "version": "1.0.0",
+    "version": "0.0.0",
+    "license": "Elastic License 2.0 (ELv2)",
+    "packages": ["packages/*"],
     "npmClient": "yarn"
 }

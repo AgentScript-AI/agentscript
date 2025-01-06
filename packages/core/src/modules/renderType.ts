@@ -1,9 +1,9 @@
 import * as s from '@agentscript-ai/schema';
+import { normalizeText } from '@agentscript-ai/utils';
 
 import type { TypeResolver } from './typeResolver.js';
 import { INDENT } from '../constants.js';
 import { renderComment } from './renderComment.js';
-import { normalizeText } from '../utils/normalizeText.js';
 
 /**
  * Options for {@link renderTypeInline}.

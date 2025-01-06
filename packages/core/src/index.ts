@@ -1,7 +1,5 @@
 export * from './defineTool.js';
-
-export * from './llm/LanguageModel.js';
-export * from './llm/llmTypes.js';
+export * from './LanguageModel.js';
 
 export * from './parser/parseScript.js';
 export * from './parser/astTypes.js';

@@ -1,12 +1,11 @@
 {
     "name": "@agentscript-ai/tsc",
-    "version": "1.0.0",
+    "version": "0.0.0",
     "type": "module",
     "sideEffects": false,
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "scripts": {
-        "watch": "cd ../.. && tsc --build --watch --preserveWatchOutput",
-        "tsc": "cd ../.. && tsc --build"
+        "watch": "yarn --cwd ../.. watch"
     }
 }

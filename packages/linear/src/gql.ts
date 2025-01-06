@@ -201,17 +201,6 @@ export type Attachment = Node & {
   url: Scalars['String']['output'];
 };
 
-/** A generic payload return from entity archive mutations. */
-export type AttachmentArchivePayload = ArchivePayload & {
-  __typename?: 'AttachmentArchivePayload';
-  /** The archived/unarchived entity. Null if entity was deleted. */
-  entity?: Maybe<Attachment>;
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
-};
-
 /** Attachment collection filtering options. */
 export type AttachmentCollectionFilter = {
   /** Compound filters, all of which need to be matched by the attachment. */
@@ -6846,11 +6835,6 @@ export type Mutation = {
   apiKeyCreate: ApiKeyPayload;
   /** [INTERNAL] Deletes an API key. */
   apiKeyDelete: DeletePayload;
-  /**
-   * [DEPRECATED] Archives an issue attachment.
-   * @deprecated This mutation is deprecated, please use `attachmentDelete` instead
-   */
-  attachmentArchive: AttachmentArchivePayload;
   /** Creates a new attachment, or updates existing if the same `url` and `issueId` is used. */
   attachmentCreate: AttachmentPayload;
   /** Deletes an issue attachment. */
@@ -7441,11 +7425,6 @@ export type MutationApiKeyCreateArgs = {
 
 
 export type MutationApiKeyDeleteArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationAttachmentArchiveArgs = {
   id: Scalars['String']['input'];
 };
 

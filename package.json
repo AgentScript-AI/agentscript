@@ -6,31 +6,35 @@
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "scripts": {
+        "setup": "yarn && nzyme monorepo",
         "monorepo": "nzyme monorepo",
-        "dev": "yarn && yarn monorepo && turbo run watch",
-        "clean": "tsc --build --clean",
-        "build": "tsc --build",
-        "start": "yarn --cwd examples/drizzle dev",
-        "sync:notion": "agentscript notion sync",
-        "ngrok": "ngrok http 3001"
+        "clean": "del \"**/dist\" \"/.tsbuildinfo\" \"!**/node_modules/**\"",
+        "dev": "yarn setup && turbo run watch",
+        "build": "tsc --build tsconfig.dev.json",
+        "watch": "yarn build --watch --preserveWatchOutput",
+        "upgrade": "yarn up \"@nzyme/*\" && yarn upgrade-interactive",
+        "release": "nx release"
     },
     "devDependencies": {
-        "@nzyme/cli": "^0.2.0",
-        "@types/source-map-support": "^0.5.10",
-        "lerna": "^8.1.8",
-        "prettier": "^3.3.3",
+        "@nx/js": "^20.3.0",
+        "@nzyme/cli": "^0.3.0",
+        "@swc-node/register": "^1.10.9",
+        "@swc/core": "^1.10.4",
+        "del-cli": "^6.0.0",
+        "nx": "20.3.0",
+        "prettier": "^3.4.2",
         "ts-node": "^10.9.2",
-        "turbo": "^2.2.2",
+        "turbo": "^2.3.3",
         "typescript": "^5.7.2"
     },
     "workspaces": [
         "packages/*",
-        "demo/*",
-        "nzyme/packages/*"
+        "demo/*"
     ],
     "packageManager": "yarn@4.1.0",
-    "dependencies": {
-        "source-map-support": "^0.5.21",
-        "supabase": "1.226.3"
+    "depcheck": {
+        "ignoreDeps": [
+            "*"
+        ]
     }
 }

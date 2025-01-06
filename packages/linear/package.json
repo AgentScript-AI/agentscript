@@ -1,6 +1,7 @@
 {
     "name": "@agentscript-ai/linear",
-    "version": "0.1.0",
+    "version": "0.0.0",
+    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -10,7 +11,8 @@
         "access": "public"
     },
     "files": [
-        "dist"
+        "dist",
+        "LICENSE"
     ],
     "type": "module",
     "main": "./dist/index.js",
@@ -26,8 +28,8 @@
     "dependencies": {
         "@agentscript-ai/core": "^0.1.0",
         "@agentscript-ai/schema": "^0.1.0",
-        "@nzyme/ioc": "^0.2.0",
-        "@nzyme/utils": "^0.2.0",
+        "@nzyme/ioc": "^0.3.0",
+        "@nzyme/utils": "^0.3.0",
         "add": "^2.0.6",
         "debug": "^4.4.0",
         "graphql": "^16.10.0",
@@ -41,9 +43,9 @@
         "@graphql-codegen/client-preset": "4.5.1",
         "@graphql-codegen/typescript-graphql-request": "^6.2.0",
         "@parcel/watcher": "^2.5.0",
-        "@types/add": "^2",
-        "@types/debug": "^4",
-        "@types/node": "^22.7.5",
+        "@types/add": "^2.0.3",
+        "@types/debug": "^4.1.12",
+        "@types/node": "^22.10.5",
         "typescript": "^5.7.2"
     }
 }

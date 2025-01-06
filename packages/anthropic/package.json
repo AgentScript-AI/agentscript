@@ -1,6 +1,7 @@
 {
     "name": "@agentscript-ai/anthropic",
-    "version": "0.1.0",
+    "version": "0.0.0",
+    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -10,7 +11,8 @@
         "access": "public"
     },
     "files": [
-        "dist"
+        "dist",
+        "LICENSE"
     ],
     "type": "module",
     "main": "./dist/index.js",
@@ -25,13 +27,13 @@
         "@agentscript-ai/core": "^0.1.0",
         "@agentscript-ai/utils": "^0.1.0",
         "@anthropic-ai/sdk": "^0.33.1",
-        "@nzyme/ioc": "^0.2.0",
-        "@nzyme/utils": "^0.2.0"
+        "@nzyme/ioc": "^0.3.0",
+        "@nzyme/utils": "^0.3.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.1.0",
         "@agentscript-ai/tsconfig": "^0.1.0",
-        "@types/node": "^22.7.7",
-        "vitest": "^2.1.3"
+        "@types/node": "^22.10.5",
+        "vitest": "^2.1.8"
     }
 }

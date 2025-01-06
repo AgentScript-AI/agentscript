@@ -3,16 +3,9 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "tsBuildInfoFile": "./dist/.tsbuildinfo",
+        "tsBuildInfoFile": "./.tsbuildinfo",
         "types": ["@types/node"]
     },
     "include": ["src"],
-    "references": [
-        {
-            "path": "../core/tsconfig.json"
-        },
-        {
-            "path": "../utils/tsconfig.json"
-        }
-    ]
+    "references": []
 }

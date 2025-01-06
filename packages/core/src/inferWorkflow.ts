@@ -1,11 +1,12 @@
 import createDebug from 'debug';
 
+import { createTypedPrompt } from '@agentscript-ai/utils';
+
+import type { LanguageModel } from './LanguageModel.js';
 import type { Runtime } from './defineRuntime.js';
-import type { LanguageModel } from './llm/LanguageModel.js';
 import { renderRuntime } from './modules/renderRuntime.js';
 import { parseScript } from './parser/parseScript.js';
 import { type Workflow, createWorkflow } from './runtime/createWorkflow.js';
-import { createTypedPrompt } from './utils/createTypedPrompt.js';
 
 /**
  * Parameters for {@link inferWorkflow}.

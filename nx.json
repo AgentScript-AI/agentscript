@@ -1,0 +1,27 @@
+{
+    "$schema": "./node_modules/nx/schemas/nx-schema.json",
+    "targetDefaults": {
+        "eslint": {
+            "dependsOn": ["^eslint"]
+        },
+        "build": {
+            "dependsOn": ["^build"]
+        }
+    },
+    "release": {
+        "projects": ["packages/*", "!packages/tsc"],
+        "releaseTagPattern": "v{version}",
+        "version": {
+            "conventionalCommits": true
+        },
+        "changelog": {
+            "workspaceChangelog": {
+                "createRelease": "github"
+            }
+        },
+        "git": {
+            "commitMessage": "chore(release): {version}"
+        }
+    },
+    "defaultBase": "main"
+}
