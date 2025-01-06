@@ -4,7 +4,7 @@
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "scripts": {
-        "monorepo": "node ./nzyme/packages/project-tools/dist/monorepo.js",
+        "monorepo": "nzyme monorepo",
         "watch": "yarn && yarn monorepo && turbo run watch",
         "dev": "yarn && yarn monorepo && turbo run dev",
         "clean": "tsc --build --clean",
@@ -14,6 +14,7 @@
         "ngrok": "ngrok http 3001"
     },
     "devDependencies": {
+        "@nzyme/cli": "^0.2.0",
         "@types/source-map-support": "^0.5.10",
         "lerna": "^8.1.8",
         "prettier": "^3.3.3",
