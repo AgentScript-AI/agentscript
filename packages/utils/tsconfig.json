@@ -7,12 +7,5 @@
         "types": ["@types/node"]
     },
     "include": ["src"],
-    "references": [
-        {
-            "path": "../../nzyme/packages/utils/tsconfig.json"
-        },
-        {
-            "path": "../../nzyme/packages/zchema/tsconfig.json"
-        }
-    ]
+    "references": []
 }

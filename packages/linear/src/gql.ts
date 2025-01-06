@@ -2523,11 +2523,6 @@ export type Document = Node & {
   comments: CommentConnection;
   /** The documents content in markdown format. */
   content?: Maybe<Scalars['String']['output']>;
-  /**
-   * [Internal] The documents content as a Prosemirror document.
-   * @deprecated Use content instead.
-   */
-  contentData?: Maybe<Scalars['JSON']['output']>;
   /** [Internal] The documents content as YJS state. */
   contentState?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
@@ -2875,11 +2870,6 @@ export type DocumentSearchResult = Node & {
   comments: CommentConnection;
   /** The documents content in markdown format. */
   content?: Maybe<Scalars['String']['output']>;
-  /**
-   * [Internal] The documents content as a Prosemirror document.
-   * @deprecated Use content instead.
-   */
-  contentData?: Maybe<Scalars['JSON']['output']>;
   /** [Internal] The documents content as YJS state. */
   contentState?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
@@ -11732,11 +11722,6 @@ export type ProjectMilestone = Node & {
   currentProgress: Scalars['JSONObject']['output'];
   /** The project milestone's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
-  /**
-   * [Internal] The project milestone's description as a Prosemirror document.
-   * @deprecated Use `descriptionState` instead.
-   */
-  descriptionData?: Maybe<Scalars['JSON']['output']>;
   /** [Internal] The project milestone's description as YJS state. */
   descriptionState?: Maybe<Scalars['String']['output']>;
   /** The content of the project milestone description. */

@@ -1,13 +1,15 @@
 {
     "name": "@agentscript-ai/demo-linear",
-    "version": "1.0.0",
-    "repository": "https://github.com/agentscript/agentscript.git",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AgentScript-AI/agentscript.git"
+    },
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "private": true,
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
     "types": "./dist/index.d.ts",
-    "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
         "build": "tsc --build",

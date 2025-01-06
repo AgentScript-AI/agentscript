@@ -1,8 +1,14 @@
 {
     "name": "@agentscript-ai/tsconfig",
-    "version": "1.0.0",
-    "repository": "https://github.com/kedrzu/agentscript.git",
+    "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AgentScript-AI/agentscript.git"
+    },
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
+    "publishConfig": {
+        "access": "public"
+    },
     "sideEffects": false,
     "main": "./base.json",
     "dependencies": {

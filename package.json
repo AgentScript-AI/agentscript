@@ -1,12 +1,13 @@
 {
-    "version": "1.0.0",
-    "repository": "https://github.com/kedrzu/agentscript.git",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AgentScript-AI/agentscript.git"
+    },
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
     "private": true,
     "scripts": {
         "monorepo": "nzyme monorepo",
-        "watch": "yarn && yarn monorepo && turbo run watch",
-        "dev": "yarn && yarn monorepo && turbo run dev",
+        "dev": "yarn && yarn monorepo && turbo run watch",
         "clean": "tsc --build --clean",
         "build": "tsc --build",
         "start": "yarn --cwd examples/drizzle dev",
@@ -25,7 +26,6 @@
     "workspaces": [
         "packages/*",
         "demo/*",
-        "integrations/*",
         "nzyme/packages/*"
     ],
     "packageManager": "yarn@4.1.0",

@@ -1,8 +1,5 @@
 {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "[csharp]": {
-        "editor.defaultFormatter": "ms-dotnettools.csharp"
-    },
     "editor.formatOnSave": true,
     "files.exclude": {
         "**/.git": true,
@@ -43,8 +40,6 @@
         "enable": true
     },
     "eslint.validate": ["javascript", "typescript", "vue"],
-    "figma.autocompleteBlocks": true,
-    "figma.assetExportDirectory": "storefront/storefront-ui/assets",
     "typescript.enablePromptUseWorkspaceTsdk": true,
     "workbench.colorCustomizations": {
         "activityBar.activeBackground": "#e35252",
@@ -65,22 +60,5 @@
         "titleBar.inactiveBackground": "#dc262699",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "dc2626",
-    "deno.enablePaths": ["supabase/functions"],
-    "deno.lint": true,
-    "deno.unstable": [
-        "bare-node-builtins",
-        "byonm",
-        "sloppy-imports",
-        "unsafe-proto",
-        "webgpu",
-        "broadcast-channel",
-        "worker-options",
-        "cron",
-        "kv",
-        "ffi",
-        "fs",
-        "http",
-        "net"
-    ]
+    "peacock.color": "dc2626"
 }

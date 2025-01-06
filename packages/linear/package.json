@@ -1,9 +1,17 @@
 {
     "name": "@agentscript-ai/linear",
-    "version": "1.0.0",
-    "repository": "https://github.com/kedrzu/agentscript.git",
+    "version": "0.1.0",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/AgentScript-AI/agentscript.git"
+    },
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
-    "private": true,
+    "publishConfig": {
+        "access": "public"
+    },
+    "files": [
+        "dist"
+    ],
     "type": "module",
     "main": "./dist/index.js",
     "module": "./dist/index.js",
@@ -16,10 +24,10 @@
         "watch": "yarn codegen --watch"
     },
     "dependencies": {
-        "@agentscript-ai/core": "*",
-        "@agentscript-ai/schema": "*",
-        "@nzyme/ioc": "*",
-        "@nzyme/utils": "*",
+        "@agentscript-ai/core": "^0.1.0",
+        "@agentscript-ai/schema": "^0.1.0",
+        "@nzyme/ioc": "^0.2.0",
+        "@nzyme/utils": "^0.2.0",
         "add": "^2.0.6",
         "debug": "^4.4.0",
         "graphql": "^16.10.0",
@@ -27,8 +35,8 @@
         "graphql-request": "^7.1.2"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "*",
-        "@agentscript-ai/tsconfig": "*",
+        "@agentscript-ai/eslint": "^0.1.0",
+        "@agentscript-ai/tsconfig": "^0.1.0",
         "@graphql-codegen/cli": "5.0.3",
         "@graphql-codegen/client-preset": "4.5.1",
         "@graphql-codegen/typescript-graphql-request": "^6.2.0",

@@ -16,12 +16,6 @@
         },
         {
             "path": "../utils/tsconfig.json"
-        },
-        {
-            "path": "../../nzyme/packages/ioc/tsconfig.json"
-        },
-        {
-            "path": "../../nzyme/packages/utils/tsconfig.json"
         }
     ]
 }
