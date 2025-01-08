@@ -13,7 +13,7 @@
         "build": "tsc --build tsconfig.dev.json",
         "watch": "yarn build --watch --preserveWatchOutput",
         "upgrade": "yarn up \"@nzyme/*\" && yarn upgrade-interactive",
-        "release": "nx release"
+        "release": "nx release --yes"
     },
     "devDependencies": {
         "@nx/js": "^20.3.0",
@@ -21,6 +21,7 @@
         "@swc-node/register": "^1.10.9",
         "@swc/core": "^1.10.4",
         "del-cli": "^6.0.0",
+        "dotenv-cli": "^8.0.0",
         "nx": "20.3.0",
         "prettier": "^3.4.2",
         "ts-node": "^10.9.2",

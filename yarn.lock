@@ -11975,6 +11975,7 @@ __metadata:
     "@swc-node/register": "npm:^1.10.9"
     "@swc/core": "npm:^1.10.4"
     del-cli: "npm:^6.0.0"
+    dotenv-cli: "npm:^8.0.0"
     nx: "npm:20.3.0"
     prettier: "npm:^3.4.2"
     ts-node: "npm:^10.9.2"
