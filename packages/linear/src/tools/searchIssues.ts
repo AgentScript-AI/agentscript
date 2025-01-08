@@ -5,8 +5,8 @@ import { LanguageModel, defineTool, inferResult } from '@agentscript-ai/core';
 import * as s from '@agentscript-ai/schema';
 
 import { LinearClient } from '../LinearClient.js';
-import type { GetIssuesQuery, GetIssuesQueryVariables, GetAgentStatesQuery } from '../gql.js';
-import { GetIssuesDocument, GetAgentStatesDocument } from '../gql.js';
+import type { GetIssuesQuery, GetIssuesQueryVariables, GetWorkflowStatesQuery } from '../gql.js';
+import { GetIssuesDocument, GetWorkflowStatesDocument } from '../gql.js';
 import { Issue } from '../types/Issue.js';
 import { createIssueFilter } from '../types/IssueFilter.js';
 
@@ -37,9 +37,9 @@ export const searchIssues = defineService({
                 Issue,
             },
             async handler({ input: { query } }) {
-                const agentStates = await loadAgentStates();
+                const workflowStates = await loadWorkflowStates();
                 const issueFilterSchema = createIssueFilter({
-                    statuses: agentStates,
+                    statuses: workflowStates,
                 });
 
                 const issuesFilter = await inferResult({
@@ -88,9 +88,9 @@ export const searchIssues = defineService({
             },
         });
 
-        async function loadAgentStates() {
-            const result = await linear.request<GetAgentStatesQuery>(GetAgentStatesDocument);
-            return result.agentStates.nodes.map(state => state.name);
+        async function loadWorkflowStates() {
+            const result = await linear.request<GetWorkflowStatesQuery>(GetWorkflowStatesDocument);
+            return result.workflowStates.nodes.map(state => state.name);
         }
     },
 });

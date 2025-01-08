@@ -27,8 +27,8 @@ query getIssues($filter: IssueFilter, $comments: Boolean!, $description: Boolean
     }
 }
 
-query getAgentStates {
-    agentStates {
+query getWorkflowStates {
+    workflowStates {
         nodes {
             name
         }
