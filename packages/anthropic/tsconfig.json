@@ -6,6 +6,5 @@
         "tsBuildInfoFile": "./.tsbuildinfo",
         "types": ["@types/node"]
     },
-    "include": ["src"],
-    "references": []
+    "include": ["src"]
 }

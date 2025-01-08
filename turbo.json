@@ -8,6 +8,10 @@
         "watch": {
             "cache": false,
             "persistent": true
+        },
+        "build": {
+            "dependsOn": ["^build"],
+            "cache": true
         }
     },
     "ui": "stream"

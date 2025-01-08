@@ -3,9 +3,8 @@
     "compilerOptions": {
         "outDir": "./dist",
         "rootDir": "./src",
-        "tsBuildInfoFile": "./dist/.tsbuildinfo"
+        "tsBuildInfoFile": "./.tsbuildinfo"
     },
     "include": ["src", "src/LanguageModel.ts"],
-    "exclude": ["src/**/*.test.ts"],
-    "references": []
+    "exclude": ["src/**/*.test.ts"]
 }
