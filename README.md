@@ -34,7 +34,7 @@ AgentScript does exactly that: prompts an LLM to generate code (a subset of JS) 
 1. AgentScript prompts LLM to genarate JS code
 1. Code it not executed directly but parsed into an [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree)
 1. [AST](https://en.wikipedia.org/wiki/Abstract_syntax_tree) is executed in a dedicated, safe runtime (interpreter). \
-   No sandbox is needed - the generated code is not really running in Node.
+   No sandbox is needed - the generated code is not running directly in Node.
 1. Execution can be paused, serialized into a database and resumed later. \
    (like when a tool call requires human interaction or approval).
 
@@ -151,7 +151,14 @@ Right now we have a working code generation and runtime supporting tools and mos
 
 Feel free to play with it by forking our [examples repo](https://github.com/AgentScript-AI/examples/tree/main).
 
-## Roadmap
+## How to Join the Community
+
+AgentScript is an open-source project, and we welcome contributions from everyone.
+
+- [Join our Discord server](https://discord.gg/hEYMnj62DT) - talk to us!
+- [See Github Issues](https://github.com/AgentScript-AI/agentscript/issues) - check out what we're working on, post your ideas!
+
+## Current roadmap
 
 - Execution serialization and deserialization
 - More JS features:
