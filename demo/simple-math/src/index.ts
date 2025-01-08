@@ -1,11 +1,8 @@
-import { loadEnvVariables } from '@nzyme/project-utils';
 import chalk from 'chalk';
 
-import { defineRuntime, defineTool, executeWorkflow, inferWorkflow } from 'agentscript-ai';
+import { defineTool, executeAgent, inferAgent } from 'agentscript-ai';
 import { AnthropicModel } from 'agentscript-ai/anthropic';
 import * as s from 'agentscript-ai/schema';
-
-loadEnvVariables();
 
 const add = defineTool({
     description: 'Add two numbers',
@@ -55,44 +52,47 @@ const squareRoot = defineTool({
     handler: ({ input }) => Math.sqrt(input.a),
 });
 
-const runtime = defineRuntime({
-    tools: {
-        add,
-        multiply,
-        divide,
-        square,
-        squareRoot,
-    },
-});
-
 const llm = AnthropicModel({
     model: 'claude-3-5-sonnet-latest',
     apiKey: process.env.ANTHROPIC_API_KEY,
     maxTokens: 1024,
 });
 
-const workflow = await inferWorkflow({
-    runtime,
+const tools = {
+    add,
+    multiply,
+    divide,
+    square,
+    squareRoot,
+};
+
+const output = s.number();
+
+const prompt = 'Calculate the square root of eight times two';
+
+const agent = await inferAgent({
     llm,
-    prompt: 'Calculate the square root of 16',
+    tools,
+    output,
+    prompt,
 });
 
-// We have the workflow ready, but it's not yet executed
+// We have the agent ready, but it's not yet executed
 console.log(chalk.green('Generated plan:'));
-console.log(workflow.plan);
+console.log(agent.plan);
 console.log();
 
 console.log(chalk.green('Generated code:'));
-console.log(workflow.script.code);
+console.log(agent.script.code);
 console.log();
 
-// Now execute the workflow
-await executeWorkflow({ workflow });
+// Now execute the agent
+await executeAgent({ agent });
 
-// We can now inspect the workflow variables and output
-console.log(chalk.green('Workflow variables:'));
-console.log(workflow.state?.root.variables);
+// We can now inspect the agent variables and output
+console.log(chalk.green('Agent variables:'));
+console.log(agent.state?.root.variables);
 console.log();
 
-console.log(chalk.green('Workflow output:'));
-console.log(workflow.state?.output);
+console.log(chalk.green('Agent output:'));
+console.log(agent.state?.output);

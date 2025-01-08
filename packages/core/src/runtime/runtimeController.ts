@@ -5,7 +5,7 @@ export interface RuntimeController {
 }
 
 export interface RuntimeControllerOptions {
-    maxTicks?: number;
+    ticks?: number;
     timeout?: number | Date;
     until?: () => boolean;
 }
@@ -15,7 +15,7 @@ const TICK_MULTIPLIER = 1000;
 export function createRuntimeControler(options: RuntimeControllerOptions): RuntimeController {
     const { timeout, until = () => false } = options;
 
-    const maxTicks = options.maxTicks ? options.maxTicks * TICK_MULTIPLIER : Infinity;
+    const maxTicks = options.ticks ? options.ticks * TICK_MULTIPLIER : Infinity;
     const timeoutDate =
         timeout != null
             ? typeof timeout === 'number'

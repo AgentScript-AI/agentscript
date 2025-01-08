@@ -5,7 +5,7 @@ import { isTool } from '../defineTool.js';
 import { renderTool } from './renderTool.js';
 import { renderTypeNamed } from './renderType.js';
 import { createTypeResolver } from './typeResolver.js';
-import type { RuntimeModule } from '../defineRuntime.js';
+import type { RuntimeModule } from '../defineAgent.js';
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 

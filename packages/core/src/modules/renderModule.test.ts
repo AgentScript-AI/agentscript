@@ -1,10 +1,10 @@
 import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
+import { joinLines } from '@agentscript-ai/utils';
 
 import { defineTool } from '../defineTool.js';
 import { renderModule } from './renderModule.js';
-import { joinLines } from '../utils/joinLines.js';
 
 test('simple module', () => {
     const User = s.object({

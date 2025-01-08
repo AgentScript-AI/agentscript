@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 
 import { LinearClient, searchIssues } from '@agentscript-ai/linear';
-import { defineRuntime, executeWorkflow, inferWorkflow } from 'agentscript-ai';
+import { executeAgent, inferAgent } from 'agentscript-ai';
 import { AnthropicModel } from 'agentscript-ai/anthropic';
 import * as s from 'agentscript-ai/schema';
 import { addToDate, summarizeData } from 'agentscript-ai/tools';
@@ -18,46 +18,48 @@ const linear = LinearClient({
     apiKey: process.env.LINEAR_API_KEY,
 });
 
-// Define the runtime
-const runtime = defineRuntime({
-    // We'll use a few tools to help us
-    tools: {
-        addToDate,
-        summarizeData: summarizeData({ llm }),
-        // Put the Linear client in nested module
-        linear: {
-            searchIssues: searchIssues({ llm, linear }),
-        },
+// Define available tools.
+const tools = {
+    // Needed for date calculation
+    addToDate,
+    // Turns data into text
+    summarizeData: summarizeData({ llm }),
+    // The real deal
+    linear: {
+        searchIssues: searchIssues({ llm, linear }),
     },
-    // Define the expected output
-    output: s.string(),
-});
+};
 
+// Define a task for the agent
 const prompt = 'Give me a progress update of tasks created in the last week';
 
-// Let the LLM infer the workflow based on the prompt and runtime
-const workflow = await inferWorkflow({
-    runtime,
+// Define the expected output
+const output = s.string();
+
+// Let the LLM infer the agent based on the prompt and runtime
+const agent = await inferAgent({
+    tools,
+    output,
     llm,
     prompt,
 });
 
-// We have the workflow ready, but it's not yet executed
+// We have the agent ready, but it's not yet executed
 console.log(chalk.green('Generated plan:'));
-console.log(workflow.plan);
+console.log(agent.plan);
 console.log();
 
 console.log(chalk.green('Generated code:'));
-console.log(workflow.script.code);
+console.log(agent.script.code);
 console.log();
 
-// Now execute the workflow
-await executeWorkflow({ workflow });
+// Now execute the agent
+await executeAgent({ agent });
 
-// We can now inspect the workflow variables and output
-console.log(chalk.green('Workflow variables:'));
-console.log(workflow.state?.root.variables);
+// We can now inspect the agent variables and output
+console.log(chalk.green('Agent variables:'));
+console.log(agent.state?.root.variables);
 console.log();
 
-console.log(chalk.green('Workflow output:'));
-console.log(workflow.state?.output);
+console.log(chalk.green('Agent output:'));
+console.log(agent.state?.output);

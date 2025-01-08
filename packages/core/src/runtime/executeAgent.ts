@@ -3,7 +3,7 @@ import type { Constructor } from '@nzyme/types';
 import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
-import type { Workflow } from './createWorkflow.js';
+import type { Agent as Agent } from './createAgent.js';
 import type { StackFrame } from './runtimeTypes.js';
 import type { ToolDefinition } from '../defineTool.js';
 import { isTool } from '../defineTool.js';
@@ -11,7 +11,7 @@ import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
-import type { Runtime, RuntimeInput, RuntimeOutput } from '../defineRuntime.js';
+import type { AgentDefinition, AgentInput, AgentOutput } from '../defineAgent.js';
 import type {
     ArrayExpression,
     Expression,
@@ -24,86 +24,86 @@ import type {
     Statement,
 } from '../parser/astTypes.js';
 
-type ExecuteWorkflowInputOptions<TRuntime extends Runtime> =
-    RuntimeInput<TRuntime> extends undefined
+type ExecuteAgentInputOptions<TAgent extends AgentDefinition> =
+    AgentInput<TAgent> extends undefined
         ? {
-              /** Input for the workflow. */
+              /** Input for the agent. */
               input?: undefined;
           }
         : {
-              /** Input for the workflow. */
-              input: RuntimeInput<TRuntime>;
+              /** Input for the agent. */
+              input: AgentInput<TAgent>;
           };
 
 /**
- * Options for the {@link executeWorkflow} function.
+ * Options for the {@link executeAgent} function.
  */
-export type ExecuteWorkflowOptions<TRuntime extends Runtime> = {
+export type ExecuteAgentOptions<TAgent extends AgentDefinition> = {
     /**
-     * Workflow to execute.
+     * Agent to execute.
      */
-    workflow: Workflow<TRuntime>;
-} & ExecuteWorkflowInputOptions<TRuntime> &
+    agent: Agent<TAgent>;
+} & ExecuteAgentInputOptions<TAgent> &
     RuntimeControllerOptions;
 
 /**
- * Result of the {@link executeWorkflow} function.
+ * Result of the {@link executeAgent} function.
  */
-export interface ExecuteWorkflowResult {
+export interface ExecuteAgentResult {
     /**
      * Number of ticks executed.
-     * A tick is a single async execution in the workflow.
+     * A tick is a single async execution in the agent.
      */
     ticks: number;
     /**
-     * Whether the workflow is done for now.
-     * If it is `false`, the workflow is not done and the caller should call {@link executeWorkflow} again.
+     * Whether the agent is done for now.
+     * If it is `false`, the agent is not done and the caller should call {@link executeAgent} again.
      */
     done: boolean;
 }
 
 /**
- * Execute a workflow.
- * @param options - Options for the workflow.
- * @returns Result of the workflow execution.
+ * Execute an agent.
+ * @param options - Options for the agent.
+ * @returns Result of the agent execution.
  */
-export async function executeWorkflow<TRuntime extends Runtime>(
-    options: ExecuteWorkflowOptions<TRuntime>,
-): Promise<ExecuteWorkflowResult> {
-    const { workflow } = options;
+export async function executeAgent<TAgent extends AgentDefinition>(
+    options: ExecuteAgentOptions<TAgent>,
+): Promise<ExecuteAgentResult> {
+    const { agent } = options;
 
     const controller = createRuntimeControler(options);
-    if (!workflow.state) {
-        workflow.state = {
+    if (!agent.state) {
+        agent.state = {
             complete: false,
             root: { startedAt: Date.now() },
         };
 
-        if (workflow.runtime.output) {
-            workflow.state.root.variables = {
+        if (agent.output) {
+            agent.state.root.variables = {
                 result: undefined,
             };
         }
     }
 
-    const root = workflow.state.root;
-    const script = workflow.script.ast;
+    const root = agent.state.root;
+    const script = agent.script.ast;
 
     if (root.completedAt) {
         return { ticks: controller.ticks, done: true };
     }
 
-    const result = await runBlock(workflow, controller, root, script);
+    const result = await runBlock(agent, controller, root, script);
 
     const frames = root.children;
     if (frames?.length === script.length && frames[frames.length - 1].completedAt) {
         completeFrame(root);
-        workflow.state.complete = true;
+        agent.state.complete = true;
 
-        if (workflow.runtime.output) {
-            const result = root.variables?.result;
-            validateOrThrow(workflow.runtime.output, result);
-            workflow.state.output = result as RuntimeOutput<TRuntime>;
+        if (agent.output) {
+            const result = root.variables?.result as AgentOutput<TAgent>;
+            validateOrThrow(agent.output, result);
+            agent.state.output = result;
         }
 
         return { ticks: controller.ticks, done: true };
@@ -113,7 +113,7 @@ export async function executeWorkflow<TRuntime extends Runtime>(
 }
 
 async function runBlock(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     statements: Statement[],
@@ -144,7 +144,7 @@ async function runBlock(
         }
 
         const statement = statements[index];
-        const frameDone = await runBlockFrame(runtime, controller, block, frame, statement);
+        const frameDone = await runBlockFrame(agent, controller, block, frame, statement);
 
         if (frame.completedAt) {
             index++;
@@ -158,7 +158,7 @@ async function runBlock(
 }
 
 async function runBlockFrame(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -183,13 +183,7 @@ async function runBlockFrame(
             }
 
             const valueFrame = getFrame(frame, 0);
-            const done = await runExpression(
-                runtime,
-                controller,
-                block,
-                valueFrame,
-                statement.value,
-            );
+            const done = await runExpression(agent, controller, block, valueFrame, statement.value);
             if (!done) {
                 return false;
             }
@@ -199,7 +193,7 @@ async function runBlockFrame(
         }
 
         case 'Expression': {
-            return await runExpression(runtime, controller, block, frame, statement.expr);
+            return await runExpression(agent, controller, block, frame, statement.expr);
         }
 
         default:
@@ -208,7 +202,7 @@ async function runBlockFrame(
 }
 
 async function runExpression(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -220,7 +214,7 @@ async function runExpression(
 
     switch (expression.type) {
         case 'Identifier': {
-            frame.value = resolveIdentifier(runtime, frame, expression);
+            frame.value = resolveIdentifier(agent, frame, expression);
             return completeFrame(frame);
         }
 
@@ -230,22 +224,22 @@ async function runExpression(
         }
 
         case 'Member': {
-            return await runMemberExpression(runtime, controller, block, frame, expression);
+            return await runMemberExpression(agent, controller, block, frame, expression);
         }
 
         case 'Object': {
-            return await runObjectExpression(runtime, controller, block, frame, expression);
+            return await runObjectExpression(agent, controller, block, frame, expression);
         }
 
         case 'Array': {
-            return await runArrayExpression(runtime, controller, block, frame, expression);
+            return await runArrayExpression(agent, controller, block, frame, expression);
         }
 
         case 'Assignment': {
             const rightFrame = getFrame(frame, 0);
 
             const result = await runExpression(
-                runtime,
+                agent,
                 controller,
                 block,
                 rightFrame,
@@ -264,11 +258,11 @@ async function runExpression(
         }
 
         case 'FunctionCall': {
-            return await runFunctionCall(runtime, controller, block, frame, expression);
+            return await runFunctionCall(agent, controller, block, frame, expression);
         }
 
         case 'New': {
-            return await runNewExpression(runtime, controller, block, frame, expression);
+            return await runNewExpression(agent, controller, block, frame, expression);
         }
 
         default:
@@ -279,14 +273,14 @@ async function runExpression(
 }
 
 async function runMemberExpression(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
     expression: MemberExpression,
 ) {
     const objectFrame = getFrame(frame, 0);
-    const objectDone = await runExpression(runtime, controller, block, objectFrame, expression.obj);
+    const objectDone = await runExpression(agent, controller, block, objectFrame, expression.obj);
     if (!objectDone) {
         return false;
     }
@@ -297,7 +291,7 @@ async function runMemberExpression(
     } else {
         const propertyFrame = getFrame(frame, 1);
         const propertyDone = await runExpression(
-            runtime,
+            agent,
             controller,
             block,
             propertyFrame,
@@ -315,7 +309,7 @@ async function runMemberExpression(
 }
 
 async function runObjectExpression(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -332,7 +326,7 @@ async function runObjectExpression(
             key = prop.key.name;
         } else {
             const keyFrame = getFrame(frame, index);
-            const keyDone = await runExpression(runtime, controller, block, keyFrame, prop.key);
+            const keyDone = await runExpression(agent, controller, block, keyFrame, prop.key);
             if (!keyDone) {
                 return false;
             }
@@ -342,7 +336,7 @@ async function runObjectExpression(
         }
 
         const valueFrame = getFrame(frame, index);
-        const valueDone = await runExpression(runtime, controller, block, valueFrame, prop.value);
+        const valueDone = await runExpression(agent, controller, block, valueFrame, prop.value);
         if (!valueDone) {
             return false;
         }
@@ -356,13 +350,13 @@ async function runObjectExpression(
 }
 
 async function runArrayExpression(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
     expression: ArrayExpression,
 ) {
-    const result = await runExpressionArray(runtime, controller, block, frame, expression.items);
+    const result = await runExpressionArray(agent, controller, block, frame, expression.items);
     if (!result) {
         return false;
     }
@@ -373,7 +367,7 @@ async function runArrayExpression(
 }
 
 async function runFunctionCall(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -383,34 +377,34 @@ async function runFunctionCall(
     let obj: unknown;
 
     if (expression.func.type === 'Member') {
-        obj = resolveExpression(runtime, frame, expression.func.obj);
-        const prop = resolveName(runtime, frame, expression.func.prop);
+        obj = resolveExpression(agent, frame, expression.func.obj);
+        const prop = resolveName(agent, frame, expression.func.prop);
         func = (obj as Record<string, unknown>)[prop];
     } else {
-        func = resolveExpression(runtime, frame, expression.func);
+        func = resolveExpression(agent, frame, expression.func);
         obj = undefined;
     }
 
     if (isTool(func)) {
-        return await runFunctionCustom(runtime, controller, block, frame, expression, func);
+        return await runFunctionCustom(agent, controller, block, frame, expression, func);
     }
 
     if (typeof func === 'function') {
-        return await runFunctionNative(runtime, controller, block, frame, expression, func, obj);
+        return await runFunctionNative(agent, controller, block, frame, expression, func, obj);
     }
 
     throw new RuntimeError(`Expression is not a function`);
 }
 
 async function runFunctionCustom(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
     call: FunctionCall,
     func: ToolDefinition,
 ) {
-    const args = await runExpressionArray(runtime, controller, block, frame, call.args);
+    const args = await runExpressionArray(agent, controller, block, frame, call.args);
     if (!args) {
         return false;
     }
@@ -445,7 +439,7 @@ async function runFunctionCustom(
 }
 
 async function runFunctionNative(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -453,7 +447,7 @@ async function runFunctionNative(
     func: NativeFunction,
     thisArg: unknown,
 ) {
-    const args = await runExpressionArray(runtime, controller, block, frame, call.args);
+    const args = await runExpressionArray(agent, controller, block, frame, call.args);
     if (!args) {
         return false;
     }
@@ -475,13 +469,13 @@ async function runFunctionNative(
 }
 
 async function runNewExpression(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
     expression: NewExpression,
 ) {
-    const constructor = resolveExpression(runtime, frame, expression.func) as Constructor;
+    const constructor = resolveExpression(agent, frame, expression.func) as Constructor;
     if (typeof constructor !== 'function') {
         throw new RuntimeError(`Expression is not a function`);
     }
@@ -490,7 +484,7 @@ async function runNewExpression(
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 
-    const args = await runExpressionArray(runtime, controller, block, frame, expression.args);
+    const args = await runExpressionArray(agent, controller, block, frame, expression.args);
     if (!args) {
         return false;
     }
@@ -500,7 +494,7 @@ async function runNewExpression(
 }
 
 async function runExpressionArray(
-    runtime: Workflow,
+    agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
@@ -512,7 +506,7 @@ async function runExpressionArray(
     for (let i = 0; i < expressions.length; i++) {
         const arg = expressions[i];
         const argFrame = getFrame(frame, i);
-        const done = await runExpression(runtime, controller, block, argFrame, arg);
+        const done = await runExpression(agent, controller, block, argFrame, arg);
         if (!done) {
             return false;
         }
@@ -579,10 +573,10 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
     } while (frame);
 }
 
-function resolveExpression(runtime: Workflow, frame: StackFrame, expression: Expression): unknown {
+function resolveExpression(agent: Agent, frame: StackFrame, expression: Expression): unknown {
     switch (expression.type) {
         case 'Identifier': {
-            return resolveIdentifier(runtime, frame, expression);
+            return resolveIdentifier(agent, frame, expression);
         }
 
         case 'Literal': {
@@ -590,8 +584,8 @@ function resolveExpression(runtime: Workflow, frame: StackFrame, expression: Exp
         }
 
         case 'Member': {
-            const object = resolveExpression(runtime, frame, expression.obj);
-            const property = resolveName(runtime, frame, expression.prop);
+            const object = resolveExpression(agent, frame, expression.obj);
+            const property = resolveName(agent, frame, expression.prop);
 
             return (object as Record<string, unknown>)[property];
         }
@@ -610,15 +604,15 @@ function resolveLiteral(expression: Literal) {
     return value;
 }
 
-function resolveName(runtime: Workflow, frame: StackFrame, expression: Expression) {
+function resolveName(agent: Agent, frame: StackFrame, expression: Expression) {
     if (expression.type === 'Identifier') {
         return expression.name;
     }
 
-    return resolveExpression(runtime, frame, expression) as string;
+    return resolveExpression(agent, frame, expression) as string;
 }
 
-function resolveIdentifier(workflow: Workflow, frame: StackFrame, expression: Identifier) {
+function resolveIdentifier(agent: Agent, frame: StackFrame, expression: Identifier) {
     const name = expression.name;
 
     while (frame) {
@@ -635,7 +629,7 @@ function resolveIdentifier(workflow: Workflow, frame: StackFrame, expression: Id
         break;
     }
 
-    const tools = workflow.runtime.tools;
+    const tools = agent.tools;
     if (name in tools) {
         return tools[name];
     }

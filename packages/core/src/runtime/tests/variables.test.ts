@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest';
 
 import { parseScript } from '../../parser/parseScript.js';
-import { createWorkflow } from '../createWorkflow.js';
-import { executeWorkflow } from '../executeWorkflow.js';
-import { anyNumber, childFrame, completedFrame, rootFrame, runtimeResult } from './testUtils.js';
+import { createAgent } from '../createAgent.js';
+import { executeAgent } from '../executeAgent.js';
+import { anyNumber, childFrame, completedFrame, rootFrame, agentResult } from './testUtils.js';
 
 test('single variable declaration', async () => {
     const script = parseScript([
@@ -11,15 +11,15 @@ test('single variable declaration', async () => {
         'const a = 1;',
     ]);
 
-    const workflow = createWorkflow({
-        runtime: { tools: {} },
+    const agent = createAgent({
+        tools: {},
         script,
     });
 
-    let result = await executeWorkflow({ workflow });
+    let result = await executeAgent({ agent });
 
     expect(result).toEqual(
-        runtimeResult({
+        agentResult({
             ticks: 0,
             done: true,
         }),
@@ -38,19 +38,19 @@ test('single variable declaration', async () => {
         ],
     });
 
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 
-    result = await executeWorkflow({ workflow });
+    result = await executeAgent({ agent });
 
     expect(result).toEqual(
-        runtimeResult({
+        agentResult({
             ticks: 0,
             done: true,
         }),
     );
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 });
 
 test('multiple variable declarations', async () => {
@@ -60,15 +60,15 @@ test('multiple variable declarations', async () => {
         'const b = 2;',
     ]);
 
-    const workflow = createWorkflow({
-        runtime: { tools: {} },
+    const agent = createAgent({
+        tools: {},
         script,
     });
 
-    let result = await executeWorkflow({ workflow });
+    let result = await executeAgent({ agent });
 
     expect(result).toEqual(
-        runtimeResult({
+        agentResult({
             ticks: 0,
             done: true,
         }),
@@ -93,28 +93,28 @@ test('multiple variable declarations', async () => {
         ],
     });
 
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 
-    result = await executeWorkflow({ workflow });
+    result = await executeAgent({ agent });
     expect(result).toEqual(
-        runtimeResult({
+        agentResult({
             ticks: 0,
             done: true,
         }),
     );
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 });
 
 test('assign variable', async () => {
     const script = parseScript(['let a = 1', 'a = 2;']);
-    const workflow = createWorkflow({
-        runtime: { tools: {} },
+    const agent = createAgent({
+        tools: {},
         script,
     });
 
-    const result = await executeWorkflow({ workflow });
+    const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -129,9 +129,9 @@ test('assign variable', async () => {
         ],
     });
 
-    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 });
 
 test('member expression', async () => {
@@ -141,12 +141,12 @@ test('member expression', async () => {
         'const c = a.b;',
     ]);
 
-    const workflow = createWorkflow({
-        runtime: { tools: {} },
+    const agent = createAgent({
+        tools: {},
         script,
     });
 
-    const result = await executeWorkflow({ workflow });
+    const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -175,9 +175,9 @@ test('member expression', async () => {
         ],
     });
 
-    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 });
 
 test('array.length', async () => {
@@ -187,12 +187,12 @@ test('array.length', async () => {
         'a.length;',
     ]);
 
-    const workflow = createWorkflow({
-        runtime: { tools: {} },
+    const agent = createAgent({
+        tools: {},
         script,
     });
 
-    const result = await executeWorkflow({ workflow });
+    const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
         completedAt: anyNumber(),
@@ -217,7 +217,7 @@ test('array.length', async () => {
         variables: { a: [1, 2, 3] },
     });
 
-    expect(result).toEqual(runtimeResult({ ticks: 0, done: true }));
-    expect(workflow.state?.root).toEqual(expectedStack);
-    expect(workflow.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
+    expect(agent.state?.root).toEqual(expectedStack);
+    expect(agent.state?.complete).toBe(true);
 });

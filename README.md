@@ -45,28 +45,31 @@ const linear = LinearClient({
     apiKey: process.env.LINEAR_API_KEY,
 });
 
-// Define the runtime
-const runtime = defineRuntime({
-    // Define available tools.
-    tools: {
-        // Needed for date calculation
-        addToDate,
-        // Turns data into text
-        summarizeData: summarizeData({ llm }),
-        // The real deal
-        linear: {
-            searchIssues: searchIssues({ llm, linear }),
-        },
+// Define available tools.
+const tools = {
+    // Needed for date calculation
+    addToDate,
+    // Turns data into text
+    summarizeData: summarizeData({ llm }),
+    // The real deal
+    linear: {
+        searchIssues: searchIssues({ llm, linear }),
     },
-    // Define the expected output
-    output: s.string(),
-});
+};
 
 // Define a task for the agent
 const prompt = 'Give me a progress update of tasks created in the last week';
 
+// Define the expected output
+const output = s.string();
+
 // Let the LLM generate the AgentScript code
-const workflow = await inferWorkflow({ runtime, llm, prompt });
+const agent = await inferAgent({
+    tools,
+    output,
+    llm,
+    prompt,
+});
 ```
 
 LLM creates a plan:
@@ -99,21 +102,21 @@ result = summarizeData({
 });
 ```
 
-Now execute the workflow:
+Now execute the agent:
 
 ```typescript
-await executeWorkflow({ workflow });
+await executeAgent({ agent });
 
 // See the output
-console.log(workflow.state.output);
+console.log(agent.state.output);
 
 // Check variables in the execution state
-console.log(workflow.state.root.variables);
+console.log(agent.state.root.variables);
 ```
 
 ## How is it different from other frameworks?
 
-Many products define agent as a fixed workflow. [TODO links] \
+Many products define agent as a fixed agent. [TODO links] \
 Thew work very nice for well defined tasks, but fall short when the task is ambiguous or not known beforehand.
 
 Then we have a bunch of orchestration frameworks ([LangGraph](https://www.langchain.com/langgraph), [CrewAI](https://www.crewai.com/), [Inferable](https://www.inferable.ai/) among others). \

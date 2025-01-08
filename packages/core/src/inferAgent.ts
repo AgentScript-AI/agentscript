@@ -3,27 +3,22 @@ import createDebug from 'debug';
 import { createTypedPrompt } from '@agentscript-ai/utils';
 
 import type { LanguageModel } from './LanguageModel.js';
-import type { Runtime } from './defineRuntime.js';
+import type { AgentDefinition } from './defineAgent.js';
 import { renderRuntime } from './modules/renderRuntime.js';
 import { parseScript } from './parser/parseScript.js';
-import { type Workflow, createWorkflow } from './runtime/createWorkflow.js';
+import type { Agent } from './runtime/createAgent.js';
 
 /**
- * Parameters for {@link inferWorkflow}.
+ * Parameters for {@link inferAgent}.
  */
-export interface InferWorkflowParams<TRuntime extends Runtime = Runtime> {
-    /**
-     * AgentScript runtime to use.
-     */
-    runtime: TRuntime;
-
+export interface InferAgentParams {
     /**
      * Language model to use.
      */
     llm: LanguageModel;
 
     /**
-     * Prompt to infer the workflow from.
+     * Prompt to infer the agent from.
      */
     prompt: string;
 
@@ -48,19 +43,17 @@ Don't explain the code later.`;
 
 const RESPONSE_REGEX = /^([\s\S]*)```(\w*)?\n([\s\S]*)\n```/m;
 
-const debug = createDebug('agentscript:inferWorkflow');
+const debug = createDebug('agentscript:inferAgent');
 
 /**
- * Infer a workflow from a given prompt.
- * @param params - Parameters for {@link inferWorkflow}.
- * @returns Inferred workflow.
+ * Infer an agent from a given prompt.
+ * @param params - Parameters for {@link inferAgent}.
+ * @returns Inferred agent.
  */
-export async function inferWorkflow<TRuntime extends Runtime>(
-    params: InferWorkflowParams<TRuntime>,
-): Promise<Workflow<TRuntime>> {
-    const runtime = params.runtime;
-    const definitions = renderRuntime(runtime);
-
+export async function inferAgent<TAgent extends AgentDefinition>(
+    params: InferAgentParams & TAgent,
+): Promise<Agent<TAgent>> {
+    const definitions = renderRuntime(params);
     const systemPrompt = createTypedPrompt({
         prompts: [params.systemPrompt, SYSTEM_PROMPT],
         definitions,
@@ -77,13 +70,15 @@ export async function inferWorkflow<TRuntime extends Runtime>(
     debug('code', code);
 
     const script = parseScript(code);
-    const workflow = createWorkflow({
-        runtime,
+    const agent: Agent<TAgent> = {
+        tools: params.tools,
+        input: params.input,
+        output: params.output,
         script,
         plan,
-    });
+    };
 
-    return workflow;
+    return agent;
 }
 
 function parseResponse(response: string) {
