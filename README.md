@@ -135,7 +135,7 @@ They work very nice for well defined tasks, but fall short when the task is ambi
 Then we have a bunch of orchestration frameworks ([LangGraph](https://www.langchain.com/langgraph), [CrewAI](https://www.crewai.com/), [Inferable](https://www.inferable.ai/) among others). \
 They provide architecture and make it easier to build classic re-act agents, where each tool call or decision point requires another LLM query. But this makes the LLM context grow quickly, is costly, slow and not flexible enough (try to implement a loop this way).
 
-AgentScript takes a completely different approach. By making LLM express execution plan as code, agent can think more abstractly about the task and does not even need to know all the data to perform operations on it or make decisions.
+AgentScript takes a completely different approach. By making LLM express execution plan as code, agent can think more abstractly about the task and does not even need to know all the data to perform operations on it or make decisions. Just like a developer writing an app does not need to know all the data it would use - they can write code working on dynamic data by using `if` statements and loops.
 
 Data is expressed as local variables and can be passed to tools, which can be normal deterministic functions, or LLM enabled ones, built using [LangChain](https://www.langchain.com/) or any other library.
 
@@ -149,7 +149,7 @@ Each tool would be able to store its state, wait for a user interaction, an even
 
 Right now we have a working code generation and runtime supporting tools and most common JS statements.
 
-Feel free to play with it by forking our demo repo. [TODO link]
+Feel free to play with it by forking our [examples repo](https://github.com/AgentScript-AI/examples/tree/main).
 
 ## Roadmap
 
