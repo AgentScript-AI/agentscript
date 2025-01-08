@@ -1,3 +1,13 @@
+## 0.1.1 (2025-01-08)
+
+### 🩹 Fixes
+
+- rename workflow to agent ([069b9c0](https://github.com/AgentScript-AI/agentscript/commit/069b9c0))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.1.0 (2025-01-07)
 
 ### 🚀 Features
