@@ -1,3 +1,13 @@
+## 0.1.2 (2025-01-08)
+
+### 🩹 Fixes
+
+- **linear:** fixed bad gql rename ([abb7c9b](https://github.com/AgentScript-AI/agentscript/commit/abb7c9b))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.1.1 (2025-01-08)
 
 ### 🩹 Fixes
