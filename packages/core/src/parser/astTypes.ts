@@ -19,7 +19,7 @@ export interface VariableDeclaration extends StatementBase {
     /**
      * Type of the statement.
      */
-    type: 'Variable';
+    type: 'var';
     /**
      * Name of the variable.
      */
@@ -37,7 +37,7 @@ export interface ExpressionStatement extends StatementBase {
     /**
      * Type of the statement.
      */
-    type: 'Expression';
+    type: 'expr';
     /**
      * Expression to evaluate.
      */
@@ -65,7 +65,7 @@ export interface FunctionCall extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'FunctionCall';
+    type: 'call';
     /**
      * Function to call.
      */
@@ -83,7 +83,7 @@ export interface NewExpression extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'New';
+    type: 'new';
     /**
      * Function to call.
      */
@@ -101,7 +101,7 @@ export interface Literal extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Literal';
+    type: 'literal';
     /**
      * Value of the literal.
      */
@@ -115,7 +115,7 @@ export interface Identifier extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Identifier';
+    type: 'ident';
     /**
      * Name of the identifier.
      */
@@ -129,7 +129,7 @@ export interface MemberExpression extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Member';
+    type: 'member';
     /**
      * Property to access.
      */
@@ -147,7 +147,7 @@ export interface Assignment extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Assignment';
+    type: 'assign';
     /**
      * Left side of the assignment.
      */
@@ -165,7 +165,7 @@ export interface ObjectExpression extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Object';
+    type: 'obj';
     /**
      * Properties of the object.
      */
@@ -179,7 +179,7 @@ export interface ArrayExpression extends ExpressionBase {
     /**
      * Type of the expression.
      */
-    type: 'Array';
+    type: 'arr';
     /**
      * Items in the array.
      */

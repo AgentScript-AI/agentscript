@@ -37,7 +37,7 @@ function parseStatement(statement: babel.Statement): Statement {
             }
 
             return {
-                type: 'Variable',
+                type: 'var',
                 name: declaration.id.name,
                 value: declaration.init ? parseExpression(declaration.init) : undefined,
                 comment,
@@ -46,7 +46,7 @@ function parseStatement(statement: babel.Statement): Statement {
 
         case 'ExpressionStatement': {
             return {
-                type: 'Expression',
+                type: 'expr',
                 expr: parseExpression(statement.expression),
                 comment,
             };
@@ -60,13 +60,13 @@ function parseExpression(expression: babel.Expression): Expression {
     switch (expression.type) {
         case 'Identifier':
             return {
-                type: 'Identifier',
+                type: 'ident',
                 name: expression.name,
             };
 
         case 'NullLiteral':
             return {
-                type: 'Literal',
+                type: 'literal',
                 value: null,
             };
 
@@ -74,14 +74,14 @@ function parseExpression(expression: babel.Expression): Expression {
         case 'BooleanLiteral':
         case 'NumericLiteral':
             return {
-                type: 'Literal',
+                type: 'literal',
                 value: expression.value,
             };
 
         case 'UnaryExpression':
             if (expression.operator === '-' && expression.argument.type === 'NumericLiteral') {
                 return {
-                    type: 'Literal',
+                    type: 'literal',
                     value: -expression.argument.value,
                 };
             }
@@ -90,14 +90,14 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'MemberExpression':
             return {
-                type: 'Member',
+                type: 'member',
                 prop: parseExpression(expression.property as babel.Expression),
                 obj: parseExpression(expression.object),
             };
 
         case 'CallExpression': {
             return {
-                type: 'FunctionCall',
+                type: 'call',
                 func: parseExpression(expression.callee as babel.Expression),
                 args: expression.arguments.map(parseArgument),
             };
@@ -105,7 +105,7 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'AssignmentExpression': {
             return {
-                type: 'Assignment',
+                type: 'assign',
                 left: parseLeftValue(expression.left as babel.LVal),
                 right: parseExpression(expression.right),
             };
@@ -113,7 +113,7 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'ObjectExpression':
             return {
-                type: 'Object',
+                type: 'obj',
                 props: expression.properties.map(prop =>
                     parseObjectProperty(prop as babel.ObjectProperty),
                 ),
@@ -121,10 +121,10 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'ArrayExpression':
             return {
-                type: 'Array',
+                type: 'arr',
                 items: expression.elements.map(e => {
                     if (e === null) {
-                        return { type: 'Literal', value: null };
+                        return { type: 'literal', value: null };
                     }
 
                     return parseArgument(e);
@@ -133,7 +133,7 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'NewExpression': {
             return {
-                type: 'New',
+                type: 'new',
                 func: parseExpression(expression.callee as babel.Expression),
                 args: expression.arguments.map(parseArgument),
             };
@@ -147,8 +147,8 @@ function parseLeftValue(left: babel.LVal): Assignment['left'] {
     const expression = parseExpression(left as babel.Expression);
 
     switch (expression.type) {
-        case 'Identifier':
-        case 'Member':
+        case 'ident':
+        case 'member':
             return expression;
     }
 

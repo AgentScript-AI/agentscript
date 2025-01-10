@@ -6,7 +6,7 @@ import { validateOrThrow } from '@agentscript-ai/schema';
 import { RuntimeError } from './RuntimeError.js';
 import type { Agent as Agent } from './createAgent.js';
 import type { StackFrame } from './runtimeTypes.js';
-import type { ToolDefinition, ToolEvent } from '../defineTool.js';
+import type { ToolDefinition } from '../defineTool.js';
 import { isTool } from '../defineTool.js';
 import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
@@ -180,7 +180,7 @@ async function runBlockFrame(
     statement: Statement,
 ) {
     switch (statement.type) {
-        case 'Variable': {
+        case 'var': {
             const name = statement.name;
 
             if (!block.variables) {
@@ -207,7 +207,7 @@ async function runBlockFrame(
             return completeFrame(frame);
         }
 
-        case 'Expression': {
+        case 'expr': {
             return await runExpression(agent, controller, block, frame, statement.expr);
         }
 
@@ -228,29 +228,29 @@ async function runExpression(
     }
 
     switch (expression.type) {
-        case 'Identifier': {
+        case 'ident': {
             frame.value = resolveIdentifier(agent, frame, expression);
             return completeFrame(frame);
         }
 
-        case 'Literal': {
+        case 'literal': {
             frame.value = resolveLiteral(expression);
             return completeFrame(frame);
         }
 
-        case 'Member': {
+        case 'member': {
             return await runMemberExpression(agent, controller, block, frame, expression);
         }
 
-        case 'Object': {
+        case 'obj': {
             return await runObjectExpression(agent, controller, block, frame, expression);
         }
 
-        case 'Array': {
+        case 'arr': {
             return await runArrayExpression(agent, controller, block, frame, expression);
         }
 
-        case 'Assignment': {
+        case 'assign': {
             const rightFrame = getFrame(frame, 0);
 
             const result = await runExpression(
@@ -264,7 +264,7 @@ async function runExpression(
                 return false;
             }
 
-            if (expression.left.type === 'Identifier') {
+            if (expression.left.type === 'ident') {
                 setVariable(block, expression.left.name, rightFrame.value);
                 return completeFrame(frame);
             }
@@ -272,11 +272,11 @@ async function runExpression(
             throw new Error('Assignment left must be a variable');
         }
 
-        case 'FunctionCall': {
+        case 'call': {
             return await runFunctionCall(agent, controller, block, frame, expression);
         }
 
-        case 'New': {
+        case 'new': {
             return await runNewExpression(agent, controller, block, frame, expression);
         }
 
@@ -301,7 +301,7 @@ async function runMemberExpression(
     }
 
     let property: string;
-    if (expression.prop.type === 'Identifier') {
+    if (expression.prop.type === 'ident') {
         property = expression.prop.name;
     } else {
         const propertyFrame = getFrame(frame, 1);
@@ -337,7 +337,7 @@ async function runObjectExpression(
     // todo: run in parallel
     for (const prop of expression.props) {
         let key: string;
-        if (prop.key.type === 'Identifier') {
+        if (prop.key.type === 'ident') {
             key = prop.key.name;
         } else {
             const keyFrame = getFrame(frame, index);
@@ -391,7 +391,7 @@ async function runFunctionCall(
     let func: unknown;
     let obj: unknown;
 
-    if (expression.func.type === 'Member') {
+    if (expression.func.type === 'member') {
         obj = resolveExpression(agent, frame, expression.func.obj);
         const prop = resolveName(agent, frame, expression.func.prop);
         func = (obj as Record<string, unknown>)[prop];
@@ -453,7 +453,7 @@ async function runFunctionCustom(
         frame.state = state;
     }
 
-    const events: ToolEvent<unknown>[] = [];
+    const events = frame.events?.filter(e => !e.processed) || [];
     const result: unknown = tool.handler({
         input,
         state,
@@ -618,15 +618,15 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
 
 function resolveExpression(agent: Agent, frame: StackFrame, expression: Expression): unknown {
     switch (expression.type) {
-        case 'Identifier': {
+        case 'ident': {
             return resolveIdentifier(agent, frame, expression);
         }
 
-        case 'Literal': {
+        case 'literal': {
             return resolveLiteral(expression);
         }
 
-        case 'Member': {
+        case 'member': {
             const object = resolveExpression(agent, frame, expression.obj);
             const property = resolveName(agent, frame, expression.prop);
 
@@ -648,7 +648,7 @@ function resolveLiteral(expression: Literal) {
 }
 
 function resolveName(agent: Agent, frame: StackFrame, expression: Expression) {
-    if (expression.type === 'Identifier') {
+    if (expression.type === 'ident') {
         return expression.name;
     }
 
