@@ -1,3 +1,5 @@
+import type { ToolEvent } from '../defineTool.js';
+
 /**
  * Stack frame.
  */
@@ -35,6 +37,10 @@ export interface StackFrame {
      * State, ie the state of the tool.
      */
     state?: unknown;
+    /**
+     * Events for the tool.
+     */
+    events?: ToolEvent[];
     /**
      * Children frames.
      */

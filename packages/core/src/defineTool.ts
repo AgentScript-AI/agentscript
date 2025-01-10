@@ -118,7 +118,7 @@ export type ToolDefinition<
 /**
  * Event of the tool.
  */
-export type ToolEvent<T> = {
+export type ToolEvent<T = unknown> = {
     /**
      * Timestamp of the event.
      */

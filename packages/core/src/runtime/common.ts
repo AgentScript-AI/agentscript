@@ -40,16 +40,3 @@ export const allowedNativeFunctions = new Set<NativeFunction | string>([
     Date.prototype.toLocaleDateString,
     Date.prototype.toLocaleTimeString,
 ]);
-
-/**
- * Set of allowed native identifiers.
- */
-export const allowedNativeIdentifiers = new Set([
-    'console',
-    'Date',
-    'Array',
-    'Object',
-    'String',
-    'Number',
-    'Boolean',
-]);

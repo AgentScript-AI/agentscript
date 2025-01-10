@@ -219,6 +219,11 @@ export type Expression =
 export type Statement = VariableDeclaration | ExpressionStatement;
 
 /**
+ * AST node.
+ */
+export type AstNode = Statement | Expression;
+
+/**
  * Script object.
  */
 export interface Script {

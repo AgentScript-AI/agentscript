@@ -9,7 +9,7 @@ import type { StackFrame } from './runtimeTypes.js';
 import type { ToolDefinition } from '../defineTool.js';
 import { isTool } from '../defineTool.js';
 import type { NativeFunction } from './common.js';
-import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
+import { allowedNativeFunctions } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type {
@@ -19,12 +19,16 @@ import type {
     AgentOutputBase,
     AgentTools,
 } from '../defineAgent.js';
+import {
+    resolveExpression,
+    resolveFunctionCall,
+    resolveIdentifier,
+    resolveLiteral,
+} from './utils/resolveExpression.js';
 import type {
     ArrayExpression,
     Expression,
     FunctionCall,
-    Identifier,
-    Literal,
     MemberExpression,
     NewExpression,
     ObjectExpression,
@@ -388,17 +392,7 @@ async function runFunctionCall(
     frame: StackFrame,
     expression: FunctionCall,
 ) {
-    let func: unknown;
-    let obj: unknown;
-
-    if (expression.func.type === 'member') {
-        obj = resolveExpression(agent, frame, expression.func.obj);
-        const prop = resolveName(agent, frame, expression.func.prop);
-        func = (obj as Record<string, unknown>)[prop];
-    } else {
-        func = resolveExpression(agent, frame, expression.func);
-        obj = undefined;
-    }
+    const { func, obj } = resolveFunctionCall(agent, frame, expression);
 
     if (isTool(func)) {
         return await runFunctionCustom(agent, controller, block, frame, expression, func);
@@ -614,72 +608,4 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
 
         frame = frame.parent;
     } while (frame);
-}
-
-function resolveExpression(agent: Agent, frame: StackFrame, expression: Expression): unknown {
-    switch (expression.type) {
-        case 'ident': {
-            return resolveIdentifier(agent, frame, expression);
-        }
-
-        case 'literal': {
-            return resolveLiteral(expression);
-        }
-
-        case 'member': {
-            const object = resolveExpression(agent, frame, expression.obj);
-            const property = resolveName(agent, frame, expression.prop);
-
-            return (object as Record<string, unknown>)[property];
-        }
-
-        default:
-            throw new RuntimeError(`Unsupported expression type: ${expression.type}`);
-    }
-}
-
-function resolveLiteral(expression: Literal) {
-    const value = expression.value;
-    if (typeof value === 'object') {
-        return JSON.parse(JSON.stringify(value)) as unknown;
-    }
-
-    return value;
-}
-
-function resolveName(agent: Agent, frame: StackFrame, expression: Expression) {
-    if (expression.type === 'ident') {
-        return expression.name;
-    }
-
-    return resolveExpression(agent, frame, expression) as string;
-}
-
-function resolveIdentifier(agent: Agent, frame: StackFrame, expression: Identifier) {
-    const name = expression.name;
-
-    while (frame) {
-        const variables = frame.variables;
-        if (variables && name in variables) {
-            return variables[name];
-        }
-
-        if (frame.parent) {
-            frame = frame.parent;
-            continue;
-        }
-
-        break;
-    }
-
-    const tools = agent.tools;
-    if (name in tools) {
-        return tools[name];
-    }
-
-    if (allowedNativeIdentifiers.has(name)) {
-        return (globalThis as Record<string, unknown>)[name];
-    }
-
-    throw new RuntimeError(`Variable ${expression.name} not found`);
 }
