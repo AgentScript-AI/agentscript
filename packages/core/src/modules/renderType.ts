@@ -1,22 +1,27 @@
+import { toPascalCase } from '@nzyme/utils';
+
 import * as s from '@agentscript-ai/schema';
 import { normalizeText } from '@agentscript-ai/utils';
 
-import type { TypeResolver } from './typeResolver.js';
-import { INDENT } from '../constants.js';
 import { renderComment } from './renderComment.js';
+import type { RenderContext } from './renderContext.js';
 
 /**
  * Options for {@link renderTypeInline}.
  */
 export interface RenderTypeOptions {
     /**
-     * Indentation to use.
+     * Schema to render.
      */
-    indent?: string;
+    schema: s.Schema;
     /**
-     * Type resolver to use.
+     * Render context.
      */
-    typeResolver?: TypeResolver;
+    ctx: RenderContext;
+    /**
+     * Name of the type.
+     */
+    nameHint?: string;
 }
 
 /**
@@ -26,96 +31,78 @@ export interface RenderTypeNamedOptions extends RenderTypeOptions {
     /**
      * Name of the type.
      */
-    name: string;
+    nameHint: string;
 }
 
 /**
- * Render a schema as TypeScript code.
- * @param schema - Schema to render.
- * @param options - Options for the schema.
- * @returns Rendered schema.
+ * Render a schema as named TypeScript type.
+ * @param options - Options for the type to render.
+ * @returns Rendered type name.
  */
-export function renderTypeNamed(schema: s.Schema, options: RenderTypeNamedOptions): string {
-    const { name, indent = '', typeResolver } = options;
-    const type = renderTypeInternal(schema, indent, typeResolver, false, true);
-    return `${indent}export interface ${name} ${type}`;
-}
-
-/**
- * Render a schema as inline TypeScript type.
- * @param schema - Schema to render.
- * @param options - Options for the schema.
- * @returns Rendered schema.
- */
-export function renderTypeInline(schema: s.Schema, options: RenderTypeOptions = {}): string {
-    return renderTypeInternal(schema, options.indent ?? '', options.typeResolver, false, false);
+export function renderType(options: RenderTypeOptions): string {
+    const { schema, ctx, nameHint } = options;
+    return renderTypeInternal(schema, ctx, false, nameHint);
 }
 
 function renderTypeInternal(
     schema: s.Schema,
-    indent: string = '',
-    typeResolver?: TypeResolver,
+    ctx: RenderContext,
     skipUndefined?: boolean,
-    skipResolving?: boolean,
+    nameHint?: string,
 ): string {
-    let type = renderInner(schema, indent, typeResolver, skipResolving);
-
-    if (schema.nullable) {
-        type = `${type} | null`;
-    }
-
-    if (schema.optional && !skipUndefined && schema.base !== s.void) {
-        type = `${type} | undefined`;
-    }
-
-    return type;
-}
-
-function renderInner(
-    schema: s.Schema,
-    indent: string,
-    typeResolver?: TypeResolver,
-    skipResolving?: boolean,
-) {
     switch (schema.base) {
         case s.string:
-            return 'string';
+            return wrapType(schema, 'string', skipUndefined);
         case s.number:
-            return 'number';
+            return wrapType(schema, 'number', skipUndefined);
         case s.boolean:
-            return 'boolean';
+            return wrapType(schema, 'boolean', skipUndefined);
         case s.date:
-            return 'Date';
+            return wrapType(schema, 'Date', skipUndefined);
         case s.void:
             return 'void';
         case s.unknown:
             return 'unknown';
         case s.enum:
-            return renderEnum(schema as s.EnumSchema);
-        case s.object:
-            if (!skipResolving) {
-                const resolved = typeResolver?.getName(schema as s.ObjectSchema);
-                if (resolved) {
-                    return resolved;
-                }
+            return renderEnum(schema as s.EnumSchema, skipUndefined);
+        case s.object: {
+            let name = ctx.ambient.getTypeName(schema);
+            if (name) {
+                return wrapType(schema, name, skipUndefined);
             }
 
-            return renderObject(schema as s.ObjectSchema, indent, typeResolver);
+            name = schema.name || nameHint;
+            if (name) {
+                name = findUniqueName(name, ctx.ambient);
+
+                ctx.ambient.addType(schema, name);
+
+                const code = renderObject(schema as s.ObjectSchema, ctx.ambient);
+
+                ctx.ambient.addLine();
+                ctx.ambient.addLine(`export type ${name} = ${code}`);
+
+                return wrapType(schema, name, skipUndefined);
+            }
+
+            const rendered = renderObject(schema as s.ObjectSchema, ctx);
+            return wrapType(schema, rendered, skipUndefined);
+        }
         case s.array:
-            return renderArray(schema as s.ArraySchema, indent, typeResolver);
+            return renderArray(schema as s.ArraySchema, ctx, skipUndefined);
 
         case s.union:
-            return renderUnion(schema as s.UnionSchema, indent, typeResolver);
+            return renderUnion(schema as s.UnionSchema, ctx, skipUndefined);
         default:
             throw new Error(`Unsupported schema ${schema.base.name}`);
     }
 }
 
-function renderObject(schema: s.ObjectSchema, indent: string, typeResolver?: TypeResolver) {
+function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
     const props = schema.props;
-    const propsIndent = indent + INDENT;
+    const propsCtx = ctx.createChild();
 
-    let code = '{\n';
+    let code = `{\n`;
     // eslint-disable-next-line prefer-const
     for (let [key, value] of Object.entries(props)) {
         const optional = value.optional;
@@ -125,34 +112,68 @@ function renderObject(schema: s.ObjectSchema, indent: string, typeResolver?: Typ
 
         const description = value.description;
         if (description) {
-            const comment = renderComment(normalizeText(description), propsIndent);
+            const comment = renderComment(normalizeText(description), propsCtx);
             if (comment) {
                 code += comment;
                 code += '\n';
             }
         }
 
-        const type = renderTypeInternal(value, propsIndent, typeResolver, optional);
-        code += `${propsIndent}${key}: ${type};\n`;
+        const type = renderTypeInternal(value, propsCtx, optional);
+        code += `${propsCtx.indent}${key}: ${type};\n`;
     }
 
-    code += `${indent}}`;
+    code += `${ctx.indent}}`;
 
     return code;
 }
 
-function renderArray(schema: s.ArraySchema, indent: string, typeResolver?: TypeResolver) {
-    if (schema.of.base === s.union) {
-        return `(${renderUnion(schema.of as s.UnionSchema, indent, typeResolver)})[]`;
+function renderArray(schema: s.ArraySchema, ctx: RenderContext, skipUndefined?: boolean) {
+    if (schema.of.base === s.union && (schema.of as s.UnionSchema).of.length > 1) {
+        return `(${renderUnion(schema.of as s.UnionSchema, ctx, skipUndefined)})[]`;
     }
 
-    return `${renderTypeInternal(schema.of, indent, typeResolver)}[]`;
+    const type = renderTypeInternal(schema.of, ctx, skipUndefined);
+
+    if (schema.of.optional || schema.of.nullable) {
+        return `(${type})[]`;
+    }
+
+    return `${type}[]`;
 }
 
-function renderUnion(schema: s.UnionSchema, indent: string, typeResolver?: TypeResolver) {
-    return schema.of.map(option => renderTypeInternal(option, indent, typeResolver)).join(' | ');
+function renderUnion(schema: s.UnionSchema, ctx: RenderContext, skipUndefined?: boolean) {
+    const type = schema.of
+        .map(option => renderTypeInternal(option, ctx, skipUndefined))
+        .join(' | ');
+    return wrapType(schema, type, skipUndefined);
 }
 
-function renderEnum(schema: s.EnumSchema) {
-    return schema.values.map(option => `"${option}"`).join(' | ');
+function renderEnum(schema: s.EnumSchema, skipUndefined?: boolean) {
+    const type = schema.values.map(option => `"${option}"`).join(' | ');
+    return wrapType(schema, type, skipUndefined);
+}
+
+function wrapType(schema: s.Schema, type: string, skipUndefined?: boolean) {
+    if (schema.nullable) {
+        type = `${type} | null`;
+    }
+
+    if (schema.optional && schema.base !== s.void && !skipUndefined) {
+        type = `${type} | undefined`;
+    }
+
+    return type;
+}
+
+function findUniqueName(name: string, ctx: RenderContext) {
+    let uniqueName = toPascalCase(name);
+    let i = 2;
+
+    while (ctx.getTypeSchema(uniqueName)) {
+        uniqueName = name + i;
+        i++;
+    }
+
+    return uniqueName;
 }

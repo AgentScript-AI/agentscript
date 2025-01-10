@@ -2,68 +2,80 @@ import { expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
+import { createRenderContext } from './renderContext.js';
 import { renderVariable } from './renderVariable.js';
-import { createTypeResolver } from './typeResolver.js';
+import { joinLines } from '@agentscript-ai/utils';
 
 test('simple const', () => {
-    const result = renderVariable({
+    const ctx = createRenderContext();
+    renderVariable({
         name: 'foo',
         type: s.string(),
         const: true,
+        ctx,
     });
 
-    expect(result).toBe('const foo: string');
+    expect(ctx.code).toBe('const foo: string');
 });
 
 test('simple let', () => {
-    const result = renderVariable({
+    const ctx = createRenderContext();
+    renderVariable({
         name: 'foo',
         type: s.string(),
+        ctx,
     });
 
-    expect(result).toBe('let foo: string');
+    expect(ctx.code).toBe('let foo: string');
 });
 
 test('const with description', () => {
-    const result = renderVariable({
+    const ctx = createRenderContext();
+    renderVariable({
         name: 'foo',
         type: s.string(),
         description: 'This is a foo variable',
         const: true,
+        ctx,
     });
 
-    const code = [
-        //
-        '/** This is a foo variable */',
-        'const foo: string',
-    ];
-
-    expect(result).toBe(code.join('\n'));
+    expect(ctx.code).toBe(
+        joinLines([
+            //
+            '/** This is a foo variable */',
+            'const foo: string',
+        ]),
+    );
 });
 
 test('const with description and type description', () => {
-    const result = renderVariable({
+    const ctx = createRenderContext();
+    renderVariable({
         name: 'foo',
         type: s.string({
             description: 'This is a string',
         }),
         description: 'This is a foo variable',
         const: true,
+        ctx,
     });
 
-    const code = [
-        '/**',
-        ' * This is a foo variable',
-        ' * This is a string',
-        ' */',
-        'const foo: string',
-    ];
-
-    expect(result).toBe(code.join('\n'));
+    expect(ctx.code).toBe(
+        joinLines([
+            //
+            '/**',
+            ' * This is a foo variable',
+            ' * This is a string',
+            ' */',
+            'const foo: string',
+        ]),
+    );
 });
 
 test('inline object', () => {
-    const result = renderVariable({
+    const ctx = createRenderContext();
+
+    renderVariable({
         name: 'foo',
         type: s.object({
             props: {
@@ -72,36 +84,44 @@ test('inline object', () => {
         }),
         description: 'This is a foo variable',
         const: true,
+        ctx,
     });
 
-    const code = [
-        //
-        '/** This is a foo variable */',
-        'const foo: {',
-        '  name: string;',
-        '}',
-    ];
-
-    expect(result).toBe(code.join('\n'));
+    expect(ctx.code).toBe(
+        joinLines([
+            //
+            '/** This is a foo variable */',
+            'const foo: {',
+            '  name: string;',
+            '}',
+        ]),
+    );
 });
 
 test('custom named object', () => {
+    const ctx = createRenderContext();
+
     const User = s.object({
+        name: 'User',
         props: {
             name: s.string(),
         },
     });
 
-    const resolver = createTypeResolver();
-    resolver.add('User', User);
-
-    const result = renderVariable({
+    renderVariable({
         name: 'user',
         type: User,
-        typeResolver: resolver,
+        ctx,
     });
 
-    const code = 'let user: User';
-
-    expect(result).toBe(code);
+    expect(ctx.code).toBe(
+        joinLines([
+            //
+            'export type User = {',
+            '  name: string;',
+            '}',
+            '',
+            'let user: User',
+        ]),
+    );
 });

@@ -17,7 +17,7 @@ export function parseScript(code: string | string[]): Script {
     const parsed: Statement[] = [];
 
     for (const node of ast.program.body) {
-        parsed.push(parseStatement(node as babel.Statement));
+        parsed.push(parseStatement(node));
     }
 
     return {

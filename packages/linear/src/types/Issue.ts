@@ -9,6 +9,8 @@ export type Issue = s.Infer<typeof Issue>;
  * Issue schema.
  */
 export const Issue = s.object({
+    name: 'Issue',
+    description: 'Linear issue',
     props: {
         id: s.string(),
         url: s.string(),

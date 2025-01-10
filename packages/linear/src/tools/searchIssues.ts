@@ -33,9 +33,6 @@ export const searchIssues = defineService({
                 }),
             },
             output: s.array(Issue),
-            types: {
-                Issue,
-            },
             async handler({ input: { query } }) {
                 const workflowStates = await loadWorkflowStates();
                 const issueFilterSchema = createIssueFilter({

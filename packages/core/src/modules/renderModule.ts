@@ -1,65 +1,32 @@
-import * as s from '@agentscript-ai/schema';
-
-import { INDENT } from '../constants.js';
 import { isTool } from '../defineTool.js';
 import { renderTool } from './renderTool.js';
-import { renderTypeNamed } from './renderType.js';
-import { createTypeResolver } from './typeResolver.js';
 import type { RuntimeModule } from '../defineAgent.js';
+import type { RenderContext } from './renderContext.js';
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
 /**
  * Render a runtime module as TypeScript code.
  * @param module - Runtime module to render.
- * @param indent - Indentation to use.
- * @returns Rendered module.
+ * @param ctx - Render context.
  */
-export function renderModule(module: RuntimeModule, indent: string = '') {
-    const typeResolver = createTypeResolver();
-
-    for (const [key, value] of Object.entries(module)) {
-        if (!VALID_NAME_REGEX.test(key)) {
+export function renderModule(module: RuntimeModule, ctx: RenderContext) {
+    for (const [name, value] of Object.entries(module)) {
+        if (!VALID_NAME_REGEX.test(name)) {
             throw new Error(
-                `Invalid name: ${key}. Names must start with a letter or underscore and can only contain letters, numbers, and underscores.`,
+                `Invalid name: ${name}. Names must start with a letter or underscore and can only contain letters, numbers, and underscores.`,
             );
         }
 
-        if (s.isSchema(value, s.object)) {
-            typeResolver.add(key, value as s.ObjectSchema);
-        }
-    }
-
-    let code = '';
-
-    for (const [name, value] of Object.entries(module)) {
-        if (code.length > 0) {
-            code += '\n\n';
-        }
-
-        if (s.isSchema(value)) {
-            if (value.base === s.object) {
-                code += renderTypeNamed(value, {
-                    name,
-                    indent,
-                    typeResolver,
-                });
-
-                // todo: support more types
-            }
-        } else if (isTool(value)) {
-            code += renderTool({
-                name,
-                func: value,
-                indent,
-                typeResolver,
-            });
+        if (isTool(value)) {
+            renderTool({ name, tool: value, ctx });
         } else if (typeof value === 'object' && value !== null) {
-            code += `${indent}declare namespace ${name} {\n`;
-            code += renderModule(value, indent + INDENT);
-            code += `\n${indent}}`;
+            ctx.addLine();
+            ctx.addLine(`declare namespace ${name} {`);
+            renderModule(value, ctx.createChild(name));
+            ctx.addLine('}');
+        } else {
+            throw new Error(`Invalid value: ${String(value)} for ${name}`);
         }
     }
-
-    return code;
 }

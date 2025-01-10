@@ -1,66 +1,38 @@
-import { toPascalCase } from '@nzyme/utils';
+import { normalizeText } from '@agentscript-ai/utils';
+
 import type { ToolDefinition } from '../defineTool.js';
 import { renderComment } from './renderComment.js';
+import type { RenderContext } from './renderContext.js';
 import { renderDocDirective } from './renderDocDirective.js';
-import { renderTypeInline, renderTypeNamed } from './renderType.js';
-import type { TypeResolver } from './typeResolver.js';
+import { renderType } from './renderType.js';
 
 interface RenderToolOptions {
-    func: ToolDefinition;
+    tool: ToolDefinition;
     name: string;
-    indent?: string;
-    typeResolver: TypeResolver;
+    ctx: RenderContext;
 }
 
 /**
  * Render a tool as TypeScript code.
  * @param options - Options for the tool.
- * @returns Rendered tool.
  */
 export function renderTool(options: RenderToolOptions) {
-    const { func: tool, name, indent = '', typeResolver } = options;
+    const { tool, name, ctx } = options;
 
-    let code = '';
     let args = '';
 
-    if (tool.types) {
-        for (const [typeName, typeSchema] of Object.entries(tool.types)) {
-            const existingName = typeResolver.getName(typeSchema);
-            if (existingName) {
-                continue;
-            }
-
-            const uniqueName = findUniqueName(typeName, typeResolver);
-            typeResolver.add(uniqueName, typeSchema);
-
-            code += renderTypeNamed(typeSchema, {
-                name: uniqueName,
-                indent,
-                typeResolver,
-            });
-            code += '\n\n';
-        }
-    }
-
-    const description = tool.description
-        ? Array.isArray(tool.description)
-            ? tool.description
-            : [tool.description]
-        : [];
+    const description = normalizeText(tool.description);
 
     if (tool.singleArg) {
-        let inputTypeName = typeResolver.getName(tool.input);
-        if (!inputTypeName) {
-            inputTypeName = toPascalCase(tool.input.name || `${name}Params`);
-            inputTypeName = findUniqueName(inputTypeName, typeResolver);
-            typeResolver.add(inputTypeName, tool.input);
+        const input = tool.input;
+        const inputTypeName = renderType({
+            schema: input,
+            ctx,
+            nameHint: `${name}Params`,
+        });
 
-            code += renderTypeNamed(tool.input, {
-                name: inputTypeName,
-                indent,
-                typeResolver,
-            });
-            code += '\n\n';
+        if (input.description) {
+            description.push(renderDocDirective(`param params -`, input.description));
         }
 
         args = `params: ${inputTypeName}`;
@@ -70,7 +42,7 @@ export function renderTool(options: RenderToolOptions) {
                 args += ', ';
             }
 
-            args += `${name}: ${renderTypeInline(arg, { typeResolver })}`;
+            args += `${name}: ${renderType({ schema: arg, ctx })}`;
 
             if (arg.description) {
                 description.push(renderDocDirective(`param ${name} -`, arg.description));
@@ -82,26 +54,19 @@ export function renderTool(options: RenderToolOptions) {
         description.push(renderDocDirective('returns', tool.output.description));
     }
 
-    const comment = renderComment(description, indent);
+    const returnType = renderType({
+        schema: tool.output,
+        ctx,
+        nameHint: `${name}Result`,
+    });
+
+    ctx.addLine();
+    ctx.addLine();
+
+    const comment = renderComment(description, ctx);
     if (comment) {
-        code += `${comment}\n`;
+        ctx.addCode(comment);
     }
 
-    const returnType = renderTypeInline(tool.output, { typeResolver });
-
-    code += `${indent}export function ${name}(${args}): ${returnType};`;
-
-    return code;
-}
-
-function findUniqueName(name: string, typeResolver: TypeResolver) {
-    let uniqueName = name;
-    let i = 2;
-
-    while (typeResolver.getSchema(uniqueName)) {
-        uniqueName = name + i;
-        i++;
-    }
-
-    return uniqueName;
+    ctx.addLine(`export function ${name}(${args}): ${returnType};`);
 }

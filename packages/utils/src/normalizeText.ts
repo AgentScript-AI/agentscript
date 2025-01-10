@@ -4,7 +4,11 @@
  * @param text - The text to normalize.
  * @returns An array of strings.
  */
-export function normalizeText(text: string | string[]) {
+export function normalizeText(text: string | string[] | undefined | null) {
+    if (!text) {
+        return [];
+    }
+
     if (!Array.isArray(text)) {
         return text.split('\n').map(line => line.trim());
     }

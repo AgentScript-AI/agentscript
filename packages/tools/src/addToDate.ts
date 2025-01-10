@@ -15,8 +15,5 @@ export const addToDate = defineTool({
         duration: Duration,
     },
     output: s.date(),
-    types: {
-        Duration,
-    },
     handler: ({ input: { date, duration } }) => add(date, duration),
 });

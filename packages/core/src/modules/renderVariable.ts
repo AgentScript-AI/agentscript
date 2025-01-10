@@ -2,13 +2,17 @@ import type * as s from '@agentscript-ai/schema';
 import { normalizeText } from '@agentscript-ai/utils';
 
 import { renderComment } from './renderComment.js';
-import { renderTypeInline } from './renderType.js';
-import type { TypeResolver } from './typeResolver.js';
+import type { RenderContext } from './renderContext.js';
+import { renderType } from './renderType.js';
 
 /**
  * Parameters for {@link renderVariable}.
  */
 export interface RenderVariableParams {
+    /**
+     * Render context.
+     */
+    ctx: RenderContext;
     /**
      * Name of the variable.
      */
@@ -22,29 +26,17 @@ export interface RenderVariableParams {
      */
     description?: string | string[];
     /**
-     * Indentation for the variable.
-     */
-    indent?: string;
-    /**
      * Whether the variable is constant.
      */
     const?: boolean;
-
-    /**
-     * Type resolver to use.
-     */
-    typeResolver?: TypeResolver;
 }
 
 /**
  * Render a variable as TypeScript code.
  * @param params - Parameters for {@link renderVariable}.
- * @returns Rendered variable.
  */
 export function renderVariable(params: RenderVariableParams) {
-    const { name, type, indent = '', const: isConst = false, typeResolver } = params;
-
-    let code = '';
+    const { name, type, const: isConst = false, ctx } = params;
 
     const description: string[] = [];
 
@@ -56,21 +48,14 @@ export function renderVariable(params: RenderVariableParams) {
         description.push(...normalizeText(type.description));
     }
 
-    if (description.length > 0) {
-        code += `${renderComment(description, indent)}\n`;
+    const typeName = renderType({ schema: type, ctx });
+    const comment = renderComment(description, ctx);
+
+    ctx.addLine();
+
+    if (comment) {
+        ctx.addLine(comment);
     }
 
-    code += `${indent}${isConst ? 'const' : 'let'} ${name}: `;
-
-    const typeName = typeResolver?.getName(type);
-    if (typeName) {
-        code += typeName;
-    } else {
-        code += renderTypeInline(type, {
-            indent,
-            typeResolver,
-        });
-    }
-
-    return code;
+    ctx.addLine(`${isConst ? 'const' : 'let'} ${name}: ${typeName}`);
 }

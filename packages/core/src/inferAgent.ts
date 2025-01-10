@@ -84,7 +84,10 @@ export async function inferAgent<TAgent extends AgentDefinition>(
 function parseResponse(response: string) {
     const match = response.match(RESPONSE_REGEX);
     if (!match) {
-        throw new Error('No code found in response');
+        debug('response', response);
+        throw new Error('No code found in response', {
+            cause: response,
+        });
     }
 
     return {

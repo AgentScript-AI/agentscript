@@ -2,109 +2,138 @@ import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
-import { renderTypeInline } from './renderType.js';
-import { createTypeResolver } from './typeResolver.js';
+import { createRenderContext } from './renderContext.js';
+import { renderType } from './renderType.js';
+import { joinLines } from '@agentscript-ai/utils';
 
 test('string', () => {
+    const ctx = createRenderContext();
     const schema = s.string();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('string');
+    expect(type).toEqual('string');
+    expect(ctx.code).toEqual('');
 });
 
 test('number', () => {
+    const ctx = createRenderContext();
     const schema = s.number();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('number');
+    expect(type).toEqual('number');
+    expect(ctx.code).toEqual('');
 });
 
 test('boolean', () => {
+    const ctx = createRenderContext();
     const schema = s.boolean();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('boolean');
+    expect(type).toEqual('boolean');
+    expect(ctx.code).toEqual('');
 });
 
 test('date', () => {
+    const ctx = createRenderContext();
     const schema = s.date();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('Date');
+    expect(type).toEqual('Date');
+    expect(ctx.code).toEqual('');
 });
 
 test('void', () => {
+    const ctx = createRenderContext();
     const schema = s.void();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('void');
+    expect(type).toEqual('void');
+    expect(ctx.code).toEqual('');
 });
 
 test('unknown', () => {
+    const ctx = createRenderContext();
     const schema = s.unknown();
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('unknown');
+    expect(type).toEqual('unknown');
+    expect(ctx.code).toEqual('');
 });
 
 test('enum', () => {
+    const ctx = createRenderContext();
     const schema = s.enum(['foo', 'bar']);
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('"foo" | "bar"');
-});
-
-test('custom type nullable', () => {
-    const schema = s.object({ props: { name: s.string() } });
-    const resolver = createTypeResolver();
-    resolver.add('Foo', schema);
-
-    const code = renderTypeInline(s.nullable(schema), { typeResolver: resolver });
-
-    expect(code).toEqual('Foo | null');
+    expect(type).toEqual('"foo" | "bar"');
+    expect(ctx.code).toEqual('');
 });
 
 test('string nullable', () => {
+    const ctx = createRenderContext();
     const schema = s.string({ nullable: true });
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('string | null');
+    expect(type).toEqual('string | null');
+    expect(ctx.code).toEqual('');
 });
 
 test('string optional', () => {
+    const ctx = createRenderContext();
     const schema = s.string({ optional: true });
-    const code = renderTypeInline(schema);
+    const type = renderType({ schema, ctx });
 
-    expect(code).toEqual('string | undefined');
+    expect(type).toEqual('string | undefined');
+    expect(ctx.code).toEqual('');
 });
 
 test('string nullable and optional', () => {
     const schema = s.string({ nullable: true, optional: true });
-    const code = renderTypeInline(schema);
+    const ctx = createRenderContext();
 
-    expect(code).toEqual('string | null | undefined');
+    const type = renderType({ schema, ctx });
+
+    expect(type).toEqual('string | null | undefined');
+    expect(ctx.code).toEqual('');
+});
+
+test('custom type nullable', () => {
+    const schema = s.object({ props: { name: s.string() } });
+    const ctx = createRenderContext();
+    ctx.addType(schema, 'Foo');
+
+    const type = renderType({ schema: s.nullable(schema), ctx });
+
+    expect(type).toEqual('Foo | null');
+    expect(ctx.code).toEqual('');
 });
 
 describe('object', () => {
     test('basic', () => {
         const schema = s.object({ props: { name: s.string() } });
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  name: string;\n}');
+        expect(type).toEqual('{\n  name: string;\n}');
+        expect(ctx.code).toEqual('');
     });
 
     test('nullable', () => {
         const schema = s.object({ props: { name: s.string() } });
-        const code = renderTypeInline(s.nullable(schema));
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.nullable(schema), ctx });
 
-        expect(code).toEqual('{\n  name: string;\n} | null');
+        expect(type).toEqual('{\n  name: string;\n} | null');
+        expect(ctx.code).toEqual('');
     });
 
     test('optional', () => {
         const schema = s.object({ props: { name: s.string() } });
-        const code = renderTypeInline(s.optional(schema));
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.optional(schema), ctx });
 
-        expect(code).toEqual('{\n  name: string;\n} | undefined');
+        expect(type).toEqual('{\n  name: string;\n} | undefined');
+        expect(ctx.code).toEqual('');
     });
 
     test('nullable and optional', () => {
@@ -113,9 +142,11 @@ describe('object', () => {
             nullable: true,
             optional: true,
         });
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  name: string;\n} | null | undefined');
+        expect(type).toEqual('{\n  name: string;\n} | null | undefined');
+        expect(ctx.code).toEqual('');
     });
 
     test('multiple properties', () => {
@@ -128,11 +159,13 @@ describe('object', () => {
                 isActive: s.boolean({ optional: true, nullable: true }),
             },
         });
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual(
+        expect(type).toEqual(
             '{\n  name: string;\n  email: string | null;\n  age?: number;\n  birthDate?: Date;\n  isActive?: boolean | null;\n}',
         );
+        expect(ctx.code).toEqual('');
     });
 
     test('nested object', () => {
@@ -141,9 +174,11 @@ describe('object', () => {
                 user: s.object({ props: { name: s.string() } }),
             },
         });
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  user: {\n    name: string;\n  };\n}');
+        expect(type).toEqual('{\n  user: {\n    name: string;\n  };\n}');
+        expect(ctx.code).toEqual('');
     });
 
     test('custom props', () => {
@@ -154,80 +189,324 @@ describe('object', () => {
             props: { child },
         });
 
-        const resolver = createTypeResolver();
-        resolver.add('Child', child);
+        const ctx = createRenderContext();
+        ctx.addType(child, 'Child');
 
-        const code = renderTypeInline(schema, { typeResolver: resolver });
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  child: Child;\n}');
+        expect(type).toEqual('{\n  child: Child;\n}');
+        expect(ctx.code).toEqual('');
+    });
+
+    test('named object', () => {
+        const child = s.object({
+            name: 'Child',
+            props: { name: s.string() },
+        });
+
+        const schema = s.object({
+            props: { child },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('{\n  child: Child;\n}');
     });
 
     test('custom nullable props', () => {
         const child = s.object({
+            name: 'Child',
             props: { name: s.string() },
         });
         const schema = s.object({
             props: { child: s.nullable(child) },
         });
 
-        const resolver = createTypeResolver();
-        resolver.add('Child', child);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        const code = renderTypeInline(schema, { typeResolver: resolver });
-
-        expect(code).toEqual('{\n  child: Child | null;\n}');
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('{\n  child: Child | null;\n}');
     });
 
     test('custom optional props', () => {
         const child = s.object({
+            name: 'Child',
             props: { name: s.string() },
         });
         const schema = s.object({
             props: { child: s.optional(child) },
         });
 
-        const resolver = createTypeResolver();
-        resolver.add('Child', child);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        const code = renderTypeInline(schema, { typeResolver: resolver });
-
-        expect(code).toEqual('{\n  child?: Child;\n}');
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('{\n  child?: Child;\n}');
     });
 
     test('props with description', () => {
         const schema = s.object({
             props: {
-                name: s.string({ description: 'The name of the person' }),
-                age: s.number({ optional: true, description: 'The age of the person' }),
+                name: s.string({
+                    description: 'The name of the person',
+                }),
+                age: s.number({
+                    optional: true,
+                    description: 'The age of the person',
+                }),
             },
         });
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual(
-            '{\n  /** The name of the person */\n  name: string;\n  /** The age of the person */\n  age?: number;\n}',
+        expect(ctx.code).toEqual('');
+        expect(type).toEqual(
+            joinLines([
+                '{',
+                '  /** The name of the person */',
+                '  name: string;',
+                '  /** The age of the person */',
+                '  age?: number;',
+                '}',
+            ]),
         );
     });
 
     test('custom props with description', () => {
         const child = s.object({
-            props: { name: s.string() },
+            name: 'Child',
+            props: {
+                name: s.string({
+                    description: 'The name of the child',
+                }),
+            },
         });
         const schema = s.object({
-            props: { child: s.extend(child, { description: 'The child of the person' }) },
+            props: {
+                child: s.extend(child, { description: 'The child of the person' }),
+            },
         });
 
-        const resolver = createTypeResolver();
-        resolver.add('Child', child);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        const code = renderTypeInline(schema, { typeResolver: resolver });
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  /** The name of the child */',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual(
+            joinLines([
+                //
+                '{',
+                '  /** The child of the person */',
+                '  child: Child;',
+                '}',
+            ]),
+        );
+    });
 
-        expect(code).toEqual('{\n  /** The child of the person */\n  child: Child;\n}');
+    test('unnamed nested object', () => {
+        const child = s.object({
+            props: {
+                name: s.string({
+                    description: 'The name of the child',
+                }),
+            },
+        });
+        const schema = s.object({
+            props: {
+                child: s.extend(child, { description: 'The child of the person' }),
+            },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(ctx.code).toEqual('');
+        expect(type).toEqual(
+            joinLines([
+                //
+                '{',
+                '  /** The child of the person */',
+                '  child: {',
+                '    /** The name of the child */',
+                '    name: string;',
+                '  };',
+                '}',
+            ]),
+        );
+    });
+
+    test('double nested object', () => {
+        const toy = s.object({
+            name: 'Toy',
+            props: {
+                name: s.string({
+                    description: 'The name of the toy',
+                }),
+            },
+        });
+
+        const child = s.object({
+            name: 'Child',
+            props: {
+                name: s.string({
+                    description: 'The name of the child',
+                }),
+                toys: s.array({
+                    of: toy,
+                    description: 'The toys of the child',
+                }),
+            },
+        });
+
+        const schema = s.object({
+            name: 'Person',
+            props: {
+                child: s.extend(child, { description: 'The child of the person' }),
+            },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Toy = {',
+                '  /** The name of the toy */',
+                '  name: string;',
+                '}',
+                '',
+                'export type Child = {',
+                '  /** The name of the child */',
+                '  name: string;',
+                '  /** The toys of the child */',
+                '  toys: Toy[];',
+                '}',
+                '',
+                'export type Person = {',
+                '  /** The child of the person */',
+                '  child: Child;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('Person');
+    });
+
+    test('same type twice', () => {
+        const child = s.object({
+            name: 'Child',
+            props: {
+                name: s.string({
+                    description: 'The name of the child',
+                }),
+            },
+        });
+
+        const schema = s.object({
+            name: 'Person',
+            props: {
+                child: s.extend(child, { description: 'The child of the person' }),
+                child2: s.extend(child, { description: 'The child of the person' }),
+            },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  /** The name of the child */',
+                '  name: string;',
+                '}',
+                '',
+                'export type Person = {',
+                '  /** The child of the person */',
+                '  child: Child;',
+                '  /** The child of the person */',
+                '  child2: Child;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('Person');
+    });
+
+    test('name collision', () => {
+        const child = s.object({
+            name: 'Child',
+            props: { name: s.string() },
+        });
+
+        const child2 = s.object({
+            name: 'Child',
+            props: { age: s.number() },
+        });
+
+        const person = s.object({
+            name: 'Person',
+            props: { child, child2 },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema: person, ctx });
+
+        expect(ctx.code).toEqual(
+            joinLines([
+                'export type Child = {',
+                '  name: string;',
+                '}',
+                '',
+                'export type Child2 = {',
+                '  age: number;',
+                '}',
+                '',
+                'export type Person = {',
+                '  child: Child;',
+                '  child2: Child2;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual('Person');
     });
 
     test('custom array props', () => {
         const child = s.object({
+            name: 'Child',
             props: { name: s.string() },
         });
+
         const parent = s.object({
             props: {
                 children: s.array({
@@ -237,58 +516,100 @@ describe('object', () => {
             },
         });
 
-        const resolver = createTypeResolver();
-        resolver.add('Child', child);
+        const ctx = createRenderContext();
+        const type = renderType({ schema: parent, ctx });
 
-        const code = renderTypeInline(parent, { typeResolver: resolver });
-
-        expect(code).toEqual('{\n  /** The children of the person */\n  children: Child[];\n}');
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type Child = {',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual(
+            joinLines([
+                //
+                '{',
+                '  /** The children of the person */',
+                '  children: Child[];',
+                '}',
+            ]),
+        );
     });
 });
 
 describe('array', () => {
     test('string array', () => {
         const schema = s.array(s.string());
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('string[]');
+        expect(type).toEqual('string[]');
+        expect(ctx.code).toEqual('');
     });
 
     test('object array', () => {
         const schema = s.array(s.object({ props: { name: s.string() } }));
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  name: string;\n}[]');
+        expect(ctx.code).toEqual('');
+        expect(type).toEqual(
+            joinLines([
+                //
+                '{',
+                '  name: string;',
+                '}[]',
+            ]),
+        );
+    });
+
+    test('array of optional', () => {
+        const schema = s.array(s.optional(s.string()));
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(type).toEqual('(string | undefined)[]');
+        expect(ctx.code).toEqual('');
     });
 });
 
 describe('union', () => {
     test('basic', () => {
         const schema = s.union([s.string(), s.number()]);
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('string | number');
+        expect(type).toEqual('string | number');
+        expect(ctx.code).toEqual('');
     });
 
     test('nullable', () => {
         const schema = s.union([s.string(), s.number()]);
-        const code = renderTypeInline(s.nullable(schema));
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.nullable(schema), ctx });
 
-        expect(code).toEqual('string | number | null');
+        expect(type).toEqual('string | number | null');
+        expect(ctx.code).toEqual('');
     });
 
     test('optional', () => {
         const schema = s.union([s.string(), s.number()]);
-        const code = renderTypeInline(s.optional(schema));
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.optional(schema), ctx });
 
-        expect(code).toEqual('string | number | undefined');
+        expect(type).toEqual('string | number | undefined');
+        expect(ctx.code).toEqual('');
     });
 
     test('nullable and optional', () => {
         const schema = s.union([s.string(), s.number()]);
-        const code = renderTypeInline(s.nullable(s.optional(schema)));
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.nullable(s.optional(schema)), ctx });
 
-        expect(code).toEqual('string | number | null | undefined');
+        expect(type).toEqual('string | number | null | undefined');
+        expect(ctx.code).toEqual('');
     });
 
     test('object', () => {
@@ -296,33 +617,65 @@ describe('union', () => {
             s.object({ props: { name: s.string() } }),
             s.object({ props: { age: s.number() } }),
         ]);
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('{\n  name: string;\n} | {\n  age: number;\n}');
+        expect(ctx.code).toEqual('');
+        expect(type).toEqual(
+            joinLines([
+                //
+                '{',
+                '  name: string;',
+                '} | {',
+                '  age: number;',
+                '}',
+            ]),
+        );
     });
 
     test('named object', () => {
-        const user = s.object({ props: { name: s.string() } });
-        const resolver = createTypeResolver();
-        resolver.add('User', user);
+        const user = s.object({
+            name: 'User',
+            props: { name: s.string() },
+        });
 
+        const ctx = createRenderContext();
         const schema = s.union([user, s.object({ props: { age: s.number() } })]);
-        const code = renderTypeInline(schema, { typeResolver: resolver });
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('User | {\n  age: number;\n}');
+        expect(ctx.code).toEqual(
+            joinLines([
+                //
+                'export type User = {',
+                '  name: string;',
+                '}',
+            ]),
+        );
+        expect(type).toEqual(
+            joinLines([
+                //
+                'User | {',
+                '  age: number;',
+                '}',
+            ]),
+        );
     });
 
     test('array', () => {
         const schema = s.union([s.array(s.string()), s.array(s.number())]);
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('string[] | number[]');
+        expect(type).toEqual('string[] | number[]');
+        expect(ctx.code).toEqual('');
     });
 
     test('array of unions', () => {
         const schema = s.array(s.union([s.string(), s.number()]));
-        const code = renderTypeInline(schema);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
 
-        expect(code).toEqual('(string | number)[]');
+        expect(type).toEqual('(string | number)[]');
+        expect(ctx.code).toEqual('');
     });
 });

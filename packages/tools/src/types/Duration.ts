@@ -9,6 +9,7 @@ export type Duration = s.Infer<typeof Duration>;
  * Duration type schema.
  */
 export const Duration = s.object({
+    name: 'Duration',
     props: {
         years: s.number({ optional: true }),
         months: s.number({ optional: true }),

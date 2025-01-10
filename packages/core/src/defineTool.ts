@@ -41,11 +41,6 @@ export type ToolOptions<TIn extends ToolInputOptions, TOut extends s.Schema> = {
      */
     output?: TOut;
     /**
-     * Additional types for the tool.
-     * These types will be included in the runtime definition.
-     */
-    types?: Record<string, s.Schema>;
-    /**
      * Handler for the tool.
      */
     handler: ToolHandler<TIn, TOut>;
@@ -75,11 +70,6 @@ export type ToolDefinition<
      * Schema of the return value of the tool.
      */
     output: TOut;
-    /**
-     * Additional types for the tool.
-     * These types will be included in the runtime definition.
-     */
-    types?: Record<string, s.Schema>;
     /**
      * Handler for the tool.
      */
@@ -141,7 +131,6 @@ export function defineTool<
         input,
         singleArg,
         output: options.output ?? (s.void() as TOut),
-        types: options.types,
         handler: options.handler as ToolHandler<ToolInputSchema<TIn>, TOut>,
         [TOOL_SYMBOL]: true,
     };

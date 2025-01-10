@@ -1,17 +1,27 @@
+import type { RenderContext } from './renderContext.js';
+
 /**
  * Render a comment.
  * @param comment - The comment to render.
- * @param indent - The indent to use.
- * @returns The rendered comment.
+ * @param ctx - Render context.
+ * @returns Rendered comment.
  */
-export function renderComment(comment: string[], indent: string = '') {
+export function renderComment(comment: string[], ctx: RenderContext) {
+    let code = '';
+
     if (comment.length === 0) {
-        return '';
+        return;
     }
 
     if (comment.length > 1) {
-        return `${indent}/**\n${comment.map(line => `${indent} * ${line}`).join('\n')}\n${indent} */`;
+        code = `${ctx.indent}/**`;
+        for (const line of comment) {
+            code += `\n${ctx.indent} * ${line}`;
+        }
+        code += `\n${ctx.indent} */`;
+    } else {
+        code = `${ctx.indent}/** ${comment[0]} */`;
     }
 
-    return `${indent}/** ${comment[0]} */`;
+    return code;
 }

@@ -37,7 +37,7 @@ export type AgentDefinition = {
  * AgentScript runtime module.
  */
 export type RuntimeModule = {
-    readonly [name: string]: s.Schema | ToolDefinition | RuntimeModule;
+    readonly [name: string]: ToolDefinition | RuntimeModule;
 };
 
 /**
