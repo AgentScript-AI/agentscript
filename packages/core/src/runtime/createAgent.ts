@@ -1,41 +1,66 @@
+import { v7 as uuid } from 'uuid';
+
 import type { StackFrame } from './runtimeTypes.js';
-import type { AgentDefinition, AgentOutput, RuntimeModule } from '../defineAgent.js';
+import type {
+    AgentDefinition,
+    AgentInputBase,
+    AgentOutput,
+    AgentOutputBase,
+    AgentTools,
+} from '../defineAgent.js';
 import type { Script } from '../parser/astTypes.js';
 
 /**
  * Parameters for {@link createAgent}.
  */
-export type CreateAgentParams<TAgent extends AgentDefinition> = {
+export type CreateAgentParams<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase,
+    TOutput extends AgentOutputBase,
+> = AgentDefinition<TTools, TInput, TOutput> & {
+    /**
+     * ID of the agent.
+     * If not provided, it will be generated as a UUID.
+     */
+    readonly id?: string;
     /**
      * AgentScript script to execute.
      */
-    script: Script;
+    readonly script: Script;
     /**
      * Plan for the agent.
      */
-    plan?: string;
+    readonly plan?: string;
     /**
      * State of the agent.
      */
-    state?: AgentState<TAgent>;
+    readonly state?: AgentState<TOutput>;
 };
 
 /**
  * Agent to be executed.
  */
-export type Agent<TAgent extends AgentDefinition = AgentDefinition> = {
+export type Agent<
+    TTools extends AgentTools = AgentTools,
+    TInput extends AgentInputBase = AgentInputBase,
+    TOutput extends AgentOutputBase = AgentOutputBase,
+> = AgentDefinition<TTools, TInput, TOutput> & {
+    /**
+     * ID of the agent.
+     */
+    id: string;
     /**
      * Tools available to the agent.
      */
-    tools: RuntimeModule;
+    tools: TTools;
     /**
      * Schema for the input of the agent.
      */
-    input: TAgent['input'];
+    input: TInput;
     /**
      * Schema for the output of the agent.
      */
-    output: TAgent['output'];
+    output: TOutput;
     /**
      * AgentScript script to execute.
      */
@@ -47,7 +72,7 @@ export type Agent<TAgent extends AgentDefinition = AgentDefinition> = {
     /**
      * State of the agent.
      */
-    state?: AgentState<TAgent>;
+    state?: AgentState<TOutput>;
 };
 
 type AgentStateBase = {
@@ -58,7 +83,7 @@ type AgentStateBase = {
     root: StackFrame;
 };
 
-type AgentStateComplete<TAgent extends AgentDefinition> = {
+type AgentStateComplete<TOutput extends AgentOutputBase> = {
     /**
      * Whether the agent is complete.
      */
@@ -67,7 +92,7 @@ type AgentStateComplete<TAgent extends AgentDefinition> = {
     /**
      * Output of the agent.
      */
-    output: AgentOutput<TAgent>;
+    output: AgentOutput<TOutput>;
 };
 
 type AgentStateIncomplete = {
@@ -85,16 +110,19 @@ type AgentStateIncomplete = {
 /**
  * State of the agent.
  */
-export type AgentState<TAgent extends AgentDefinition> = AgentStateBase &
-    (AgentStateComplete<TAgent> | AgentStateIncomplete);
+export type AgentState<TOutput extends AgentOutputBase> = AgentStateBase &
+    (AgentStateComplete<TOutput> | AgentStateIncomplete);
 
 /**
  * Create a new agent.
  * @param agent - Agent options.
  * @returns New agent.
  */
-export function createAgent<TAgent extends AgentDefinition>(
-    agent: TAgent & CreateAgentParams<TAgent>,
-) {
-    return agent as Agent<TAgent>;
+export function createAgent<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase,
+    TOutput extends AgentOutputBase,
+>(agent: CreateAgentParams<TTools, TInput, TOutput>) {
+    const id = agent.id ?? uuid();
+    return { ...agent, id } as Agent<TTools, TInput, TOutput>;
 }

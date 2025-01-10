@@ -12,7 +12,13 @@ import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
-import type { AgentDefinition, AgentInput, AgentOutput } from '../defineAgent.js';
+import type {
+    AgentInput,
+    AgentInputBase,
+    AgentOutput,
+    AgentOutputBase,
+    AgentTools,
+} from '../defineAgent.js';
 import type {
     ArrayExpression,
     Expression,
@@ -25,26 +31,29 @@ import type {
     Statement,
 } from '../parser/astTypes.js';
 
-type ExecuteAgentInputOptions<TAgent extends AgentDefinition> =
-    AgentInput<TAgent> extends undefined
-        ? {
-              /** Input for the agent. */
-              input?: undefined;
-          }
-        : {
-              /** Input for the agent. */
-              input: AgentInput<TAgent>;
-          };
+type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends undefined
+    ? {
+          /** Input for the agent. */
+          input?: undefined;
+      }
+    : {
+          /** Input for the agent. */
+          input: AgentInput<TInput>;
+      };
 
 /**
  * Options for the {@link executeAgent} function.
  */
-export type ExecuteAgentOptions<TAgent extends AgentDefinition> = {
+export type ExecuteAgentOptions<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase,
+    TOutput extends AgentOutputBase,
+> = {
     /**
      * Agent to execute.
      */
-    agent: Agent<TAgent>;
-} & ExecuteAgentInputOptions<TAgent> &
+    agent: Agent<TTools, TInput, TOutput>;
+} & ExecuteAgentInputOptions<TInput> &
     RuntimeControllerOptions;
 
 /**
@@ -68,9 +77,11 @@ export interface ExecuteAgentResult {
  * @param options - Options for the agent.
  * @returns Result of the agent execution.
  */
-export async function executeAgent<TAgent extends AgentDefinition>(
-    options: ExecuteAgentOptions<TAgent>,
-): Promise<ExecuteAgentResult> {
+export async function executeAgent<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase,
+    TOutput extends AgentOutputBase,
+>(options: ExecuteAgentOptions<TTools, TInput, TOutput>): Promise<ExecuteAgentResult> {
     const { agent } = options;
 
     const controller = createRuntimeControler(options);
@@ -102,7 +113,7 @@ export async function executeAgent<TAgent extends AgentDefinition>(
         agent.state.complete = true;
 
         if (agent.output) {
-            const result = root.variables?.result as AgentOutput<TAgent>;
+            const result = root.variables?.result as AgentOutput<TOutput>;
             validateOrThrow(agent.output, result);
             agent.state.output = result;
         }
