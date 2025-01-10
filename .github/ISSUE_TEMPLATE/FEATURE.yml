@@ -1,0 +1,14 @@
+name: 'New Feature'
+description: Create a ticket for a new feature
+labels: ['feature']
+projects: ['AgentScript-AI/3']
+assignees:
+    - kedrzu
+body:
+    - type: textarea
+      id: summary
+      attributes:
+          label: 'Summary'
+          description: Provide a brief explanation of the feature
+      validations:
+          required: true
