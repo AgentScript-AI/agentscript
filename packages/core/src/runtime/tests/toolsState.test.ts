@@ -38,11 +38,17 @@ test('simple tool state', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: undefined,
                 state: {
                     bar: 'foobar',
                 },
-                children: [completedFrame({ value: 'foo' })],
+                children: [
+                    completedFrame({
+                        trace: '0:0:0',
+                        value: 'foo',
+                    }),
+                ],
             }),
         ],
     });

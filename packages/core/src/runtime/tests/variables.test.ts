@@ -32,8 +32,15 @@ test('single variable declaration', async () => {
         },
         children: [
             childFrame({
+                trace: '0:0',
                 completedAt: anyDate(),
-                children: [childFrame({ completedAt: anyDate(), value: 1 })],
+                children: [
+                    childFrame({
+                        trace: '0:0:0',
+                        completedAt: anyDate(),
+                        value: 1,
+                    }),
+                ],
             }),
         ],
     });
@@ -83,12 +90,26 @@ test('multiple variable declarations', async () => {
         children: [
             //
             childFrame({
+                trace: '0:0',
                 completedAt: anyDate(),
-                children: [childFrame({ completedAt: anyDate(), value: 1 })],
+                children: [
+                    childFrame({
+                        trace: '0:0:0',
+                        completedAt: anyDate(),
+                        value: 1,
+                    }),
+                ],
             }),
             childFrame({
+                trace: '0:1',
                 completedAt: anyDate(),
-                children: [childFrame({ completedAt: anyDate(), value: 2 })],
+                children: [
+                    childFrame({
+                        trace: '0:1:0',
+                        completedAt: anyDate(),
+                        value: 2,
+                    }),
+                ],
             }),
         ],
     });
@@ -121,10 +142,12 @@ test('assign variable', async () => {
         variables: { a: 2 },
         children: [
             completedFrame({
-                children: [completedFrame({ value: 1 })],
+                trace: '0:0',
+                children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
             completedFrame({
-                children: [completedFrame({ value: 2 })],
+                trace: '0:1',
+                children: [completedFrame({ trace: '0:1:0', value: 2 })],
             }),
         ],
     });
@@ -153,19 +176,25 @@ test('member expression', async () => {
         variables: { a: { b: 1 }, c: 1 },
         children: [
             completedFrame({
+                trace: '0:0',
+
                 children: [
                     completedFrame({
+                        trace: '0:0:0',
                         value: { b: 1 },
-                        children: [completedFrame({ value: 1 })],
+                        children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                     }),
                 ],
             }),
             completedFrame({
+                trace: '0:1',
                 children: [
                     completedFrame({
+                        trace: '0:1:0',
                         value: 1,
                         children: [
                             completedFrame({
+                                trace: '0:1:0:0',
                                 value: { b: 1 },
                             }),
                         ],
@@ -198,20 +227,23 @@ test('array.length', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 children: [
                     completedFrame({
+                        trace: '0:0:0',
                         value: [1, 2, 3],
                         children: [
-                            completedFrame({ value: 1 }),
-                            completedFrame({ value: 2 }),
-                            completedFrame({ value: 3 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
+                            completedFrame({ trace: '0:0:0:2', value: 3 }),
                         ],
                     }),
                 ],
             }),
             completedFrame({
+                trace: '0:1',
                 value: 3,
-                children: [completedFrame({ value: [1, 2, 3] })],
+                children: [completedFrame({ trace: '0:1:0', value: [1, 2, 3] })],
             }),
         ],
         variables: { a: [1, 2, 3] },

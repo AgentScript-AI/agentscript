@@ -88,7 +88,10 @@ export async function executeAgent<
     if (!agent.state) {
         agent.state = {
             complete: false,
-            root: { startedAt: new Date() },
+            root: {
+                trace: '0',
+                startedAt: new Date(),
+            },
         };
 
         if (agent.output) {
@@ -455,6 +458,8 @@ async function runFunctionCustom(
         input,
         state,
         events,
+        trace: frame.trace,
+        agent,
     });
 
     if (result instanceof Promise) {
@@ -555,7 +560,12 @@ function pushNewFrame(parent: StackFrame) {
         parent.children = [];
     }
 
-    const frame: StackFrame = { startedAt: new Date(), parent };
+    const frame: StackFrame = {
+        startedAt: new Date(),
+        parent,
+        trace: `${parent.trace}:${parent.children.length}`,
+    };
+
     parent.children.push(frame);
 
     return {
@@ -574,7 +584,11 @@ function getFrame(parent: StackFrame, index: number) {
     }
 
     if (index === parent.children.length) {
-        const frame: StackFrame = { startedAt: new Date(), parent };
+        const frame: StackFrame = {
+            startedAt: new Date(),
+            parent,
+            trace: `${parent.trace}:${index}`,
+        };
         parent.children.push(frame);
         return frame;
     }

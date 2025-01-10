@@ -3,6 +3,11 @@
  */
 export interface StackFrame {
     /**
+     * Trace of the frame.
+     * This is a unique identifier for the frame in the execution state.
+     */
+    trace: string;
+    /**
      * Started at.
      */
     startedAt: Date;

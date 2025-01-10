@@ -56,8 +56,12 @@ test('single function call', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: 3,
-                children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
+                children: [
+                    completedFrame({ trace: '0:0:0', value: 1 }),
+                    completedFrame({ trace: '0:0:1', value: 2 }),
+                ],
             }),
         ],
     });
@@ -89,24 +93,36 @@ test('multiple function calls', async () => {
         children: [
             //
             completedFrame({
-                children: [completedFrame({ value: 1 })],
+                trace: '0:0',
+                children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
             completedFrame({
-                children: [completedFrame({ value: 2 })],
+                trace: '0:1',
+                children: [completedFrame({ trace: '0:1:0', value: 2 })],
             }),
             completedFrame({
+                trace: '0:2',
                 children: [
                     completedFrame({
+                        trace: '0:2:0',
                         value: 3,
-                        children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
+                        children: [
+                            completedFrame({ trace: '0:2:0:0', value: 1 }),
+                            completedFrame({ trace: '0:2:0:1', value: 2 }),
+                        ],
                     }),
                 ],
             }),
             completedFrame({
+                trace: '0:3',
                 children: [
                     completedFrame({
+                        trace: '0:3:0',
                         value: 9,
-                        children: [completedFrame({ value: 3 }), completedFrame({ value: 3 })],
+                        children: [
+                            completedFrame({ trace: '0:3:0:0', value: 3 }),
+                            completedFrame({ trace: '0:3:0:1', value: 3 }),
+                        ],
                     }),
                 ],
             }),
@@ -138,10 +154,12 @@ describe('nested function calls', () => {
         let expectedStack = rootFrame({
             children: [
                 childFrame({
+                    trace: '0:0',
                     children: [
                         completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [completedFrame({ value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                     ],
                 }),
@@ -156,14 +174,17 @@ describe('nested function calls', () => {
         expectedStack = rootFrame({
             children: [
                 childFrame({
+                    trace: '0:0',
                     children: [
                         completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [completedFrame({ value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                         completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [completedFrame({ value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -177,15 +198,18 @@ describe('nested function calls', () => {
             completedAt: anyDate(),
             children: [
                 completedFrame({
+                    trace: '0:0',
                     value: 5,
                     children: [
                         completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [completedFrame({ value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                         completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [completedFrame({ value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -204,15 +228,18 @@ describe('nested function calls', () => {
             completedAt: anyDate(),
             children: [
                 completedFrame({
+                    trace: '0:0',
                     value: 5,
                     children: [
                         completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [completedFrame({ value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                         completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [completedFrame({ value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -241,8 +268,12 @@ test('module function', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: 3,
-                children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
+                children: [
+                    completedFrame({ trace: '0:0:0', value: 1 }),
+                    completedFrame({ trace: '0:0:1', value: 2 }),
+                ],
             }),
         ],
     });
@@ -262,6 +293,7 @@ test('new Date()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: expect.any(Date),
             }),
         ],
@@ -282,6 +314,7 @@ test('toString()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: 'true',
             }),
         ],
@@ -302,8 +335,9 @@ test('Number()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: 1,
-                children: [completedFrame({ value: '1' })],
+                children: [completedFrame({ trace: '0:0:0', value: '1' })],
             }),
         ],
     });
@@ -322,8 +356,9 @@ test('Boolean()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: true,
-                children: [completedFrame({ value: 'true' })],
+                children: [completedFrame({ trace: '0:0:0', value: 'true' })],
             }),
         ],
     });
@@ -342,8 +377,9 @@ test('String()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 value: '1',
-                children: [completedFrame({ value: 1 })],
+                children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
         ],
     });
@@ -367,22 +403,25 @@ test('array.push()', async () => {
         completedAt: anyDate(),
         children: [
             completedFrame({
+                trace: '0:0',
                 children: [
                     completedFrame({
+                        trace: '0:0:0',
                         value: [1, 2, 3, 4],
                         children: [
-                            completedFrame({ value: 1 }),
-                            completedFrame({ value: 2 }),
-                            completedFrame({ value: 3 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
+                            completedFrame({ trace: '0:0:0:2', value: 3 }),
                         ],
                     }),
                 ],
             }),
             completedFrame({
+                trace: '0:1',
                 value: 4,
                 children: [
                     //
-                    completedFrame({ value: 4 }),
+                    completedFrame({ trace: '0:1:0', value: 4 }),
                 ],
             }),
         ],
@@ -418,17 +457,17 @@ test('more than two arguments are turned into a single arg', async () => {
     const expectedStack = rootFrame({
         completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyDate(),
+            completedFrame({
+                trace: '0:0',
                 value: 6,
                 children: [
-                    childFrame({
-                        completedAt: anyDate(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: { a: 1, b: 2, c: 3 },
                         children: [
-                            childFrame({ completedAt: anyDate(), value: 1 }),
-                            childFrame({ completedAt: anyDate(), value: 2 }),
-                            childFrame({ completedAt: anyDate(), value: 3 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
+                            completedFrame({ trace: '0:0:0:2', value: 3 }),
                         ],
                     }),
                 ],
@@ -466,16 +505,16 @@ test('explicit single arg', async () => {
     const expectedStack = rootFrame({
         completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyDate(),
+            completedFrame({
+                trace: '0:0',
                 value: 3,
                 children: [
-                    childFrame({
-                        completedAt: anyDate(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: { a: 1, b: 2 },
                         children: [
-                            childFrame({ completedAt: anyDate(), value: 1 }),
-                            childFrame({ completedAt: anyDate(), value: 2 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
                         ],
                     }),
                 ],
@@ -499,16 +538,17 @@ test('agent output', async () => {
 
     const expectedStack = rootFrame({
         completedAt: anyDate(),
+
         children: [
-            childFrame({
-                completedAt: anyDate(),
+            completedFrame({
+                trace: '0:0',
                 children: [
-                    childFrame({
-                        completedAt: anyDate(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: 3,
                         children: [
-                            childFrame({ completedAt: anyDate(), value: 1 }),
-                            childFrame({ completedAt: anyDate(), value: 2 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
                         ],
                     }),
                 ],

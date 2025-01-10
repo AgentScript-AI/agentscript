@@ -1,5 +1,7 @@
 import * as s from '@agentscript-ai/schema';
 
+import type { Agent } from './runtime/createAgent.js';
+
 const TOOL_SYMBOL = Symbol('tool');
 
 type ObjectSchema = s.NonNullish<s.ObjectSchema> | undefined;
@@ -150,6 +152,14 @@ export type ToolContext<TInput, TState, TEvent> = {
      * Otherwise, the tool executed for the first time.
      */
     events: ToolEvent<TEvent>[];
+    /**
+     * Trace of the tool execution within the agent.
+     */
+    trace: string;
+    /**
+     * Agent instance.
+     */
+    agent: Agent;
 };
 
 /**

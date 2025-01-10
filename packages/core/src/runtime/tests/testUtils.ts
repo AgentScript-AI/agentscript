@@ -3,10 +3,11 @@ import { expect } from 'vitest';
 import type { ExecuteAgentResult } from '../executeAgent.js';
 import type { StackFrame } from '../runtimeTypes.js';
 
-export function rootFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
+export function rootFrame(frame: Omit<StackFrame, 'startedAt' | 'trace'>): StackFrame {
     return {
         ...frame,
         startedAt: anyDate(),
+        trace: '0',
     };
 }
 
