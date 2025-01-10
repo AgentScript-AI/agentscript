@@ -15,7 +15,11 @@ type ToolInputSchemaFromOptions<TIn extends ToolInputOptions = ToolInputOptions>
 /**
  * Options for {@link defineTool}.
  */
-export type ToolOptions<TInput extends ToolInputOptions, TOutput extends s.Schema> = {
+export type ToolOptions<
+    TInput extends ToolInputOptions,
+    TOutput extends s.Schema,
+    TState extends ToolInputOptions,
+> = {
     /**
      * Description of the tool.
      * Should be descriptive and concise, so that LLM can understand what the tool does.
@@ -30,11 +34,18 @@ export type ToolOptions<TInput extends ToolInputOptions, TOutput extends s.Schem
      * @default s.void()
      */
     output?: TOutput;
-
+    /**
+     * Schema of the state of the tool.
+     */
+    state?: TState;
     /**
      * Handler for the tool.
      */
-    handler: ToolHandler<ToolInputSchemaFromOptions<TInput>, TOutput>;
+    handler: ToolHandler<
+        s.Infer<ToolInputSchemaFromOptions<TInput>>,
+        s.Infer<TOutput>,
+        s.Infer<ToolInputSchemaFromOptions<TState>>
+    >;
 };
 
 /**
@@ -43,6 +54,7 @@ export type ToolOptions<TInput extends ToolInputOptions, TOutput extends s.Schem
 export type ToolDefinition<
     TInput extends ToolInputSchema = ToolInputSchema,
     TOutput extends s.Schema = s.SchemaAny,
+    TState extends ToolInputSchema = ToolInputSchema,
 > = {
     /**
      * Description of the tool.
@@ -62,9 +74,13 @@ export type ToolDefinition<
      */
     output: TOutput;
     /**
+     * Schema of the state of the tool.
+     */
+    state: TState;
+    /**
      * Handler for the tool.
      */
-    handler: ToolHandler<TInput, TOutput>;
+    handler: ToolHandler<s.Infer<TInput>, s.Infer<TOutput>, s.Infer<TState>>;
     /**
      * Symbol to indicate that the value is a tool.
      * @internal
@@ -75,19 +91,24 @@ export type ToolDefinition<
 /**
  * Parameters for the tool handler.
  */
-export type ToolContext<TIn extends s.Schema> = {
+export type ToolContext<TInput, TState> = {
     /**
      * Resolved arguments for the tool.
+     * First you need to define the input schema in {@link defineTool} options.
      */
-    input: s.Infer<TIn>;
+    input: TInput;
+    /**
+     * State of the tool.
+     */
+    state: TState;
 };
 
 /**
  * Handler for the tool.
  */
-export type ToolHandler<TIn extends s.Schema, TOut extends s.Schema> = (
-    params: ToolContext<TIn>,
-) => s.Infer<TOut> | Promise<s.Infer<TOut>>;
+export type ToolHandler<TInput, TOutput, TState> = (
+    ctx: ToolContext<TInput, TState>,
+) => TOutput | Promise<TOutput>;
 
 /**
  * Define a tool.
@@ -97,14 +118,15 @@ export type ToolHandler<TIn extends s.Schema, TOut extends s.Schema> = (
 export function defineTool<
     TInput extends ToolInputOptions = undefined,
     TOutput extends s.Schema = s.VoidSchema,
+    TState extends ToolInputOptions = undefined,
 >(
-    options: ToolOptions<TInput, TOutput>,
-): ToolDefinition<ToolInputSchemaFromOptions<TInput>, TOutput> {
+    options: ToolOptions<TInput, TOutput, TState>,
+): ToolDefinition<ToolInputSchemaFromOptions<TInput>, TOutput, ToolInputSchemaFromOptions<TState>> {
     let input: ToolInputSchemaFromOptions<TInput>;
     let singleArg = false;
 
     if (!options.input) {
-        input = s.object({ props: {} }) as ToolInputSchemaFromOptions<TInput>;
+        input = s.void() as ToolInputSchemaFromOptions<TInput>;
     } else if (s.isSchema(options.input, s.object)) {
         if (options.input.nullable || options.input.optional) {
             throw new Error('Input schema must not be nullable or optional');
@@ -119,11 +141,25 @@ export function defineTool<
         singleArg = Object.keys(options.input).length > 2;
     }
 
+    let state: ToolInputSchemaFromOptions<TState>;
+    if (!options.state) {
+        state = s.void() as ToolInputSchemaFromOptions<TState>;
+    } else if (s.isSchema(options.state, s.object)) {
+        if (options.state.nullable || options.state.optional) {
+            throw new Error('State schema must not be nullable or optional');
+        }
+
+        state = options.state as ToolInputSchemaFromOptions<TState>;
+    } else {
+        state = s.object({ props: options.state }) as ToolInputSchemaFromOptions<TState>;
+    }
+
     return {
         description: options.description,
         input,
         singleArg,
         output: options.output ?? (s.void() as TOutput),
+        state,
         handler: options.handler,
         [TOOL_SYMBOL]: true,
     };
