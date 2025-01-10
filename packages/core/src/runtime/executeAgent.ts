@@ -6,7 +6,7 @@ import { validateOrThrow } from '@agentscript-ai/schema';
 import { RuntimeError } from './RuntimeError.js';
 import type { Agent as Agent } from './createAgent.js';
 import type { StackFrame } from './runtimeTypes.js';
-import type { ToolDefinition } from '../defineTool.js';
+import type { ToolDefinition, ToolEvent } from '../defineTool.js';
 import { isTool } from '../defineTool.js';
 import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions, allowedNativeIdentifiers } from './common.js';
@@ -403,41 +403,49 @@ async function runFunctionCustom(
     block: StackFrame,
     frame: StackFrame,
     call: FunctionCall,
-    func: ToolDefinition,
+    tool: ToolDefinition,
 ) {
     const args = await runExpressionArray(agent, controller, block, frame, call.args);
     if (!args) {
         return false;
     }
 
-    let argObject: Record<string, unknown>;
-    if (func.singleArg) {
-        argObject = args[0] as Record<string, unknown>;
-    } else {
-        argObject = {};
+    let input: Record<string, unknown> | undefined;
+    if (tool.input) {
+        if (tool.singleArg) {
+            input = args[0] as Record<string, unknown>;
+        } else {
+            input = {};
 
-        if (s.isSchema(func.input, s.object)) {
-            const argProps = Object.entries(func.input.props);
+            if (s.isSchema(tool.input, s.object)) {
+                const argProps = Object.entries(tool.input.props);
 
-            for (let i = 0; i < argProps.length; i++) {
-                const arg = args[i];
-                const argName = argProps[i][0];
+                for (let i = 0; i < argProps.length; i++) {
+                    const arg = args[i];
+                    const argName = argProps[i][0];
 
-                argObject[argName] = arg;
+                    input[argName] = arg;
+                }
             }
         }
-    }
 
-    validateOrThrow(func.input, argObject);
+        validateOrThrow(tool.input, input);
+    }
 
     // Prepare state for the tool execution
     let state = frame.state as Record<string, unknown> | undefined;
-    if (!state || !s.isSchema(state, s.object)) {
-        state = s.coerce(func.state) as Record<string, unknown>;
+    if (tool.state && !state) {
+        state = s.coerce(tool.state) as Record<string, unknown>;
         frame.state = state;
     }
 
-    const result: unknown = func.handler({ input: argObject, state });
+    const events: ToolEvent<unknown>[] = [];
+    const result: unknown = tool.handler({
+        input,
+        state,
+        events,
+    });
+
     if (result instanceof Promise) {
         frame.value = await result;
         controller.tick();

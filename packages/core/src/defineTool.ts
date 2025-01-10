@@ -2,23 +2,33 @@ import * as s from '@agentscript-ai/schema';
 
 const TOOL_SYMBOL = Symbol('tool');
 
-type ToolInputSchema = s.NonNullish<s.ObjectSchema> | s.VoidSchema;
-type ToolInputOptions = s.ObjectSchemaProps | s.NonNullish<s.ObjectSchema> | undefined;
+type ObjectSchema = s.NonNullish<s.ObjectSchema> | undefined;
+type ObjectOptions = s.ObjectSchemaProps | s.NonNullish<s.ObjectSchema> | undefined;
 
-type ToolInputSchemaFromOptions<TIn extends ToolInputOptions = ToolInputOptions> =
-    TIn extends s.NonNullish<s.ObjectSchema>
-        ? TIn
-        : TIn extends s.ObjectSchemaProps
-          ? s.ObjectSchema<{ props: TIn; nullable: false; optional: false }>
-          : s.VoidSchema;
+type SchemaFromOptions<T extends ObjectOptions = ObjectOptions> =
+    T extends s.NonNullish<s.ObjectSchema>
+        ? T
+        : T extends s.ObjectSchemaProps
+          ? s.ObjectSchema<{ props: T; nullable: false; optional: false }>
+          : undefined;
+
+type ValueFromOptions<T extends ObjectOptions = ObjectOptions> =
+    T extends s.NonNullish<s.ObjectSchema>
+        ? s.Infer<T>
+        : T extends s.ObjectSchemaProps
+          ? s.ObjectSchemaPropsValue<T>
+          : undefined;
+
+type ValueFromSchema<T extends s.Schema | undefined> = T extends s.Schema ? s.Infer<T> : undefined;
 
 /**
  * Options for {@link defineTool}.
  */
 export type ToolOptions<
-    TInput extends ToolInputOptions,
+    TInput extends ObjectOptions,
     TOutput extends s.Schema,
-    TState extends ToolInputOptions,
+    TState extends ObjectOptions,
+    TEvent extends s.Schema | undefined,
 > = {
     /**
      * Description of the tool.
@@ -39,12 +49,17 @@ export type ToolOptions<
      */
     state?: TState;
     /**
+     * Schema of the event of the tool.
+     */
+    event?: TEvent;
+    /**
      * Handler for the tool.
      */
     handler: ToolHandler<
-        s.Infer<ToolInputSchemaFromOptions<TInput>>,
+        ValueFromOptions<TInput>,
         s.Infer<TOutput>,
-        s.Infer<ToolInputSchemaFromOptions<TState>>
+        ValueFromOptions<TState>,
+        ValueFromSchema<TEvent>
     >;
 };
 
@@ -52,9 +67,10 @@ export type ToolOptions<
  * Tool definition.
  */
 export type ToolDefinition<
-    TInput extends ToolInputSchema = ToolInputSchema,
+    TInput extends ObjectSchema = ObjectSchema,
     TOutput extends s.Schema = s.SchemaAny,
-    TState extends ToolInputSchema = ToolInputSchema,
+    TState extends ObjectSchema = ObjectSchema,
+    TEvent extends s.Schema | undefined = s.Schema | undefined,
 > = {
     /**
      * Description of the tool.
@@ -78,9 +94,18 @@ export type ToolDefinition<
      */
     state: TState;
     /**
+     * Schema of the event of the tool.
+     */
+    event: TEvent;
+    /**
      * Handler for the tool.
      */
-    handler: ToolHandler<s.Infer<TInput>, s.Infer<TOutput>, s.Infer<TState>>;
+    handler: ToolHandler<
+        ValueFromSchema<TInput>,
+        s.Infer<TOutput>,
+        ValueFromSchema<TState>,
+        ValueFromSchema<TEvent>
+    >;
     /**
      * Symbol to indicate that the value is a tool.
      * @internal
@@ -89,9 +114,27 @@ export type ToolDefinition<
 };
 
 /**
+ * Event of the tool.
+ */
+export type ToolEvent<T> = {
+    /**
+     * Timestamp of the event.
+     */
+    readonly timestamp: Date;
+    /**
+     * Payload of the event.
+     */
+    readonly payload: T;
+    /**
+     * Whether the event has been processed.
+     */
+    processed: boolean;
+};
+
+/**
  * Parameters for the tool handler.
  */
-export type ToolContext<TInput, TState> = {
+export type ToolContext<TInput, TState, TEvent> = {
     /**
      * Resolved arguments for the tool.
      * First you need to define the input schema in {@link defineTool} options.
@@ -101,13 +144,19 @@ export type ToolContext<TInput, TState> = {
      * State of the tool.
      */
     state: TState;
+    /**
+     * Events to be processed.
+     * If provided, the tool was interacted with.
+     * Otherwise, the tool executed for the first time.
+     */
+    events: ToolEvent<TEvent>[];
 };
 
 /**
  * Handler for the tool.
  */
-export type ToolHandler<TInput, TOutput, TState> = (
-    ctx: ToolContext<TInput, TState>,
+export type ToolHandler<TInput, TOutput, TState, TEvent> = (
+    ctx: ToolContext<TInput, TState, TEvent>,
 ) => TOutput | Promise<TOutput>;
 
 /**
@@ -116,53 +165,62 @@ export type ToolHandler<TInput, TOutput, TState> = (
  * @returns Defined tool.
  */
 export function defineTool<
-    TInput extends ToolInputOptions = undefined,
+    TInput extends ObjectOptions = undefined,
     TOutput extends s.Schema = s.VoidSchema,
-    TState extends ToolInputOptions = undefined,
->(
-    options: ToolOptions<TInput, TOutput, TState>,
-): ToolDefinition<ToolInputSchemaFromOptions<TInput>, TOutput, ToolInputSchemaFromOptions<TState>> {
-    let input: ToolInputSchemaFromOptions<TInput>;
+    TState extends ObjectOptions = undefined,
+    TEvent extends s.Schema | undefined = undefined,
+>(options: ToolOptions<TInput, TOutput, TState, TEvent>) {
+    type Tool = ToolDefinition<
+        SchemaFromOptions<TInput>,
+        TOutput,
+        SchemaFromOptions<TState>,
+        TEvent
+    >;
+
+    let input: SchemaFromOptions<TInput>;
     let singleArg = false;
 
     if (!options.input) {
-        input = s.void() as ToolInputSchemaFromOptions<TInput>;
+        input = undefined as Tool['input'];
     } else if (s.isSchema(options.input, s.object)) {
         if (options.input.nullable || options.input.optional) {
             throw new Error('Input schema must not be nullable or optional');
         }
 
-        input = options.input as ToolInputSchemaFromOptions<TInput>;
+        input = options.input as Tool['input'];
         // if a full schema is provided, we assume it's a single argument
         singleArg = true;
     } else {
-        input = s.object({ props: options.input }) as ToolInputSchemaFromOptions<TInput>;
+        input = s.object({ props: options.input }) as Tool['input'];
         // make the tool singleArg if there are more than 2 arguments
         singleArg = Object.keys(options.input).length > 2;
     }
 
-    let state: ToolInputSchemaFromOptions<TState>;
+    let state: Tool['state'];
     if (!options.state) {
-        state = s.void() as ToolInputSchemaFromOptions<TState>;
+        state = undefined as Tool['state'];
     } else if (s.isSchema(options.state, s.object)) {
         if (options.state.nullable || options.state.optional) {
             throw new Error('State schema must not be nullable or optional');
         }
 
-        state = options.state as ToolInputSchemaFromOptions<TState>;
+        state = options.state as Tool['state'];
     } else {
-        state = s.object({ props: options.state }) as ToolInputSchemaFromOptions<TState>;
+        state = s.object({ props: options.state }) as Tool['state'];
     }
 
-    return {
+    const tool: Tool = {
         description: options.description,
         input,
         singleArg,
-        output: options.output ?? (s.void() as TOutput),
+        output: options.output ?? (s.void() as Tool['output']),
         state,
-        handler: options.handler,
+        event: options.event as Tool['event'],
+        handler: options.handler as Tool['handler'],
         [TOOL_SYMBOL]: true,
     };
+
+    return tool;
 }
 
 /**
