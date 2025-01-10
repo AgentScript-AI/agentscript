@@ -1,31 +1,21 @@
-import type { EmptyObject } from '@nzyme/types';
-
 import * as s from '@agentscript-ai/schema';
 
 const TOOL_SYMBOL = Symbol('tool');
 
-type ToolInputOptions = s.ObjectSchemaProps | s.NonNullish<s.ObjectSchema>;
+type ToolInputSchema = s.NonNullish<s.ObjectSchema> | s.VoidSchema;
+type ToolInputOptions = s.ObjectSchemaProps | s.NonNullish<s.ObjectSchema> | undefined;
 
-type ToolInputSchema<TIn extends ToolInputOptions> =
+type ToolInputSchemaFromOptions<TIn extends ToolInputOptions = ToolInputOptions> =
     TIn extends s.NonNullish<s.ObjectSchema>
         ? TIn
         : TIn extends s.ObjectSchemaProps
           ? s.ObjectSchema<{ props: TIn; nullable: false; optional: false }>
-          : never;
-
-type ToolInputValue<TIn extends ToolInputOptions> = TIn extends s.ObjectSchema
-    ? s.Infer<TIn>
-    : TIn extends s.ObjectSchemaProps
-      ? s.ObjectSchemaProps extends TIn
-          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            any
-          : s.ObjectSchemaPropsValue<TIn>
-      : never;
+          : s.VoidSchema;
 
 /**
  * Options for {@link defineTool}.
  */
-export type ToolOptions<TIn extends ToolInputOptions, TOut extends s.Schema> = {
+export type ToolOptions<TInput extends ToolInputOptions, TOutput extends s.Schema> = {
     /**
      * Description of the tool.
      * Should be descriptive and concise, so that LLM can understand what the tool does.
@@ -34,24 +24,25 @@ export type ToolOptions<TIn extends ToolInputOptions, TOut extends s.Schema> = {
     /**
      * Arguments for the tool.
      */
-    input?: TIn;
+    input?: TInput;
     /**
      * Schema of the return value of the tool.
      * @default s.void()
      */
-    output?: TOut;
+    output?: TOutput;
+
     /**
      * Handler for the tool.
      */
-    handler: ToolHandler<TIn, TOut>;
+    handler: ToolHandler<ToolInputSchemaFromOptions<TInput>, TOutput>;
 };
 
 /**
  * Tool definition.
  */
 export type ToolDefinition<
-    TIn extends s.NonNullish<s.ObjectSchema> = s.NonNullish<s.ObjectSchemaAny>,
-    TOut extends s.Schema = s.SchemaAny,
+    TInput extends ToolInputSchema = ToolInputSchema,
+    TOutput extends s.Schema = s.SchemaAny,
 > = {
     /**
      * Description of the tool.
@@ -61,7 +52,7 @@ export type ToolDefinition<
     /**
      * Arguments for the tool.
      */
-    input: TIn;
+    input: TInput;
     /**
      * Whether the tool has a single argument.
      */
@@ -69,11 +60,11 @@ export type ToolDefinition<
     /**
      * Schema of the return value of the tool.
      */
-    output: TOut;
+    output: TOutput;
     /**
      * Handler for the tool.
      */
-    handler: ToolHandler<TIn, TOut>;
+    handler: ToolHandler<TInput, TOutput>;
     /**
      * Symbol to indicate that the value is a tool.
      * @internal
@@ -84,18 +75,18 @@ export type ToolDefinition<
 /**
  * Parameters for the tool handler.
  */
-export type ToolHandlerParams<TIn extends ToolInputOptions> = {
+export type ToolContext<TIn extends s.Schema> = {
     /**
      * Resolved arguments for the tool.
      */
-    input: ToolInputValue<TIn>;
+    input: s.Infer<TIn>;
 };
 
 /**
  * Handler for the tool.
  */
-export type ToolHandler<TIn extends ToolInputOptions, TOut extends s.Schema> = (
-    params: ToolHandlerParams<TIn>,
+export type ToolHandler<TIn extends s.Schema, TOut extends s.Schema> = (
+    params: ToolContext<TIn>,
 ) => s.Infer<TOut> | Promise<s.Infer<TOut>>;
 
 /**
@@ -104,24 +95,26 @@ export type ToolHandler<TIn extends ToolInputOptions, TOut extends s.Schema> = (
  * @returns Defined tool.
  */
 export function defineTool<
-    TIn extends ToolInputOptions = EmptyObject,
-    TOut extends s.Schema = s.Schema<void>,
->(options: ToolOptions<TIn, TOut>): ToolDefinition<ToolInputSchema<TIn>, TOut> {
-    let input: ToolInputSchema<TIn>;
+    TInput extends ToolInputOptions = undefined,
+    TOutput extends s.Schema = s.VoidSchema,
+>(
+    options: ToolOptions<TInput, TOutput>,
+): ToolDefinition<ToolInputSchemaFromOptions<TInput>, TOutput> {
+    let input: ToolInputSchemaFromOptions<TInput>;
     let singleArg = false;
 
     if (!options.input) {
-        input = s.object({ props: {} }) as ToolInputSchema<TIn>;
+        input = s.object({ props: {} }) as ToolInputSchemaFromOptions<TInput>;
     } else if (s.isSchema(options.input, s.object)) {
         if (options.input.nullable || options.input.optional) {
             throw new Error('Input schema must not be nullable or optional');
         }
 
-        input = options.input as ToolInputSchema<TIn>;
+        input = options.input as ToolInputSchemaFromOptions<TInput>;
         // if a full schema is provided, we assume it's a single argument
         singleArg = true;
     } else {
-        input = s.object({ props: options.input }) as ToolInputSchema<TIn>;
+        input = s.object({ props: options.input }) as ToolInputSchemaFromOptions<TInput>;
         // make the tool singleArg if there are more than 2 arguments
         singleArg = Object.keys(options.input).length > 2;
     }
@@ -130,8 +123,8 @@ export function defineTool<
         description: options.description,
         input,
         singleArg,
-        output: options.output ?? (s.void() as TOut),
-        handler: options.handler as ToolHandler<ToolInputSchema<TIn>, TOut>,
+        output: options.output ?? (s.void() as TOutput),
+        handler: options.handler,
         [TOOL_SYMBOL]: true,
     };
 }

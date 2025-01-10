@@ -1,5 +1,6 @@
 import type { Constructor } from '@nzyme/types';
 
+import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
@@ -410,18 +411,20 @@ async function runFunctionCustom(
     }
 
     let argObject: Record<string, unknown>;
-
     if (func.singleArg) {
         argObject = args[0] as Record<string, unknown>;
     } else {
         argObject = {};
-        const argProps = Object.entries(func.input.props);
 
-        for (let i = 0; i < argProps.length; i++) {
-            const arg = args[i];
-            const argName = argProps[i][0];
+        if (s.isSchema(func.input, s.object)) {
+            const argProps = Object.entries(func.input.props);
 
-            argObject[argName] = arg;
+            for (let i = 0; i < argProps.length; i++) {
+                const arg = args[i];
+                const argName = argProps[i][0];
+
+                argObject[argName] = arg;
+            }
         }
     }
 
