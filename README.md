@@ -1,13 +1,23 @@
-# AgentScript framework
+<div>
+  <h1>AgentScript: Build AI agents that think in code</h1>
+</div>
 
-![NPM Version](https://img.shields.io/npm/v/agentscript-ai)
-![agentscript.ai](https://img.shields.io/badge/website-agentscript%2Eai-blue)
+<div >
+  <a href="https://www.npmjs.com/package/agentscript-ai"><img alt="CodeCov" src="https://img.shields.io/npm/v/agentscript-ai?style=for-the-badge&color=red"></a>
+  <a href="https://agentscript.ai"><img src="https://img.shields.io/badge/website-agentscript%2Eai-blue?style=for-the-badge&color=blue" alt=" License"></a>
+  <a href="https://discord.gg/hEYMnj62DT"><img src="https://img.shields.io/badge/Discord-Join%20Us-purple?logo=discord&logoColor=white&style=for-the-badge" alt="Join our Discord community"></a>
+  <br/>  <br/>
+</div>
 
 AgentScript is a unique open-source framework for building re-act AI agents.
 
 ```
 npm install agentscript-ai
 ```
+
+Check out a short demo video:
+
+[![AgentScript demo video](https://img.youtube.com/vi/b3MlCpBoxNM/0.jpg)](https://www.youtube.com/watch?v=b3MlCpBoxNM)
 
 See also our [examples repo](https://github.com/AgentScript-AI/examples/tree/main).
 
