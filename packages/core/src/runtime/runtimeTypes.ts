@@ -1,23 +1,65 @@
+/**
+ * Stack frame.
+ */
 export interface StackFrame {
+    /**
+     * Started at.
+     */
     startedAt: number;
+    /**
+     * Completed at.
+     */
     completedAt?: number;
+    /**
+     * Variables.
+     */
     variables?: Record<string, unknown>;
+    /**
+     * Parent frame.
+     */
     parent?: StackFrame;
+    /**
+     * Error, if any.
+     */
     error?: string;
+    /**
+     * Value, ie the result of the function.
+     */
     value?: unknown;
+    /**
+     * State, ie the state of the tool.
+     */
+    state?: unknown;
+    /**
+     * Children frames.
+     */
     children?: StackFrame[];
 }
 
+/**
+ * Stack block frame.
+ */
 export interface StackBlockFrame extends StackFrame {
+    /**
+     * Variables.
+     */
     variables: Record<string, unknown>;
+    /**
+     * Frames.
+     */
     frames: StackFrame[];
 }
 
-export interface StackFunctionFrame extends StackFrame {
-    state: unknown;
-}
-
+/**
+ * Stack loop frame.
+ */
 export interface StackLoopFrame extends StackFrame {
+    /**
+     * Item name.
+     */
     itemName: string;
+    /**
+     * Item blocks.
+     */
     itemBlocks: StackBlockFrame[];
 }

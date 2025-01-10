@@ -1,5 +1,6 @@
 import type { Constructor } from '@nzyme/types';
 
+import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
@@ -410,24 +411,33 @@ async function runFunctionCustom(
     }
 
     let argObject: Record<string, unknown>;
-
     if (func.singleArg) {
         argObject = args[0] as Record<string, unknown>;
     } else {
         argObject = {};
-        const argProps = Object.entries(func.input.props);
 
-        for (let i = 0; i < argProps.length; i++) {
-            const arg = args[i];
-            const argName = argProps[i][0];
+        if (s.isSchema(func.input, s.object)) {
+            const argProps = Object.entries(func.input.props);
 
-            argObject[argName] = arg;
+            for (let i = 0; i < argProps.length; i++) {
+                const arg = args[i];
+                const argName = argProps[i][0];
+
+                argObject[argName] = arg;
+            }
         }
     }
 
     validateOrThrow(func.input, argObject);
 
-    const result: unknown = func.handler({ input: argObject });
+    // Prepare state for the tool execution
+    let state = frame.state as Record<string, unknown> | undefined;
+    if (!state || !s.isSchema(state, s.object)) {
+        state = s.coerce(func.state) as Record<string, unknown>;
+        frame.state = state;
+    }
+
+    const result: unknown = func.handler({ input: argObject, state });
     if (result instanceof Promise) {
         frame.value = await result;
         controller.tick();

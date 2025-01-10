@@ -1,3 +1,4 @@
+import * as s from '@agentscript-ai/schema';
 import { normalizeText } from '@agentscript-ai/utils';
 
 import type { ToolDefinition } from '../defineTool.js';
@@ -23,29 +24,31 @@ export function renderTool(options: RenderToolOptions) {
 
     const description = normalizeText(tool.description);
 
-    if (tool.singleArg) {
-        const input = tool.input;
-        const inputTypeName = renderType({
-            schema: input,
-            ctx,
-            nameHint: `${name}Params`,
-        });
+    const input = tool.input;
+    if (s.isSchema(input, s.object)) {
+        if (tool.singleArg) {
+            const inputTypeName = renderType({
+                schema: input,
+                ctx,
+                nameHint: `${name}Params`,
+            });
 
-        if (input.description) {
-            description.push(renderDocDirective(`param params -`, input.description));
-        }
-
-        args = `params: ${inputTypeName}`;
-    } else {
-        for (const [name, arg] of Object.entries(tool.input.props)) {
-            if (args.length > 0) {
-                args += ', ';
+            if (input.description) {
+                description.push(renderDocDirective(`param params -`, input.description));
             }
 
-            args += `${name}: ${renderType({ schema: arg, ctx })}`;
+            args = `params: ${inputTypeName}`;
+        } else {
+            for (const [name, arg] of Object.entries(input.props)) {
+                if (args.length > 0) {
+                    args += ', ';
+                }
 
-            if (arg.description) {
-                description.push(renderDocDirective(`param ${name} -`, arg.description));
+                args += `${name}: ${renderType({ schema: arg, ctx })}`;
+
+                if (arg.description) {
+                    description.push(renderDocDirective(`param ${name} -`, arg.description));
+                }
             }
         }
     }
