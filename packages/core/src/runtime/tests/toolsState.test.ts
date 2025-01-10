@@ -6,7 +6,7 @@ import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, anyNumber, completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, anyDate, completedFrame, rootFrame } from './testUtils.js';
 
 test('simple tool state', async () => {
     const tool = defineTool({
@@ -35,7 +35,7 @@ test('simple tool state', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 value: undefined,

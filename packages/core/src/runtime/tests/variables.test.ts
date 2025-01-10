@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { parseScript } from '../../parser/parseScript.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { anyNumber, childFrame, completedFrame, rootFrame, agentResult } from './testUtils.js';
+import { agentResult, anyDate, childFrame, completedFrame, rootFrame } from './testUtils.js';
 
 test('single variable declaration', async () => {
     const script = parseScript([
@@ -26,14 +26,14 @@ test('single variable declaration', async () => {
     );
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         variables: {
             a: 1,
         },
         children: [
             childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                completedAt: anyDate(),
+                children: [childFrame({ completedAt: anyDate(), value: 1 })],
             }),
         ],
     });
@@ -75,7 +75,7 @@ test('multiple variable declarations', async () => {
     );
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         variables: {
             a: 1,
             b: 2,
@@ -83,12 +83,12 @@ test('multiple variable declarations', async () => {
         children: [
             //
             childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                completedAt: anyDate(),
+                children: [childFrame({ completedAt: anyDate(), value: 1 })],
             }),
             childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                completedAt: anyDate(),
+                children: [childFrame({ completedAt: anyDate(), value: 2 })],
             }),
         ],
     });
@@ -117,7 +117,7 @@ test('assign variable', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         variables: { a: 2 },
         children: [
             completedFrame({
@@ -149,7 +149,7 @@ test('member expression', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         variables: { a: { b: 1 }, c: 1 },
         children: [
             completedFrame({
@@ -195,7 +195,7 @@ test('array.length', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 children: [

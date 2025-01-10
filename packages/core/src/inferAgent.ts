@@ -1,3 +1,4 @@
+import type { EmptyObject } from '@nzyme/types';
 import createDebug from 'debug';
 
 import { createTypedPrompt } from '@agentscript-ai/utils';
@@ -64,8 +65,8 @@ const debug = createDebug('agentscript:inferAgent');
  */
 export async function inferAgent<
     TTools extends AgentTools,
-    TInput extends AgentInputBase,
-    TOutput extends AgentOutputBase,
+    TInput extends AgentInputBase = EmptyObject,
+    TOutput extends AgentOutputBase = undefined,
 >(params: InferAgentParams<TTools, TInput, TOutput>) {
     const definitions = renderRuntime(params);
     const systemPrompt = createTypedPrompt({

@@ -6,7 +6,7 @@ import type { StackFrame } from '../runtimeTypes.js';
 export function rootFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
     return {
         ...frame,
-        startedAt: anyNumber(),
+        startedAt: anyDate(),
     };
 }
 
@@ -17,7 +17,7 @@ export function agentResult(result: ExecuteAgentResult): ExecuteAgentResult {
 export function childFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
     return {
         ...frame,
-        startedAt: anyNumber(),
+        startedAt: anyDate(),
         parent: expect.any(Object) as StackFrame,
     };
 }
@@ -25,10 +25,14 @@ export function childFrame(frame: Omit<StackFrame, 'startedAt'>): StackFrame {
 export function completedFrame(frame: Omit<StackFrame, 'startedAt' | 'completedAt'>): StackFrame {
     return {
         ...childFrame(frame),
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
     };
 }
 
 export function anyNumber() {
     return expect.any(Number) as number;
+}
+
+export function anyDate() {
+    return expect.any(Date) as Date;
 }

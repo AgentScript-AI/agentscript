@@ -1,3 +1,4 @@
+import type { EmptyObject } from '@nzyme/types';
 import { v7 as uuid } from 'uuid';
 
 import type { StackFrame } from './runtimeTypes.js';
@@ -120,8 +121,8 @@ export type AgentState<TOutput extends AgentOutputBase> = AgentStateBase &
  */
 export function createAgent<
     TTools extends AgentTools,
-    TInput extends AgentInputBase,
-    TOutput extends AgentOutputBase,
+    TInput extends AgentInputBase = EmptyObject,
+    TOutput extends AgentOutputBase = undefined,
 >(agent: CreateAgentParams<TTools, TInput, TOutput>) {
     const id = agent.id ?? uuid();
     return { ...agent, id } as Agent<TTools, TInput, TOutput>;

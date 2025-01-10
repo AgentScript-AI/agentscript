@@ -6,7 +6,7 @@ import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, anyNumber, childFrame, completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, anyDate, childFrame, completedFrame, rootFrame } from './testUtils.js';
 
 const add = defineTool({
     description: 'Add two numbers',
@@ -53,15 +53,11 @@ test('single function call', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 value: 3,
-                children: [
-                    childFrame({ completedAt: anyNumber(), value: 1 }),
-                    childFrame({ completedAt: anyNumber(), value: 2 }),
-                ],
+                children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
             }),
         ],
     });
@@ -83,7 +79,7 @@ test('multiple function calls', async () => {
 
     let result = await executeAgent({ agent, ticks: 3 });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         variables: {
             a: 1,
             b: 2,
@@ -92,37 +88,25 @@ test('multiple function calls', async () => {
         },
         children: [
             //
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+            completedFrame({
+                children: [completedFrame({ value: 1 })],
             }),
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+            completedFrame({
+                children: [completedFrame({ value: 2 })],
             }),
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
                         value: 3,
-                        children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
-                        ],
+                        children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
                     }),
                 ],
             }),
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
                         value: 9,
-                        children: [
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
-                        ],
+                        children: [completedFrame({ value: 3 }), completedFrame({ value: 3 })],
                     }),
                 ],
             }),
@@ -155,10 +139,9 @@ describe('nested function calls', () => {
             children: [
                 childFrame({
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ value: 1 })],
                         }),
                     ],
                 }),
@@ -174,15 +157,13 @@ describe('nested function calls', () => {
             children: [
                 childFrame({
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ value: 2 })],
                         }),
                     ],
                 }),
@@ -193,21 +174,18 @@ describe('nested function calls', () => {
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
-            completedAt: anyNumber(),
+            completedAt: anyDate(),
             children: [
-                childFrame({
-                    completedAt: anyNumber(),
+                completedFrame({
                     value: 5,
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ value: 2 })],
                         }),
                     ],
                 }),
@@ -223,21 +201,18 @@ describe('nested function calls', () => {
 
         const result = await executeAgent({ agent });
         const expectedStack = rootFrame({
-            completedAt: anyNumber(),
+            completedAt: anyDate(),
             children: [
-                childFrame({
-                    completedAt: anyNumber(),
+                completedFrame({
                     value: 5,
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ value: 2 })],
                         }),
                     ],
                 }),
@@ -263,15 +238,11 @@ test('module function', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 value: 3,
-                children: [
-                    childFrame({ completedAt: anyNumber(), value: 1 }),
-                    childFrame({ completedAt: anyNumber(), value: 2 }),
-                ],
+                children: [completedFrame({ value: 1 }), completedFrame({ value: 2 })],
             }),
         ],
     });
@@ -288,10 +259,9 @@ test('new Date()', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 value: expect.any(Date),
             }),
         ],
@@ -309,10 +279,9 @@ test('toString()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
                 value: 'true',
             }),
         ],
@@ -330,7 +299,7 @@ test('Number()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 value: 1,
@@ -350,7 +319,7 @@ test('Boolean()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 value: true,
@@ -370,7 +339,7 @@ test('String()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 value: '1',
@@ -395,7 +364,7 @@ test('array.push()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             completedFrame({
                 children: [
@@ -447,19 +416,19 @@ test('more than two arguments are turned into a single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             childFrame({
-                completedAt: anyNumber(),
+                completedAt: anyDate(),
                 value: 6,
                 children: [
                     childFrame({
-                        completedAt: anyNumber(),
+                        completedAt: anyDate(),
                         value: { a: 1, b: 2, c: 3 },
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
+                            childFrame({ completedAt: anyDate(), value: 1 }),
+                            childFrame({ completedAt: anyDate(), value: 2 }),
+                            childFrame({ completedAt: anyDate(), value: 3 }),
                         ],
                     }),
                 ],
@@ -495,18 +464,18 @@ test('explicit single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             childFrame({
-                completedAt: anyNumber(),
+                completedAt: anyDate(),
                 value: 3,
                 children: [
                     childFrame({
-                        completedAt: anyNumber(),
+                        completedAt: anyDate(),
                         value: { a: 1, b: 2 },
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            childFrame({ completedAt: anyDate(), value: 1 }),
+                            childFrame({ completedAt: anyDate(), value: 2 }),
                         ],
                     }),
                 ],
@@ -529,17 +498,17 @@ test('agent output', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        completedAt: anyDate(),
         children: [
             childFrame({
-                completedAt: anyNumber(),
+                completedAt: anyDate(),
                 children: [
                     childFrame({
-                        completedAt: anyNumber(),
+                        completedAt: anyDate(),
                         value: 3,
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            childFrame({ completedAt: anyDate(), value: 1 }),
+                            childFrame({ completedAt: anyDate(), value: 2 }),
                         ],
                     }),
                 ],

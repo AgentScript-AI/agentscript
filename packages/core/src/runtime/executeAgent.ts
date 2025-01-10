@@ -1,4 +1,4 @@
-import type { Constructor } from '@nzyme/types';
+import type { Constructor, EmptyObject } from '@nzyme/types';
 
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
@@ -31,7 +31,7 @@ import type {
     Statement,
 } from '../parser/astTypes.js';
 
-type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends undefined
+type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends EmptyObject
     ? {
           /** Input for the agent. */
           input?: undefined;
@@ -88,7 +88,7 @@ export async function executeAgent<
     if (!agent.state) {
         agent.state = {
             complete: false,
-            root: { startedAt: Date.now() },
+            root: { startedAt: new Date() },
         };
 
         if (agent.output) {
@@ -555,7 +555,7 @@ function pushNewFrame(parent: StackFrame) {
         parent.children = [];
     }
 
-    const frame: StackFrame = { startedAt: Date.now(), parent };
+    const frame: StackFrame = { startedAt: new Date(), parent };
     parent.children.push(frame);
 
     return {
@@ -574,7 +574,7 @@ function getFrame(parent: StackFrame, index: number) {
     }
 
     if (index === parent.children.length) {
-        const frame: StackFrame = { startedAt: Date.now(), parent };
+        const frame: StackFrame = { startedAt: new Date(), parent };
         parent.children.push(frame);
         return frame;
     }
@@ -583,7 +583,7 @@ function getFrame(parent: StackFrame, index: number) {
 }
 
 function completeFrame(frame: StackFrame) {
-    frame.completedAt = Date.now();
+    frame.completedAt = new Date();
     return true;
 }
 

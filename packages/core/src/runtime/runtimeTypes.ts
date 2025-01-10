@@ -5,11 +5,11 @@ export interface StackFrame {
     /**
      * Started at.
      */
-    startedAt: number;
+    startedAt: Date;
     /**
      * Completed at.
      */
-    completedAt?: number;
+    completedAt?: Date;
     /**
      * Variables.
      */
