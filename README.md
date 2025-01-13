@@ -131,10 +131,10 @@ Now execute the agent:
 await executeAgent({ agent });
 
 // See the output
-console.log(agent.state.output);
+console.log(agent.output);
 
 // Check variables in the execution state
-console.log(agent.state.root.variables);
+console.log(agent.root.variables);
 ```
 
 ## How is it different from other frameworks?
