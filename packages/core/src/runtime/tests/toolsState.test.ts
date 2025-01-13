@@ -2,11 +2,11 @@ import { expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
-import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
+import { defineTool } from '../../tools/defineTool.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, anyNumber, completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, completedFrame, rootFrame } from './testUtils.js';
 
 test('simple tool state', async () => {
     const tool = defineTool({
@@ -35,19 +35,25 @@ test('simple tool state', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
             completedFrame({
+                trace: '0:0',
                 value: undefined,
                 state: {
                     bar: 'foobar',
                 },
-                children: [completedFrame({ value: 'foo' })],
+                children: [
+                    completedFrame({
+                        trace: '0:0:0',
+                        value: 'foo',
+                    }),
+                ],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });

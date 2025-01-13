@@ -2,11 +2,11 @@ import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
-import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
+import { defineTool } from '../../tools/defineTool.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, anyNumber, childFrame, completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, childFrame, completedFrame, rootFrame } from './testUtils.js';
 
 const add = defineTool({
     description: 'Add two numbers',
@@ -53,22 +53,22 @@ test('single function call', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: 3,
                 children: [
-                    childFrame({ completedAt: anyNumber(), value: 1 }),
-                    childFrame({ completedAt: anyNumber(), value: 2 }),
+                    completedFrame({ trace: '0:0:0', value: 1 }),
+                    completedFrame({ trace: '0:0:1', value: 2 }),
                 ],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('multiple function calls', async () => {
@@ -83,7 +83,7 @@ test('multiple function calls', async () => {
 
     let result = await executeAgent({ agent, ticks: 3 });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         variables: {
             a: 1,
             b: 2,
@@ -92,36 +92,36 @@ test('multiple function calls', async () => {
         },
         children: [
             //
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+            completedFrame({
+                trace: '0:0',
+                children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
-            childFrame({
-                completedAt: anyNumber(),
-                children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+            completedFrame({
+                trace: '0:1',
+                children: [completedFrame({ trace: '0:1:0', value: 2 })],
             }),
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:2',
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
+                        trace: '0:2:0',
                         value: 3,
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            completedFrame({ trace: '0:2:0:0', value: 1 }),
+                            completedFrame({ trace: '0:2:0:1', value: 2 }),
                         ],
                     }),
                 ],
             }),
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:3',
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
+                        trace: '0:3:0',
                         value: 9,
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
+                            completedFrame({ trace: '0:3:0:0', value: 3 }),
+                            completedFrame({ trace: '0:3:0:1', value: 3 }),
                         ],
                     }),
                 ],
@@ -129,19 +129,14 @@ test('multiple function calls', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 2, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 2 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 
     result = await executeAgent({ agent, ticks: 1 });
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 describe('nested function calls', () => {
@@ -154,68 +149,70 @@ describe('nested function calls', () => {
         let expectedStack = rootFrame({
             children: [
                 childFrame({
+                    trace: '0:0',
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                     ],
                 }),
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 1, done: false }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(false);
+        expect(result).toEqual(agentResult({ ticks: 1 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('running');
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
             children: [
                 childFrame({
+                    trace: '0:0',
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 1, done: false }));
+        expect(result).toEqual(agentResult({ ticks: 1 }));
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
-            completedAt: anyNumber(),
+            status: 'finished',
             children: [
-                childFrame({
-                    completedAt: anyNumber(),
+                completedFrame({
+                    trace: '0:0',
                     value: 5,
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
             ],
         });
-        expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(true);
+        expect(result).toEqual(agentResult({ ticks: 1 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('finished');
     });
 
     test('run all ticks', async () => {
@@ -223,30 +220,30 @@ describe('nested function calls', () => {
 
         const result = await executeAgent({ agent });
         const expectedStack = rootFrame({
-            completedAt: anyNumber(),
+            status: 'finished',
             children: [
-                childFrame({
-                    completedAt: anyNumber(),
+                completedFrame({
+                    trace: '0:0',
                     value: 5,
                     children: [
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:0',
                             value: 1,
-                            children: [childFrame({ completedAt: anyNumber(), value: 1 })],
+                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
-                        childFrame({
-                            completedAt: anyNumber(),
+                        completedFrame({
+                            trace: '0:0:1',
                             value: 4,
-                            children: [childFrame({ completedAt: anyNumber(), value: 2 })],
+                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 3, done: true }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(true);
+        expect(result).toEqual(agentResult({ ticks: 3 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('finished');
     });
 });
 
@@ -263,22 +260,22 @@ test('module function', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: 3,
                 children: [
-                    childFrame({ completedAt: anyNumber(), value: 1 }),
-                    childFrame({ completedAt: anyNumber(), value: 2 }),
+                    completedFrame({ trace: '0:0:0', value: 1 }),
+                    completedFrame({ trace: '0:0:1', value: 2 }),
                 ],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('new Date()', async () => {
@@ -288,18 +285,18 @@ test('new Date()', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: expect.any(Date),
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('toString()', async () => {
@@ -309,18 +306,18 @@ test('toString()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: 'true',
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('Number()', async () => {
@@ -330,18 +327,19 @@ test('Number()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
             completedFrame({
+                trace: '0:0',
                 value: 1,
-                children: [completedFrame({ value: '1' })],
+                children: [completedFrame({ trace: '0:0:0', value: '1' })],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('Boolean()', async () => {
@@ -350,18 +348,19 @@ test('Boolean()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
             completedFrame({
+                trace: '0:0',
                 value: true,
-                children: [completedFrame({ value: 'true' })],
+                children: [completedFrame({ trace: '0:0:0', value: 'true' })],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('String()', async () => {
@@ -370,18 +369,19 @@ test('String()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
             completedFrame({
+                trace: '0:0',
                 value: '1',
-                children: [completedFrame({ value: 1 })],
+                children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('array.push()', async () => {
@@ -395,34 +395,37 @@ test('array.push()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
             completedFrame({
+                trace: '0:0',
                 children: [
                     completedFrame({
+                        trace: '0:0:0',
                         value: [1, 2, 3, 4],
                         children: [
-                            completedFrame({ value: 1 }),
-                            completedFrame({ value: 2 }),
-                            completedFrame({ value: 3 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
+                            completedFrame({ trace: '0:0:0:2', value: 3 }),
                         ],
                     }),
                 ],
             }),
             completedFrame({
+                trace: '0:1',
                 value: 4,
                 children: [
                     //
-                    completedFrame({ value: 4 }),
+                    completedFrame({ trace: '0:1:0', value: 4 }),
                 ],
             }),
         ],
         variables: { a: [1, 2, 3, 4] },
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('more than two arguments are turned into a single arg', async () => {
@@ -447,19 +450,19 @@ test('more than two arguments are turned into a single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: 6,
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: { a: 1, b: 2, c: 3 },
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
-                            childFrame({ completedAt: anyNumber(), value: 3 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
+                            completedFrame({ trace: '0:0:0:2', value: 3 }),
                         ],
                     }),
                 ],
@@ -467,9 +470,9 @@ test('more than two arguments are turned into a single arg', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('explicit single arg', async () => {
@@ -495,18 +498,18 @@ test('explicit single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 value: 3,
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: { a: 1, b: 2 },
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
                         ],
                     }),
                 ],
@@ -514,9 +517,9 @@ test('explicit single arg', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('agent output', async () => {
@@ -529,17 +532,18 @@ test('agent output', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyNumber(),
+        status: 'finished',
+
         children: [
-            childFrame({
-                completedAt: anyNumber(),
+            completedFrame({
+                trace: '0:0',
                 children: [
-                    childFrame({
-                        completedAt: anyNumber(),
+                    completedFrame({
+                        trace: '0:0:0',
                         value: 3,
                         children: [
-                            childFrame({ completedAt: anyNumber(), value: 1 }),
-                            childFrame({ completedAt: anyNumber(), value: 2 }),
+                            completedFrame({ trace: '0:0:0:0', value: 1 }),
+                            completedFrame({ trace: '0:0:0:1', value: 2 }),
                         ],
                     }),
                 ],
@@ -548,8 +552,8 @@ test('agent output', async () => {
         variables: { result: 3 },
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
-    expect(agent.state?.output).toBe(3);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+    expect(agent.output).toBe(3);
 });

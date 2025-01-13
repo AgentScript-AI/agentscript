@@ -10,9 +10,9 @@ test('assign variable', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
-                value: { type: 'Literal', value: 1 },
+                value: { type: 'literal', value: 1 },
             },
         ],
     };
@@ -27,9 +27,9 @@ test('assign variable with negative value', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
-                value: { type: 'Literal', value: -1 },
+                value: { type: 'literal', value: -1 },
             },
         ],
     };
@@ -44,12 +44,9 @@ test('call function', () => {
         code,
         ast: [
             {
-                type: 'Expression',
-                expr: {
-                    type: 'FunctionCall',
-                    func: { type: 'Identifier', name: 'foo' },
-                    args: [],
-                },
+                type: 'call',
+                func: { type: 'ident', name: 'foo' },
+                args: [],
             },
         ],
     };
@@ -64,16 +61,13 @@ test('call function with arguments', () => {
         code,
         ast: [
             {
-                type: 'Expression',
-                expr: {
-                    type: 'FunctionCall',
-                    func: { type: 'Identifier', name: 'foo' },
-                    args: [
-                        { type: 'Literal', value: 1 },
-                        { type: 'Literal', value: 2 },
-                        { type: 'Literal', value: 3 },
-                    ],
-                },
+                type: 'call',
+                func: { type: 'ident', name: 'foo' },
+                args: [
+                    { type: 'literal', value: 1 },
+                    { type: 'literal', value: 2 },
+                    { type: 'literal', value: 3 },
+                ],
             },
         ],
     };
@@ -88,15 +82,15 @@ test('call function and assign to variable', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
                 value: {
-                    type: 'FunctionCall',
-                    func: { type: 'Identifier', name: 'foo' },
+                    type: 'call',
+                    func: { type: 'ident', name: 'foo' },
                     args: [
-                        { type: 'Literal', value: 1 },
-                        { type: 'Literal', value: 2 },
-                        { type: 'Literal', value: 3 },
+                        { type: 'literal', value: 1 },
+                        { type: 'literal', value: 2 },
+                        { type: 'literal', value: 3 },
                     ],
                 },
             },
@@ -113,16 +107,13 @@ test('call member function', () => {
         code,
         ast: [
             {
-                type: 'Expression',
-                expr: {
-                    type: 'FunctionCall',
-                    func: {
-                        type: 'Member',
-                        obj: { type: 'Identifier', name: 'foo' },
-                        prop: { type: 'Identifier', name: 'bar' },
-                    },
-                    args: [],
+                type: 'call',
+                func: {
+                    type: 'member',
+                    obj: { type: 'ident', name: 'foo' },
+                    prop: { type: 'ident', name: 'bar' },
                 },
+                args: [],
             },
         ],
     };
@@ -145,37 +136,34 @@ test('multiple statements', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
-                value: { type: 'Literal', value: 1 },
+                value: { type: 'literal', value: 1 },
                 comment: undefined,
             },
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'b',
                 value: {
-                    type: 'FunctionCall',
-                    func: { type: 'Identifier', name: 'add' },
+                    type: 'call',
+                    func: { type: 'ident', name: 'add' },
                     args: [
-                        { type: 'Identifier', name: 'a' },
-                        { type: 'Literal', value: 2 },
+                        { type: 'ident', name: 'a' },
+                        { type: 'literal', value: 2 },
                     ],
                 },
             },
             {
-                type: 'Expression',
+                type: 'assign',
                 comment: 'multiply b by 3',
-                expr: {
-                    type: 'Assignment',
-                    left: { type: 'Identifier', name: 'b' },
-                    right: {
-                        type: 'FunctionCall',
-                        func: { type: 'Identifier', name: 'multiply' },
-                        args: [
-                            { type: 'Identifier', name: 'b' },
-                            { type: 'Literal', value: 3 },
-                        ],
-                    },
+                left: { type: 'ident', name: 'b' },
+                right: {
+                    type: 'call',
+                    func: { type: 'ident', name: 'multiply' },
+                    args: [
+                        { type: 'ident', name: 'b' },
+                        { type: 'literal', value: 3 },
+                    ],
                 },
             },
         ],
@@ -191,14 +179,14 @@ test('object expression', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
                 value: {
-                    type: 'Object',
+                    type: 'obj',
                     props: [
                         {
-                            key: { type: 'Identifier', name: 'b' },
-                            value: { type: 'Literal', value: 1 },
+                            key: { type: 'ident', name: 'b' },
+                            value: { type: 'literal', value: 1 },
                         },
                     ],
                 },
@@ -216,14 +204,14 @@ test('array expression', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
                 value: {
-                    type: 'Array',
+                    type: 'arr',
                     items: [
-                        { type: 'Literal', value: 1 },
-                        { type: 'Literal', value: 2 },
-                        { type: 'Literal', value: 3 },
+                        { type: 'literal', value: 1 },
+                        { type: 'literal', value: 2 },
+                        { type: 'literal', value: 3 },
                     ],
                 },
             },
@@ -240,11 +228,11 @@ test('create date', () => {
         code,
         ast: [
             {
-                type: 'Variable',
+                type: 'var',
                 name: 'a',
                 value: {
-                    type: 'New',
-                    func: { type: 'Identifier', name: 'Date' },
+                    type: 'new',
+                    func: { type: 'ident', name: 'Date' },
                     args: [],
                 },
             },

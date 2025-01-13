@@ -1,27 +1,40 @@
+import type { EmptyObject } from '@nzyme/types';
 import createDebug from 'debug';
 
 import { createTypedPrompt } from '@agentscript-ai/utils';
 
 import type { LanguageModel } from './LanguageModel.js';
-import type { AgentDefinition } from './defineAgent.js';
+import type {
+    AgentDefinition,
+    AgentInputBase,
+    AgentOutputBase,
+    AgentTools,
+} from './defineAgent.js';
 import { renderRuntime } from './modules/renderRuntime.js';
 import { parseScript } from './parser/parseScript.js';
-import type { Agent } from './runtime/createAgent.js';
+import { createAgent } from './runtime/createAgent.js';
 
 /**
  * Parameters for {@link inferAgent}.
  */
-export interface InferAgentParams {
+export interface InferAgentParams<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase,
+    TOutput extends AgentOutputBase,
+> extends AgentDefinition<TTools, TInput, TOutput> {
+    /**
+     * ID of the agent.
+     * If not provided, it will be generated as a UUID.
+     */
+    id?: string;
     /**
      * Language model to use.
      */
     llm: LanguageModel;
-
     /**
      * Prompt to infer the agent from.
      */
     prompt: string;
-
     /**
      * System prompt to use.
      */
@@ -50,9 +63,11 @@ const debug = createDebug('agentscript:inferAgent');
  * @param params - Parameters for {@link inferAgent}.
  * @returns Inferred agent.
  */
-export async function inferAgent<TAgent extends AgentDefinition>(
-    params: InferAgentParams & TAgent,
-): Promise<Agent<TAgent>> {
+export async function inferAgent<
+    TTools extends AgentTools,
+    TInput extends AgentInputBase = EmptyObject,
+    TOutput extends AgentOutputBase = undefined,
+>(params: InferAgentParams<TTools, TInput, TOutput>) {
     const definitions = renderRuntime(params);
     const systemPrompt = createTypedPrompt({
         prompts: [params.systemPrompt, SYSTEM_PROMPT],
@@ -70,13 +85,14 @@ export async function inferAgent<TAgent extends AgentDefinition>(
     debug('code', code);
 
     const script = parseScript(code);
-    const agent: Agent<TAgent> = {
+    const agent = createAgent<TTools, TInput, TOutput>({
+        id: params.id,
         tools: params.tools,
         input: params.input,
         output: params.output,
         script,
         plan,
-    };
+    });
 
     return agent;
 }
