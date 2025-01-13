@@ -1,7 +1,7 @@
 import { parse } from '@babel/parser';
 import type * as babel from '@babel/types';
 
-import type { Assignment, Expression, ObjectProperty, Script, Statement } from './astTypes.js';
+import type { Assignment, AstNode, Expression, ObjectProperty, Script } from './astTypes.js';
 
 /**
  * Parse a script into an AST.
@@ -14,19 +14,19 @@ export function parseScript(code: string | string[]): Script {
     }
 
     const ast = parse(code);
-    const parsed: Statement[] = [];
+    const parsed: AstNode[] = [];
 
     for (const node of ast.program.body) {
         parsed.push(parseStatement(node));
     }
 
     return {
-        code: code,
+        code,
         ast: parsed,
     };
 }
 
-function parseStatement(statement: babel.Statement): Statement {
+function parseStatement(statement: babel.Statement): AstNode {
     const comment = parseComment(statement.leadingComments);
 
     switch (statement.type) {
@@ -45,11 +45,9 @@ function parseStatement(statement: babel.Statement): Statement {
         }
 
         case 'ExpressionStatement': {
-            return {
-                type: 'expr',
-                expr: parseExpression(statement.expression),
-                comment,
-            };
+            const expr = parseExpression(statement.expression);
+            expr.comment = comment;
+            return expr;
         }
     }
 

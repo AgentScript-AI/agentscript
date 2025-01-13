@@ -1,7 +1,7 @@
 /**
  * Base interface for all statements.
  */
-export interface StatementBase {
+export interface AstNodeBase {
     /**
      * Type of the statement.
      */
@@ -15,7 +15,7 @@ export interface StatementBase {
 /**
  * Variable declaration statement.
  */
-export interface VariableDeclaration extends StatementBase {
+export interface VariableDeclaration extends AstNodeBase {
     /**
      * Type of the statement.
      */
@@ -31,37 +31,9 @@ export interface VariableDeclaration extends StatementBase {
 }
 
 /**
- * Expression statement.
- */
-export interface ExpressionStatement extends StatementBase {
-    /**
-     * Type of the statement.
-     */
-    type: 'expr';
-    /**
-     * Expression to evaluate.
-     */
-    expr: Expression;
-}
-
-/**
- * Base interface for all expressions.
- */
-export interface ExpressionBase {
-    /**
-     * Type of the expression.
-     */
-    type: string;
-    /**
-     * Comment for the expression.
-     */
-    comment?: string;
-}
-
-/**
  * Function call expression.
  */
-export interface FunctionCall extends ExpressionBase {
+export interface FunctionCall extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -79,7 +51,7 @@ export interface FunctionCall extends ExpressionBase {
 /**
  * New expression.
  */
-export interface NewExpression extends ExpressionBase {
+export interface NewExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -97,7 +69,7 @@ export interface NewExpression extends ExpressionBase {
 /**
  * Literal expression.
  */
-export interface Literal extends ExpressionBase {
+export interface Literal extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -111,7 +83,7 @@ export interface Literal extends ExpressionBase {
 /**
  * Identifier expression.
  */
-export interface Identifier extends ExpressionBase {
+export interface Identifier extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -125,7 +97,7 @@ export interface Identifier extends ExpressionBase {
 /**
  * Member expression.
  */
-export interface MemberExpression extends ExpressionBase {
+export interface MemberExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -143,7 +115,7 @@ export interface MemberExpression extends ExpressionBase {
 /**
  * Assignment expression.
  */
-export interface Assignment extends ExpressionBase {
+export interface Assignment extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -161,7 +133,7 @@ export interface Assignment extends ExpressionBase {
 /**
  * Object expression.
  */
-export interface ObjectExpression extends ExpressionBase {
+export interface ObjectExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -175,7 +147,7 @@ export interface ObjectExpression extends ExpressionBase {
 /**
  *
  */
-export interface ArrayExpression extends ExpressionBase {
+export interface ArrayExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -216,7 +188,7 @@ export type Expression =
 /**
  * Script statement.
  */
-export type Statement = VariableDeclaration | ExpressionStatement;
+export type Statement = VariableDeclaration;
 
 /**
  * AST node.
@@ -234,5 +206,5 @@ export interface Script {
     /**
      * AST of the script.
      */
-    ast: Statement[];
+    ast: AstNode[];
 }

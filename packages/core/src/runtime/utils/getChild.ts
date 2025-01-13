@@ -11,9 +11,6 @@ export function getChild(node: AstNode, index: number): AstNode | undefined {
         case 'var':
             return index === 0 ? node.value : undefined;
 
-        case 'expr':
-            return getChild(node.expr, index);
-
         case 'assign':
             switch (index) {
                 case 0:

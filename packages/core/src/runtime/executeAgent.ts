@@ -19,12 +19,12 @@ import type {
 } from '../defineAgent.js';
 import type {
     ArrayExpression,
+    AstNode,
     Expression,
     FunctionCall,
     MemberExpression,
     NewExpression,
     ObjectExpression,
-    Statement,
 } from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
@@ -139,7 +139,7 @@ async function runBlock(
     agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
-    statements: Statement[],
+    nodes: AstNode[],
 ) {
     if (!block.children) {
         block.children = [];
@@ -150,7 +150,7 @@ async function runBlock(
     let frame: StackFrame | undefined;
 
     while (true) {
-        if (index >= statements.length) {
+        if (index >= nodes.length) {
             // went through all statements in block
             return updateFrame(block, 'finished');
         }
@@ -169,8 +169,8 @@ async function runBlock(
             continue;
         }
 
-        const statement = statements[index];
-        const frameDone = await runBlockFrame(agent, controller, block, frame, statement);
+        const node = nodes[index];
+        const frameDone = await runNode(agent, controller, block, frame, node);
         if (!frameDone) {
             return updateFrame(frame, 'running');
         }
@@ -179,16 +179,16 @@ async function runBlock(
     }
 }
 
-async function runBlockFrame(
+async function runNode(
     agent: Agent,
     controller: RuntimeController,
     block: StackFrame,
     frame: StackFrame,
-    statement: Statement,
+    node: AstNode,
 ) {
-    switch (statement.type) {
+    switch (node.type) {
         case 'var': {
-            const name = statement.name;
+            const name = node.name;
 
             if (!block.variables) {
                 block.variables = {};
@@ -198,13 +198,13 @@ async function runBlockFrame(
                 throw new RuntimeError(`Variable ${name} already exists`);
             }
 
-            if (!statement.value) {
+            if (!node.value) {
                 block.variables[name] = undefined;
                 return updateFrame(frame, 'finished');
             }
 
             const valueFrame = getFrame(frame, 0);
-            const done = await runExpression(agent, controller, block, valueFrame, statement.value);
+            const done = await runExpression(agent, controller, block, valueFrame, node.value);
             if (!done) {
                 return updateFrame(frame, 'running');
             }
@@ -213,12 +213,8 @@ async function runBlockFrame(
             return updateFrame(frame, 'finished');
         }
 
-        case 'expr': {
-            return await runExpression(agent, controller, block, frame, statement.expr);
-        }
-
         default:
-            throw new RuntimeError(`Unknown statement type: ${(statement as Statement).type}`);
+            return await runExpression(agent, controller, block, frame, node);
     }
 }
 

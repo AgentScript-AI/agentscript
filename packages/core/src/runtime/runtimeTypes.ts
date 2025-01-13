@@ -55,31 +55,3 @@ export interface StackFrame {
      */
     children?: StackFrame[];
 }
-
-/**
- * Stack block frame.
- */
-export interface StackBlockFrame extends StackFrame {
-    /**
-     * Variables.
-     */
-    variables: Record<string, unknown>;
-    /**
-     * Frames.
-     */
-    frames: StackFrame[];
-}
-
-/**
- * Stack loop frame.
- */
-export interface StackLoopFrame extends StackFrame {
-    /**
-     * Item name.
-     */
-    itemName: string;
-    /**
-     * Item blocks.
-     */
-    itemBlocks: StackBlockFrame[];
-}

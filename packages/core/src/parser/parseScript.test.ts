@@ -44,12 +44,9 @@ test('call function', () => {
         code,
         ast: [
             {
-                type: 'expr',
-                expr: {
-                    type: 'call',
-                    func: { type: 'ident', name: 'foo' },
-                    args: [],
-                },
+                type: 'call',
+                func: { type: 'ident', name: 'foo' },
+                args: [],
             },
         ],
     };
@@ -64,16 +61,13 @@ test('call function with arguments', () => {
         code,
         ast: [
             {
-                type: 'expr',
-                expr: {
-                    type: 'call',
-                    func: { type: 'ident', name: 'foo' },
-                    args: [
-                        { type: 'literal', value: 1 },
-                        { type: 'literal', value: 2 },
-                        { type: 'literal', value: 3 },
-                    ],
-                },
+                type: 'call',
+                func: { type: 'ident', name: 'foo' },
+                args: [
+                    { type: 'literal', value: 1 },
+                    { type: 'literal', value: 2 },
+                    { type: 'literal', value: 3 },
+                ],
             },
         ],
     };
@@ -113,16 +107,13 @@ test('call member function', () => {
         code,
         ast: [
             {
-                type: 'expr',
-                expr: {
-                    type: 'call',
-                    func: {
-                        type: 'member',
-                        obj: { type: 'ident', name: 'foo' },
-                        prop: { type: 'ident', name: 'bar' },
-                    },
-                    args: [],
+                type: 'call',
+                func: {
+                    type: 'member',
+                    obj: { type: 'ident', name: 'foo' },
+                    prop: { type: 'ident', name: 'bar' },
                 },
+                args: [],
             },
         ],
     };
@@ -163,19 +154,16 @@ test('multiple statements', () => {
                 },
             },
             {
-                type: 'expr',
+                type: 'assign',
                 comment: 'multiply b by 3',
-                expr: {
-                    type: 'assign',
-                    left: { type: 'ident', name: 'b' },
-                    right: {
-                        type: 'call',
-                        func: { type: 'ident', name: 'multiply' },
-                        args: [
-                            { type: 'ident', name: 'b' },
-                            { type: 'literal', value: 3 },
-                        ],
-                    },
+                left: { type: 'ident', name: 'b' },
+                right: {
+                    type: 'call',
+                    func: { type: 'ident', name: 'multiply' },
+                    args: [
+                        { type: 'ident', name: 'b' },
+                        { type: 'literal', value: 3 },
+                    ],
                 },
             },
         ],
