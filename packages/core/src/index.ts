@@ -5,8 +5,8 @@ export * from './agent/agentTypes.js';
 export * from './agent/defineAgent.js';
 export * from './agent/createAgent.js';
 export * from './agent/inferAgent.js';
-export * from './agent/deserializeAgent.js';
-export * from './agent/serializeAgent.js';
+export * from './agent/restoreAgent.js';
+export * from './agent/storeAgent.js';
 
 export * from './parser/parseScript.js';
 export * from './parser/astTypes.js';

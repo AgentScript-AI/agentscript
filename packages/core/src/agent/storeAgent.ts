@@ -4,17 +4,18 @@ import { createHeapSerializer } from '../heap/createHeapSerializer.js';
 import type { StackFrame, StackFrameSerialized } from '../runtime/runtimeTypes.js';
 
 /**
- * Serialize an agent.
+ * Serialize an agent for storage.
  * @param agent - Agent to serialize.
  * @returns Serialized agent.
  */
-export function serializeAgent(agent: Agent): AgentSerialized {
+export function storeAgent(agent: Agent): AgentSerialized {
     const serializer = createHeapSerializer();
     const root = serializeFrame(agent.root, serializer);
     const output = agent.output !== undefined ? serializer.push(agent.output) : undefined;
 
     return {
         id: agent.id,
+        runtime: agent.runtime,
         script: agent.script,
         plan: agent.plan,
         heap: serializer.heap,

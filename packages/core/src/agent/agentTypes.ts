@@ -32,6 +32,10 @@ export type Agent<
      */
     readonly id: string;
     /**
+     * Agent runtime.
+     */
+    readonly runtime: AgentRuntime;
+    /**
      * AgentScript script to execute.
      */
     readonly script: Script;
@@ -69,6 +73,20 @@ type AgentStateRunning = {
 };
 
 /**
+ * Agent runtime.
+ */
+export type AgentRuntime = {
+    /**
+     * AgentScript runtime code.
+     */
+    readonly code: string;
+    /**
+     * Hash of the agent runtime code.
+     */
+    readonly hash: string;
+};
+
+/**
  * Serialized agent.
  */
 export type AgentSerialized = {
@@ -76,6 +94,10 @@ export type AgentSerialized = {
      * Agent ID.
      */
     id: string;
+    /**
+     * Runtime of the agent.
+     */
+    runtime: AgentRuntime;
     /**
      * Agent script.
      */

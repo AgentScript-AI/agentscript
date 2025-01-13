@@ -22,7 +22,7 @@ import type {
  * @param agentDefinition - Agent definition.
  * @returns Deserialized agent.
  */
-export function deserializeAgent<
+export function restoreAgent<
     TTools extends AgentTools,
     TInput extends AgentInputBase,
     TOutput extends AgentOutputBase,
@@ -33,6 +33,7 @@ export function deserializeAgent<
     const agent: Agent = {
         id: state.id,
         def: agentDefinition,
+        runtime: state.runtime,
         script: state.script,
         plan: state.plan,
         status: root.status as LiteralPick<StackFrameStatus, 'finished'>,

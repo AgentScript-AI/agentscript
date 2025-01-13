@@ -1,15 +1,15 @@
 import type { EmptyObject } from '@nzyme/types';
-import { v7 as uuid } from 'uuid';
 
 import type { Agent } from './agentTypes.js';
+import { createAgentInternal } from './createAgentInternal.js';
 import type {
     AgentDefinition,
     AgentInputBase,
     AgentOutputBase,
     AgentTools,
 } from './defineAgent.js';
+import { renderRuntime } from '../modules/renderRuntime.js';
 import type { Script } from '../parser/astTypes.js';
-import type { StackFrame } from '../runtime/runtimeTypes.js';
 
 /**
  * Parameters for {@link createAgent}.
@@ -36,33 +36,16 @@ export type CreateAgentOptions<
 
 /**
  * Create a new agent.
- * @param agent - Agent options.
+ * @param options - Agent options.
  * @returns New agent.
  */
 export function createAgent<
     TTools extends AgentTools,
     TInput extends AgentInputBase = EmptyObject,
     TOutput extends AgentOutputBase = undefined,
->(agent: CreateAgentOptions<TTools, TInput, TOutput>): Agent<TTools, TInput, TOutput> {
-    const id = agent.id ?? uuid();
-    const startedAt = new Date();
-    const root: StackFrame = {
-        trace: '0',
-        status: 'running',
-        startedAt,
-        updatedAt: startedAt,
-    };
-
-    if (agent.output) {
-        root.variables = { result: undefined };
-    }
-
-    return {
-        id,
-        def: agent,
-        script: agent.script,
-        plan: agent.plan,
-        status: 'running',
-        root,
-    };
+>(options: CreateAgentOptions<TTools, TInput, TOutput>): Agent<TTools, TInput, TOutput> {
+    return createAgentInternal({
+        ...options,
+        runtime: renderRuntime(options),
+    });
 }

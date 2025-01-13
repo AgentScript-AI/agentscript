@@ -4,8 +4,8 @@ import * as s from '@agentscript-ai/schema';
 
 import type { AgentSerialized } from './agentTypes.js';
 import { createAgent } from './createAgent.js';
-import { deserializeAgent } from './deserializeAgent.js';
-import { serializeAgent } from './serializeAgent.js';
+import { restoreAgent } from './restoreAgent.js';
+import { storeAgent } from './storeAgent.js';
 import { parseScript } from '../parser/parseScript.js';
 import { executeAgent } from '../runtime/executeAgent.js';
 import { childFrame, rootFrame } from '../runtime/tests/testUtils.js';
@@ -66,9 +66,9 @@ test('serialize not finished execution', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('running');
 
-    let serialized = serializeAgent(agent);
+    let serialized = storeAgent(agent);
     let json = JSON.stringify(serialized);
-    let deserialized = deserializeAgent(JSON.parse(json) as AgentSerialized, agent.def);
+    let deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
     expect(deserialized).toMatchObject(agent);
     expect(deserialized.root).toEqual(expectedStack);
@@ -169,9 +169,9 @@ test('serialize not finished execution', async () => {
     expect(agent.root).toMatchObject(expectedStack);
     expect(agent.status).toBe('finished');
 
-    serialized = serializeAgent(agent);
+    serialized = storeAgent(agent);
     json = JSON.stringify(serialized);
-    deserialized = deserializeAgent(JSON.parse(json) as AgentSerialized, agent.def);
+    deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
     expect(deserialized).toMatchObject(agent);
     expect(deserialized.root).toMatchObject(expectedStack);
