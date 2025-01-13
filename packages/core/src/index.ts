@@ -4,6 +4,7 @@ export * from './inferAgent.js';
 
 export * from './parser/parseScript.js';
 export * from './parser/astTypes.js';
+export * from './parser/ParseError.js';
 
 export * from './defineAgent.js';
 export * from './runtime/createAgent.js';

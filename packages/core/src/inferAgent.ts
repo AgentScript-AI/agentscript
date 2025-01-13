@@ -11,6 +11,7 @@ import type {
     AgentTools,
 } from './defineAgent.js';
 import { renderRuntime } from './modules/renderRuntime.js';
+import { parseCodeResponse } from './parser/parseCodeResponse.js';
 import { parseScript } from './parser/parseScript.js';
 import { createAgent } from './runtime/createAgent.js';
 
@@ -54,8 +55,6 @@ Then create a valid AgentScript code.
 Don't wrap code in a function.
 Don't explain the code later.`;
 
-const RESPONSE_REGEX = /^([\s\S]*)```(\w*)?\n([\s\S]*)\n```/m;
-
 const debug = createDebug('agentscript:inferAgent');
 
 /**
@@ -79,7 +78,7 @@ export async function inferAgent<
         messages: [{ role: 'user', content: params.prompt }],
     });
 
-    const { plan, code } = parseResponse(response.content);
+    const { plan, code } = parseCodeResponse(response.content);
 
     debug('plan', plan);
     debug('code', code);
@@ -95,19 +94,4 @@ export async function inferAgent<
     });
 
     return agent;
-}
-
-function parseResponse(response: string) {
-    const match = response.match(RESPONSE_REGEX);
-    if (!match) {
-        debug('response', response);
-        throw new Error('No code found in response', {
-            cause: response,
-        });
-    }
-
-    return {
-        plan: match[1].trim(),
-        code: match[3].trim(),
-    };
 }

@@ -1,6 +1,7 @@
 import { parse } from '@babel/parser';
 import type * as babel from '@babel/types';
 
+import { ParseError } from './ParseError.js';
 import type { Assignment, AstNode, Expression, ObjectProperty, Script } from './astTypes.js';
 
 /**
@@ -33,7 +34,9 @@ function parseStatement(statement: babel.Statement): AstNode {
         case 'VariableDeclaration': {
             const declaration = statement.declarations[0];
             if (declaration.id.type !== 'Identifier') {
-                throw new Error('Invalid variable declaration');
+                throw new ParseError('Invalid variable declaration', {
+                    cause: statement,
+                });
             }
 
             return {
@@ -51,7 +54,9 @@ function parseStatement(statement: babel.Statement): AstNode {
         }
     }
 
-    throw new Error(`Unknown statement type: ${statement.type}`);
+    throw new ParseError(`Unknown statement type: ${statement.type}`, {
+        cause: statement,
+    });
 }
 
 function parseExpression(expression: babel.Expression): Expression {
@@ -138,7 +143,9 @@ function parseExpression(expression: babel.Expression): Expression {
         }
     }
 
-    throw new Error(`Unknown expression type: ${expression.type}`);
+    throw new ParseError(`Unknown expression type: ${expression.type}`, {
+        cause: expression,
+    });
 }
 
 function parseLeftValue(left: babel.LVal): Assignment['left'] {
@@ -150,7 +157,9 @@ function parseLeftValue(left: babel.LVal): Assignment['left'] {
             return expression;
     }
 
-    throw new Error(`Invalid left value: ${expression.type}`);
+    throw new ParseError(`Invalid left value: ${expression.type}`, {
+        cause: expression,
+    });
 }
 
 function parseComment(comments: babel.Comment[] | undefined | null): string | undefined {
@@ -173,12 +182,16 @@ function parseArgument(
 ): Expression {
     if (arg.type === 'SpreadElement') {
         // TODO: Implement spread elements
-        throw new Error('Spread element not supported');
+        throw new ParseError('Spread element not supported', {
+            cause: arg,
+        });
     }
 
     if (arg.type === 'ArgumentPlaceholder') {
         // TODO: Implement argument placeholders
-        throw new Error('Argument placeholder not supported');
+        throw new ParseError('Argument placeholder not supported', {
+            cause: arg,
+        });
     }
 
     return parseExpression(arg);
