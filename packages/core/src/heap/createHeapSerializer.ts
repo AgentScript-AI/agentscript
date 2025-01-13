@@ -1,7 +1,11 @@
-import type { HeapSerialized, HeapSerializedValue } from './heapTypes.js';
+import type { Heap, HeapArray, HeapObject, HeapSet } from './heapTypes.js';
 
+/**
+ * Create a heap serializer.
+ * @returns Heap serializer.
+ */
 export function createHeapSerializer() {
-    const heap: HeapSerialized = [];
+    const heap: Heap = [];
     const heapMap = new Map<unknown, number>();
 
     return {
@@ -23,7 +27,7 @@ export function createHeapSerializer() {
         }
 
         if (value === null) {
-            heap.push(['', value]);
+            heap.push(value);
             return index;
         }
 
@@ -31,37 +35,46 @@ export function createHeapSerializer() {
             case 'number':
             case 'string':
             case 'boolean':
-                heap.push(['', value]);
+                heap.push(value);
                 break;
             case 'bigint':
                 heap.push(['bint', value.toString()]);
                 break;
             case 'symbol':
-                heap.push(['sym', value.toString()]);
+                if (value.description) {
+                    heap.push(['sym', value.description]);
+                } else {
+                    heap.push(['sym']);
+                }
+
                 break;
             case 'object': {
-                let serialized: [string, ...number[]];
-
                 if (Array.isArray(value)) {
-                    serialized = ['arr'];
+                    const serialized: HeapArray = ['arr'];
+                    // push the array to the heap first for potential recursion
+                    heap.push(serialized);
                     for (const item of value) {
                         serialized.push(push(item));
                     }
                 } else if (value instanceof Set) {
-                    serialized = ['set'];
+                    const serialized: HeapSet = ['set'];
+                    // push the set to the heap first for potential recursion
+                    heap.push(serialized);
                     for (const item of value) {
                         serialized.push(push(item));
                     }
                 } else if (value instanceof Date) {
-                    serialized = ['date', push(value.toISOString())];
+                    heap.push(['date', value.toISOString()]);
                 } else {
-                    serialized = ['obj'];
+                    const obj: HeapObject = {};
+                    // push the object to the heap first for potential recursion
+                    heap.push(obj);
+
                     for (const [key, val] of Object.entries(value)) {
-                        serialized.push(key, push(val));
+                        obj[key] = push(val);
                     }
                 }
 
-                heap.push(serialized as HeapSerializedValue);
                 break;
             }
             default:

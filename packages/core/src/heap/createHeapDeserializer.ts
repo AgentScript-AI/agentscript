@@ -1,11 +1,11 @@
-import type { HeapSerialized } from './heapTypes.js';
+import type { Heap } from './heapTypes.js';
 
 /**
  * Create a heap deserializer.
  * @param heap - Heap to deserialize.
  * @returns Heap deserializer.
  */
-export function createHeapDeserializer(heap: HeapSerialized) {
+export function createHeapDeserializer(heap: Heap) {
     const heapMap = new Map<number, unknown>();
 
     return { get };
@@ -26,6 +26,17 @@ export function createHeapDeserializer(heap: HeapSerialized) {
         }
 
         if (!Array.isArray(serialized)) {
+            if (typeof serialized === 'object') {
+                const result: Record<string, unknown> = {};
+                // set the result in the heap map for potential recursion
+                heapMap.set(index, result);
+                for (const [key, value] of Object.entries(serialized as Record<string, number>)) {
+                    result[key] = get(value);
+                }
+
+                return result;
+            }
+
             heapMap.set(index, serialized);
             return serialized;
         }
@@ -52,15 +63,15 @@ export function createHeapDeserializer(heap: HeapSerialized) {
                 return result;
             }
 
-            case 'obj': {
-                const result: Record<string, unknown> = {};
-                // set the result in the heap map for potential recursion
-                heapMap.set(index, result);
-                for (const [key, value] of Object.entries(serialized[1])) {
-                    result[key] = get(value);
-                }
-                return result;
-            }
+            // case 'obj': {
+            //     const result: Record<string, unknown> = {};
+            //     // set the result in the heap map for potential recursion
+            //     heapMap.set(index, result);
+            //     for (const [key, value] of Object.entries(serialized[1])) {
+            //         result[key] = get(value);
+            //     }
+            //     return result;
+            // }
 
             case 'bint': {
                 return BigInt(serialized[1]);
