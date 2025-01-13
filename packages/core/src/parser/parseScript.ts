@@ -35,7 +35,7 @@ export function parseScript(code: string | string[]): Script {
 }
 
 function parseStatement(statement: babel.Statement): AstNode {
-    const comment = parseComment(statement.leadingComments);
+    let node: AstNode;
 
     switch (statement.type) {
         case 'VariableDeclaration': {
@@ -46,24 +46,32 @@ function parseStatement(statement: babel.Statement): AstNode {
                 });
             }
 
-            return {
+            node = {
                 type: 'var',
                 name: declaration.id.name,
                 value: declaration.init ? parseExpression(declaration.init) : undefined,
-                comment,
             };
+
+            break;
         }
 
         case 'ExpressionStatement': {
-            const expr = parseExpression(statement.expression);
-            expr.comment = comment;
-            return expr;
+            node = parseExpression(statement.expression);
+            break;
         }
+
+        default:
+            throw new ParseError(`Unknown statement type: ${statement.type}`, {
+                cause: statement,
+            });
     }
 
-    throw new ParseError(`Unknown statement type: ${statement.type}`, {
-        cause: statement,
-    });
+    const comment = parseComment(statement.leadingComments);
+    if (comment) {
+        node.comment = comment;
+    }
+
+    return node;
 }
 
 function parseExpression(expression: babel.Expression): Expression {
