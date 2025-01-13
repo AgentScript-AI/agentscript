@@ -9,25 +9,27 @@
     "scripts": {
         "setup": "yarn && nzyme monorepo",
         "monorepo": "nzyme monorepo",
-        "clean": "del \"**/dist\" \"/.tsbuildinfo\" \"!**/node_modules/**\"",
+        "clean": "del \"**/dist\" \"**/.tsbuildinfo\" \"!**/node_modules/**\"",
         "dev": "yarn setup && turbo run watch",
         "build": "tsc -b ./tsconfig.dev.json",
         "watch": "yarn build --watch --preserveWatchOutput",
         "upgrade": "yarn up \"@nzyme/*\" && yarn upgrade-interactive",
-        "release": "nx release --yes"
+        "test": "vitest run",
+        "release": "yarn && yarn clean && yarn monorepo && turbo run codegen && yarn build && yarn test && nx release --yes"
     },
     "devDependencies": {
         "@nx/js": "^20.3.1",
-        "@nzyme/cli": "^0.3.0",
+        "@nzyme/cli": "^0.4.0",
         "@swc-node/register": "^1.10.9",
-        "@swc/core": "^1.10.6",
+        "@swc/core": "^1.10.7",
         "del-cli": "^6.0.0",
         "dotenv-cli": "^8.0.0",
         "nx": "20.3.1",
         "prettier": "^3.4.2",
         "ts-node": "^10.9.2",
         "turbo": "^2.3.3",
-        "typescript": "^5.7.2"
+        "typescript": "^5.7.3",
+        "vitest": "^2.1.8"
     },
     "workspaces": [
         "packages/*"

@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/tsconfig",
-    "version": "0.1.2",
+    "version": "0.2.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",

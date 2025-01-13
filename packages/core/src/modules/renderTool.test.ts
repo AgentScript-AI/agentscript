@@ -3,9 +3,9 @@ import { expect, test } from 'vitest';
 import * as s from '@agentscript-ai/schema';
 import { joinLines } from '@agentscript-ai/utils';
 
-import { defineTool } from '../defineTool.js';
 import { createRenderContext } from './renderContext.js';
 import { renderTool } from './renderTool.js';
+import { defineTool } from '../tools/defineTool.js';
 
 const User = s.object({
     name: 'User',

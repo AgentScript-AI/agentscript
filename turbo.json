@@ -9,8 +9,11 @@
             "cache": false,
             "persistent": true
         },
+        "codegen": {
+            "cache": false
+        },
         "build": {
-            "dependsOn": ["^build"],
+            "dependsOn": ["^build", "codegen"],
             "cache": true
         }
     },

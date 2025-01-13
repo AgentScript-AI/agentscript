@@ -1,3 +1,18 @@
+## 0.2.0 (2025-01-13)
+
+### 🚀 Features
+
+- tool execution state ([#6](https://github.com/AgentScript-AI/agentscript/pull/6))
+- tool interactivity ([#7](https://github.com/AgentScript-AI/agentscript/pull/7))
+
+### 🩹 Fixes
+
+- runtime code generation refactor ([b8b2740](https://github.com/AgentScript-AI/agentscript/commit/b8b2740))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.1.2 (2025-01-08)
 
 ### 🩹 Fixes
