@@ -18,12 +18,7 @@ test('single variable declaration', async () => {
 
     let result = await executeAgent({ agent });
 
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
+    expect(result).toEqual(agentResult({ ticks: 0 }));
 
     const expectedStack = rootFrame({
         status: 'finished',
@@ -43,19 +38,14 @@ test('single variable declaration', async () => {
         ],
     });
 
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 
     result = await executeAgent({ agent });
 
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('multiple variable declarations', async () => {
@@ -72,12 +62,7 @@ test('multiple variable declarations', async () => {
 
     let result = await executeAgent({ agent });
 
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
+    expect(result).toEqual(agentResult({ ticks: 0 }));
 
     const expectedStack = rootFrame({
         status: 'finished',
@@ -108,18 +93,13 @@ test('multiple variable declarations', async () => {
         ],
     });
 
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 
     result = await executeAgent({ agent });
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('assign variable', async () => {
@@ -146,9 +126,9 @@ test('assign variable', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('member expression', async () => {
@@ -198,9 +178,9 @@ test('member expression', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('array.length', async () => {
@@ -243,7 +223,7 @@ test('array.length', async () => {
         variables: { a: [1, 2, 3] },
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });

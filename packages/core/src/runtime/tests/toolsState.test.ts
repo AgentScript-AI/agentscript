@@ -53,7 +53,7 @@ test('simple tool state', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });

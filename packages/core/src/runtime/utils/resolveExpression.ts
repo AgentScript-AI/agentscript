@@ -85,7 +85,7 @@ export function resolveIdentifier(agent: Agent, frame: StackFrame, expression: I
         break;
     }
 
-    const tools = agent.tools;
+    const tools = agent.def.tools;
     if (name in tools) {
         return tools[name];
     }

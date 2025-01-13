@@ -16,11 +16,15 @@ export function findFrameByTrace(agent: Agent, trace: string) {
         throw new RuntimeError(`Invalid trace: ${trace}`);
     }
 
-    let index = path[0];
-    let node: AstNode | undefined = agent.script.ast[index];
-    let frame: StackFrame | undefined = agent.state?.root.children?.[index];
+    if (path[0] !== 0) {
+        throw new RuntimeError(`Invalid trace: ${trace}`);
+    }
 
-    for (let i = 1; i < path.length; i++) {
+    let index = path[1];
+    let node: AstNode | undefined = agent.script.ast[index];
+    let frame: StackFrame | undefined = agent.root.children?.[index];
+
+    for (let i = 2; i < path.length; i++) {
         if (!node) {
             throw new RuntimeError(`Node not found at index for trace ${trace}`);
         }

@@ -66,9 +66,9 @@ test('single function call', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('multiple function calls', async () => {
@@ -129,19 +129,14 @@ test('multiple function calls', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 2, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 2 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 
     result = await executeAgent({ agent, ticks: 1 });
-    expect(result).toEqual(
-        agentResult({
-            ticks: 0,
-            done: true,
-        }),
-    );
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 describe('nested function calls', () => {
@@ -166,9 +161,9 @@ describe('nested function calls', () => {
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 1, done: false }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(false);
+        expect(result).toEqual(agentResult({ ticks: 1 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('running');
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
@@ -191,7 +186,7 @@ describe('nested function calls', () => {
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 1, done: false }));
+        expect(result).toEqual(agentResult({ ticks: 1 }));
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
@@ -215,9 +210,9 @@ describe('nested function calls', () => {
                 }),
             ],
         });
-        expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(true);
+        expect(result).toEqual(agentResult({ ticks: 1 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('finished');
     });
 
     test('run all ticks', async () => {
@@ -246,9 +241,9 @@ describe('nested function calls', () => {
             ],
         });
 
-        expect(result).toEqual(agentResult({ ticks: 3, done: true }));
-        expect(agent.state?.root).toEqual(expectedStack);
-        expect(agent.state?.complete).toBe(true);
+        expect(result).toEqual(agentResult({ ticks: 3 }));
+        expect(agent.root).toEqual(expectedStack);
+        expect(agent.status).toBe('finished');
     });
 });
 
@@ -278,9 +273,9 @@ test('module function', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('new Date()', async () => {
@@ -299,9 +294,9 @@ test('new Date()', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('toString()', async () => {
@@ -320,9 +315,9 @@ test('toString()', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('Number()', async () => {
@@ -342,9 +337,9 @@ test('Number()', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('Boolean()', async () => {
@@ -363,9 +358,9 @@ test('Boolean()', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('String()', async () => {
@@ -384,9 +379,9 @@ test('String()', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('array.push()', async () => {
@@ -428,9 +423,9 @@ test('array.push()', async () => {
         variables: { a: [1, 2, 3, 4] },
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('more than two arguments are turned into a single arg', async () => {
@@ -475,9 +470,9 @@ test('more than two arguments are turned into a single arg', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('explicit single arg', async () => {
@@ -522,9 +517,9 @@ test('explicit single arg', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });
 
 test('agent output', async () => {
@@ -557,8 +552,8 @@ test('agent output', async () => {
         variables: { result: 3 },
     });
 
-    expect(result).toEqual(agentResult({ ticks: 1, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
-    expect(agent.state?.output).toBe(3);
+    expect(result).toEqual(agentResult({ ticks: 1 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+    expect(agent.output).toBe(3);
 });

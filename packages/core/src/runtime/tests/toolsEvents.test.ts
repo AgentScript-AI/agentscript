@@ -6,18 +6,28 @@ import { parseScript } from '../../parser/parseScript.js';
 import { defineTool } from '../../tools/defineTool.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, completedFrame, rootFrame } from './testUtils.js';
+import { anyDate, childFrame, completedFrame, rootFrame } from './testUtils.js';
+import { pushEvent } from '../pushEvent.js';
 
 test('simple tool event', async () => {
     const tool = defineTool({
         input: {
             foo: s.string(),
         },
-        state: {
-            bar: s.string({ optional: true }),
-        },
+        output: s.string(),
         event: s.string(),
-        handler: ({ input, state, events }) => {},
+        handler: ({ input, events, result }) => {
+            if (events.length > 0) {
+                expect(events.length).toBe(1);
+                expect(events[0].payload).toBe('bar');
+                expect(events[0].processed).toBe(false);
+
+                events[0].processed = true;
+                return input.foo + events[0].payload;
+            }
+
+            return result.await();
+        },
     });
 
     const tools = {
@@ -31,16 +41,14 @@ test('simple tool event', async () => {
 
     const agent = createAgent({ tools, script });
 
-    const result = await executeAgent({ agent });
-    const expectedStack = rootFrame({
-        status: 'finished',
+    await executeAgent({ agent });
+
+    let expectedStack = rootFrame({
+        status: 'awaiting',
         children: [
-            completedFrame({
+            childFrame({
+                status: 'awaiting',
                 trace: '0:0',
-                value: undefined,
-                state: {
-                    bar: 'foobar',
-                },
                 children: [
                     completedFrame({
                         trace: '0:0:0',
@@ -51,7 +59,67 @@ test('simple tool event', async () => {
         ],
     });
 
-    expect(result).toEqual(agentResult({ ticks: 0, done: true }));
-    expect(agent.state?.root).toEqual(expectedStack);
-    expect(agent.state?.complete).toBe(true);
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('awaiting');
+
+    pushEvent({
+        agent,
+        trace: '0:0',
+        event: 'bar',
+    });
+
+    expectedStack = rootFrame({
+        status: 'awaiting',
+        children: [
+            childFrame({
+                status: 'awaiting',
+                trace: '0:0',
+                events: [
+                    {
+                        timestamp: anyDate(),
+                        payload: 'bar',
+                        processed: false,
+                    },
+                ],
+                children: [
+                    completedFrame({
+                        trace: '0:0:0',
+                        value: 'foo',
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('awaiting');
+
+    await executeAgent({ agent });
+
+    expectedStack = rootFrame({
+        status: 'finished',
+        children: [
+            completedFrame({
+                trace: '0:0',
+                value: 'foobar',
+
+                events: [
+                    {
+                        timestamp: anyDate(),
+                        payload: 'bar',
+                        processed: true,
+                    },
+                ],
+                children: [
+                    completedFrame({
+                        trace: '0:0:0',
+                        value: 'foo',
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
 });

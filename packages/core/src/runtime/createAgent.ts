@@ -1,7 +1,7 @@
-import type { EmptyObject } from '@nzyme/types';
+import type { EmptyObject, LiteralExclude, LiteralPick } from '@nzyme/types';
 import { v7 as uuid } from 'uuid';
 
-import type { StackFrame } from './runtimeTypes.js';
+import type { StackFrame, StackFrameStatus } from './runtimeTypes.js';
 import type {
     AgentDefinition,
     AgentInputBase,
@@ -32,10 +32,28 @@ export type CreateAgentParams<
      * Plan for the agent.
      */
     readonly plan?: string;
+};
+
+type AgentStateComplete<TOutput extends AgentOutputBase> = {
     /**
-     * State of the agent.
+     * Status of the agent execution.
      */
-    readonly state?: AgentState<TOutput>;
+    status: LiteralPick<StackFrameStatus, 'finished'>;
+    /**
+     * Output of the agent.
+     */
+    output: AgentOutput<TOutput>;
+};
+
+type AgentStateRunning = {
+    /**
+     * Status of the agent execution.
+     */
+    status: LiteralExclude<StackFrameStatus, 'finished'>;
+    /**
+     * Output of the agent.
+     */
+    output?: undefined;
 };
 
 /**
@@ -45,74 +63,29 @@ export type Agent<
     TTools extends AgentTools = AgentTools,
     TInput extends AgentInputBase = AgentInputBase,
     TOutput extends AgentOutputBase = AgentOutputBase,
-> = AgentDefinition<TTools, TInput, TOutput> & {
+> = {
+    /**
+     * Definition of the agent.
+     */
+    readonly def: AgentDefinition<TTools, TInput, TOutput>;
     /**
      * ID of the agent.
      */
-    id: string;
-    /**
-     * Tools available to the agent.
-     */
-    tools: TTools;
-    /**
-     * Schema for the input of the agent.
-     */
-    input: TInput;
-    /**
-     * Schema for the output of the agent.
-     */
-    output: TOutput;
+    readonly id: string;
     /**
      * AgentScript script to execute.
      */
-    script: Script;
+    readonly script: Script;
     /**
      * Plan for the agent.
      */
-    plan?: string;
-    /**
-     * State of the agent.
-     */
-    state?: AgentState<TOutput>;
-};
-
-type AgentStateBase = {
+    readonly plan?: string;
     /**
      * Root frame of the agent execution stack.
      * Execution progress is stored here.
      */
     root: StackFrame;
-};
-
-type AgentStateComplete<TOutput extends AgentOutputBase> = {
-    /**
-     * Whether the agent is complete.
-     */
-    complete: true;
-
-    /**
-     * Output of the agent.
-     */
-    output: AgentOutput<TOutput>;
-};
-
-type AgentStateIncomplete = {
-    /**
-     * Whether the agent is complete.
-     */
-    complete: false;
-
-    /**
-     * Output of the agent.
-     */
-    output?: undefined;
-};
-
-/**
- * State of the agent.
- */
-export type AgentState<TOutput extends AgentOutputBase> = AgentStateBase &
-    (AgentStateComplete<TOutput> | AgentStateIncomplete);
+} & (AgentStateComplete<TOutput> | AgentStateRunning);
 
 /**
  * Create a new agent.
@@ -123,7 +96,26 @@ export function createAgent<
     TTools extends AgentTools,
     TInput extends AgentInputBase = EmptyObject,
     TOutput extends AgentOutputBase = undefined,
->(agent: CreateAgentParams<TTools, TInput, TOutput>) {
+>(agent: CreateAgentParams<TTools, TInput, TOutput>): Agent<TTools, TInput, TOutput> {
     const id = agent.id ?? uuid();
-    return { ...agent, id } as Agent<TTools, TInput, TOutput>;
+    const startedAt = new Date();
+    const root: StackFrame = {
+        trace: '0',
+        status: 'running',
+        startedAt,
+        updatedAt: startedAt,
+    };
+
+    if (agent.output) {
+        root.variables = { result: undefined };
+    }
+
+    return {
+        id,
+        def: agent,
+        script: agent.script,
+        plan: agent.plan,
+        status: 'running',
+        root,
+    };
 }

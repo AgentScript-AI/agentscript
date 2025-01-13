@@ -34,7 +34,7 @@ import {
     resolveIdentifier,
     resolveLiteral,
 } from './utils/resolveExpression.js';
-import { toolResultHelper } from '../tools/toolResult.js';
+import { TOOL_AWAIT_RESULT, toolResultHelper } from '../tools/toolResult.js';
 
 type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends EmptyObject
     ? {
@@ -45,6 +45,23 @@ type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends Em
           /** Input for the agent. */
           input: AgentInput<TInput>;
       };
+
+type AgentVisitParams = {
+    /**
+     * Execution frame being visited.
+     */
+    frame: StackFrame;
+    /**
+     * AST node being visited.
+     */
+    node: AstNode;
+    /**
+     * Agent being executed.
+     */
+    agent: Agent;
+};
+
+type AgentVisitCallback = (params: AgentVisitParams) => void;
 
 /**
  * Options for the {@link executeAgent} function.
@@ -58,6 +75,13 @@ export type ExecuteAgentOptions<
      * Agent to execute.
      */
     agent: Agent<TTools, TInput, TOutput>;
+
+    /**
+     * Callback for visiting a node during execution.
+     * This is an internal API used for testing and may change.
+     * @internal
+     */
+    onVisit?: AgentVisitCallback;
 } & ExecuteAgentInputOptions<TInput> &
     RuntimeControllerOptions;
 
@@ -70,11 +94,6 @@ export interface ExecuteAgentResult {
      * A tick is a single async execution in the agent.
      */
     ticks: number;
-    /**
-     * Whether the agent is done for now.
-     * If it is `false`, the agent is not done and the caller should call {@link executeAgent} again.
-     */
-    done: boolean;
 }
 
 /**
@@ -90,57 +109,33 @@ export async function executeAgent<
     const { agent } = options;
 
     const controller = createRuntimeControler(options);
-    const startedAt = new Date();
-    if (!agent.state) {
-        agent.state = {
-            complete: false,
-            root: {
-                trace: '0',
-                startedAt,
-                updatedAt: startedAt,
-                status: 'running',
-            },
-        };
 
-        if (agent.output) {
-            agent.state.root.variables = {
-                result: undefined,
-            };
-        }
-    }
-
-    const root = agent.state.root;
+    const root = agent.root;
     const script = agent.script.ast;
+    const status = await runBlock(agent, controller, options.onVisit, root, script);
 
-    if (root.status === 'finished') {
-        return { ticks: controller.ticks, done: true };
+    agent.status = status;
+
+    if (status === 'finished' && agent.def.output) {
+        const result = root.variables?.result as AgentOutput<TOutput>;
+        validateOrThrow(agent.def.output, result);
+        agent.output = result;
     }
 
-    const result = await runBlock(agent, controller, root, script);
-
-    const frames = root.children;
-    if (frames?.length === script.length && frames[frames.length - 1].status === 'finished') {
-        updateFrame(root, 'finished');
-        agent.state.complete = true;
-
-        if (agent.output) {
-            const result = root.variables?.result as AgentOutput<TOutput>;
-            validateOrThrow(agent.output, result);
-            agent.state.output = result;
-        }
-
-        return { ticks: controller.ticks, done: true };
-    }
-
-    return { ticks: controller.ticks, done: result };
+    return { ticks: controller.ticks };
 }
 
 async function runBlock(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     nodes: AstNode[],
-) {
+): Promise<StackFrameStatus> {
+    if (block.status === 'finished') {
+        return 'finished';
+    }
+
     if (!block.children) {
         block.children = [];
     }
@@ -170,9 +165,9 @@ async function runBlock(
         }
 
         const node = nodes[index];
-        const frameDone = await runNode(agent, controller, block, frame, node);
-        if (!frameDone) {
-            return updateFrame(frame, 'running');
+        const frameStatus = await runNode(agent, controller, onVisit, block, frame, node);
+        if (frameStatus !== 'finished') {
+            return updateFrame(block, frameStatus);
         }
 
         index++;
@@ -182,10 +177,11 @@ async function runBlock(
 async function runNode(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     node: AstNode,
-) {
+): Promise<StackFrameStatus> {
     switch (node.type) {
         case 'var': {
             const name = node.name;
@@ -204,9 +200,17 @@ async function runNode(
             }
 
             const valueFrame = getFrame(frame, 0);
-            const done = await runExpression(agent, controller, block, valueFrame, node.value);
-            if (!done) {
-                return updateFrame(frame, 'running');
+            const status = await runExpression(
+                agent,
+                controller,
+                onVisit,
+                block,
+                valueFrame,
+                node.value,
+            );
+
+            if (status !== 'finished') {
+                return updateFrame(frame, status);
             }
 
             block.variables[name] = valueFrame.value;
@@ -214,19 +218,20 @@ async function runNode(
         }
 
         default:
-            return await runExpression(agent, controller, block, frame, node);
+            return await runExpression(agent, controller, onVisit, block, frame, node);
     }
 }
 
 async function runExpression(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: Expression,
-): Promise<boolean> {
+): Promise<StackFrameStatus> {
     if (frame.status === 'finished') {
-        return true;
+        return 'finished';
     }
 
     switch (expression.type) {
@@ -240,30 +245,29 @@ async function runExpression(
             return updateFrame(frame, 'finished');
         }
 
-        case 'member': {
-            return await runMemberExpression(agent, controller, block, frame, expression);
-        }
+        case 'member':
+            return await runMemberExpression(agent, controller, onVisit, block, frame, expression);
 
-        case 'obj': {
-            return await runObjectExpression(agent, controller, block, frame, expression);
-        }
+        case 'obj':
+            return await runObjectExpression(agent, controller, onVisit, block, frame, expression);
 
-        case 'arr': {
-            return await runArrayExpression(agent, controller, block, frame, expression);
-        }
+        case 'arr':
+            return await runArrayExpression(agent, controller, onVisit, block, frame, expression);
 
         case 'assign': {
             const rightFrame = getFrame(frame, 0);
 
-            const result = await runExpression(
+            const status = await runExpression(
                 agent,
                 controller,
+                onVisit,
                 block,
                 rightFrame,
                 expression.right,
             );
-            if (!result) {
-                return updateFrame(frame, 'running');
+
+            if (status !== 'finished') {
+                return updateFrame(frame, status);
             }
 
             if (expression.left.type === 'ident') {
@@ -274,13 +278,11 @@ async function runExpression(
             throw new Error('Assignment left must be a variable');
         }
 
-        case 'call': {
-            return await runFunctionCall(agent, controller, block, frame, expression);
-        }
+        case 'call':
+            return await runFunctionCall(agent, controller, onVisit, block, frame, expression);
 
-        case 'new': {
-            return await runNewExpression(agent, controller, block, frame, expression);
-        }
+        case 'new':
+            return await runNewExpression(agent, controller, onVisit, block, frame, expression);
 
         default:
             throw new RuntimeError(
@@ -292,14 +294,23 @@ async function runExpression(
 async function runMemberExpression(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: MemberExpression,
-) {
+): Promise<StackFrameStatus> {
     const objectFrame = getFrame(frame, 0);
-    const objectDone = await runExpression(agent, controller, block, objectFrame, expression.obj);
-    if (!objectDone) {
-        return updateFrame(frame, 'running');
+    const objectStatus = await runExpression(
+        agent,
+        controller,
+        onVisit,
+        block,
+        objectFrame,
+        expression.obj,
+    );
+
+    if (objectStatus !== 'finished') {
+        return updateFrame(frame, objectStatus);
     }
 
     let property: string;
@@ -307,15 +318,17 @@ async function runMemberExpression(
         property = expression.prop.name;
     } else {
         const propertyFrame = getFrame(frame, 1);
-        const propertyDone = await runExpression(
+        const propertyStatus = await runExpression(
             agent,
             controller,
+            onVisit,
             block,
             propertyFrame,
             expression.prop,
         );
-        if (!propertyDone) {
-            return updateFrame(frame, 'running');
+
+        if (propertyStatus !== 'finished') {
+            return updateFrame(frame, propertyStatus);
         }
 
         property = propertyFrame.value as string;
@@ -328,10 +341,11 @@ async function runMemberExpression(
 async function runObjectExpression(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: ObjectExpression,
-) {
+): Promise<StackFrameStatus> {
     const result: Record<string, unknown> = {};
 
     let index = 0;
@@ -343,9 +357,17 @@ async function runObjectExpression(
             key = prop.key.name;
         } else {
             const keyFrame = getFrame(frame, index);
-            const keyDone = await runExpression(agent, controller, block, keyFrame, prop.key);
-            if (!keyDone) {
-                return updateFrame(frame, 'running');
+            const keyStatus = await runExpression(
+                agent,
+                controller,
+                onVisit,
+                block,
+                keyFrame,
+                prop.key,
+            );
+
+            if (keyStatus !== 'finished') {
+                return updateFrame(frame, keyStatus);
             }
 
             key = keyFrame.value as string;
@@ -353,9 +375,17 @@ async function runObjectExpression(
         }
 
         const valueFrame = getFrame(frame, index);
-        const valueDone = await runExpression(agent, controller, block, valueFrame, prop.value);
-        if (!valueDone) {
-            return updateFrame(frame, 'running');
+        const valueStatus = await runExpression(
+            agent,
+            controller,
+            onVisit,
+            block,
+            valueFrame,
+            prop.value,
+        );
+
+        if (valueStatus !== 'finished') {
+            return updateFrame(frame, valueStatus);
         }
 
         result[key] = valueFrame.value;
@@ -369,35 +399,53 @@ async function runObjectExpression(
 async function runArrayExpression(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: ArrayExpression,
 ) {
-    const result = await runExpressionArray(agent, controller, block, frame, expression.items);
-    if (!result) {
-        return updateFrame(frame, 'running');
+    const result = await runExpressionArray(
+        agent,
+        controller,
+        onVisit,
+        block,
+        frame,
+        expression.items,
+    );
+
+    if (Array.isArray(result)) {
+        frame.value = result;
+        return updateFrame(frame, 'finished');
     }
 
-    frame.value = result;
-
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, result);
 }
 
 async function runFunctionCall(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: FunctionCall,
-) {
+): Promise<StackFrameStatus> {
     const { func, obj } = resolveFunctionCall(agent, frame, expression);
 
     if (isTool(func)) {
-        return await runFunctionCustom(agent, controller, block, frame, expression, func);
+        return await runFunctionCustom(agent, controller, onVisit, block, frame, expression, func);
     }
 
     if (typeof func === 'function') {
-        return await runFunctionNative(agent, controller, block, frame, expression, func, obj);
+        return await runFunctionNative(
+            agent,
+            controller,
+            onVisit,
+            block,
+            frame,
+            expression,
+            func,
+            obj,
+        );
     }
 
     throw new RuntimeError(`Expression is not a function`);
@@ -406,14 +454,15 @@ async function runFunctionCall(
 async function runFunctionCustom(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     call: FunctionCall,
     tool: ToolDefinition,
-) {
-    const args = await runExpressionArray(agent, controller, block, frame, call.args);
-    if (!args) {
-        return updateFrame(frame, 'running');
+): Promise<StackFrameStatus> {
+    const args = await runExpressionArray(agent, controller, onVisit, block, frame, call.args);
+    if (!Array.isArray(args)) {
+        return updateFrame(frame, args);
     }
 
     let input: Record<string, unknown> | undefined;
@@ -446,7 +495,7 @@ async function runFunctionCustom(
     }
 
     const events = frame.events?.filter(e => !e.processed) || [];
-    const result: unknown = tool.handler({
+    let result: unknown = tool.handler({
         input,
         state,
         events,
@@ -456,27 +505,31 @@ async function runFunctionCustom(
     });
 
     if (result instanceof Promise) {
-        frame.value = await result;
+        result = await result;
         controller.tick();
-    } else {
-        frame.value = result;
     }
 
+    if (result === TOOL_AWAIT_RESULT) {
+        return updateFrame(frame, 'awaiting');
+    }
+
+    frame.value = result;
     return updateFrame(frame, 'finished');
 }
 
 async function runFunctionNative(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     call: FunctionCall,
     func: NativeFunction,
     thisArg: unknown,
 ) {
-    const args = await runExpressionArray(agent, controller, block, frame, call.args);
-    if (!args) {
-        return updateFrame(frame, 'running');
+    const args = await runExpressionArray(agent, controller, onVisit, block, frame, call.args);
+    if (!Array.isArray(args)) {
+        return updateFrame(frame, args);
     }
 
     const allowed = allowedNativeFunctions.has(func) || allowedNativeFunctions.has(func.name);
@@ -498,6 +551,7 @@ async function runFunctionNative(
 async function runNewExpression(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expression: NewExpression,
@@ -511,18 +565,27 @@ async function runNewExpression(
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 
-    const args = await runExpressionArray(agent, controller, block, frame, expression.args);
-    if (!args) {
-        return updateFrame(frame, 'running');
+    const args = await runExpressionArray(
+        agent,
+        controller,
+        onVisit,
+        block,
+        frame,
+        expression.args,
+    );
+
+    if (Array.isArray(args)) {
+        frame.value = new constructor(...args);
+        return updateFrame(frame, 'finished');
     }
 
-    frame.value = new constructor(...args);
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, args);
 }
 
 async function runExpressionArray(
     agent: Agent,
     controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
     block: StackFrame,
     frame: StackFrame,
     expressions: Expression[],
@@ -533,15 +596,15 @@ async function runExpressionArray(
     for (let i = 0; i < expressions.length; i++) {
         const arg = expressions[i];
         const argFrame = getFrame(frame, i);
-        const done = await runExpression(agent, controller, block, argFrame, arg);
-        if (!done) {
-            return updateFrame(frame, 'running') as false;
+        const argStatus = await runExpression(agent, controller, onVisit, block, argFrame, arg);
+        if (argStatus !== 'finished') {
+            return updateFrame(frame, argStatus);
         }
 
         result.push(argFrame.value);
 
         if (!controller.continue()) {
-            return updateFrame(frame, 'running') as false;
+            return updateFrame(frame, 'running');
         }
     }
 
@@ -601,7 +664,7 @@ function updateFrame(frame: StackFrame, status: StackFrameStatus) {
     frame.updatedAt = new Date();
     frame.status = status;
 
-    return status === 'finished';
+    return status;
 }
 
 function setVariable(frame: StackFrame, name: string, value: unknown) {
