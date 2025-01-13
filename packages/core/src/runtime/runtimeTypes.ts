@@ -1,4 +1,9 @@
-import type { ToolEvent } from '../defineTool.js';
+import type { ToolEvent } from '../tools/defineTool.js';
+
+/**
+ * Status of the stack frame.
+ */
+export type StackFrameStatus = 'running' | 'finished' | 'error' | 'awaiting';
 
 /**
  * Stack frame.
@@ -10,13 +15,17 @@ export interface StackFrame {
      */
     trace: string;
     /**
+     * Status of the frame.
+     */
+    status: StackFrameStatus;
+    /**
      * Started at.
      */
     startedAt: Date;
     /**
-     * Completed at.
+     * Updated at.
      */
-    completedAt?: Date;
+    updatedAt: Date;
     /**
      * Variables.
      */

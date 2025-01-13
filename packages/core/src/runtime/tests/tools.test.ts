@@ -2,11 +2,11 @@ import { describe, expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
-import { defineTool } from '../../defineTool.js';
 import { parseScript } from '../../parser/parseScript.js';
+import { defineTool } from '../../tools/defineTool.js';
 import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { agentResult, anyDate, childFrame, completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, childFrame, completedFrame, rootFrame } from './testUtils.js';
 
 const add = defineTool({
     description: 'Add two numbers',
@@ -53,7 +53,7 @@ test('single function call', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -83,7 +83,7 @@ test('multiple function calls', async () => {
 
     let result = await executeAgent({ agent, ticks: 3 });
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         variables: {
             a: 1,
             b: 2,
@@ -195,7 +195,7 @@ describe('nested function calls', () => {
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
-            completedAt: anyDate(),
+            status: 'finished',
             children: [
                 completedFrame({
                     trace: '0:0',
@@ -225,7 +225,7 @@ describe('nested function calls', () => {
 
         const result = await executeAgent({ agent });
         const expectedStack = rootFrame({
-            completedAt: anyDate(),
+            status: 'finished',
             children: [
                 completedFrame({
                     trace: '0:0',
@@ -265,7 +265,7 @@ test('module function', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -290,7 +290,7 @@ test('new Date()', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -311,7 +311,7 @@ test('toString()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -332,7 +332,7 @@ test('Number()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -353,7 +353,7 @@ test('Boolean()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -374,7 +374,7 @@ test('String()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -400,7 +400,7 @@ test('array.push()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -455,7 +455,7 @@ test('more than two arguments are turned into a single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -503,7 +503,7 @@ test('explicit single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
         children: [
             completedFrame({
                 trace: '0:0',
@@ -537,7 +537,7 @@ test('agent output', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        completedAt: anyDate(),
+        status: 'finished',
 
         children: [
             completedFrame({

@@ -1,4 +1,4 @@
-import { isTool } from '../defineTool.js';
+import { isTool } from '../tools/defineTool.js';
 import { renderTool } from './renderTool.js';
 import type { RuntimeModule } from '../defineAgent.js';
 import type { RenderContext } from './renderContext.js';

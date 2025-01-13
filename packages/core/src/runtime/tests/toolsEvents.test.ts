@@ -8,18 +8,16 @@ import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
 import { agentResult, completedFrame, rootFrame } from './testUtils.js';
 
-test('simple tool state', async () => {
+test('simple tool event', async () => {
     const tool = defineTool({
-        description: 'A tool',
         input: {
             foo: s.string(),
         },
         state: {
-            bar: s.string(),
+            bar: s.string({ optional: true }),
         },
-        handler: ({ input, state }) => {
-            state.bar = input.foo + 'bar';
-        },
+        event: s.string(),
+        handler: ({ input, state, events }) => {},
     });
 
     const tools = {

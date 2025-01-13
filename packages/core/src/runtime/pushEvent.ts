@@ -1,9 +1,9 @@
 import { validateOrThrow } from '@agentscript-ai/schema';
 import * as s from '@agentscript-ai/schema';
 
-import { isTool } from '../defineTool.js';
 import { RuntimeError } from './RuntimeError.js';
 import type { Agent } from './createAgent.js';
+import { isTool } from '../tools/defineTool.js';
 import { findFrameByTrace } from './utils/findFrameByTrace.js';
 import { resolveFunctionCall } from './utils/resolveExpression.js';
 

@@ -2,7 +2,7 @@ import type { SomeObject } from '@nzyme/types';
 
 import type * as s from '@agentscript-ai/schema';
 
-import type { ToolDefinition } from './defineTool.js';
+import type { ToolDefinition } from './tools/defineTool.js';
 
 /**
  * Schema for the input of the agent.

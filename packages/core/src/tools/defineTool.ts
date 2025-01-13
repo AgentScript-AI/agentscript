@@ -1,6 +1,7 @@
 import * as s from '@agentscript-ai/schema';
 
-import type { Agent } from './runtime/createAgent.js';
+import type { ToolResult, ToolResultHelper } from './toolResult.js';
+import type { Agent } from '../runtime/createAgent.js';
 
 const TOOL_SYMBOL = Symbol('tool');
 
@@ -136,7 +137,7 @@ export type ToolEvent<T = unknown> = {
 /**
  * Parameters for the tool handler.
  */
-export type ToolContext<TInput, TState, TEvent> = {
+export type ToolContext<TInput, TOutput, TState, TEvent> = {
     /**
      * Resolved arguments for the tool.
      * First you need to define the input schema in {@link defineTool} options.
@@ -160,14 +161,18 @@ export type ToolContext<TInput, TState, TEvent> = {
      * Agent instance.
      */
     agent: Agent;
+    /**
+     * Helper for the tool result.
+     */
+    result: ToolResultHelper<TOutput>;
 };
 
 /**
  * Handler for the tool.
  */
 export type ToolHandler<TInput, TOutput, TState, TEvent> = (
-    ctx: ToolContext<TInput, TState, TEvent>,
-) => TOutput | Promise<TOutput>;
+    ctx: ToolContext<TInput, TOutput, TState, TEvent>,
+) => ToolResult<TOutput> | Promise<ToolResult<TOutput>>;
 
 /**
  * Define a tool.

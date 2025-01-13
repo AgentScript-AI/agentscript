@@ -1,5 +1,6 @@
-export * from './defineTool.js';
 export * from './LanguageModel.js';
+export * from './inferResult.js';
+export * from './inferAgent.js';
 
 export * from './parser/parseScript.js';
 export * from './parser/astTypes.js';
@@ -11,5 +12,5 @@ export * from './runtime/pushEvent.js';
 export * from './runtime/RuntimeError.js';
 export * from './runtime/runtimeTypes.js';
 
-export * from './inferResult.js';
-export * from './inferAgent.js';
+export * from './tools/defineTool.js';
+export type * from './tools/toolResult.js';

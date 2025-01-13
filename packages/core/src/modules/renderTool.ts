@@ -1,7 +1,7 @@
 import * as s from '@agentscript-ai/schema';
 import { normalizeText } from '@agentscript-ai/utils';
 
-import type { ToolDefinition } from '../defineTool.js';
+import type { ToolDefinition } from '../tools/defineTool.js';
 import { renderComment } from './renderComment.js';
 import type { RenderContext } from './renderContext.js';
 import { renderDocDirective } from './renderDocDirective.js';
