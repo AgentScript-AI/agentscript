@@ -6,7 +6,7 @@ import { validateOrThrow } from '@agentscript-ai/schema';
 import { RuntimeError } from './RuntimeError.js';
 import type { NativeFunction } from './common.js';
 import { allowedNativeFunctions } from './common.js';
-import type { Agent as Agent } from './createAgent.js';
+import type { Agent as Agent } from '../agent/agentTypes.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type { StackFrame, StackFrameStatus } from './runtimeTypes.js';
@@ -16,7 +16,7 @@ import type {
     AgentOutput,
     AgentOutputBase,
     AgentTools,
-} from '../defineAgent.js';
+} from '../agent/defineAgent.js';
 import type {
     ArrayExpression,
     AstNode,

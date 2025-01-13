@@ -1,6 +1,11 @@
 import type { Heap, HeapArray, HeapObject, HeapSet } from './heapTypes.js';
 
 /**
+ * Heap serializer.
+ */
+export type HeapSerializer = ReturnType<typeof createHeapSerializer>;
+
+/**
  * Create a heap serializer.
  * @returns Heap serializer.
  */

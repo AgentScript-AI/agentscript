@@ -3,17 +3,17 @@ import createDebug from 'debug';
 
 import { createTypedPrompt } from '@agentscript-ai/utils';
 
-import type { LanguageModel } from './LanguageModel.js';
+import type { LanguageModel } from '../LanguageModel.js';
+import { createAgent } from './createAgent.js';
 import type {
     AgentDefinition,
     AgentInputBase,
     AgentOutputBase,
     AgentTools,
 } from './defineAgent.js';
-import { renderRuntime } from './modules/renderRuntime.js';
-import { parseCodeResponse } from './parser/parseCodeResponse.js';
-import { parseScript } from './parser/parseScript.js';
-import { createAgent } from './runtime/createAgent.js';
+import { renderRuntime } from '../modules/renderRuntime.js';
+import { parseCodeResponse } from '../parser/parseCodeResponse.js';
+import { parseScript } from '../parser/parseScript.js';
 
 /**
  * Parameters for {@link inferAgent}.

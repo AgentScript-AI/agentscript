@@ -1,4 +1,4 @@
-import type { AgentDefinition } from '../defineAgent.js';
+import type { AgentDefinition } from '../agent/defineAgent.js';
 import { createRenderContext } from './renderContext.js';
 import { renderModule } from './renderModule.js';
 import { renderVariable } from './renderVariable.js';

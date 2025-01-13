@@ -1,7 +1,7 @@
 import * as s from '@agentscript-ai/schema';
 
 import type { ToolResult, ToolResultHelper } from './toolResult.js';
-import type { Agent } from '../runtime/createAgent.js';
+import type { Agent } from '../agent/agentTypes.js';
 
 const TOOL_SYMBOL = Symbol('tool');
 
@@ -128,6 +128,25 @@ export type ToolEvent<T = unknown> = {
      * Payload of the event.
      */
     readonly payload: T;
+    /**
+     * Whether the event has been processed.
+     */
+    processed: boolean;
+};
+
+/**
+ * Serialized tool event.
+ */
+export type ToolEventSerialized = {
+    /**
+     * Timestamp of the event.
+     */
+    timestamp: number;
+    /**
+     * Payload of the event.
+     * Refers to the index of the payload in the heap.
+     */
+    payload: number;
     /**
      * Whether the event has been processed.
      */

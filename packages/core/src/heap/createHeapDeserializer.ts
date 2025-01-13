@@ -1,6 +1,11 @@
 import type { Heap } from './heapTypes.js';
 
 /**
+ * Heap deserializer.
+ */
+export type HeapDeserializer = ReturnType<typeof createHeapDeserializer>;
+
+/**
  * Create a heap deserializer.
  * @param heap - Heap to deserialize.
  * @returns Heap deserializer.

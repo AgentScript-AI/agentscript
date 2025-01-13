@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
+import { createAgent } from '../../agent/createAgent.js';
 import { parseScript } from '../../parser/parseScript.js';
-import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 
