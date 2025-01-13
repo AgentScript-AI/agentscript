@@ -1,18 +1,45 @@
-export type HeapSerialized = HeapSerializedValue[];
+/**
+ * Heap. Allows for recursive serialization of values.
+ */
+export type Heap = HeapValue[];
 
-export type HeapSerializedValue =
-    | PrimitiveSerialized
-    | ArraySerialized
-    | ObjectSerialized
-    | BigIntSerialized
-    | DateSerialized
-    | SymbolSerialized
-    | SetSerialized;
+/**
+ * Heap value.
+ */
+export type HeapValue =
+    | HeapPrimitive
+    | HeapArray
+    | HeapObject
+    | HeapBigInt
+    | HeapDate
+    | HeapSymbol
+    | HeapSet;
 
-export type PrimitiveSerialized = ['', value: boolean | string | number | null];
-export type ArraySerialized = ['arr', ...values: number[]];
-export type ObjectSerialized = ['obj', value: Record<string, number>];
-export type BigIntSerialized = ['bint', value: string];
-export type DateSerialized = ['date', value: string];
-export type SymbolSerialized = ['sym', value: string];
-export type SetSerialized = ['set', ...values: number[]];
+/**
+ * Primitive serialized.
+ */
+export type HeapPrimitive = boolean | string | number | null;
+/**
+ * Array serialized.
+ */
+export type HeapArray = ['arr', ...values: number[]];
+/**
+ * Object serialized.
+ */
+export type HeapObject = Record<string, number>;
+/**
+ * BigInt serialized.
+ */
+export type HeapBigInt = ['bint', value: string];
+/**
+ * Date serialized.
+ */
+export type HeapDate = ['date', value: string];
+/**
+ * Symbol serialized.
+ */
+export type HeapSymbol = ['sym', value: string | undefined] | ['sym'];
+/**
+ * Set serialized.
+ */
+export type HeapSet = ['set', ...values: number[]];

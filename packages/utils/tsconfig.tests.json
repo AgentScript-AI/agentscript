@@ -1,7 +1,8 @@
 {
-    "extends": "../../tsconfig.tests.json",
+    "extends": "@agentscript-ai/tsconfig/tests.json",
     "compilerOptions": {
         "rootDir": "."
     },
-    "include": ["./src/**/*.test.ts"]
+    "include": ["./src/**/*.ts", "./vitest.config.ts"],
+    "exclude": []
 }

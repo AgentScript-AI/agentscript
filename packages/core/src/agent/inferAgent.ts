@@ -3,17 +3,17 @@ import createDebug from 'debug';
 
 import { createTypedPrompt } from '@agentscript-ai/utils';
 
-import type { LanguageModel } from './LanguageModel.js';
+import type { LanguageModel } from '../LanguageModel.js';
+import { createAgentInternal } from './createAgentInternal.js';
 import type {
     AgentDefinition,
     AgentInputBase,
     AgentOutputBase,
     AgentTools,
 } from './defineAgent.js';
-import { renderRuntime } from './modules/renderRuntime.js';
-import { parseCodeResponse } from './parser/parseCodeResponse.js';
-import { parseScript } from './parser/parseScript.js';
-import { createAgent } from './runtime/createAgent.js';
+import { renderRuntime } from '../modules/renderRuntime.js';
+import { parseCodeResponse } from '../parser/parseCodeResponse.js';
+import { parseScript } from '../parser/parseScript.js';
 
 /**
  * Parameters for {@link inferAgent}.
@@ -67,10 +67,11 @@ export async function inferAgent<
     TInput extends AgentInputBase = EmptyObject,
     TOutput extends AgentOutputBase = undefined,
 >(params: InferAgentParams<TTools, TInput, TOutput>) {
-    const definitions = renderRuntime(params);
+    const runtime = renderRuntime(params);
+
     const systemPrompt = createTypedPrompt({
         prompts: [params.systemPrompt, SYSTEM_PROMPT],
-        definitions,
+        definitions: runtime.code,
     });
 
     const response = await params.llm.invoke({
@@ -84,13 +85,14 @@ export async function inferAgent<
     debug('code', code);
 
     const script = parseScript(code);
-    const agent = createAgent<TTools, TInput, TOutput>({
+    const agent = createAgentInternal<TTools, TInput, TOutput>({
         id: params.id,
         tools: params.tools,
         input: params.input,
         output: params.output,
         script,
         plan,
+        runtime,
     });
 
     return agent;

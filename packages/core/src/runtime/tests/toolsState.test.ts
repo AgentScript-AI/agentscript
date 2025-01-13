@@ -2,9 +2,9 @@ import { expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
 
+import { createAgent } from '../../agent/createAgent.js';
 import { parseScript } from '../../parser/parseScript.js';
 import { defineTool } from '../../tools/defineTool.js';
-import { createAgent } from '../createAgent.js';
 import { executeAgent } from '../executeAgent.js';
 import { agentResult, completedFrame, rootFrame } from './testUtils.js';
 

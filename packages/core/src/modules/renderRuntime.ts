@@ -1,14 +1,17 @@
-import type { AgentDefinition } from '../defineAgent.js';
+import { getMd5Hash } from '@nzyme/crypto-utils';
+
 import { createRenderContext } from './renderContext.js';
 import { renderModule } from './renderModule.js';
 import { renderVariable } from './renderVariable.js';
+import type { AgentRuntime } from '../agent/agentTypes.js';
+import type { AgentDefinition } from '../agent/defineAgent.js';
 
 /**
  * Render a runtime as TypeScript code.
  * @param agent - Agent to render.
  * @returns Rendered agent runtime.
  */
-export function renderRuntime(agent: AgentDefinition) {
+export function renderRuntime(agent: AgentDefinition): AgentRuntime {
     const ctx = createRenderContext();
 
     renderModule(agent.tools, ctx);
@@ -22,5 +25,11 @@ export function renderRuntime(agent: AgentDefinition) {
         });
     }
 
-    return ctx.code;
+    const code = ctx.code;
+    const hash = `${getMd5Hash(code)}:${code.length}`;
+
+    return {
+        code,
+        hash,
+    };
 }
