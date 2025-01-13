@@ -2,7 +2,14 @@ import { parse } from '@babel/parser';
 import type * as babel from '@babel/types';
 
 import { ParseError } from './ParseError.js';
-import type { Assignment, AstNode, Expression, ObjectProperty, Script } from './astTypes.js';
+import type {
+    Assignment,
+    AstNode,
+    Expression,
+    ObjectProperty,
+    OperatorExpression,
+    Script,
+} from './astTypes.js';
 
 /**
  * Parse a script into an AST.
@@ -106,13 +113,12 @@ function parseExpression(expression: babel.Expression): Expression {
             };
         }
 
-        case 'AssignmentExpression': {
+        case 'AssignmentExpression':
             return {
                 type: 'assign',
                 left: parseLeftValue(expression.left as babel.LVal),
                 right: parseExpression(expression.right),
             };
-        }
 
         case 'ObjectExpression':
             return {
@@ -134,13 +140,21 @@ function parseExpression(expression: babel.Expression): Expression {
                 }),
             };
 
-        case 'NewExpression': {
+        case 'NewExpression':
             return {
                 type: 'new',
                 func: parseExpression(expression.callee as babel.Expression),
                 args: expression.arguments.map(parseArgument),
             };
-        }
+
+        case 'BinaryExpression':
+        case 'LogicalExpression':
+            return {
+                type: 'operator',
+                operator: expression.operator as OperatorExpression['operator'],
+                left: parseExpression(expression.left as babel.Expression),
+                right: parseExpression(expression.right),
+            };
     }
 
     throw new ParseError(`Unknown expression type: ${expression.type}`, {

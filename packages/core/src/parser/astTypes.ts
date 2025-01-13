@@ -131,6 +131,44 @@ export interface Assignment extends AstNodeBase {
 }
 
 /**
+ * Operator expression.
+ */
+export interface OperatorExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'operator';
+    /**
+     * Operator.
+     */
+    operator:
+        | '+'
+        | '-'
+        | '*'
+        | '/'
+        | '%'
+        | '=='
+        | '==='
+        | '!='
+        | '!=='
+        | '>'
+        | '<'
+        | '>='
+        | '<='
+        | '&&'
+        | '||'
+        | '??';
+    /**
+     * Left side of the operator.
+     */
+    left?: Expression;
+    /**
+     * Right side of the operator.
+     */
+    right?: Expression;
+}
+
+/**
  * Object expression.
  */
 export interface ObjectExpression extends AstNodeBase {
@@ -145,21 +183,7 @@ export interface ObjectExpression extends AstNodeBase {
 }
 
 /**
- *
- */
-export interface ArrayExpression extends AstNodeBase {
-    /**
-     * Type of the expression.
-     */
-    type: 'arr';
-    /**
-     * Items in the array.
-     */
-    items: Expression[];
-}
-
-/**
- *
+ * Object property.
  */
 export interface ObjectProperty {
     /**
@@ -173,6 +197,20 @@ export interface ObjectProperty {
 }
 
 /**
+ * Array expression.
+ */
+export interface ArrayExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'arr';
+    /**
+     * Items in the array.
+     */
+    items: Expression[];
+}
+
+/**
  * Expression.
  */
 export type Expression =
@@ -183,7 +221,8 @@ export type Expression =
     | Assignment
     | ObjectExpression
     | ArrayExpression
-    | NewExpression;
+    | NewExpression
+    | OperatorExpression;
 
 /**
  * Script statement.

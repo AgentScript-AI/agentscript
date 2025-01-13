@@ -25,6 +25,7 @@ import type {
     MemberExpression,
     NewExpression,
     ObjectExpression,
+    OperatorExpression,
 } from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
@@ -247,6 +248,16 @@ async function runExpression(
 
         case 'member':
             return await runMemberExpression(agent, controller, onVisit, block, frame, expression);
+
+        case 'operator':
+            return await runOperatorExpression(
+                agent,
+                controller,
+                onVisit,
+                block,
+                frame,
+                expression,
+            );
 
         case 'obj':
             return await runObjectExpression(agent, controller, onVisit, block, frame, expression);
@@ -543,6 +554,123 @@ async function runFunctionNative(
         controller.tick();
     } else {
         frame.value = result;
+    }
+
+    return updateFrame(frame, 'finished');
+}
+
+async function runOperatorExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    onVisit: AgentVisitCallback | undefined,
+    block: StackFrame,
+    frame: StackFrame,
+    expression: OperatorExpression,
+) {
+    let frameIndex = 0;
+
+    let leftFrame: StackFrame | undefined;
+    let rightFrame: StackFrame | undefined;
+
+    if (expression.left) {
+        leftFrame = getFrame(frame, frameIndex++);
+        const leftStatus = await runExpression(
+            agent,
+            controller,
+            onVisit,
+            block,
+            leftFrame,
+            expression.left,
+        );
+
+        if (leftStatus !== 'finished') {
+            return updateFrame(frame, leftStatus);
+        }
+    }
+
+    if (expression.right) {
+        rightFrame = getFrame(frame, frameIndex++);
+        const rightStatus = await runExpression(
+            agent,
+            controller,
+            onVisit,
+            block,
+            rightFrame,
+            expression.right,
+        );
+
+        if (rightStatus !== 'finished') {
+            return updateFrame(frame, rightStatus);
+        }
+    }
+
+    switch (expression.operator) {
+        case '+':
+            frame.value = (leftFrame?.value as number) + (rightFrame?.value as number);
+            break;
+
+        case '-':
+            frame.value = (leftFrame?.value as number) - (rightFrame?.value as number);
+            break;
+
+        case '*':
+            frame.value = (leftFrame?.value as number) * (rightFrame?.value as number);
+            break;
+
+        case '/':
+            frame.value = (leftFrame?.value as number) / (rightFrame?.value as number);
+            break;
+
+        case '%':
+            frame.value = (leftFrame?.value as number) % (rightFrame?.value as number);
+            break;
+
+        case '==':
+            frame.value = (leftFrame?.value as number) == (rightFrame?.value as number);
+            break;
+
+        case '===':
+            frame.value = (leftFrame?.value as number) === (rightFrame?.value as number);
+            break;
+
+        case '!=':
+            frame.value = (leftFrame?.value as number) != (rightFrame?.value as number);
+            break;
+
+        case '!==':
+            frame.value = (leftFrame?.value as number) !== (rightFrame?.value as number);
+            break;
+
+        case '>':
+            frame.value = (leftFrame?.value as number) > (rightFrame?.value as number);
+            break;
+
+        case '>=':
+            frame.value = (leftFrame?.value as number) >= (rightFrame?.value as number);
+            break;
+
+        case '<':
+            frame.value = (leftFrame?.value as number) < (rightFrame?.value as number);
+            break;
+
+        case '<=':
+            frame.value = (leftFrame?.value as number) <= (rightFrame?.value as number);
+            break;
+
+        case '&&':
+            frame.value = (leftFrame?.value as boolean) && (rightFrame?.value as boolean);
+            break;
+
+        case '||':
+            frame.value = (leftFrame?.value as boolean) || (rightFrame?.value as boolean);
+            break;
+
+        case '??':
+            frame.value = leftFrame?.value ?? rightFrame?.value;
+            break;
+
+        default:
+            throw new RuntimeError(`Unsupported operator: ${expression.operator as string}`);
     }
 
     return updateFrame(frame, 'finished');
