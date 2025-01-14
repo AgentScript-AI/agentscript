@@ -55,7 +55,7 @@ export function createHeapSerializer() {
                 break;
             case 'object': {
                 if (Array.isArray(value)) {
-                    const serialized: HeapArray = ['arr'];
+                    const serialized: HeapArray = ['array'];
                     // push the array to the heap first for potential recursion
                     heap.push(serialized);
                     for (const item of value) {

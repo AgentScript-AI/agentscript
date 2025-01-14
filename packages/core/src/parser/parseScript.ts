@@ -60,6 +60,22 @@ function parseStatement(statement: babel.Statement): AstNode {
             break;
         }
 
+        case 'BlockStatement': {
+            node = {
+                type: 'block',
+                body: statement.body.map(parseStatement),
+            };
+            break;
+        }
+
+        case 'ReturnStatement': {
+            node = {
+                type: 'return',
+                value: statement.argument ? parseExpression(statement.argument) : undefined,
+            };
+            break;
+        }
+
         default:
             throw new ParseError(`Unknown statement type: ${statement.type}`, {
                 cause: statement,
@@ -130,7 +146,7 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'ObjectExpression':
             return {
-                type: 'obj',
+                type: 'object',
                 props: expression.properties.map(prop =>
                     parseObjectProperty(prop as babel.ObjectProperty),
                 ),
@@ -138,7 +154,7 @@ function parseExpression(expression: babel.Expression): Expression {
 
         case 'ArrayExpression':
             return {
-                type: 'arr',
+                type: 'array',
                 items: expression.elements.map(e => {
                     if (e === null) {
                         return { type: 'literal', value: null };
@@ -162,6 +178,26 @@ function parseExpression(expression: babel.Expression): Expression {
                 operator: expression.operator as OperatorExpression['operator'],
                 left: parseExpression(expression.left as babel.Expression),
                 right: parseExpression(expression.right),
+            };
+
+        case 'ArrowFunctionExpression':
+            return {
+                type: 'arrowfn',
+                params: expression.params.map(p => {
+                    const param = parseExpression(p as babel.Expression);
+
+                    if (param.type !== 'ident') {
+                        throw new ParseError('Invalid arrow function parameter', {
+                            cause: p,
+                        });
+                    }
+
+                    return param;
+                }),
+                body:
+                    expression.body.type === 'BlockStatement'
+                        ? parseStatement(expression.body)
+                        : parseExpression(expression.body),
             };
     }
 
