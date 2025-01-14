@@ -31,6 +31,34 @@ export interface VariableDeclaration extends AstNodeBase {
 }
 
 /**
+ * Block statement.
+ */
+export interface BlockStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'block';
+    /**
+     * Statements in the block.
+     */
+    body: AstNode[];
+}
+
+/**
+ * Return statement.
+ */
+export interface ReturnStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'return';
+    /**
+     * Value to return.
+     */
+    value?: Expression;
+}
+
+/**
  * Function call expression.
  */
 export interface FunctionCall extends AstNodeBase {
@@ -175,7 +203,7 @@ export interface ObjectExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
-    type: 'obj';
+    type: 'object';
     /**
      * Properties of the object.
      */
@@ -203,11 +231,29 @@ export interface ArrayExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
-    type: 'arr';
+    type: 'array';
     /**
      * Items in the array.
      */
     items: Expression[];
+}
+
+/**
+ * Arrow function expression.
+ */
+export interface ArrowFunctionExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'arrowfn';
+    /**
+     * Parameters of the function.
+     */
+    params: Identifier[];
+    /**
+     * Body of the function.
+     */
+    body: AstNode;
 }
 
 /**
@@ -222,12 +268,13 @@ export type Expression =
     | ObjectExpression
     | ArrayExpression
     | NewExpression
-    | OperatorExpression;
+    | OperatorExpression
+    | ArrowFunctionExpression;
 
 /**
  * Script statement.
  */
-export type Statement = VariableDeclaration;
+export type Statement = VariableDeclaration | BlockStatement | ReturnStatement;
 
 /**
  * AST node.

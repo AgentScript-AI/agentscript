@@ -42,6 +42,8 @@ test('simple tool event', async () => {
     const agent = createAgent({ tools, script });
 
     await executeAgent({ agent });
+    await executeAgent({ agent });
+    await executeAgent({ agent });
 
     let expectedStack = rootFrame({
         status: 'awaiting',
