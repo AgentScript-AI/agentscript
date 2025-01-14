@@ -46,8 +46,7 @@ const SYSTEM_PROMPT = `You answer using programming language called AgentScript.
 - can't use regexes
 - can't use complex computation
 - can only use predefined functions and nothing else
-- can only use \`if\` statements to control execution flow
-- some of the functions may require use interaction or approval to be executed, this is done in a chat in form of interactive messages, do not ask for approval here
+- to iterate over arrays always use \`map\` function
 - each function call or code block requires a comment briefly explaining the step
 
 First explain your plan step by step in non-technical way. Do not reference code, or functions.
