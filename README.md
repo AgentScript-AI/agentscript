@@ -3,8 +3,9 @@
 </div>
 
 <div >
-  <a href="https://www.npmjs.com/package/agentscript-ai"><img alt="CodeCov" src="https://img.shields.io/npm/v/agentscript-ai?style=for-the-badge&color=red"></a>
-  <a href="https://agentscript.ai"><img src="https://img.shields.io/badge/website-agentscript%2Eai-blue?style=for-the-badge&color=blue" alt=" License"></a>
+  <a href="https://www.npmjs.com/package/agentscript-ai"><img alt="CodeCov" src="https://img.shields.io/npm/v/agentscript-ai?style=for-the-badge&color=red"></a>&nbsp;
+  <a href="https://agentscript.ai"><img src="https://img.shields.io/badge/website-agentscript%2Eai-blue?style=for-the-badge&color=orange" alt="Website"></a><br/>
+  <a href="https://agentscript.ai/docs"><img src="https://img.shields.io/badge/docs-learn_more-blue?style=for-the-badge&color=blue" alt="Docs"></a>&nbsp;
   <a href="https://discord.gg/hEYMnj62DT"><img src="https://img.shields.io/badge/Discord-Join%20Us-purple?logo=discord&logoColor=white&style=for-the-badge" alt="Join our Discord community"></a>
   <br/>  <br/>
 </div>
