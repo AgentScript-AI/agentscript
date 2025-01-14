@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/core",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
@@ -18,8 +18,8 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript-ai/schema": "^0.2.0",
-        "@agentscript-ai/utils": "^0.2.0",
+        "@agentscript-ai/schema": "^0.3.0",
+        "@agentscript-ai/utils": "^0.3.0",
         "@babel/parser": "^7.26.5",
         "@nzyme/crypto-utils": "^0.4.0",
         "@nzyme/ioc": "^0.4.0",
@@ -29,8 +29,8 @@
         "uuid": "^11.0.5"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.2.0",
-        "@agentscript-ai/tsconfig": "^0.2.0",
+        "@agentscript-ai/eslint": "^0.3.0",
+        "@agentscript-ai/tsconfig": "^0.3.0",
         "@nzyme/vitest": "^0.4.0",
         "@types/debug": "^4.1.12",
         "@types/node": "^22.10.5",

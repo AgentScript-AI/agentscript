@@ -1,3 +1,19 @@
+## 0.3.0 (2025-01-14)
+
+### 🚀 Features
+
+- add binary operators ([#8](https://github.com/AgentScript-AI/agentscript/pull/8))
+- execution state perisistence ([#9](https://github.com/AgentScript-AI/agentscript/pull/9))
+- support array.map loops ([#10](https://github.com/AgentScript-AI/agentscript/pull/10))
+
+### 🩹 Fixes
+
+- parsing LLM response when code is not wrapped ([96f23f1](https://github.com/AgentScript-AI/agentscript/commit/96f23f1))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.2.0 (2025-01-13)
 
 ### 🚀 Features
