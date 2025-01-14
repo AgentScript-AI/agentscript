@@ -21,10 +21,10 @@ export function getChild(node: AstNode, index: number): AstNode | undefined {
                     return undefined;
             }
 
-        case 'arr':
+        case 'array':
             return node.items[index];
 
-        case 'obj':
+        case 'object':
             return node.props[index]?.value;
 
         case 'call':
