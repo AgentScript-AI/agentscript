@@ -4114,7 +4114,9 @@ export type ImageUploadFromUrlPayload = {
 };
 
 export type InheritanceEntityMapping = {
-  /** Mapping of the entity ID to the new entity ID. */
+  /** Mapping of the IssueLabel ID to the new IssueLabel name. */
+  issueLabels?: InputMaybe<Scalars['JSONObject']['input']>;
+  /** Mapping of the WorkflowState ID to the new WorkflowState ID. */
   workflowStates: Scalars['JSONObject']['input'];
 };
 
@@ -16505,11 +16507,6 @@ export type UserSettings = Node & {
   /** Whether this user is subscribed to privacy and legal update emails or not. */
   subscribedToPrivacyLegalUpdates: Scalars['Boolean']['output'];
   /**
-   * [DEPRECATED] Whether this user is subscribed to unread notifications reminder emails or not.
-   * @deprecated This field has been replaced by notificationChannelPreferences
-   */
-  subscribedToUnreadNotificationsReminder: Scalars['Boolean']['output'];
-  /**
    * The email types the user has unsubscribed from.
    * @deprecated Use individual subscription fields instead. This field's value is now outdated.
    */
@@ -16570,8 +16567,6 @@ export type UserSettingsUpdateInput = {
   subscribedToInviteAccepted?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether this user is subscribed to privacy and legal update emails or not. */
   subscribedToPrivacyLegalUpdates?: InputMaybe<Scalars['Boolean']['input']>;
-  /** [DEPRECATED] Whether this user is subscribed to email notifications reminder or not. */
-  subscribedToUnreadNotificationsReminder?: InputMaybe<Scalars['Boolean']['input']>;
   /** The types of emails the user has unsubscribed from. */
   unsubscribedFrom?: InputMaybe<Array<Scalars['String']['input']>>;
   /** [Internal] The user's usage warning history. */
