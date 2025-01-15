@@ -1,5 +1,5 @@
 <div>
-  <h1>AgentScript: Build AI agents that think in code</h1>
+  <h1>AgentScript SDK: build AI agents that think in code</h1>
 </div>
 
 <div >
@@ -10,7 +10,7 @@
   <br/>  <br/>
 </div>
 
-AgentScript is a unique open-source framework for building re-act AI agents.
+AgentScript is a unique open-source SDK for building AI agents.
 
 ```
 npm install agentscript-ai
@@ -93,6 +93,74 @@ const agent = await inferAgent({
 });
 ```
 
+By running `inferAgent` we call LLM with the following prompt, consisting of all available tools:
+
+<div style="padding: 6px 16px; border-left: 3px solid #aaaaaa99;">
+
+You answer using programming language called AgentScript. It's a subset of JavaScript with following limitations:
+
+- can't use regexes
+- can't use complex computation
+- can only use predefined functions and nothing else
+- ...
+
+First explain your plan step by step in non-technical way. Do not reference code, or functions.\
+Then create a valid AgentScript code. \
+Don't wrap code in a function.\
+Don't explain the code later.
+
+```typescript
+export type Duration = {
+    years?: number;
+    months?: number;
+    days?: number;
+    hours?: number;
+    minutes?: number;
+    seconds?: number;
+};
+
+/** Add a duration to a date. */
+export function addToDate(date: Date, duration: Duration): Date;
+
+export type SummarizeDataParams = {
+    /** The data to summarize. Can be in any format. */
+    data: unknown;
+    /**
+     * The prompt to use to summarize the data.
+     * Describe the expected outcome.
+     */
+    prompt: string;
+};
+
+/** Summarize any data */
+export function summarizeData(params: SummarizeDataParams): string;
+
+declare namespace linear {
+    export type Issue = {
+        id: string;
+        url: string;
+        title: string;
+        description?: string;
+        status: string;
+        createdAt: Date;
+        updatedAt: Date;
+    };
+
+    /**
+     * Search for issues using a natural language query.
+     * Do not filter results later, put all the search criteria in the query.
+     * @param query - Descriptive query in object format.
+     */
+    export function searchIssues(query: unknown): Issue[];
+}
+
+/** You must put the result of the task here. */
+let result: string;
+```
+
+</div>
+
+\
 LLM responds with a plan:
 
 > I'll help create a progress update for recent tasks. Here's the plan:
@@ -138,7 +206,7 @@ console.log(agent.output);
 console.log(agent.root.variables);
 ```
 
-## How is it different from other frameworks?
+## How is it different?
 
 Many products define agent as a fixed workflow (for example [Glide](https://www.glideapps.com/)). \
 They work very nice for well defined tasks, but fall short when the task is ambiguous or not known beforehand.
@@ -171,14 +239,10 @@ AgentScript is an open-source project, and we welcome contributions from everyon
 
 ## Current roadmap
 
-- Execution serialization and deserialization
 - More JS features:
     - `if` statements,
-    - `for` loops,
     - template literals
     - arrow functions
-    - unary and binary operators
+    - unary operators
 - Input variables
-- Tool state
-- Tool interactivity
 - Observability and debugging
