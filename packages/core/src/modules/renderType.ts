@@ -50,7 +50,7 @@ function renderTypeInternal(
     skipUndefined?: boolean,
     nameHint?: string,
 ): string {
-    switch (schema.base) {
+    switch (schema.type) {
         case s.string:
             return wrapType(schema, 'string', skipUndefined);
         case s.number:
@@ -94,7 +94,7 @@ function renderTypeInternal(
         case s.union:
             return renderUnion(schema as s.UnionSchema, ctx, skipUndefined);
         default:
-            throw new Error(`Unsupported schema ${schema.base.name}`);
+            throw new Error(`Unsupported schema ${schema.type.name}`);
     }
 }
 
@@ -159,7 +159,7 @@ function wrapType(schema: s.Schema, type: string, skipUndefined?: boolean) {
         type = `${type} | null`;
     }
 
-    if (schema.optional && schema.base !== s.void && !skipUndefined) {
+    if (schema.optional && schema.type !== s.void && !skipUndefined) {
         type = `${type} | undefined`;
     }
 

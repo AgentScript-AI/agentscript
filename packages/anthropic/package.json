@@ -33,7 +33,7 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.3.0",
         "@agentscript-ai/tsconfig": "^0.3.0",
-        "@types/node": "^22.10.5",
+        "@types/node": "^22.10.6",
         "vitest": "^2.1.8"
     }
 }
