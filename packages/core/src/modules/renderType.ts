@@ -57,6 +57,8 @@ function renderTypeInternal(
             return wrapType(schema, 'number', skipUndefined);
         case s.boolean:
             return wrapType(schema, 'boolean', skipUndefined);
+        case s.bigint:
+            return wrapType(schema, 'bigint', skipUndefined);
         case s.date:
             return wrapType(schema, 'Date', skipUndefined);
         case s.void:
@@ -129,7 +131,7 @@ function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
 }
 
 function renderArray(schema: s.ArraySchema, ctx: RenderContext, skipUndefined?: boolean) {
-    if (schema.of.base === s.union && (schema.of as s.UnionSchema).of.length > 1) {
+    if (schema.of.type === s.union && (schema.of as s.UnionSchema).of.length > 1) {
         return `(${renderUnion(schema.of as s.UnionSchema, ctx, skipUndefined)})[]`;
     }
 

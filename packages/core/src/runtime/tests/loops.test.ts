@@ -32,25 +32,10 @@ test('array map with inline arrow function', async () => {
             completedFrame({
                 trace: '0:0',
                 children: [
-                    // array expression
+                    // array literal
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3],
-                        children: [
-                            // array items
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:2',
-                                value: 3,
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -164,25 +149,10 @@ test('array map with block arrow function', async () => {
             completedFrame({
                 trace: '0:0',
                 children: [
-                    // array expression
+                    // array literal
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3],
-                        children: [
-                            // array items
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:2',
-                                value: 3,
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -360,25 +330,10 @@ test('array map with async tool inline', async () => {
             completedFrame({
                 trace: '0:0',
                 children: [
-                    // array expression
+                    // array literal
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3],
-                        children: [
-                            // array items
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:2',
-                                value: 3,
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -501,25 +456,10 @@ test('array map with async tool in block', async () => {
             completedFrame({
                 trace: '0:0',
                 children: [
-                    // array expression
+                    // array literal
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3],
-                        children: [
-                            // array items
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:2',
-                                value: 3,
-                            }),
-                        ],
                     }),
                 ],
             }),

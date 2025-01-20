@@ -13,6 +13,6 @@
     "sideEffects": false,
     "main": "./base.json",
     "dependencies": {
-        "@types/node": "^22.10.6"
+        "@types/node": "^22.10.7"
     }
 }

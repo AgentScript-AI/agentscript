@@ -151,12 +151,10 @@ test('member expression', async () => {
         children: [
             completedFrame({
                 trace: '0:0',
-
                 children: [
                     completedFrame({
                         trace: '0:0:0',
                         value: { b: 1 },
-                        children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                     }),
                 ],
             }),
@@ -206,11 +204,6 @@ test('array.length', async () => {
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3],
-                        children: [
-                            completedFrame({ trace: '0:0:0:0', value: 1 }),
-                            completedFrame({ trace: '0:0:0:1', value: 2 }),
-                            completedFrame({ trace: '0:0:0:2', value: 3 }),
-                        ],
                     }),
                 ],
             }),

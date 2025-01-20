@@ -1,8 +1,9 @@
 import { expect, test } from 'vitest';
 
+import { joinLines } from '@agentscript-ai/utils';
+
 import type { Script } from './astTypes.js';
 import { parseScript } from './parseScript.js';
-import { joinLines } from '@agentscript-ai/utils';
 
 test('assign variable', () => {
     const code = 'const a = 1';
@@ -173,7 +174,7 @@ test('multiple statements', () => {
     expect(script).toEqual(expected);
 });
 
-test('object expression', () => {
+test('object literal', () => {
     const code = 'const a = { b: 1 }';
     const script = parseScript(code);
     const expected: Script = {
@@ -183,11 +184,44 @@ test('object expression', () => {
                 type: 'var',
                 name: 'a',
                 value: {
+                    type: 'literal',
+                    value: {
+                        b: 1,
+                    },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('object expression', () => {
+    const code = joinLines([
+        //
+        'const a = 1',
+        'const b = {',
+        '  a: a',
+        '}',
+    ]);
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: { type: 'literal', value: 1 },
+            },
+            {
+                type: 'var',
+                name: 'b',
+                value: {
                     type: 'object',
                     props: [
                         {
-                            key: { type: 'ident', name: 'b' },
-                            value: { type: 'literal', value: 1 },
+                            key: { type: 'ident', name: 'a' },
+                            value: { type: 'ident', name: 'a' },
                         },
                     ],
                 },
@@ -198,7 +232,7 @@ test('object expression', () => {
     expect(script).toEqual(expected);
 });
 
-test('array expression', () => {
+test('array literal', () => {
     const code = 'const a = [1, 2, 3]';
     const script = parseScript(code);
     const expected: Script = {
@@ -208,9 +242,38 @@ test('array expression', () => {
                 type: 'var',
                 name: 'a',
                 value: {
+                    type: 'literal',
+                    value: [1, 2, 3],
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('array expression', () => {
+    const code = joinLines([
+        //
+        'const a = 1',
+        'const b = [a, 2, 3]',
+    ]);
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: { type: 'literal', value: 1 },
+            },
+            {
+                type: 'var',
+                name: 'b',
+                value: {
                     type: 'array',
                     items: [
-                        { type: 'literal', value: 1 },
+                        { type: 'ident', name: 'a' },
                         { type: 'literal', value: 2 },
                         { type: 'literal', value: 3 },
                     ],
@@ -259,12 +322,8 @@ test('array map inline', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'array',
-                    items: [
-                        { type: 'literal', value: 1 },
-                        { type: 'literal', value: 2 },
-                        { type: 'literal', value: 3 },
-                    ],
+                    type: 'literal',
+                    value: [1, 2, 3],
                 },
             },
             {
@@ -316,12 +375,8 @@ test('array map with function', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'array',
-                    items: [
-                        { type: 'literal', value: 1 },
-                        { type: 'literal', value: 2 },
-                        { type: 'literal', value: 3 },
-                    ],
+                    type: 'literal',
+                    value: [1, 2, 3],
                 },
             },
             {

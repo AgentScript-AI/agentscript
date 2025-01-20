@@ -3,9 +3,12 @@ import type * as babel from '@babel/types';
 
 import { ParseError } from './ParseError.js';
 import type {
+    ArrayExpression,
     Assignment,
     AstNode,
     Expression,
+    Literal,
+    ObjectExpression,
     ObjectProperty,
     OperatorExpression,
     Script,
@@ -145,24 +148,10 @@ function parseExpression(expression: babel.Expression): Expression {
             };
 
         case 'ObjectExpression':
-            return {
-                type: 'object',
-                props: expression.properties.map(prop =>
-                    parseObjectProperty(prop as babel.ObjectProperty),
-                ),
-            };
+            return parseObjectExpression(expression);
 
         case 'ArrayExpression':
-            return {
-                type: 'array',
-                items: expression.elements.map(e => {
-                    if (e === null) {
-                        return { type: 'literal', value: null };
-                    }
-
-                    return parseArgument(e);
-                }),
-            };
+            return parseArrayExpression(expression);
 
         case 'NewExpression':
             return {
@@ -204,6 +193,61 @@ function parseExpression(expression: babel.Expression): Expression {
     throw new ParseError(`Unknown expression type: ${expression.type}`, {
         cause: expression,
     });
+}
+
+function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpression | Literal {
+    const props = expression.properties.map(prop =>
+        parseObjectProperty(prop as babel.ObjectProperty),
+    );
+
+    if (
+        props.every(
+            prop =>
+                prop.value.type === 'literal' &&
+                (prop.key.type === 'ident' || prop.key.type === 'literal'),
+        )
+    ) {
+        const value: Record<string, unknown> = {};
+        for (const prop of props) {
+            if (prop.key.type === 'ident') {
+                value[prop.key.name] = (prop.value as Literal).value;
+            } else {
+                value[(prop.key as Literal).value as string] = (prop.value as Literal).value;
+            }
+        }
+
+        return {
+            type: 'literal',
+            value,
+        };
+    }
+
+    return {
+        type: 'object',
+        props,
+    };
+}
+
+function parseArrayExpression(expression: babel.ArrayExpression): ArrayExpression | Literal {
+    const items = expression.elements.map<Expression>(e => {
+        if (e === null) {
+            return { type: 'literal', value: null };
+        }
+
+        return parseArgument(e);
+    });
+
+    if (items.every(item => item.type === 'literal')) {
+        return {
+            type: 'literal',
+            value: items.map(item => item.value),
+        };
+    }
+
+    return {
+        type: 'array',
+        items,
+    };
 }
 
 function parseLeftValue(left: babel.LVal): Assignment['left'] {

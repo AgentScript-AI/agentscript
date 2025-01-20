@@ -403,11 +403,6 @@ test('array.push()', async () => {
                     completedFrame({
                         trace: '0:0:0',
                         value: [1, 2, 3, 4],
-                        children: [
-                            completedFrame({ trace: '0:0:0:0', value: 1 }),
-                            completedFrame({ trace: '0:0:0:1', value: 2 }),
-                            completedFrame({ trace: '0:0:0:2', value: 3 }),
-                        ],
                     }),
                 ],
             }),
@@ -459,11 +454,6 @@ test('more than two arguments are turned into a single arg', async () => {
                     completedFrame({
                         trace: '0:0:0',
                         value: { a: 1, b: 2, c: 3 },
-                        children: [
-                            completedFrame({ trace: '0:0:0:0', value: 1 }),
-                            completedFrame({ trace: '0:0:0:1', value: 2 }),
-                            completedFrame({ trace: '0:0:0:2', value: 3 }),
-                        ],
                     }),
                 ],
             }),
@@ -507,10 +497,6 @@ test('explicit single arg', async () => {
                     completedFrame({
                         trace: '0:0:0',
                         value: { a: 1, b: 2 },
-                        children: [
-                            completedFrame({ trace: '0:0:0:0', value: 1 }),
-                            completedFrame({ trace: '0:0:0:1', value: 2 }),
-                        ],
                     }),
                 ],
             }),
