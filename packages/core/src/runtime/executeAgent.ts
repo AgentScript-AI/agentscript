@@ -27,6 +27,7 @@ import type {
     ObjectExpression,
     OperatorExpression,
     ReturnStatement,
+    TemplateLiteral,
 } from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
@@ -300,6 +301,9 @@ async function runExpression(
 
         case 'new':
             return await runNewExpression(agent, controller, closure, block, frame, expression);
+
+        case 'template':
+            return await runTemplateLiteral(agent, controller, closure, block, frame, expression);
 
         default:
             throw new RuntimeError(
@@ -757,6 +761,43 @@ async function runNewExpression(
     }
 
     return updateFrame(frame, args);
+}
+
+async function runTemplateLiteral(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    block: StackFrame,
+    frame: StackFrame,
+    expression: TemplateLiteral,
+) {
+    let result = '';
+    let frameIndex = 0;
+
+    for (const part of expression.parts) {
+        if (typeof part === 'string') {
+            result += part;
+        } else {
+            const partFrame = getFrame(frame, frameIndex++);
+            const partStatus = await runExpression(
+                agent,
+                controller,
+                closure,
+                block,
+                partFrame,
+                part,
+            );
+
+            if (partStatus !== 'finished') {
+                return updateFrame(frame, partStatus);
+            }
+
+            result += String(partFrame.value);
+        }
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'finished');
 }
 
 async function runExpressionArray(

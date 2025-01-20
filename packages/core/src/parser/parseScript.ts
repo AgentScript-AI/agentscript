@@ -12,6 +12,7 @@ import type {
     ObjectProperty,
     OperatorExpression,
     Script,
+    TemplateLiteral,
 } from './astTypes.js';
 
 /**
@@ -160,6 +161,9 @@ function parseExpression(expression: babel.Expression): Expression {
                 args: expression.arguments.map(parseArgument),
             };
 
+        case 'TemplateLiteral':
+            return parseTemplateLiteral(expression);
+
         case 'BinaryExpression':
         case 'LogicalExpression':
             return {
@@ -247,6 +251,29 @@ function parseArrayExpression(expression: babel.ArrayExpression): ArrayExpressio
     return {
         type: 'array',
         items,
+    };
+}
+
+function parseTemplateLiteral(expression: babel.TemplateLiteral): TemplateLiteral {
+    const parts: TemplateLiteral['parts'] = [];
+
+    for (let i = 0; i < expression.quasis.length + expression.expressions.length; i++) {
+        if (i % 2 === 0) {
+            const part = expression.quasis[i / 2].value.raw;
+            if (!part) {
+                continue;
+            }
+
+            parts.push(part);
+        } else {
+            const expr = expression.expressions[Math.floor(i / 2)];
+            parts.push(parseExpression(expr as babel.Expression));
+        }
+    }
+
+    return {
+        type: 'template',
+        parts,
     };
 }
 

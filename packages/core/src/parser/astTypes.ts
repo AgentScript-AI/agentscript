@@ -257,6 +257,20 @@ export interface ArrowFunctionExpression extends AstNodeBase {
 }
 
 /**
+ * Template literal expression.
+ */
+export interface TemplateLiteral extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'template';
+    /**
+     * Parts of the template literal.
+     */
+    parts: (Expression | string)[];
+}
+
+/**
  * Expression.
  */
 export type Expression =
@@ -269,7 +283,8 @@ export type Expression =
     | ArrayExpression
     | NewExpression
     | OperatorExpression
-    | ArrowFunctionExpression;
+    | ArrowFunctionExpression
+    | TemplateLiteral;
 
 /**
  * Script statement.
