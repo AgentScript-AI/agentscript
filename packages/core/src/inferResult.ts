@@ -11,7 +11,7 @@ export type InferResultParams<T extends Schema> = {
     /**
      * Language model to use.
      */
-    llm: LanguageModel;
+    model: LanguageModel;
 
     /**
      * Prompt to infer the result.
@@ -50,7 +50,7 @@ export async function inferResult<T extends Schema>(params: InferResultParams<T>
         params.prompt,
     ].join('\n');
 
-    const response = await params.llm.invoke({
+    const response = await params.model.invoke({
         systemPrompt,
         messages: [{ role: 'user', content: params.prompt }],
     });

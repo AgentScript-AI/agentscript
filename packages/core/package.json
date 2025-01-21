@@ -23,6 +23,7 @@
         "@babel/parser": "^7.26.5",
         "@nzyme/crypto-utils": "^0.4.0",
         "@nzyme/ioc": "^0.4.0",
+        "@nzyme/markdown": "^0.4.0",
         "@nzyme/types": "^0.4.0",
         "@nzyme/utils": "^0.4.0",
         "debug": "^4.4.0",

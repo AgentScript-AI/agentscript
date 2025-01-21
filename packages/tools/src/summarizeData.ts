@@ -10,9 +10,9 @@ import { getCurrentDatePrompt } from '@agentscript-ai/utils';
 export const summarizeData = defineService({
     name: 'summarizeData',
     deps: {
-        llm: LanguageModel,
+        model: LanguageModel,
     },
-    setup({ llm }) {
+    setup({ model }) {
         return defineTool({
             description: 'Summarize any data',
             input: s.object({
@@ -30,7 +30,7 @@ export const summarizeData = defineService({
             }),
             output: s.string(),
             async handler({ input: { data, prompt } }) {
-                const result = await llm.invoke({
+                const result = await model.invoke({
                     systemPrompt: [
                         `Your task is to summarize the following data based on the user prompt:`,
                         JSON.stringify(data),

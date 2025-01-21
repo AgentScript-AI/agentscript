@@ -303,7 +303,7 @@ export interface Script {
     /**
      * Code of the script.
      */
-    code?: string;
+    code: string;
     /**
      * AST of the script.
      */

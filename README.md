@@ -56,7 +56,7 @@ You can see full example [here](https://github.com/AgentScript-AI/examples/tree/
 
 ```typescript
 // Configure the language model
-const llm = AnthropicModel({
+const model = AnthropicModel({
     model: 'claude-3-5-sonnet-latest',
     apiKey: process.env.ANTHROPIC_API_KEY,
 });
@@ -71,10 +71,10 @@ const tools = {
     // Needed for date calculation
     addToDate,
     // Turns data into text
-    summarizeData: summarizeData({ llm }),
+    summarizeData: summarizeData({ model }),
     // The real deal
     linear: {
-        searchIssues: searchIssues({ llm, linear }),
+        searchIssues: searchIssues({ model, linear }),
     },
 };
 
@@ -88,7 +88,7 @@ const output = s.string();
 const agent = await inferAgent({
     tools,
     output,
-    llm,
+    model,
     prompt,
 });
 ```

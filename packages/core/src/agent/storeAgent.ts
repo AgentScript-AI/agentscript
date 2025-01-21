@@ -1,4 +1,4 @@
-import type { Agent, AgentSerialized } from './agentTypes.js';
+import type { Agent, AgentSerialized, AgentState, AgentStateSerialized } from './agentTypes.js';
 import type { HeapSerializer } from '../heap/createHeapSerializer.js';
 import { createHeapSerializer } from '../heap/createHeapSerializer.js';
 import type { StackFrame, StackFrameSerialized } from '../runtime/runtimeTypes.js';
@@ -10,17 +10,25 @@ import type { StackFrame, StackFrameSerialized } from '../runtime/runtimeTypes.j
  */
 export function storeAgent(agent: Agent): AgentSerialized {
     const serializer = createHeapSerializer();
-    const root = serializeFrame(agent.root, serializer);
-    const output = agent.output !== undefined ? serializer.push(agent.output) : undefined;
+
+    const state = serializeState(agent, serializer);
+    const chain = agent.chain?.map(state => serializeState(state, serializer));
 
     return {
         id: agent.id,
         runtime: agent.runtime,
-        script: agent.script,
-        plan: agent.plan,
         heap: serializer.heap,
-        root,
-        output,
+        chain,
+        ...state,
+    };
+}
+
+function serializeState(state: AgentState, heap: HeapSerializer): AgentStateSerialized {
+    return {
+        root: serializeFrame(state.root, heap),
+        script: state.script,
+        plan: state.plan,
+        output: state.output !== undefined ? heap.push(state.output) : undefined,
     };
 }
 

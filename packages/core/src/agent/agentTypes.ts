@@ -24,10 +24,6 @@ export type Agent<
     TOutput extends AgentOutputBase = AgentOutputBase,
 > = {
     /**
-     * Definition of the agent.
-     */
-    readonly def: AgentDefinition<TTools, TInput, TOutput>;
-    /**
      * ID of the agent.
      */
     readonly id: string;
@@ -36,6 +32,24 @@ export type Agent<
      */
     readonly runtime: AgentRuntime;
     /**
+     * Definition of the agent.
+     */
+    readonly def: AgentDefinition<TTools, TInput, TOutput>;
+    /**
+     * Chain of agents.
+     */
+    readonly chain?: AgentState[];
+} & AgentState<TOutput>;
+
+/**
+ * Agent state.
+ */
+export type AgentState<TOutput extends AgentOutputBase = AgentOutputBase> = {
+    /**
+     * Prompt used to create the agent.
+     */
+    readonly prompt?: string;
+    /**
      * AgentScript script to execute.
      */
     readonly script: Script;
@@ -43,6 +57,7 @@ export type Agent<
      * Plan for the agent.
      */
     readonly plan?: string;
+
     /**
      * Root frame of the agent execution stack.
      * Execution progress is stored here.
@@ -87,6 +102,14 @@ export type AgentRuntime = {
 };
 
 /**
+ * Agent for a given definition.
+ */
+export type AgentFor<TDef extends AgentDefinition> =
+    TDef extends AgentDefinition<infer TTools, infer TInput, infer TOutput>
+        ? Agent<TTools, TInput, TOutput>
+        : never;
+
+/**
  * Serialized agent.
  */
 export type AgentSerialized = {
@@ -99,6 +122,20 @@ export type AgentSerialized = {
      */
     runtime: AgentRuntime;
     /**
+     * Agent heap. Holds all the values that are serialized.
+     */
+    heap: Heap;
+    /**
+     * Chain of previous agents.
+     */
+    chain?: AgentStateSerialized[];
+} & AgentStateSerialized;
+
+/**
+ * Serialized agent state.
+ */
+export type AgentStateSerialized = {
+    /**
      * Agent script.
      */
     script: Script;
@@ -106,10 +143,6 @@ export type AgentSerialized = {
      * Agent plan.
      */
     plan?: string;
-    /**
-     * Agent heap. Holds all the values that are serialized.
-     */
-    heap: Heap;
     /**
      * Root frame.
      */

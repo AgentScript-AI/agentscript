@@ -54,6 +54,7 @@ function renderTypeInternal(
         case s.string:
             return wrapType(schema, 'string', skipUndefined);
         case s.number:
+        case s.integer:
             return wrapType(schema, 'number', skipUndefined);
         case s.boolean:
             return wrapType(schema, 'boolean', skipUndefined);

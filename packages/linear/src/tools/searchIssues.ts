@@ -18,10 +18,10 @@ const debug = createDebug('agentscript:linear:searchIssues');
 export const searchIssues = defineService({
     name: 'LinearSearchIssues',
     deps: {
-        llm: LanguageModel,
+        model: LanguageModel,
         linear: LinearClient,
     },
-    setup({ llm, linear }) {
+    setup({ model, linear }) {
         return defineTool({
             description: [
                 'Search for issues using a natural language query.',
@@ -40,7 +40,7 @@ export const searchIssues = defineService({
                 });
 
                 const issuesFilter = await inferResult({
-                    llm,
+                    model,
                     systemPrompt: `Create a filter for issues based on the given query.`,
                     prompt: JSON.stringify(query),
                     result: issueFilterSchema,

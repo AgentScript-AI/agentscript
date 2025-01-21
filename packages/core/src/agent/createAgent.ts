@@ -32,6 +32,10 @@ export type CreateAgentOptions<
      * Plan for the agent.
      */
     readonly plan?: string;
+    /**
+     * Prompt used to create the agent.
+     */
+    readonly prompt?: string;
 };
 
 /**
@@ -43,9 +47,9 @@ export function createAgent<
     TTools extends AgentTools,
     TInput extends AgentInputBase = EmptyObject,
     TOutput extends AgentOutputBase = undefined,
->(options: CreateAgentOptions<TTools, TInput, TOutput>): Agent<TTools, TInput, TOutput> {
+>(options: CreateAgentOptions<TTools, TInput, TOutput>) {
     return createAgentInternal({
         ...options,
         runtime: renderRuntime(options),
-    });
+    }) as Agent<TTools, TInput, TOutput>;
 }

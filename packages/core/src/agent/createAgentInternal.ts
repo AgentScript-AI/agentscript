@@ -1,7 +1,6 @@
-import type { EmptyObject } from '@nzyme/types';
 import { v7 as uuid } from 'uuid';
 
-import type { Agent, AgentRuntime } from './agentTypes.js';
+import type { Agent, AgentRuntime, AgentState } from './agentTypes.js';
 import type { CreateAgentOptions } from './createAgent.js';
 import type { AgentInputBase, AgentOutputBase, AgentTools } from './defineAgent.js';
 import type { StackFrame } from '../runtime/runtimeTypes.js';
@@ -9,15 +8,20 @@ import type { StackFrame } from '../runtime/runtimeTypes.js';
 /**
  * Parameters for {@link createAgentInternal}.
  */
-export type CreateAgentInternalOptions<
-    TTools extends AgentTools,
-    TInput extends AgentInputBase,
-    TOutput extends AgentOutputBase,
-> = CreateAgentOptions<TTools, TInput, TOutput> & {
+export type CreateAgentInternalOptions = CreateAgentOptions<
+    AgentTools,
+    AgentInputBase,
+    AgentOutputBase
+> & {
     /**
      * Runtime of the agent.
      */
     readonly runtime: AgentRuntime;
+
+    /**
+     * Chain of agents.
+     */
+    readonly chain?: AgentState[];
 };
 
 /**
@@ -25,11 +29,7 @@ export type CreateAgentInternalOptions<
  * @param options - Agent options.
  * @returns New agent.
  */
-export function createAgentInternal<
-    TTools extends AgentTools,
-    TInput extends AgentInputBase = EmptyObject,
-    TOutput extends AgentOutputBase = undefined,
->(options: CreateAgentInternalOptions<TTools, TInput, TOutput>): Agent<TTools, TInput, TOutput> {
+export function createAgentInternal(options: CreateAgentInternalOptions): Agent {
     const id = options.id ?? uuid();
     const startedAt = new Date();
     const root: StackFrame = {
@@ -51,5 +51,6 @@ export function createAgentInternal<
         status: 'running',
         root,
         runtime: options.runtime,
+        chain: options.chain,
     };
 }

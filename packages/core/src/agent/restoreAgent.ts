@@ -1,13 +1,13 @@
 import type { LiteralPick } from '@nzyme/types';
 
-import type { Agent, AgentSerialized } from './agentTypes.js';
+import type { Agent, AgentSerialized, AgentState, AgentStateSerialized } from './agentTypes.js';
 import type {
     AgentDefinition,
     AgentInputBase,
-    AgentOutput,
     AgentOutputBase,
     AgentTools,
 } from './defineAgent.js';
+import { rechainAgent } from './rechainAgent.js';
 import type { HeapDeserializer } from '../heap/createHeapDeserializer.js';
 import { createHeapDeserializer } from '../heap/createHeapDeserializer.js';
 import type {
@@ -18,7 +18,7 @@ import type {
 
 /**
  * Deserialize an agent.
- * @param state - Serialized agent state.
+ * @param agentSerialized - Serialized agent state.
  * @param agentDefinition - Agent definition.
  * @returns Deserialized agent.
  */
@@ -26,22 +26,35 @@ export function restoreAgent<
     TTools extends AgentTools,
     TInput extends AgentInputBase,
     TOutput extends AgentOutputBase,
->(state: AgentSerialized, agentDefinition: AgentDefinition<TTools, TInput, TOutput>) {
-    const heap = createHeapDeserializer(state.heap);
-    const root = deserializeFrame(state.root, heap, '0');
+>(agentSerialized: AgentSerialized, agentDefinition: AgentDefinition<TTools, TInput, TOutput>) {
+    const heap = createHeapDeserializer(agentSerialized.heap);
+    const state = deserializeState(agentSerialized, heap);
+    const chain = agentSerialized.chain?.map(state => deserializeState(state, heap));
 
     const agent: Agent = {
-        id: state.id,
+        id: agentSerialized.id,
         def: agentDefinition,
-        runtime: state.runtime,
+        runtime: agentSerialized.runtime,
+        chain,
+        ...state,
+    };
+
+    rechainAgent(agent);
+
+    return agent as Agent<TTools, TInput, TOutput>;
+}
+
+function deserializeState(state: AgentStateSerialized, heap: HeapDeserializer): AgentState {
+    const root = deserializeFrame(state.root, heap, '0');
+    const output = state.output ? heap.get(state.output) : undefined;
+
+    return {
         script: state.script,
         plan: state.plan,
         status: root.status as LiteralPick<StackFrameStatus, 'finished'>,
         root,
-        output: state.output ? (heap.get(state.output) as AgentOutput<TOutput>) : undefined,
+        output,
     };
-
-    return agent as Agent<TTools, TInput, TOutput>;
 }
 
 function deserializeFrame(
