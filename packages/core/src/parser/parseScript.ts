@@ -202,6 +202,14 @@ function parseExpression(expression: babel.Expression): Expression {
                         ? parseStatement(expression.body)
                         : parseExpression(expression.body),
             };
+
+        case 'ConditionalExpression':
+            return {
+                type: 'ternary',
+                if: parseExpression(expression.test),
+                then: parseExpression(expression.consequent),
+                else: parseExpression(expression.alternate),
+            };
     }
 
     throw new ParseError(`Unknown expression type: ${expression.type}`, {

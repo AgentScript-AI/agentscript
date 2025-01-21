@@ -132,3 +132,26 @@ test('if-elseif-else statement', () => {
 
     expect(script).toMatchObject(expected);
 });
+
+test('ternary operator', () => {
+    const code = joinLines([
+        //
+        'a ? b : c',
+    ]);
+
+    const script = parseScript(code);
+
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'ternary',
+                if: { type: 'ident', name: 'a' },
+                then: { type: 'ident', name: 'b' },
+                else: { type: 'ident', name: 'c' },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});

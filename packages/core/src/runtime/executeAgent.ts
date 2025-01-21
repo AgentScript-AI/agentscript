@@ -29,6 +29,7 @@ import type {
     OperatorExpression,
     ReturnStatement,
     TemplateLiteral,
+    TernaryExpression,
 } from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
@@ -306,6 +307,9 @@ async function runExpression(
                 frame,
                 expression,
             );
+
+        case 'ternary':
+            return await runTernaryExpression(agent, controller, closure, block, frame, expression);
 
         case 'object':
             return await runObjectExpression(agent, controller, closure, block, frame, expression);
@@ -782,6 +786,46 @@ async function runOperatorExpression(
             throw new RuntimeError(`Unsupported operator: ${expression.operator as string}`);
     }
 
+    return updateFrame(frame, 'finished');
+}
+
+async function runTernaryExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    block: StackFrame,
+    frame: StackFrame,
+    expression: TernaryExpression,
+) {
+    const conditionFrame = getFrame(frame, 0);
+
+    const conditionStatus = await runExpression(
+        agent,
+        controller,
+        closure,
+        block,
+        conditionFrame,
+        expression.if,
+    );
+    if (conditionStatus !== 'finished') {
+        return updateFrame(frame, conditionStatus);
+    }
+
+    const thenFrame = getFrame(frame, 1);
+    const thenExpression = conditionFrame.value ? expression.then : expression.else;
+    const thenStatus = await runExpression(
+        agent,
+        controller,
+        closure,
+        block,
+        thenFrame,
+        thenExpression,
+    );
+    if (thenStatus !== 'finished') {
+        return updateFrame(frame, thenStatus);
+    }
+
+    frame.value = thenFrame.value;
     return updateFrame(frame, 'finished');
 }
 

@@ -1,6 +1,6 @@
+import type { Agent } from '../../agent/agentTypes.js';
 import type { Expression, FunctionCall, Identifier, Literal } from '../../parser/astTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
-import type { Agent } from '../../agent/agentTypes.js';
 import type { StackFrame } from '../runtimeTypes.js';
 
 const allowedNativeIdentifiers = new Set([
@@ -70,6 +70,9 @@ export function resolveName(agent: Agent, frame: StackFrame, expression: Express
  */
 export function resolveIdentifier(agent: Agent, frame: StackFrame, expression: Identifier) {
     const name = expression.name;
+    if (name === 'undefined') {
+        return undefined;
+    }
 
     while (frame) {
         const variables = frame.variables;

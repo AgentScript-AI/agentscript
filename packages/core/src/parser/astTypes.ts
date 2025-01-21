@@ -293,6 +293,28 @@ export interface TemplateLiteral extends AstNodeBase {
 }
 
 /**
+ * Ternary expression.
+ */
+export interface TernaryExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'ternary';
+    /**
+     * Condition of the ternary expression.
+     */
+    if: Expression;
+    /**
+     * Then part of the ternary expression.
+     */
+    then: Expression;
+    /**
+     * Else part of the ternary expression.
+     */
+    else: Expression;
+}
+
+/**
  * Expression.
  */
 export type Expression =
@@ -306,7 +328,8 @@ export type Expression =
     | NewExpression
     | OperatorExpression
     | ArrowFunctionExpression
-    | TemplateLiteral;
+    | TemplateLiteral
+    | TernaryExpression;
 
 /**
  * Script statement.
