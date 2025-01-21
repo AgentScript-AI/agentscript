@@ -120,6 +120,7 @@ test('assign variable', async () => {
                 children: [completedFrame({ trace: '0:0:0', value: 1 })],
             }),
             completedFrame({
+                value: 2,
                 trace: '0:1',
                 children: [completedFrame({ trace: '0:1:0', value: 2 })],
             }),

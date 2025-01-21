@@ -22,6 +22,7 @@ import type {
     AstNode,
     Expression,
     FunctionCall,
+    IfStatement,
     MemberExpression,
     NewExpression,
     ObjectExpression,
@@ -222,12 +223,52 @@ async function runNode(
         case 'block':
             return await runBlock(agent, controller, closure, frame, node.body);
 
+        case 'if':
+            return await runIf(agent, controller, closure, block, frame, node);
+
         case 'return':
             return await runReturn(agent, controller, closure, block, frame, node);
 
         default:
             return await runExpression(agent, controller, closure, block, frame, node);
     }
+}
+
+async function runIf(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    block: StackFrame,
+    frame: StackFrame,
+    node: IfStatement,
+) {
+    const conditionFrame = getFrame(frame, 0);
+    const conditionStatus = await runExpression(
+        agent,
+        controller,
+        closure,
+        block,
+        conditionFrame,
+        node.if,
+    );
+
+    if (conditionStatus !== 'finished') {
+        return updateFrame(frame, conditionStatus);
+    }
+
+    if (conditionFrame.value) {
+        const thenFrame = getFrame(frame, 1);
+        const thenStatus = await runNode(agent, controller, closure, block, thenFrame, node.then);
+        return updateFrame(frame, thenStatus);
+    }
+
+    if (node.else) {
+        const elseFrame = getFrame(frame, 1);
+        const elseStatus = await runNode(agent, controller, closure, block, elseFrame, node.else);
+        return updateFrame(frame, elseStatus);
+    }
+
+    return updateFrame(frame, 'finished');
 }
 
 async function runExpression(
@@ -290,6 +331,7 @@ async function runExpression(
 
             if (expression.left.type === 'ident') {
                 setVariable(block, expression.left.name, rightFrame.value);
+                frame.value = rightFrame.value;
                 return updateFrame(frame, 'finished');
             }
 
@@ -478,8 +520,8 @@ async function runArrayMap(
     expr: FunctionCall,
     thisArg: unknown[],
 ) {
-    const fn = expr.args[0];
-    if (expr.args.length !== 1 || fn.type !== 'arrowfn') {
+    const fn = expr.args?.[0];
+    if (expr.args?.length !== 1 || fn?.type !== 'arrowfn') {
         throw new RuntimeError(`Array.prototype.map called with invalid arguments`);
     }
 
@@ -524,7 +566,14 @@ async function runFunctionCustom(
     expr: FunctionCall,
     tool: ToolDefinition,
 ): Promise<StackFrameStatus> {
-    const args = await runExpressionArray(agent, controller, closure, block, frame, expr.args);
+    const args = await runExpressionArray(
+        agent,
+        controller,
+        closure,
+        block,
+        frame,
+        expr.args ?? [],
+    );
     if (!Array.isArray(args)) {
         return updateFrame(frame, args);
     }
@@ -596,7 +645,14 @@ async function runFunctionNative(
         throw new RuntimeError(`Function ${func.name} is not allowed`);
     }
 
-    const args = await runExpressionArray(agent, controller, closure, block, frame, call.args);
+    const args = await runExpressionArray(
+        agent,
+        controller,
+        closure,
+        block,
+        frame,
+        call.args ?? [],
+    );
     if (!Array.isArray(args)) {
         return updateFrame(frame, args);
     }
@@ -752,7 +808,7 @@ async function runNewExpression(
         closure,
         block,
         frame,
-        expression.args,
+        expression.args ?? [],
     );
 
     if (Array.isArray(args)) {

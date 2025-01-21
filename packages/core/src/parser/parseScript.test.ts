@@ -48,7 +48,7 @@ test('call function', () => {
             {
                 type: 'call',
                 func: { type: 'ident', name: 'foo' },
-                args: [],
+                args: undefined,
             },
         ],
     };
@@ -115,7 +115,7 @@ test('call member function', () => {
                     obj: { type: 'ident', name: 'foo' },
                     prop: { type: 'ident', name: 'bar' },
                 },
-                args: [],
+                args: undefined,
             },
         ],
     };
@@ -297,7 +297,7 @@ test('create date', () => {
                 value: {
                     type: 'new',
                     func: { type: 'ident', name: 'Date' },
-                    args: [],
+                    args: undefined,
                 },
             },
         ],

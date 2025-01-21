@@ -523,6 +523,7 @@ test('agent output', async () => {
         children: [
             completedFrame({
                 trace: '0:0',
+                value: 3,
                 children: [
                     completedFrame({
                         trace: '0:0:0',

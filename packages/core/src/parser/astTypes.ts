@@ -59,6 +59,28 @@ export interface ReturnStatement extends AstNodeBase {
 }
 
 /**
+ * If statement.
+ */
+export interface IfStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'if';
+    /**
+     * Condition of the if statement.
+     */
+    if: Expression;
+    /**
+     * Body of the if statement.
+     */
+    then: AstNode;
+    /**
+     * Else statement.
+     */
+    else?: AstNode;
+}
+
+/**
  * Function call expression.
  */
 export interface FunctionCall extends AstNodeBase {
@@ -73,7 +95,7 @@ export interface FunctionCall extends AstNodeBase {
     /**
      * Arguments to pass to the function.
      */
-    args: Expression[];
+    args?: Expression[];
 }
 
 /**
@@ -91,7 +113,7 @@ export interface NewExpression extends AstNodeBase {
     /**
      * Arguments to pass to the constructor.
      */
-    args: Expression[];
+    args?: Expression[];
 }
 
 /**
@@ -289,7 +311,7 @@ export type Expression =
 /**
  * Script statement.
  */
-export type Statement = VariableDeclaration | BlockStatement | ReturnStatement;
+export type Statement = VariableDeclaration | BlockStatement | ReturnStatement | IfStatement;
 
 /**
  * AST node.

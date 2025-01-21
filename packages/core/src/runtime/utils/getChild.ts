@@ -28,10 +28,10 @@ export function getChild(node: AstNode, index: number): AstNode | undefined {
             return node.props[index]?.value;
 
         case 'call':
-            return node.args[index];
+            return node.args?.[index];
 
         case 'new':
-            return node.args[index];
+            return node.args?.[index];
 
         default:
             return undefined;

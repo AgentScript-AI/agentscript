@@ -84,7 +84,7 @@ test('template literal with function call', () => {
                             obj: { type: 'ident', name: 'name' },
                             prop: { type: 'ident', name: 'toUpperCase' },
                         },
-                        args: [],
+                        args: undefined,
                     },
                     '!',
                 ],

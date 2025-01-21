@@ -72,6 +72,16 @@ function parseStatement(statement: babel.Statement): AstNode {
             break;
         }
 
+        case 'IfStatement': {
+            node = {
+                type: 'if',
+                if: parseExpression(statement.test),
+                then: parseStatement(statement.consequent),
+                else: statement.alternate ? parseStatement(statement.alternate) : undefined,
+            };
+            break;
+        }
+
         case 'ReturnStatement': {
             node = {
                 type: 'return',
@@ -137,7 +147,7 @@ function parseExpression(expression: babel.Expression): Expression {
             return {
                 type: 'call',
                 func: parseExpression(expression.callee as babel.Expression),
-                args: expression.arguments.map(parseArgument),
+                args: parseArguments(expression.arguments),
             };
         }
 
@@ -158,7 +168,7 @@ function parseExpression(expression: babel.Expression): Expression {
             return {
                 type: 'new',
                 func: parseExpression(expression.callee as babel.Expression),
-                args: expression.arguments.map(parseArgument),
+                args: parseArguments(expression.arguments),
             };
 
         case 'TemplateLiteral':
@@ -304,6 +314,18 @@ function parseObjectProperty(property: babel.ObjectProperty): ObjectProperty {
         key: parseExpression(property.key as babel.Expression),
         value: parseExpression(property.value as babel.Expression),
     };
+}
+
+type Argument = babel.Expression | babel.SpreadElement | babel.ArgumentPlaceholder;
+
+function parseArguments(args: Argument[]) {
+    const result = args.map(arg => parseArgument(arg));
+
+    if (result.length === 0) {
+        return undefined;
+    }
+
+    return result;
 }
 
 function parseArgument(
