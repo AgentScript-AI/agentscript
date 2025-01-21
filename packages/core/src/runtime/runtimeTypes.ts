@@ -57,46 +57,51 @@ export interface StackFrame {
 }
 
 /**
+ * Serialized stack frame status.
+ */
+export type StackFrameStatusSerialized = 'R' | 'F' | 'E' | 'A';
+
+/**
  * Serialized stack frame.
  */
 export interface StackFrameSerialized {
     /**
      * Status of the frame.
      */
-    status: StackFrameStatus;
+    s: StackFrameStatusSerialized;
     /**
      * Started at.
      */
-    startedAt: number;
+    t: number;
     /**
      * Updated at.
      */
-    updatedAt: number;
+    u: number;
     /**
      * Variables.
      * Refers to the index of the variables in the heap.
      */
-    variables?: number;
+    vr?: number;
     /**
      * Error, if any.
      */
-    error?: string;
+    err?: string;
     /**
      * Value, ie the result of the function.
      * Refers to the index of the value in the heap.
      */
-    value?: number;
+    v?: number;
     /**
      * State, ie the state of the tool.
      * Refers to the index of the state in the heap.
      */
-    state?: number;
+    st?: number;
     /**
      * Events for the tool.
      */
-    events?: ToolEventSerialized[];
+    ev?: ToolEventSerialized[];
     /**
      * Children frames.
      */
-    children?: StackFrameSerialized[];
+    c?: StackFrameSerialized[];
 }

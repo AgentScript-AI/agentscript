@@ -28,6 +28,10 @@ export type Agent<
      */
     readonly id: string;
     /**
+     * Timestamp of the agent creation.
+     */
+    readonly createdAt: Date;
+    /**
      * Agent runtime.
      */
     readonly runtime: AgentRuntime;
@@ -121,6 +125,10 @@ export type AgentSerialized = {
      * Runtime of the agent.
      */
     runtime: AgentRuntime;
+    /**
+     * Timestamp of the agent creation.
+     */
+    createdAt: number;
     /**
      * Agent heap. Holds all the values that are serialized.
      */

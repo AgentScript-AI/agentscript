@@ -14,6 +14,7 @@ import type {
     StackFrame,
     StackFrameSerialized,
     StackFrameStatus,
+    StackFrameStatusSerialized,
 } from '../runtime/runtimeTypes.js';
 
 /**
@@ -28,13 +29,15 @@ export function restoreAgent<
     TOutput extends AgentOutputBase,
 >(agentSerialized: AgentSerialized, agentDefinition: AgentDefinition<TTools, TInput, TOutput>) {
     const heap = createHeapDeserializer(agentSerialized.heap);
-    const state = deserializeState(agentSerialized, heap);
-    const chain = agentSerialized.chain?.map(state => deserializeState(state, heap));
+    const createdAt = agentSerialized.createdAt;
+    const state = deserializeState(agentSerialized, heap, createdAt);
+    const chain = agentSerialized.chain?.map(state => deserializeState(state, heap, createdAt));
 
     const agent: Agent = {
         id: agentSerialized.id,
         def: agentDefinition,
         runtime: agentSerialized.runtime,
+        createdAt: new Date(createdAt),
         chain,
         ...state,
     };
@@ -44,8 +47,12 @@ export function restoreAgent<
     return agent as Agent<TTools, TInput, TOutput>;
 }
 
-function deserializeState(state: AgentStateSerialized, heap: HeapDeserializer): AgentState {
-    const root = deserializeFrame(state.root, heap, '0');
+function deserializeState(
+    state: AgentStateSerialized,
+    heap: HeapDeserializer,
+    timestamp: number,
+): AgentState {
+    const root = deserializeFrame(state.root, heap, '0', timestamp);
     const output = state.output ? heap.get(state.output) : undefined;
 
     return {
@@ -61,34 +68,48 @@ function deserializeFrame(
     frameSerialized: StackFrameSerialized,
     heap: HeapDeserializer,
     trace: string,
+    timestamp: number,
 ): StackFrame {
     const frame: StackFrame = {
         trace,
-        status: frameSerialized.status,
-        startedAt: new Date(frameSerialized.startedAt),
-        updatedAt: new Date(frameSerialized.updatedAt),
+        status: deserializeStatus(frameSerialized.s),
+        startedAt: new Date(frameSerialized.t + timestamp),
+        updatedAt: new Date(frameSerialized.u + timestamp),
         variables:
-            frameSerialized.variables !== undefined
-                ? (heap.get(frameSerialized.variables) as Record<string, unknown>)
+            frameSerialized.vr !== undefined
+                ? (heap.get(frameSerialized.vr) as Record<string, unknown>)
                 : undefined,
-        error: frameSerialized.error,
-        value: frameSerialized.value !== undefined ? heap.get(frameSerialized.value) : undefined,
-        state: frameSerialized.state !== undefined ? heap.get(frameSerialized.state) : undefined,
-        events: frameSerialized.events?.map(event => ({
-            timestamp: new Date(event.timestamp),
+        error: frameSerialized.err,
+        value: frameSerialized.v !== undefined ? heap.get(frameSerialized.v) : undefined,
+        state: frameSerialized.st !== undefined ? heap.get(frameSerialized.st) : undefined,
+        events: frameSerialized.ev?.map(event => ({
+            timestamp: new Date(event.timestamp + timestamp),
             payload: heap.get(event.payload),
             processed: event.processed,
         })),
-        children: frameSerialized.children?.map((child, index) =>
-            deserializeFrame(child, heap, `${trace}:${index}`),
+        children: frameSerialized.c?.map((child, index) =>
+            deserializeFrame(child, heap, `${trace}:${index}`, timestamp),
         ),
     };
 
-    frame.children = frameSerialized.children?.map((child, index) => {
-        const childFrame = deserializeFrame(child, heap, `${trace}:${index}`);
+    frame.children = frameSerialized.c?.map((child, index) => {
+        const childFrame = deserializeFrame(child, heap, `${trace}:${index}`, timestamp);
         childFrame.parent = frame;
         return childFrame;
     });
 
     return frame;
+}
+
+function deserializeStatus(status: StackFrameStatusSerialized): StackFrameStatus {
+    switch (status) {
+        case 'R':
+            return 'running';
+        case 'F':
+            return 'finished';
+        case 'E':
+            return 'error';
+        case 'A':
+            return 'awaiting';
+    }
 }

@@ -22,24 +22,24 @@ export type HeapPrimitive = boolean | string | number | null;
 /**
  * Array serialized.
  */
-export type HeapArray = ['arr', ...values: number[]];
+export type HeapArray = ['a', ...values: number[]];
 /**
  * Object serialized.
  */
-export type HeapObject = Record<string, number>;
+export type HeapObject = ['o', ...values: (string | number)[]];
 /**
  * BigInt serialized.
  */
-export type HeapBigInt = ['bint', value: string];
+export type HeapBigInt = ['bi', value: string];
 /**
  * Date serialized.
  */
-export type HeapDate = ['date', value: string];
+export type HeapDate = ['d', value: string];
 /**
  * Symbol serialized.
  */
-export type HeapSymbol = ['sym', value: string | undefined] | ['sym'];
+export type HeapSymbol = ['sm', value: string | undefined] | ['sm'];
 /**
  * Set serialized.
  */
-export type HeapSet = ['set', ...values: number[]];
+export type HeapSet = ['st', ...values: number[]];

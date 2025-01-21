@@ -43,40 +43,40 @@ export function createHeapSerializer() {
                 heap.push(value);
                 break;
             case 'bigint':
-                heap.push(['bint', value.toString()]);
+                heap.push(['bi', value.toString()]);
                 break;
             case 'symbol':
                 if (value.description) {
-                    heap.push(['sym', value.description]);
+                    heap.push(['sm', value.description]);
                 } else {
-                    heap.push(['sym']);
+                    heap.push(['sm']);
                 }
 
                 break;
             case 'object': {
                 if (Array.isArray(value)) {
-                    const serialized: HeapArray = ['arr'];
+                    const serialized: HeapArray = ['a'];
                     // push the array to the heap first for potential recursion
                     heap.push(serialized);
                     for (const item of value) {
                         serialized.push(push(item));
                     }
                 } else if (value instanceof Set) {
-                    const serialized: HeapSet = ['set'];
+                    const serialized: HeapSet = ['st'];
                     // push the set to the heap first for potential recursion
                     heap.push(serialized);
                     for (const item of value) {
                         serialized.push(push(item));
                     }
                 } else if (value instanceof Date) {
-                    heap.push(['date', value.toISOString()]);
+                    heap.push(['d', value.toISOString()]);
                 } else {
-                    const obj: HeapObject = {};
+                    const obj: HeapObject = ['o'];
                     // push the object to the heap first for potential recursion
                     heap.push(obj);
 
                     for (const [key, val] of Object.entries(value)) {
-                        obj[key] = push(val);
+                        obj.push(key, push(val));
                     }
                 }
 

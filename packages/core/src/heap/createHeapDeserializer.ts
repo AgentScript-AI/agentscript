@@ -25,29 +25,14 @@ export function createHeapDeserializer(heap: Heap) {
 
     function deserialize(index: number) {
         const serialized = heap[index];
-        if (serialized === null) {
-            heapMap.set(index, null);
-            return null;
-        }
 
         if (!Array.isArray(serialized)) {
-            if (typeof serialized === 'object') {
-                const result: Record<string, unknown> = {};
-                // set the result in the heap map for potential recursion
-                heapMap.set(index, result);
-                for (const [key, value] of Object.entries(serialized as Record<string, number>)) {
-                    result[key] = get(value);
-                }
-
-                return result;
-            }
-
             heapMap.set(index, serialized);
             return serialized;
         }
 
         switch (serialized[0]) {
-            case 'arr': {
+            case 'a': {
                 const result: unknown[] = [];
                 // set the result in the heap map for potential recursion
                 heapMap.set(index, result);
@@ -58,7 +43,7 @@ export function createHeapDeserializer(heap: Heap) {
                 return result;
             }
 
-            case 'set': {
+            case 'st': {
                 const result = new Set<unknown>();
                 // set the result in the heap map for potential recursion
                 heapMap.set(index, result);
@@ -68,25 +53,25 @@ export function createHeapDeserializer(heap: Heap) {
                 return result;
             }
 
-            // case 'obj': {
-            //     const result: Record<string, unknown> = {};
-            //     // set the result in the heap map for potential recursion
-            //     heapMap.set(index, result);
-            //     for (const [key, value] of Object.entries(serialized[1])) {
-            //         result[key] = get(value);
-            //     }
-            //     return result;
-            // }
+            case 'o': {
+                const result: Record<string, unknown> = {};
+                // set the result in the heap map for potential recursion
+                heapMap.set(index, result);
+                for (let i = 1; i < serialized.length; i += 2) {
+                    result[serialized[i] as string] = get(serialized[i + 1] as number);
+                }
+                return result;
+            }
 
-            case 'bint': {
+            case 'bi': {
                 return BigInt(serialized[1]);
             }
 
-            case 'date': {
+            case 'd': {
                 return new Date(serialized[1]);
             }
 
-            case 'sym': {
+            case 'sm': {
                 return Symbol(serialized[1]);
             }
         }

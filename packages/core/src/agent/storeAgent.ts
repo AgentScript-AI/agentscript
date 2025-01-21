@@ -1,7 +1,12 @@
 import type { Agent, AgentSerialized, AgentState, AgentStateSerialized } from './agentTypes.js';
 import type { HeapSerializer } from '../heap/createHeapSerializer.js';
 import { createHeapSerializer } from '../heap/createHeapSerializer.js';
-import type { StackFrame, StackFrameSerialized } from '../runtime/runtimeTypes.js';
+import type {
+    StackFrame,
+    StackFrameSerialized,
+    StackFrameStatus,
+    StackFrameStatusSerialized,
+} from '../runtime/runtimeTypes.js';
 
 /**
  * Serialize an agent for storage.
@@ -10,42 +15,65 @@ import type { StackFrame, StackFrameSerialized } from '../runtime/runtimeTypes.j
  */
 export function storeAgent(agent: Agent): AgentSerialized {
     const serializer = createHeapSerializer();
+    const createdAt = agent.createdAt.getTime();
 
-    const state = serializeState(agent, serializer);
-    const chain = agent.chain?.map(state => serializeState(state, serializer));
+    const state = serializeState(agent, serializer, createdAt);
+    const chain = agent.chain?.map(state => serializeState(state, serializer, createdAt));
 
     return {
         id: agent.id,
         runtime: agent.runtime,
         heap: serializer.heap,
         chain,
+        createdAt,
         ...state,
     };
 }
 
-function serializeState(state: AgentState, heap: HeapSerializer): AgentStateSerialized {
+function serializeState(
+    state: AgentState,
+    heap: HeapSerializer,
+    timestamp: number,
+): AgentStateSerialized {
     return {
-        root: serializeFrame(state.root, heap),
+        root: serializeFrame(state.root, heap, timestamp),
         script: state.script,
         plan: state.plan,
         output: state.output !== undefined ? heap.push(state.output) : undefined,
     };
 }
 
-function serializeFrame(frame: StackFrame, heap: HeapSerializer): StackFrameSerialized {
+function serializeFrame(
+    frame: StackFrame,
+    heap: HeapSerializer,
+    timestamp: number,
+): StackFrameSerialized {
     return {
-        status: frame.status,
-        startedAt: frame.startedAt.getTime(),
-        updatedAt: frame.updatedAt.getTime(),
-        variables: frame.variables ? heap.push(frame.variables) : undefined,
-        error: frame.error,
-        value: frame.value !== undefined ? heap.push(frame.value) : undefined,
-        state: frame.state !== undefined ? heap.push(frame.state) : undefined,
-        events: frame.events?.map(event => ({
-            timestamp: event.timestamp.getTime(),
+        s: serializeStatus(frame.status),
+        t: frame.startedAt.getTime() - timestamp,
+        u: frame.updatedAt.getTime() - timestamp,
+        vr: frame.variables ? heap.push(frame.variables) : undefined,
+        err: frame.error,
+        v: frame.value !== undefined ? heap.push(frame.value) : undefined,
+        st: frame.state !== undefined ? heap.push(frame.state) : undefined,
+        ev: frame.events?.map(event => ({
+            timestamp: event.timestamp.getTime() - timestamp,
             payload: heap.push(event.payload),
             processed: event.processed,
         })),
-        children: frame.children?.map(child => serializeFrame(child, heap)),
+        c: frame.children?.map(child => serializeFrame(child, heap, timestamp)),
     };
+}
+
+function serializeStatus(status: StackFrameStatus): StackFrameStatusSerialized {
+    switch (status) {
+        case 'running':
+            return 'R';
+        case 'finished':
+            return 'F';
+        case 'error':
+            return 'E';
+        case 'awaiting':
+            return 'A';
+    }
 }

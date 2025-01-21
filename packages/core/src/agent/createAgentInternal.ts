@@ -50,6 +50,7 @@ export function createAgentInternal(options: CreateAgentInternalOptions): Agent 
         plan: options.plan,
         status: 'running',
         root,
+        createdAt: new Date(),
         runtime: options.runtime,
         chain: options.chain,
     };
