@@ -63,7 +63,7 @@ __metadata:
     "@nzyme/cli": "npm:^0.5.0"
     "@swc-node/register": "npm:^1.10.9"
     "@swc/core": "npm:^1.10.7"
-    "@vitest/coverage-v8": "npm:3.0.1"
+    "@vitest/coverage-v8": "npm:3.0.3"
     del-cli: "npm:^6.0.0"
     dotenv-cli: "npm:^8.0.0"
     nx: "npm:20.3.1"
@@ -4358,9 +4358,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vitest/coverage-v8@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@vitest/coverage-v8@npm:3.0.1"
+"@vitest/coverage-v8@npm:3.0.3":
+  version: 3.0.3
+  resolution: "@vitest/coverage-v8@npm:3.0.3"
   dependencies:
     "@ampproject/remapping": "npm:^2.3.0"
     "@bcoe/v8-coverage": "npm:^1.0.2"
@@ -4375,12 +4375,12 @@ __metadata:
     test-exclude: "npm:^7.0.1"
     tinyrainbow: "npm:^2.0.0"
   peerDependencies:
-    "@vitest/browser": 3.0.1
-    vitest: 3.0.1
+    "@vitest/browser": 3.0.3
+    vitest: 3.0.3
   peerDependenciesMeta:
     "@vitest/browser":
       optional: true
-  checksum: 10c0/931aaf208c3c1c020c669475148ad633e3572622bf3861466179d57a766473b3039199642dd837dce302984fd6d7d90bc9c9a32809b994e4f5a9f099cdcca8b4
+  checksum: 10c0/fb8db1d5781be5d5c3a3d5db5047cae841e80290c015254f79147bcd06bedad4d651fe8a55f01928807a5d7fc88358e86981de06ee5780bc0b24758d8610e405
   languageName: node
   linkType: hard
 
