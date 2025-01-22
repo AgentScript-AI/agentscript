@@ -6852,6 +6852,8 @@ export type Meeting = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the meeting. */
   creator?: Maybe<User>;
+  /** The time at which the meeting is set to end. */
+  endsAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the meeting was hidden. Null if the entity has not been hidden. */
   hiddenAt?: Maybe<Scalars['DateTime']['output']>;
   /** The icon of the meeting. */
@@ -6860,10 +6862,18 @@ export type Meeting = Node & {
   id: Scalars['ID']['output'];
   /** [Internal] The initiative that the meeting is associated with. */
   initiative?: Maybe<Initiative>;
+  /** The location of the meeting. */
+  location?: Maybe<Scalars['String']['output']>;
+  /** The meeting link of the meeting. */
+  meetingLink?: Maybe<Scalars['String']['output']>;
   /** The project that the meeting is associated with. */
   project?: Maybe<Project>;
+  /** Link to a recording of the meeting. */
+  recordingLink?: Maybe<Scalars['String']['output']>;
   /** The order of the item in the resources list. */
   sortOrder: Scalars['Float']['output'];
+  /** The time at which the meeting is set to start. */
+  startsAt?: Maybe<Scalars['DateTime']['output']>;
   /** The meeting title. */
   title: Scalars['String']['output'];
   /** A flag that indicates whether the meeting is in the trash bin. */
