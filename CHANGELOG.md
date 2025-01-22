@@ -1,3 +1,23 @@
+## 0.4.0 (2025-01-22)
+
+### 🚀 Features
+
+- experimental support for chain of agents ([dd1d7d1](https://github.com/AgentScript-AI/agentscript/commit/dd1d7d1))
+- **core:** add support for if, else, else if ([7ac1828](https://github.com/AgentScript-AI/agentscript/commit/7ac1828))
+- **core:** serialization optimizations ([485956b](https://github.com/AgentScript-AI/agentscript/commit/485956b))
+- **core:** ternary operator support ([9c1a6ca](https://github.com/AgentScript-AI/agentscript/commit/9c1a6ca))
+- **runtime:** template literals ([3f7134a](https://github.com/AgentScript-AI/agentscript/commit/3f7134a))
+
+### 🩹 Fixes
+
+- bump package versions ([8ff632c](https://github.com/AgentScript-AI/agentscript/commit/8ff632c))
+- ast literals optimization ([1c122c5](https://github.com/AgentScript-AI/agentscript/commit/1c122c5))
+- **core:** minor fixes and temporary deprecations ([51c1556](https://github.com/AgentScript-AI/agentscript/commit/51c1556))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.3.0 (2025-01-14)
 
 ### 🚀 Features
