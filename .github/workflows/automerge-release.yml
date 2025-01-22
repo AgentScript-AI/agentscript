@@ -3,6 +3,9 @@ on:
   push:
     branches: [release]
 
+permissions:
+  contents: write
+
 jobs:
   merge-branch:
     runs-on: ubuntu-latest

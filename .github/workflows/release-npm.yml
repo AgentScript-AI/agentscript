@@ -1,4 +1,8 @@
 name: Release new version
+
+permissions:
+  contents: write
+
 on:
   workflow_dispatch:
     inputs:
@@ -34,7 +38,8 @@ jobs:
         with:
           node-version: latest
 
-      - run: yarn setup
+      - run: yarn install
+      - run: yarn monorepo
       - run: yarn build
       - run: yarn test
 
