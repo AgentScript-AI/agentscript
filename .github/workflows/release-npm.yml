@@ -54,13 +54,10 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: actions/checkout@v4
-        if: ${{ inputs.dry_run != true }}
-        with:
-          ref: main
-
       - name: Merge release to main
         if: ${{ inputs.dry_run != true }}
         run: |
+          git checkout main
+          git pull
           git merge --no-ff release -m "chore: auto-merge release -> main"
           git push
