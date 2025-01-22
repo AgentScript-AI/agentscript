@@ -13,7 +13,7 @@ __metadata:
     "@agentscript-ai/eslint": "npm:^0.4.0"
     "@agentscript-ai/tsconfig": "npm:^0.4.0"
     "@agentscript-ai/utils": "npm:^0.4.0"
-    "@anthropic-ai/sdk": "npm:^0.33.1"
+    "@anthropic-ai/sdk": "npm:^0.35.0"
     "@nzyme/ioc": "npm:^0.5.0"
     "@nzyme/utils": "npm:^0.5.0"
     "@types/node": "npm:^22.10.7"
@@ -168,9 +168,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@anthropic-ai/sdk@npm:^0.33.1":
-  version: 0.33.1
-  resolution: "@anthropic-ai/sdk@npm:0.33.1"
+"@anthropic-ai/sdk@npm:^0.35.0":
+  version: 0.35.0
+  resolution: "@anthropic-ai/sdk@npm:0.35.0"
   dependencies:
     "@types/node": "npm:^18.11.18"
     "@types/node-fetch": "npm:^2.6.4"
@@ -179,7 +179,7 @@ __metadata:
     form-data-encoder: "npm:1.7.2"
     formdata-node: "npm:^4.3.2"
     node-fetch: "npm:^2.6.7"
-  checksum: 10c0/8f40282d2274f61269f783ac89d4dc8b48e881c37bbb244c664801824a8f672a9e97b367be469f93574d92af6cad75753be13f71133a7a818bd1d4af11fe299c
+  checksum: 10c0/4c7c2452374d684d6573edf00d4f052b847766b22323d204b25eccd7fbe007827704cceb3a2df50dc9c02b5e494b5089138328990e5f7c53143640f72e4fd9ec
   languageName: node
   linkType: hard
 
