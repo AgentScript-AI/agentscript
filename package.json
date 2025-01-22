@@ -13,7 +13,8 @@
         "dev": "yarn setup && turbo run watch",
         "build": "tsc -b ./tsconfig.dev.json",
         "watch": "yarn build --watch --preserveWatchOutput",
-        "upgrade": "yarn up \"@nzyme/*\" && yarn upgrade-interactive",
+        "upgrade": "yarn upgrade:nzyme && yarn upgrade-interactive",
+        "upgrade:nzyme": "yarn up \"@nzyme/*\"",
         "test": "vitest run",
         "coverage": "vitest run --coverage",
         "release": "yarn && yarn clean && yarn monorepo && turbo run codegen && yarn build && yarn test && nx release --yes"

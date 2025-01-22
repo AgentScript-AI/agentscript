@@ -1,0 +1,35 @@
+name: Check commit
+on:
+  push:
+    branches: [main, release]
+jobs:
+  check-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - run: yarn setup
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
+
+      - run: yarn upgrade:nzyme
+
+      - name: Commit changes
+        run: |
+          if git diff --exit-code; then
+            echo "No changes to commit."
+          else
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
+            git commit -a -m "chore: update yarn.lock"
+            git push
+          fi
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test

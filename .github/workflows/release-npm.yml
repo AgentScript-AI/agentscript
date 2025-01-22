@@ -1,0 +1,62 @@
+name: Release new version
+on:
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run the release'
+        required: false
+        type: boolean
+        default: false
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        if: github.ref_name == 'main'
+        with:
+          ref: release
+          fetch-tags: true
+          fetch-depth: 0
+
+      - name: Setup Git
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "Github Actions"
+
+      - name: Merge main to release
+        if: github.ref_name == 'main'
+        id: mergeMain
+        run: |
+          git merge --no-ff origin/main -m "chore: release new version"
+          git push
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: latest
+
+      - run: yarn setup
+      - run: yarn build
+      - run: yarn test
+
+      - run: yarn release
+        if: ${{ inputs.dry_run != true }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: yarn release --dry-run
+        if: ${{ inputs.dry_run }}
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        if: ${{ inputs.dry_run != true }}
+        with:
+          ref: main
+
+      - name: Merge release to main
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git merge --no-ff release -m "chore: auto-merge release -> main"
+          git push
