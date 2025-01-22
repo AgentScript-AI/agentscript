@@ -518,11 +518,19 @@ export type AuthOauthClientWithScope = {
   webhookUrl?: Maybe<Scalars['String']['output']>;
 };
 
+export type AuthOauthClientWithTokenCount = {
+  __typename?: 'AuthOauthClientWithTokenCount';
+  /** The auth OAuth client. */
+  client: AuthOauthClient;
+  /** The count of tokens matching the app, scopes, and actor mode. */
+  tokenCount: Scalars['Float']['output'];
+};
+
 export type AuthOauthClientWithTokens = {
   __typename?: 'AuthOauthClientWithTokens';
   /** The auth OAuth client. */
   client: AuthOauthClient;
-  /** The token matching the app, scope, and actor. */
+  /** The tokens matching the user, app, scopes, and actor mode. */
   tokens: Array<OauthToken>;
 };
 
@@ -1384,6 +1392,8 @@ export type Customer = Node & {
   externalIds: Array<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** The integration that manages the Customer. */
+  integration?: Maybe<Integration>;
   /** The customer's logo URL. */
   logoUrl?: Maybe<Scalars['String']['output']>;
   /** The customer's name. */
@@ -2123,6 +2133,8 @@ export type Cycle = Node & {
   id: Scalars['ID']['output'];
   /** The number of in progress estimation points after each day. */
   inProgressScopeHistory: Array<Scalars['Float']['output']>;
+  /** The cycle inherited from. */
+  inheritedFrom?: Maybe<Cycle>;
   /** The total number of issues in the cycle after each day. */
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the cycle. */
@@ -2526,7 +2538,7 @@ export type Document = Node & {
   icon?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** [Internal] The initiative that the document is associated with. */
+  /** The initiative that the document is associated with. */
   initiative?: Maybe<Initiative>;
   /** The last template that was applied to this document. */
   lastAppliedTemplate?: Maybe<Template>;
@@ -2630,6 +2642,8 @@ export type DocumentContent = Node & {
   initiative?: Maybe<Initiative>;
   /** The issue that the content is associated with. */
   issue?: Maybe<Issue>;
+  /** [ALPHA] The meeting that the content is associated with. */
+  meeting?: Maybe<Meeting>;
   /** The project that the content is associated with. */
   project?: Maybe<Project>;
   /** The project milestone that the content is associated with. */
@@ -2873,7 +2887,7 @@ export type DocumentSearchResult = Node & {
   icon?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** [Internal] The initiative that the document is associated with. */
+  /** The initiative that the document is associated with. */
   initiative?: Maybe<Initiative>;
   /** The last template that was applied to this document. */
   lastAppliedTemplate?: Maybe<Template>;
@@ -4147,6 +4161,8 @@ export type Initiative = Node & {
   id: Scalars['ID']['output'];
   /** [Internal] Settings for all integrations associated with that initiative. */
   integrationsSettings?: Maybe<IntegrationsSettings>;
+  /** [ALPHA] The last initiative update posted for this initiative. */
+  lastUpdate?: Maybe<InitiativeUpdate>;
   /** Links associated with the initiative. */
   links: EntityExternalLinkConnection;
   /** The name of the initiative. */
@@ -5040,6 +5056,8 @@ export type Issue = Node & {
   addedToCycleAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the issue was added to a project. */
   addedToProjectAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the issue was added to a team. */
+  addedToTeamAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The user to whom the issue is assigned to. */
@@ -6276,6 +6294,8 @@ export type IssueSearchResult = Node & {
   addedToCycleAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the issue was added to a project. */
   addedToProjectAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the issue was added to a team. */
+  addedToTeamAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The user to whom the issue is assigned to. */
@@ -6819,6 +6839,56 @@ export type ManualSort = {
   nulls?: InputMaybe<PaginationNulls>;
   /** The order for the individual sort */
   order?: InputMaybe<PaginationSortOrder>;
+};
+
+/** A meeting that can be attached to different entities. */
+export type Meeting = Node & {
+  __typename?: 'Meeting';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The color of the icon. */
+  color?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The user who created the meeting. */
+  creator?: Maybe<User>;
+  /** The time at which the meeting was hidden. Null if the entity has not been hidden. */
+  hiddenAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The icon of the meeting. */
+  icon?: Maybe<Scalars['String']['output']>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] The initiative that the meeting is associated with. */
+  initiative?: Maybe<Initiative>;
+  /** The project that the meeting is associated with. */
+  project?: Maybe<Project>;
+  /** The order of the item in the resources list. */
+  sortOrder: Scalars['Float']['output'];
+  /** The meeting title. */
+  title: Scalars['String']['output'];
+  /** A flag that indicates whether the meeting is in the trash bin. */
+  trashed?: Maybe<Scalars['Boolean']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The user who last updated the meeting. */
+  updatedBy?: Maybe<User>;
+};
+
+export type MeetingConnection = {
+  __typename?: 'MeetingConnection';
+  edges: Array<MeetingEdge>;
+  nodes: Array<Meeting>;
+  pageInfo: PageInfo;
+};
+
+export type MeetingEdge = {
+  __typename?: 'MeetingEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: Meeting;
 };
 
 /** Issue project milestone options. */
@@ -7499,6 +7569,7 @@ export type MutationAttachmentLinkIntercomArgs = {
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   issueId: Scalars['String']['input'];
+  partId?: InputMaybe<Scalars['String']['input']>;
   title?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -10612,8 +10683,6 @@ export type OrganizationInviteCreateInput = {
   email: Scalars['String']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
-  /** The message to send to the invitee. */
-  message?: InputMaybe<Scalars['String']['input']>;
   /** [INTERNAL] Optional metadata about the invite. */
   metadata?: InputMaybe<Scalars['JSONObject']['input']>;
   /** What user role the invite should grant. */
@@ -11031,6 +11100,75 @@ export type Post = Node & {
   user?: Maybe<User>;
 };
 
+/** [Internal] A post related notification. */
+export type PostNotification = Entity & Node & Notification & {
+  __typename?: 'PostNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** Related comment ID. Null if the notification is not related to a comment. */
+  commentId?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** Related parent comment ID. Null if the notification is not related to a comment. */
+  parentCommentId?: Maybe<Scalars['String']['output']>;
+  /** Related post ID. */
+  postId: Scalars['String']['output'];
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** Name of the reaction emoji related to the notification. */
+  reactionEmoji?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
+};
+
 /** Type of Post */
 export const PostType = {
   Summary: 'summary',
@@ -11111,6 +11249,8 @@ export type Project = Node & {
   issues: IssueConnection;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
+  /** The last project update posted for this project. */
+  lastUpdate?: Maybe<ProjectUpdate>;
   /** The project lead. */
   lead?: Maybe<User>;
   /** Users that are members of the project. */
@@ -11571,42 +11711,6 @@ export type ProjectHistoryEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: ProjectHistory;
-};
-
-/** An external link for a project. */
-export type ProjectLink = Node & {
-  __typename?: 'ProjectLink';
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /** The link's label. */
-  label: Scalars['String']['output'];
-  /** The order of the item in the project resources list. */
-  sortOrder: Scalars['Float']['output'];
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-  /** The link's URL. */
-  url: Scalars['String']['output'];
-};
-
-export type ProjectLinkConnection = {
-  __typename?: 'ProjectLinkConnection';
-  edges: Array<ProjectLinkEdge>;
-  nodes: Array<ProjectLink>;
-  pageInfo: PageInfo;
-};
-
-export type ProjectLinkEdge = {
-  __typename?: 'ProjectLinkEdge';
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String']['output'];
-  node: ProjectLink;
 };
 
 /** A milestone for a project. */
@@ -12129,6 +12233,8 @@ export type ProjectSearchResult = Node & {
   issues: IssueConnection;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
+  /** The last project update posted for this project. */
+  lastUpdate?: Maybe<ProjectUpdate>;
   /** The project lead. */
   lead?: Maybe<User>;
   /** Users that are members of the project. */
