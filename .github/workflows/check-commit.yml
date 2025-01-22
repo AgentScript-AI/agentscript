@@ -44,6 +44,18 @@ jobs:
             git push
           fi
 
+      - run: yarn codegen
+      - name: Commit codegen updates
+        run: |
+          if git diff --exit-code; then
+            echo "No changes to commit."
+          else
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
+            git commit -a -m "chore: execute codegen"
+            git push
+          fi
+
       - name: Build
         run: yarn build
 
