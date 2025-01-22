@@ -2,6 +2,10 @@ name: Check commit
 on:
   push:
     branches: [main, release]
+
+permissions:
+  contents: write
+
 jobs:
   check-commit:
     runs-on: ubuntu-latest
@@ -11,13 +15,11 @@ jobs:
         with:
           node-version: latest
 
-      - run: yarn setup
+      - run: yarn install
         env:
           YARN_ENABLE_IMMUTABLE_INSTALLS: false
 
-      - run: yarn upgrade:nzyme
-
-      - name: Commit changes
+      - name: Commit yarn.lock changes
         run: |
           if git diff --exit-code; then
             echo "No changes to commit."
@@ -25,6 +27,20 @@ jobs:
             git config --local user.email "actions@github.com"
             git config --local user.name "Github Actions"
             git commit -a -m "chore: update yarn.lock"
+            git push
+          fi
+
+      - run: yarn monorepo
+      - run: yarn upgrade:nzyme
+
+      - name: Commit nzyme updates
+        run: |
+          if git diff --exit-code; then
+            echo "No changes to commit."
+          else
+            git config --local user.email "actions@github.com"
+            git config --local user.name "Github Actions"
+            git commit -a -m "chore: update nzyme packages"
             git push
           fi
 
