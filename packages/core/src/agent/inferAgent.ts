@@ -30,11 +30,11 @@ export interface InferAgentParams<
     /**
      * Prompt to infer the agent from.
      */
-    prompt: string;
+    prompt: string | string[];
     /**
      * System prompt to use.
      */
-    systemPrompt?: string;
+    systemPrompt?: string | string[];
 }
 
 /**

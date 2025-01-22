@@ -53,6 +53,7 @@ export type ToolOptions<
     state?: TState;
     /**
      * Schema of the event of the tool.
+     * @deprecated Will probably change in the future.
      */
     event?: TEvent;
     /**
@@ -98,6 +99,7 @@ export type ToolDefinition<
     state: TState;
     /**
      * Schema of the event of the tool.
+     * @deprecated Will probably change in the future.
      */
     event: TEvent;
     /**
@@ -170,6 +172,7 @@ export type ToolContext<TInput, TOutput, TState, TEvent> = {
      * Events to be processed.
      * If provided, the tool was interacted with.
      * Otherwise, the tool executed for the first time.
+     * @deprecated Will probably change in the future.
      */
     events: ToolEvent<TEvent>[];
     /**

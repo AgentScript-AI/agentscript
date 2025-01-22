@@ -502,12 +502,18 @@ async function runFunctionCall(
         return await runFunctionCustom(agent, controller, closure, block, frame, expr, func);
     }
 
-    if (func === Array.prototype.map) {
-        if (!Array.isArray(obj)) {
-            throw new RuntimeError(`Array.prototype.map called on non-array`);
-        }
+    switch (func) {
+        case Array.prototype.map:
+            return await runArrayMap(agent, controller, frame, expr, obj);
 
-        return await runArrayMap(agent, controller, frame, expr, obj);
+        case Array.prototype.filter:
+            return await runArrayFilter(agent, controller, frame, expr, obj);
+
+        case Array.prototype.some:
+            return await runArraySome(agent, controller, frame, expr, obj);
+
+        case Array.prototype.every:
+            return await runArrayEvery(agent, controller, frame, expr, obj);
     }
 
     if (typeof func === 'function') {
@@ -522,19 +528,124 @@ async function runArrayMap(
     controller: RuntimeController,
     frame: StackFrame,
     expr: FunctionCall,
-    thisArg: unknown[],
+    arr: unknown,
 ) {
+    const result: unknown[] = [];
+
+    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'map', value => {
+        result.push(value);
+    });
+
+    if (status !== 'finished') {
+        return updateFrame(frame, status);
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'finished');
+}
+
+async function runArrayFilter(
+    agent: Agent,
+    controller: RuntimeController,
+    frame: StackFrame,
+    expr: FunctionCall,
+    arr: unknown,
+) {
+    const result: unknown[] = [];
+
+    const status = await runArrayFunc(
+        agent,
+        controller,
+        frame,
+        expr,
+        arr,
+        'filter',
+        (value, item) => {
+            if (value) {
+                result.push(item);
+            }
+        },
+    );
+
+    if (status !== 'finished') {
+        return updateFrame(frame, status);
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'finished');
+}
+
+async function runArraySome(
+    agent: Agent,
+    controller: RuntimeController,
+    frame: StackFrame,
+    expr: FunctionCall,
+    arr: unknown,
+) {
+    let result = false;
+
+    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'some', value => {
+        if (value) {
+            result = true;
+            return false;
+        }
+    });
+
+    if (status !== 'finished') {
+        return updateFrame(frame, status);
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'finished');
+}
+
+async function runArrayEvery(
+    agent: Agent,
+    controller: RuntimeController,
+    frame: StackFrame,
+    expr: FunctionCall,
+    arr: unknown,
+) {
+    let result = true;
+
+    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'every', value => {
+        if (!value) {
+            result = false;
+            return false;
+        }
+    });
+
+    if (status !== 'finished') {
+        return updateFrame(frame, status);
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'finished');
+}
+
+async function runArrayFunc(
+    agent: Agent,
+    controller: RuntimeController,
+    frame: StackFrame,
+    expr: FunctionCall,
+    arr: unknown,
+    funcName: string,
+    func: (value: unknown, item: unknown, index: number) => void | false,
+) {
+    if (!Array.isArray(arr)) {
+        throw new RuntimeError(`Array.prototype.${funcName} called on non-array`);
+    }
+
     const fn = expr.args?.[0];
     if (expr.args?.length !== 1 || fn?.type !== 'arrowfn') {
-        throw new RuntimeError(`Array.prototype.map called with invalid arguments`);
+        throw new RuntimeError(`Array.prototype.${funcName} called with invalid arguments`);
     }
 
     const itemVar = fn.params[0]?.name;
     const indexVar = fn.params[1]?.name;
-    const result: unknown[] = [];
 
-    for (let i = 0; i < thisArg.length; i++) {
-        const item = thisArg[i];
+    for (let i = 0; i < arr.length; i++) {
+        const item = arr[i] as unknown;
         const itemFrame = getFrame(frame, i);
 
         if (!itemFrame.variables) {
@@ -554,10 +665,12 @@ async function runArrayMap(
             return updateFrame(frame, status);
         }
 
-        result.push(itemFrame.value);
+        const value = func(itemFrame.value, item, i);
+        if (value === false) {
+            break;
+        }
     }
 
-    frame.value = result;
     return updateFrame(frame, 'finished');
 }
 

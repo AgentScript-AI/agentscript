@@ -1,5 +1,7 @@
 import { codeSnippet } from '@nzyme/markdown';
 
+import { joinLines } from '@agentscript-ai/utils';
+
 import type { LanguageModel, LanguageModelMessage } from '../LanguageModel.js';
 import type { AgentState } from './agentTypes.js';
 import { createAgentInternal } from './createAgentInternal.js';
@@ -12,10 +14,10 @@ interface InferAgentInternalOptions {
     def: AgentDefinition;
     id?: string;
     model: LanguageModel;
-    systemPrompt?: string;
+    systemPrompt?: string | string[];
     chain?: AgentState[];
     messages?: LanguageModelMessage[];
-    prompt: string;
+    prompt: string | string[];
 }
 
 const SYSTEM_PROMPT = `You answer using programming language called AgentScript. It's a subset of JavaScript with following limitations:
@@ -38,8 +40,17 @@ Don't explain the code later.`;
 export async function inferAgentInternal(params: InferAgentInternalOptions) {
     const runtime = renderRuntime(params.def);
 
-    const basePrompt = params.systemPrompt ? `${params.systemPrompt}\n\n` : '';
-    const systemPrompt = `${basePrompt}${SYSTEM_PROMPT}\n\n${codeSnippet(runtime.code, 'typescript')}`;
+    const basePrompt = joinLines(params.systemPrompt);
+    const systemPrompt = [
+        //
+        basePrompt,
+        SYSTEM_PROMPT,
+        codeSnippet(runtime.code, 'typescript'),
+    ]
+        .filter(Boolean)
+        .join('\n\n');
+
+    const prompt = joinLines(params.prompt);
 
     const messages: LanguageModelMessage[] = [];
     if (params.messages) {
@@ -48,7 +59,7 @@ export async function inferAgentInternal(params: InferAgentInternalOptions) {
 
     messages.push({
         role: 'user',
-        content: params.prompt,
+        content: prompt,
     });
 
     const response = await params.model.invoke({
@@ -65,7 +76,7 @@ export async function inferAgentInternal(params: InferAgentInternalOptions) {
         input: params.def.input,
         output: params.def.output,
         chain: params.chain,
-        prompt: params.prompt,
+        prompt,
         script,
         plan,
         runtime,

@@ -6,5 +6,12 @@
     "trailingComma": "all",
     "endOfLine": "lf",
     "singleAttributePerLine": true,
-    "bracketSpacing": true
+    "overrides": [
+        {
+            "files": ["*.yml", "*.yaml"],
+            "options": {
+                "tabWidth": 2
+            }
+        }
+    ]
 }

@@ -1,12 +1,13 @@
 import { codeSnippet } from '@nzyme/markdown';
 import type { SomeObject } from '@nzyme/types';
 
+import { joinLines } from '@agentscript-ai/utils';
+
 import type { LanguageModel, LanguageModelMessage } from '../LanguageModel.js';
 import type { Agent, AgentState } from './agentTypes.js';
 import type { AgentTools } from './defineAgent.js';
 import { inferAgentInternal } from './inferAgentInternal.js';
 import { rechainAgent } from './rechainAgent.js';
-import { joinLines } from '@agentscript-ai/utils';
 
 /**
  * Parameters for {@link chainAgent}.
@@ -23,11 +24,11 @@ export type ChainAgentParams<TTools extends AgentTools> = {
     /**
      * Prompt to use.
      */
-    prompt: string;
+    prompt: string | string[];
     /**
      * System prompt to use.
      */
-    systemPrompt?: string;
+    systemPrompt?: string | string[];
 };
 
 /**

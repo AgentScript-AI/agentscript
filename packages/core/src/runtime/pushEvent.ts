@@ -28,6 +28,7 @@ export type PushEventOptions = {
 /**
  * Push an event to the agent.
  * @param options - Options for the event.
+ * @deprecated Will probably change in the future.
  */
 export function pushEvent(options: PushEventOptions) {
     const { agent, event, trace } = options;
