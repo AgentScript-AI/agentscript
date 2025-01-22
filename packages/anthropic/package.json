@@ -27,8 +27,8 @@
         "@agentscript-ai/core": "^0.3.0",
         "@agentscript-ai/utils": "^0.3.0",
         "@anthropic-ai/sdk": "^0.33.1",
-        "@nzyme/ioc": "^0.4.0",
-        "@nzyme/utils": "^0.4.0"
+        "@nzyme/ioc": "^0.5.0",
+        "@nzyme/utils": "^0.5.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.3.0",

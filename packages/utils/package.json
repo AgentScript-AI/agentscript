@@ -24,8 +24,8 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@nzyme/utils": "^0.4.0",
-        "@nzyme/zchema": "^0.4.0"
+        "@nzyme/utils": "^0.5.0",
+        "@nzyme/zchema": "^0.5.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.3.0",
