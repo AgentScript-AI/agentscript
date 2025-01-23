@@ -52,7 +52,7 @@ AgentScript does exactly that: prompts an LLM to generate code (a subset of JS) 
 ## Show me the code
 
 Let's build an agent doing stuff with [Linear](https://linear.app). \
-You can see full example [here](https://github.com/AgentScript-AI/examples/tree/main/linear).
+You can see full example [here](https://github.com/AgentScript-AI/examples/tree/main/linear-agent).
 
 ```typescript
 // Configure the language model
