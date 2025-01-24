@@ -3369,7 +3369,9 @@ export type InitiativeCollectionFilter = {
   creator?: InputMaybe<UserFilter>;
   /** Filters that needs to be matched by all initiatives. */
   every?: InputMaybe<InitiativeFilter>;
-  /** [Internal] Comparator for the initiative health (with age). */
+  /** Comparator for the initiative health: onTrack, atRisk, offTrack */
+  health?: InputMaybe<StringComparator>;
+  /** [Internal] Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
@@ -3383,7 +3385,7 @@ export type InitiativeCollectionFilter = {
   slugId?: InputMaybe<StringComparator>;
   /** Filters that needs to be matched by some initiatives. */
   some?: InputMaybe<InitiativeFilter>;
-  /** Comparator for the initiative status. */
+  /** Comparator for the initiative status: Planned, Active, Completed */
   status?: InputMaybe<StringComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
@@ -3437,7 +3439,9 @@ export type InitiativeFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
-  /** [Internal] Comparator for the initiative health (with age). */
+  /** Comparator for the initiative health: onTrack, atRisk, offTrack */
+  health?: InputMaybe<StringComparator>;
+  /** [Internal] Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
@@ -3447,7 +3451,7 @@ export type InitiativeFilter = {
   or?: InputMaybe<Array<InitiativeFilter>>;
   /** Comparator for the initiative slug ID. */
   slugId?: InputMaybe<StringComparator>;
-  /** Comparator for the initiative status. */
+  /** Comparator for the initiative status: Planned, Active, Completed */
   status?: InputMaybe<StringComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
@@ -8754,9 +8758,9 @@ export type NullableProjectFilter = {
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects with violated dependencies. */
   hasViolatedRelations?: InputMaybe<RelationExistsComparator>;
-  /** Comparator for the project health. */
+  /** Comparator for the project health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
-  /** Comparator for the project health (with age). */
+  /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
@@ -10138,9 +10142,9 @@ export type ProjectCollectionFilter = {
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects with violated dependencies. */
   hasViolatedRelations?: InputMaybe<RelationExistsComparator>;
-  /** Comparator for the project health. */
+  /** Comparator for the project health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
-  /** Comparator for the project health (with age). */
+  /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
@@ -10273,9 +10277,9 @@ export type ProjectFilter = {
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects with violated dependencies. */
   hasViolatedRelations?: InputMaybe<RelationExistsComparator>;
-  /** Comparator for the project health. */
+  /** Comparator for the project health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
-  /** Comparator for the project health (with age). */
+  /** Comparator for the project health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
@@ -11264,6 +11268,8 @@ export type ProjectUpdate = Node & {
   infoSnapshot?: Maybe<Scalars['JSONObject']['output']>;
   /** Whether project update diff should be hidden. */
   isDiffHidden: Scalars['Boolean']['output'];
+  /** Whether the project update is stale. */
+  isStale: Scalars['Boolean']['output'];
   /** The project that the update is associated with. */
   project: Project;
   /** Emoji reaction summary, grouped by emoji type. */
