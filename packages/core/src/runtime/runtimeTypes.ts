@@ -1,3 +1,4 @@
+import type { AstNode } from '../parser/astTypes.js';
 import type { ToolEvent, ToolEventSerialized } from '../tools/defineTool.js';
 
 /**
@@ -27,6 +28,10 @@ export interface StackFrame {
      */
     updatedAt: Date;
     /**
+     * AST node - for debugging purposes.
+     */
+    node?: AstNode;
+    /**
      * Variables.
      */
     variables?: Record<string, unknown>;
@@ -53,7 +58,7 @@ export interface StackFrame {
     /**
      * Children frames.
      */
-    children?: StackFrame[];
+    children?: (StackFrame | null)[];
 }
 
 /**
@@ -103,5 +108,5 @@ export interface StackFrameSerialized {
     /**
      * Children frames.
      */
-    c?: StackFrameSerialized[];
+    c?: (StackFrameSerialized | null)[];
 }

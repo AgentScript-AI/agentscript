@@ -87,12 +87,13 @@ function deserializeFrame(
             payload: heap.get(event.payload),
             processed: event.processed,
         })),
-        children: frameSerialized.c?.map((child, index) =>
-            deserializeFrame(child, heap, `${trace}:${index}`, timestamp),
-        ),
     };
 
     frame.children = frameSerialized.c?.map((child, index) => {
+        if (!child) {
+            return null;
+        }
+
         const childFrame = deserializeFrame(child, heap, `${trace}:${index}`, timestamp);
         childFrame.parent = frame;
         return childFrame;

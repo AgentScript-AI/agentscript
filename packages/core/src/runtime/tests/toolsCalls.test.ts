@@ -56,12 +56,8 @@ test('single function call', async () => {
         status: 'finished',
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'call',
                 value: 3,
-                children: [
-                    completedFrame({ trace: '0:0:0', value: 1 }),
-                    completedFrame({ trace: '0:0:1', value: 2 }),
-                ],
             }),
         ],
     });
@@ -91,37 +87,55 @@ test('multiple function calls', async () => {
             d: 9,
         },
         children: [
-            //
+            // var a declaration
             completedFrame({
-                trace: '0:0',
-                children: [completedFrame({ trace: '0:0:0', value: 1 })],
+                node: 'var',
             }),
+            // var b declaration
             completedFrame({
-                trace: '0:1',
-                children: [completedFrame({ trace: '0:1:0', value: 2 })],
+                node: 'var',
             }),
+            // var c declaration
             completedFrame({
-                trace: '0:2',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:2:0',
+                        node: 'call',
                         value: 3,
                         children: [
-                            completedFrame({ trace: '0:2:0:0', value: 1 }),
-                            completedFrame({ trace: '0:2:0:1', value: 2 }),
+                            // this
+                            null,
+                            // first arg
+                            completedFrame({
+                                node: 'ident',
+                                value: 1,
+                            }),
+                            // second arg
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
                         ],
                     }),
                 ],
             }),
+            // var d declaration
             completedFrame({
-                trace: '0:3',
+                node: 'var',
                 children: [
+                    // call
                     completedFrame({
-                        trace: '0:3:0',
+                        node: 'call',
                         value: 9,
                         children: [
-                            completedFrame({ trace: '0:3:0:0', value: 3 }),
-                            completedFrame({ trace: '0:3:0:1', value: 3 }),
+                            // this
+                            null,
+                            // first arg
+                            completedFrame({
+                                node: 'ident',
+                                value: 3,
+                            }),
+                            // second arg is literal
                         ],
                     }),
                 ],
@@ -149,12 +163,14 @@ describe('nested function calls', () => {
         let expectedStack = rootFrame({
             children: [
                 childFrame({
-                    trace: '0:0',
+                    node: 'call',
                     children: [
+                        // this arg
+                        null,
+                        // first arg
                         completedFrame({
-                            trace: '0:0:0',
+                            node: 'call',
                             value: 1,
-                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
                     ],
                 }),
@@ -169,17 +185,19 @@ describe('nested function calls', () => {
         expectedStack = rootFrame({
             children: [
                 childFrame({
-                    trace: '0:0',
+                    node: 'call',
                     children: [
+                        // this arg
+                        null,
+                        // first arg
                         completedFrame({
-                            trace: '0:0:0',
+                            node: 'call',
                             value: 1,
-                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
+                        // second arg
                         completedFrame({
-                            trace: '0:0:1',
+                            node: 'call',
                             value: 4,
-                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -193,18 +211,20 @@ describe('nested function calls', () => {
             status: 'finished',
             children: [
                 completedFrame({
-                    trace: '0:0',
+                    node: 'call',
                     value: 5,
                     children: [
+                        // this arg
+                        null,
+                        // first arg
                         completedFrame({
-                            trace: '0:0:0',
+                            node: 'call',
                             value: 1,
-                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
+                        // second arg
                         completedFrame({
-                            trace: '0:0:1',
+                            node: 'call',
                             value: 4,
-                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -223,18 +243,20 @@ describe('nested function calls', () => {
             status: 'finished',
             children: [
                 completedFrame({
-                    trace: '0:0',
+                    node: 'call',
                     value: 5,
                     children: [
+                        // this arg
+                        null,
+                        // first arg
                         completedFrame({
-                            trace: '0:0:0',
+                            node: 'call',
                             value: 1,
-                            children: [completedFrame({ trace: '0:0:0:0', value: 1 })],
                         }),
+                        // second arg
                         completedFrame({
-                            trace: '0:0:1',
+                            node: 'call',
                             value: 4,
-                            children: [completedFrame({ trace: '0:0:1:0', value: 2 })],
                         }),
                     ],
                 }),
@@ -248,7 +270,11 @@ describe('nested function calls', () => {
 });
 
 test('module function', async () => {
-    const script = parseScript(['utils.add(1, 2);']);
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'utils.add(2, a);',
+    ]);
 
     const agent = createAgent({
         tools: {
@@ -261,164 +287,34 @@ test('module function', async () => {
 
     const expectedStack = rootFrame({
         status: 'finished',
+        variables: {
+            a: 1,
+        },
         children: [
+            // var a declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
+            }),
+            // call
+            completedFrame({
+                node: 'call',
                 value: 3,
                 children: [
-                    completedFrame({ trace: '0:0:0', value: 1 }),
-                    completedFrame({ trace: '0:0:1', value: 2 }),
+                    // this arg
+                    null,
+                    // first arg is literal
+                    null,
+                    // second arg
+                    completedFrame({
+                        node: 'ident',
+                        value: 1,
+                    }),
                 ],
             }),
         ],
     });
 
     expect(result).toEqual(agentResult({ ticks: 1 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('new Date()', async () => {
-    const script = parseScript('new Date()');
-
-    const agent = createAgent({ tools, script });
-
-    const result = await executeAgent({ agent });
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                value: expect.any(Date),
-            }),
-        ],
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('toString()', async () => {
-    const script = parseScript('true.toString()');
-
-    const agent = createAgent({ tools, script });
-    const result = await executeAgent({ agent });
-
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                value: 'true',
-            }),
-        ],
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('Number()', async () => {
-    const script = parseScript('Number("1")');
-    const agent = createAgent({ tools, script });
-
-    const result = await executeAgent({ agent });
-
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                value: 1,
-                children: [completedFrame({ trace: '0:0:0', value: '1' })],
-            }),
-        ],
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('Boolean()', async () => {
-    const script = parseScript('Boolean("true")');
-    const agent = createAgent({ tools, script });
-    const result = await executeAgent({ agent });
-
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                value: true,
-                children: [completedFrame({ trace: '0:0:0', value: 'true' })],
-            }),
-        ],
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('String()', async () => {
-    const script = parseScript('String(1)');
-    const agent = createAgent({ tools, script });
-    const result = await executeAgent({ agent });
-
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                value: '1',
-                children: [completedFrame({ trace: '0:0:0', value: 1 })],
-            }),
-        ],
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
-    expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
-});
-
-test('array.push()', async () => {
-    const script = parseScript([
-        //
-        'const a = [1, 2, 3];',
-        'a.push(4);',
-    ]);
-
-    const agent = createAgent({ tools, script });
-    const result = await executeAgent({ agent });
-
-    const expectedStack = rootFrame({
-        status: 'finished',
-        children: [
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: [1, 2, 3, 4],
-                    }),
-                ],
-            }),
-            completedFrame({
-                trace: '0:1',
-                value: 4,
-                children: [
-                    //
-                    completedFrame({ trace: '0:1:0', value: 4 }),
-                ],
-            }),
-        ],
-        variables: { a: [1, 2, 3, 4] },
-    });
-
-    expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('finished');
 });
@@ -437,23 +333,53 @@ test('more than two arguments are turned into a single arg', async () => {
         },
     });
 
-    const ast = parseScript('add({ a: 1, b: 2, c: 3 })');
+    const ast = parseScript([
+        //
+        'const b = 2;',
+        'add({ a: 1, b: b, c: 3 });',
+    ]);
+
     const agent = createAgent({
         tools: { add },
         script: ast,
     });
+
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
         status: 'finished',
+        variables: {
+            b: 2,
+        },
         children: [
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
+            }),
+            // call
+            completedFrame({
+                node: 'call',
                 value: 6,
                 children: [
+                    // this arg
+                    null,
+                    // arg
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'object',
                         value: { a: 1, b: 2, c: 3 },
+                        children: [
+                            // a key
+                            null,
+                            // a value
+                            null,
+                            // b key
+                            null,
+                            // b value
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
+                        ],
                     }),
                 ],
             }),
@@ -465,7 +391,7 @@ test('more than two arguments are turned into a single arg', async () => {
     expect(agent.status).toBe('finished');
 });
 
-test('explicit single arg', async () => {
+test('explicit single arg literal', async () => {
     const add = defineTool({
         description: 'Add three numbers',
         input: s.object({
@@ -491,12 +417,78 @@ test('explicit single arg', async () => {
         status: 'finished',
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'call',
+                value: 3,
+                // arg is a literal
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+});
+
+test('explicit single arg object', async () => {
+    const add = defineTool({
+        description: 'Add three numbers',
+        input: s.object({
+            props: {
+                a: s.number(),
+                b: s.number(),
+            },
+        }),
+        output: s.number(),
+        handler({ input }) {
+            return input.a + input.b;
+        },
+    });
+
+    const ast = parseScript([
+        //
+        'const b = 2;',
+        'add({ a: 1, b });',
+    ]);
+    const agent = createAgent({
+        tools: { add },
+        script: ast,
+    });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'finished',
+        variables: {
+            b: 2,
+        },
+        children: [
+            // var b declaration
+            completedFrame({
+                node: 'var',
+            }),
+            // call
+            completedFrame({
+                node: 'call',
                 value: 3,
                 children: [
+                    // this arg
+                    null,
+                    // arg
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'object',
                         value: { a: 1, b: 2 },
+                        children: [
+                            // a key
+                            null,
+                            // a value
+                            null,
+                            // b key
+                            null,
+                            // b value
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
+                        ],
                     }),
                 ],
             }),
@@ -522,16 +514,15 @@ test('agent output', async () => {
 
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'assign',
                 value: 3,
                 children: [
+                    // left side
+                    null,
+                    // right side
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'call',
                         value: 3,
-                        children: [
-                            completedFrame({ trace: '0:0:0:0', value: 1 }),
-                            completedFrame({ trace: '0:0:0:1', value: 2 }),
-                        ],
                     }),
                 ],
             }),

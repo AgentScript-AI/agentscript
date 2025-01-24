@@ -1,6 +1,6 @@
+import type { Agent } from '../../agent/agentTypes.js';
 import type { AstNode } from '../../parser/astTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
-import type { Agent } from '../../agent/agentTypes.js';
 import type { StackFrame } from '../runtimeTypes.js';
 import { getChild } from './getChild.js';
 
@@ -22,7 +22,7 @@ export function findFrameByTrace(agent: Agent, trace: string) {
 
     let index = path[1];
     let node: AstNode | undefined = agent.script.ast[index];
-    let frame: StackFrame | undefined = agent.root.children?.[index];
+    let frame: StackFrame | undefined | null = agent.root.children?.[index];
 
     for (let i = 2; i < path.length; i++) {
         if (!node) {

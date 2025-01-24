@@ -9,7 +9,7 @@ import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 import { defineTool } from '../../tools/defineTool.js';
 
-test('array map with inline arrow function', async () => {
+test('array variable map with inline arrow function', async () => {
     const code = joinLines([
         //
         'const a = [1, 2, 3]',
@@ -29,28 +29,24 @@ test('array map with inline arrow function', async () => {
         status: 'finished',
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // array literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: [1, 2, 3],
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // var b declaration
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     // array map call
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'call',
                         value: [2, 4, 6],
                         children: [
+                            // this arg
+                            completedFrame({
+                                node: 'ident',
+                                value: [1, 2, 3],
+                            }),
                             // array map item / operator call
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'operator',
                                 value: 2,
                                 variables: {
                                     x: 1,
@@ -58,19 +54,14 @@ test('array map with inline arrow function', async () => {
                                 children: [
                                     // left operand
                                     completedFrame({
-                                        trace: '0:1:0:0:0',
+                                        node: 'ident',
                                         value: 1,
-                                    }),
-                                    // right operand
-                                    completedFrame({
-                                        trace: '0:1:0:0:1',
-                                        value: 2,
                                     }),
                                 ],
                             }),
                             // array map item / operator call
                             completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'operator',
                                 value: 4,
                                 variables: {
                                     x: 2,
@@ -78,19 +69,14 @@ test('array map with inline arrow function', async () => {
                                 children: [
                                     // left operand
                                     completedFrame({
-                                        trace: '0:1:0:1:0',
-                                        value: 2,
-                                    }),
-                                    // right operand
-                                    completedFrame({
-                                        trace: '0:1:0:1:1',
+                                        node: 'ident',
                                         value: 2,
                                     }),
                                 ],
                             }),
                             // array map item / operator call
                             completedFrame({
-                                trace: '0:1:0:2',
+                                node: 'operator',
                                 value: 6,
                                 variables: {
                                     x: 3,
@@ -98,13 +84,8 @@ test('array map with inline arrow function', async () => {
                                 children: [
                                     // left operand
                                     completedFrame({
-                                        trace: '0:1:0:2:0',
+                                        node: 'ident',
                                         value: 3,
-                                    }),
-                                    // right operand
-                                    completedFrame({
-                                        trace: '0:1:0:2:1',
-                                        value: 2,
                                     }),
                                 ],
                             }),
@@ -123,7 +104,151 @@ test('array map with inline arrow function', async () => {
     expect(agent.status).toBe('finished');
 });
 
-test('array map with block arrow function', async () => {
+test('array literal map with inline arrow function', async () => {
+    const code = joinLines([
+        //
+        '[1, 2].map(x => x * 2)',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'finished',
+        children: [
+            // array map call
+            completedFrame({
+                node: 'call',
+                value: [2, 4],
+                children: [
+                    // this arg is literal
+                    null,
+                    // array map item / operator call
+                    completedFrame({
+                        node: 'operator',
+                        value: 2,
+                        variables: {
+                            x: 1,
+                        },
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 1,
+                            }),
+                        ],
+                    }),
+                    // array map item / operator call
+                    completedFrame({
+                        node: 'operator',
+                        value: 4,
+                        variables: {
+                            x: 2,
+                        },
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+});
+
+test('array member map with inline arrow function', async () => {
+    const code = joinLines([
+        //
+        'const a = { b: [1, 2] }',
+        'a.b.map(x => x * 2)',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'finished',
+        variables: {
+            a: { b: [1, 2] },
+        },
+        children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // array map call
+            completedFrame({
+                node: 'call',
+                value: [2, 4],
+                children: [
+                    // this arg is member
+                    completedFrame({
+                        node: 'member',
+                        value: [1, 2],
+                        children: [
+                            // member object
+                            completedFrame({
+                                node: 'ident',
+                                value: { b: [1, 2] },
+                            }),
+                        ],
+                    }),
+                    // array map item / operator call
+                    completedFrame({
+                        node: 'operator',
+                        value: 2,
+                        variables: {
+                            x: 1,
+                        },
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 1,
+                            }),
+                        ],
+                    }),
+                    // array map item / operator call
+                    completedFrame({
+                        node: 'operator',
+                        value: 4,
+                        variables: {
+                            x: 2,
+                        },
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+});
+
+test('array variable map with block arrow function', async () => {
     const code = joinLines([
         //
         'const a = [1, 2, 3]',
@@ -147,27 +272,25 @@ test('array map with block arrow function', async () => {
         children: [
             // var a declaration
             completedFrame({
-                trace: '0:0',
-                children: [
-                    // array literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: [1, 2, 3],
-                    }),
-                ],
+                node: 'var',
             }),
             // var b declaration
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     // array map call
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'call',
                         value: [2, 4, 6],
                         children: [
-                            // array map item block
+                            // this arg
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
+                                value: [1, 2, 3],
+                            }),
+                            // item 0
+                            completedFrame({
+                                node: 'block',
                                 value: 2,
                                 variables: {
                                     x: 1,
@@ -176,37 +299,40 @@ test('array map with block arrow function', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:0:0',
+                                        node: 'var',
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                trace: '0:1:0:0:0:0',
+                                                node: 'operator',
                                                 value: 2,
                                                 children: [
                                                     // left operand
                                                     completedFrame({
-                                                        trace: '0:1:0:0:0:0:0',
+                                                        node: 'ident',
                                                         value: 1,
                                                     }),
-                                                    // right operand
-                                                    completedFrame({
-                                                        trace: '0:1:0:0:0:0:1',
-                                                        value: 2,
-                                                    }),
+                                                    // right operand is literal
                                                 ],
                                             }),
                                         ],
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:0:1',
-                                        value: 2,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 2,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
-                            // array map item block
+
+                            // item 1
                             completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'block',
                                 value: 4,
                                 variables: {
                                     x: 2,
@@ -215,37 +341,40 @@ test('array map with block arrow function', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:1:0',
+                                        node: 'var',
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                trace: '0:1:0:1:0:0',
+                                                node: 'operator',
                                                 value: 4,
                                                 children: [
                                                     // left operand
                                                     completedFrame({
-                                                        trace: '0:1:0:1:0:0:0',
+                                                        node: 'ident',
                                                         value: 2,
                                                     }),
-                                                    // right operand
-                                                    completedFrame({
-                                                        trace: '0:1:0:1:0:0:1',
-                                                        value: 2,
-                                                    }),
+                                                    // right operand is literal
                                                 ],
                                             }),
                                         ],
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:1:1',
-                                        value: 4,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 4,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
-                            // array map item block
+
+                            // item 2
                             completedFrame({
-                                trace: '0:1:0:2',
+                                node: 'block',
                                 value: 6,
                                 variables: {
                                     x: 3,
@@ -254,31 +383,33 @@ test('array map with block arrow function', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:2:0',
+                                        node: 'var',
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                trace: '0:1:0:2:0:0',
+                                                node: 'operator',
                                                 value: 6,
                                                 children: [
                                                     // left operand
                                                     completedFrame({
-                                                        trace: '0:1:0:2:0:0:0',
+                                                        node: 'ident',
                                                         value: 3,
                                                     }),
-                                                    // right operand
-                                                    completedFrame({
-                                                        trace: '0:1:0:2:0:0:1',
-                                                        value: 2,
-                                                    }),
+                                                    // right operand is literal
                                                 ],
                                             }),
                                         ],
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:2:1',
-                                        value: 6,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 6,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
@@ -297,7 +428,142 @@ test('array map with block arrow function', async () => {
     expect(agent.status).toBe('finished');
 });
 
-test('array map with async tool inline', async () => {
+test('array variable map with block arrow function and nested return', async () => {
+    const code = joinLines([
+        //
+        'const a = [1, 2]',
+        'const b = a.map(x => {',
+        '    if (x < 2) {',
+        '        return 0',
+        '    }',
+        '',
+        '    return x',
+        '})',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'finished',
+        children: [
+            // var a declaration
+            completedFrame({
+                node: 'var',
+            }),
+            // var b declaration
+            completedFrame({
+                node: 'var',
+                children: [
+                    // array map call
+                    completedFrame({
+                        node: 'call',
+                        value: [0, 2],
+                        children: [
+                            // this arg
+                            completedFrame({
+                                node: 'ident',
+                                value: [1, 2],
+                            }),
+                            // item 0
+                            completedFrame({
+                                node: 'block',
+                                value: 0,
+                                variables: {
+                                    x: 1,
+                                },
+                                children: [
+                                    // if statement
+                                    completedFrame({
+                                        node: 'if',
+                                        children: [
+                                            // condition
+                                            completedFrame({
+                                                node: 'operator',
+                                                value: true,
+                                                children: [
+                                                    // left operand
+                                                    completedFrame({
+                                                        node: 'ident',
+                                                        value: 1,
+                                                    }),
+                                                ],
+                                            }),
+                                            // then statement
+                                            completedFrame({
+                                                node: 'block',
+                                                children: [
+                                                    completedFrame({
+                                                        node: 'return',
+                                                        // literal return value
+                                                    }),
+                                                ],
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                            // item 1
+                            completedFrame({
+                                node: 'block',
+                                value: 2,
+                                variables: {
+                                    x: 2,
+                                },
+                                children: [
+                                    // if statement
+                                    completedFrame({
+                                        node: 'if',
+                                        children: [
+                                            // condition
+                                            completedFrame({
+                                                node: 'operator',
+                                                value: false,
+                                                children: [
+                                                    // left operand
+                                                    completedFrame({
+                                                        node: 'ident',
+                                                        value: 2,
+                                                    }),
+                                                ],
+                                            }),
+                                        ],
+                                    }),
+                                    // return statement
+                                    completedFrame({
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 2,
+                                            }),
+                                        ],
+                                    }),
+                                ],
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        variables: {
+            a: [1, 2],
+            b: [0, 2],
+        },
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('finished');
+});
+
+test('array variable map with async tool inline', async () => {
     const multiply = defineTool({
         description: 'Multiplies two numbers',
         input: {
@@ -328,82 +594,74 @@ test('array map with async tool inline', async () => {
         children: [
             // var a declaration
             completedFrame({
-                trace: '0:0',
-                children: [
-                    // array literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: [1, 2, 3],
-                    }),
-                ],
+                node: 'var',
             }),
             // var b declaration
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     // array map call
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'call',
                         value: [2, 4, 6],
                         children: [
+                            // this arg
+                            completedFrame({
+                                node: 'ident',
+                                value: [1, 2, 3],
+                            }),
                             // array map item / tool call
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'call',
                                 value: 2,
                                 variables: {
                                     x: 1,
                                 },
                                 children: [
+                                    // this
+                                    null,
                                     // first parameter
                                     completedFrame({
-                                        trace: '0:1:0:0:0',
+                                        node: 'ident',
                                         value: 1,
                                     }),
-                                    // second parameter
-                                    completedFrame({
-                                        trace: '0:1:0:0:1',
-                                        value: 2,
-                                    }),
+                                    // second parameter (literal)
                                 ],
                             }),
                             // array map item / tool call
                             completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'call',
                                 value: 4,
                                 variables: {
                                     x: 2,
                                 },
                                 children: [
+                                    // this
+                                    null,
                                     // first parameter
                                     completedFrame({
-                                        trace: '0:1:0:1:0',
+                                        node: 'ident',
                                         value: 2,
                                     }),
-                                    // second parameter
-                                    completedFrame({
-                                        trace: '0:1:0:1:1',
-                                        value: 2,
-                                    }),
+                                    // second parameter (literal)
                                 ],
                             }),
-                            // array map item / operator call
+                            // array map item / tool call
                             completedFrame({
-                                trace: '0:1:0:2',
+                                node: 'call',
                                 value: 6,
                                 variables: {
                                     x: 3,
                                 },
                                 children: [
+                                    // this
+                                    null,
                                     // first parameter
                                     completedFrame({
-                                        trace: '0:1:0:2:0',
+                                        node: 'ident',
                                         value: 3,
                                     }),
-                                    // second parameter
-                                    completedFrame({
-                                        trace: '0:1:0:2:1',
-                                        value: 2,
-                                    }),
+                                    // second parameter (literal)
                                 ],
                             }),
                         ],
@@ -420,7 +678,7 @@ test('array map with async tool inline', async () => {
     expect(agent.status).toBe('finished');
 });
 
-test('array map with async tool in block', async () => {
+test('array variable map with async tool in block', async () => {
     const multiply = defineTool({
         description: 'Multiplies two numbers',
         input: {
@@ -454,27 +712,25 @@ test('array map with async tool in block', async () => {
         children: [
             // var a declaration
             completedFrame({
-                trace: '0:0',
-                children: [
-                    // array literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: [1, 2, 3],
-                    }),
-                ],
+                node: 'var',
             }),
             // var b declaration
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     // array map call
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'call',
                         value: [2, 4, 6],
                         children: [
+                            // this arg
+                            completedFrame({
+                                node: 'ident',
+                                value: [1, 2, 3],
+                            }),
                             // array map item block
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'block',
                                 value: 2,
                                 variables: {
                                     x: 1,
@@ -483,22 +739,19 @@ test('array map with async tool in block', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:0:0',
+                                        node: 'var',
                                         children: [
                                             // tool call
                                             completedFrame({
-                                                trace: '0:1:0:0:0:0',
+                                                node: 'call',
                                                 value: 2,
                                                 children: [
+                                                    // this
+                                                    null,
                                                     // first parameter
                                                     completedFrame({
-                                                        trace: '0:1:0:0:0:0:0',
+                                                        node: 'ident',
                                                         value: 1,
-                                                    }),
-                                                    // second parameter
-                                                    completedFrame({
-                                                        trace: '0:1:0:0:0:0:1',
-                                                        value: 2,
                                                     }),
                                                 ],
                                             }),
@@ -506,14 +759,20 @@ test('array map with async tool in block', async () => {
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:0:1',
-                                        value: 2,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 2,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
                             // array map item block
                             completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'block',
                                 value: 4,
                                 variables: {
                                     x: 2,
@@ -522,21 +781,18 @@ test('array map with async tool in block', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:1:0',
+                                        node: 'var',
                                         children: [
                                             // tool call
                                             completedFrame({
-                                                trace: '0:1:0:1:0:0',
+                                                node: 'call',
                                                 value: 4,
                                                 children: [
+                                                    // this
+                                                    null,
                                                     // first parameter
                                                     completedFrame({
-                                                        trace: '0:1:0:1:0:0:0',
-                                                        value: 2,
-                                                    }),
-                                                    // second parameter
-                                                    completedFrame({
-                                                        trace: '0:1:0:1:0:0:1',
+                                                        node: 'ident',
                                                         value: 2,
                                                     }),
                                                 ],
@@ -545,14 +801,20 @@ test('array map with async tool in block', async () => {
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:1:1',
-                                        value: 4,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 4,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
                             // array map item block
                             completedFrame({
-                                trace: '0:1:0:2',
+                                node: 'block',
                                 value: 6,
                                 variables: {
                                     x: 3,
@@ -561,22 +823,19 @@ test('array map with async tool in block', async () => {
                                 children: [
                                     // var y declaration
                                     completedFrame({
-                                        trace: '0:1:0:2:0',
+                                        node: 'var',
                                         children: [
                                             // tool call
                                             completedFrame({
-                                                trace: '0:1:0:2:0:0',
+                                                node: 'call',
                                                 value: 6,
                                                 children: [
+                                                    // this
+                                                    null,
                                                     // first parameter
                                                     completedFrame({
-                                                        trace: '0:1:0:2:0:0:0',
+                                                        node: 'ident',
                                                         value: 3,
-                                                    }),
-                                                    // second parameter
-                                                    completedFrame({
-                                                        trace: '0:1:0:2:0:0:1',
-                                                        value: 2,
                                                     }),
                                                 ],
                                             }),
@@ -584,8 +843,14 @@ test('array map with async tool in block', async () => {
                                     }),
                                     // return statement
                                     completedFrame({
-                                        trace: '0:1:0:2:1',
-                                        value: 6,
+                                        node: 'return',
+                                        children: [
+                                            // return value
+                                            completedFrame({
+                                                node: 'ident',
+                                                value: 6,
+                                            }),
+                                        ],
                                     }),
                                 ],
                             }),
@@ -603,3 +868,18 @@ test('array map with async tool in block', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('finished');
 });
+
+// todo: test array filter
+// todo: test array reduce
+// todo: test array every
+// todo: test array some
+// todo: test array find
+// todo: test array findIndex
+// todo: test array includes
+// todo: test array indexOf
+// todo: test array lastIndexOf
+// todo: test array concat
+// todo: test array slice
+// todo: test array splice
+// todo: test array reverse
+// todo: test array sort

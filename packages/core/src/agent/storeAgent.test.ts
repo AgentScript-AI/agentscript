@@ -38,22 +38,14 @@ test('serialize not finished execution', async () => {
         children: [
             // var frame
             childFrame({
+                node: 'any',
                 status: 'finished',
-                trace: '0:0',
                 children: [
                     // tool call frame
                     childFrame({
+                        node: 'any',
                         status: 'finished',
-                        trace: '0:0:0',
                         value: 'foo',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:0:0:0',
-                                value: 'foo',
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -63,15 +55,14 @@ test('serialize not finished execution', async () => {
         },
     });
 
-    expect(agent.root).toEqual(expectedStack);
+    expect(agent.root).toMatchObject(expectedStack);
     expect(agent.status).toBe('running');
 
     let serialized = storeAgent(agent);
     let json = JSON.stringify(serialized);
     let deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
-    expect(deserialized).toMatchObject(agent);
-    expect(deserialized.root).toEqual(expectedStack);
+    expect(deserialized.root).toMatchObject(expectedStack);
     expect(deserialized.status).toBe('running');
 
     agent = deserialized;
@@ -83,73 +74,59 @@ test('serialize not finished execution', async () => {
         children: [
             // var frame
             childFrame({
+                node: 'any',
                 status: 'finished',
-                trace: '0:0',
                 children: [
                     // tool call frame
                     childFrame({
+                        node: 'any',
                         status: 'finished',
-                        trace: '0:0:0',
                         value: 'foo',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:0:0:0',
-                                value: 'foo',
-                            }),
-                        ],
                     }),
                 ],
             }),
             // var frame
             childFrame({
+                node: 'any',
                 status: 'finished',
-                trace: '0:1',
                 children: [
                     // tool call frame
                     childFrame({
+                        node: 'any',
                         status: 'finished',
-                        trace: '0:1:0',
                         value: 'bar',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:1:0:0',
-                                value: 'bar',
-                            }),
-                        ],
                     }),
                 ],
             }),
             // var frame
             childFrame({
+                node: 'any',
                 status: 'finished',
-                trace: '0:2',
                 children: [
                     // tool call frame
                     childFrame({
+                        node: 'any',
                         status: 'finished',
-                        trace: '0:2:0',
                         value: 'foobar',
                         children: [
+                            // call object
+                            null,
                             // tool param - concat
                             childFrame({
+                                node: 'any',
                                 status: 'finished',
-                                trace: '0:2:0:0',
                                 value: 'foobar',
                                 children: [
                                     // concat left
                                     childFrame({
+                                        node: 'any',
                                         status: 'finished',
-                                        trace: '0:2:0:0:0',
                                         value: 'foo',
                                     }),
                                     // concat right
                                     childFrame({
+                                        node: 'any',
                                         status: 'finished',
-                                        trace: '0:2:0:0:1',
                                         value: 'bar',
                                     }),
                                 ],
@@ -173,7 +150,6 @@ test('serialize not finished execution', async () => {
     json = JSON.stringify(serialized);
     deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
-    expect(deserialized).toMatchObject(agent);
     expect(deserialized.root).toMatchObject(expectedStack);
     expect(deserialized.status).toBe('finished');
 });

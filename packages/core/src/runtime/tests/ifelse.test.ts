@@ -17,11 +17,7 @@ test('if statement, passed', async () => {
     ]);
 
     const script = parseScript(code);
-
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
@@ -29,52 +25,31 @@ test('if statement, passed', async () => {
         status: 'finished',
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: 1,
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // if statement
             completedFrame({
-                trace: '0:1',
+                node: 'if',
                 children: [
                     // condition
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: true,
                         children: [
                             // left operand
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
                                 value: 1,
-                            }),
-                            // right operand
-                            completedFrame({
-                                trace: '0:1:0:1',
-                                value: 0,
                             }),
                         ],
                     }),
                     // body
                     completedFrame({
-                        trace: '0:1:1',
+                        node: 'block',
                         children: [
                             // assignment
                             completedFrame({
-                                trace: '0:1:1:0',
+                                node: 'assign',
                                 value: 2,
-                                children: [
-                                    // literal
-                                    completedFrame({
-                                        trace: '0:1:1:0:0',
-                                        value: 2,
-                                    }),
-                                ],
                             }),
                         ],
                     }),
@@ -101,10 +76,7 @@ test('if statement, failed', async () => {
 
     const script = parseScript(code);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
@@ -112,33 +84,19 @@ test('if statement, failed', async () => {
         status: 'finished',
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: 1,
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // if statement
             completedFrame({
-                trace: '0:1',
+                node: 'if',
                 children: [
                     // condition
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: false,
                         children: [
                             // left operand
                             completedFrame({
-                                trace: '0:1:0:0',
-                                value: 1,
-                            }),
-                            // right operand
-                            completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'ident',
                                 value: 1,
                             }),
                         ],
@@ -159,7 +117,7 @@ test('if statement, else', async () => {
     const code = joinLines([
         //
         'let a = 1',
-        'if (a > 1) {',
+        'if (1 < a) {',
         '    a = 2',
         '} else {',
         '    a = 3',
@@ -167,11 +125,7 @@ test('if statement, else', async () => {
     ]);
 
     const script = parseScript(code);
-
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
@@ -179,52 +133,33 @@ test('if statement, else', async () => {
         status: 'finished',
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: 1,
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // if statement
             completedFrame({
-                trace: '0:1',
+                node: 'if',
                 children: [
                     // condition
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: false,
                         children: [
-                            // left operand
-                            completedFrame({
-                                trace: '0:1:0:0',
-                                value: 1,
-                            }),
+                            // left operand (litaral)
+                            null,
                             // right operand
                             completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'ident',
                                 value: 1,
                             }),
                         ],
                     }),
                     // else body
                     completedFrame({
-                        trace: '0:1:1',
+                        node: 'block',
                         children: [
                             // assignment
                             completedFrame({
-                                trace: '0:1:1:0',
+                                node: 'assign',
                                 value: 3,
-                                children: [
-                                    // literal
-                                    completedFrame({
-                                        trace: '0:1:1:0:0',
-                                        value: 3,
-                                    }),
-                                ],
                             }),
                         ],
                     }),
@@ -253,10 +188,7 @@ test('if statement, else if', async () => {
 
     const script = parseScript(code);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
@@ -264,73 +196,47 @@ test('if statement, else if', async () => {
         status: 'finished',
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: 1,
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // if statement
             completedFrame({
-                trace: '0:1',
+                node: 'if',
                 children: [
                     // condition
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: false,
                         children: [
                             // left operand
                             completedFrame({
-                                trace: '0:1:0:0',
-                                value: 1,
-                            }),
-                            // right operand
-                            completedFrame({
-                                trace: '0:1:0:1',
+                                node: 'ident',
                                 value: 1,
                             }),
                         ],
                     }),
                     // else if body
                     completedFrame({
-                        trace: '0:1:1',
+                        node: 'if',
                         children: [
                             // condition
                             completedFrame({
-                                trace: '0:1:1:0',
+                                node: 'operator',
                                 value: true,
                                 children: [
                                     // left operand
                                     completedFrame({
-                                        trace: '0:1:1:0:0',
+                                        node: 'ident',
                                         value: 1,
-                                    }),
-                                    // right operand
-                                    completedFrame({
-                                        trace: '0:1:1:0:1',
-                                        value: 0,
                                     }),
                                 ],
                             }),
                             // else if body
                             completedFrame({
-                                trace: '0:1:1:1',
+                                node: 'block',
                                 children: [
                                     // assignment
                                     completedFrame({
-                                        trace: '0:1:1:1:0',
+                                        node: 'assign',
                                         value: 3,
-                                        children: [
-                                            // literal
-                                            completedFrame({
-                                                trace: '0:1:1:1:0:0',
-                                                value: 3,
-                                            }),
-                                        ],
                                     }),
                                 ],
                             }),
