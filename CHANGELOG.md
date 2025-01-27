@@ -1,3 +1,20 @@
+## 0.5.0 (2025-01-27)
+
+### 🚀 Features
+
+- ast runtime optimizations ([afbca7d](https://github.com/AgentScript-AI/agentscript/commit/afbca7d))
+- extracted parser to a separate package ([207846d](https://github.com/AgentScript-AI/agentscript/commit/207846d))
+- add support for Vercel AI SDK providers ([5b4fbeb](https://github.com/AgentScript-AI/agentscript/commit/5b4fbeb))
+- added support for LangChain models ([a5c1ed4](https://github.com/AgentScript-AI/agentscript/commit/a5c1ed4))
+
+### 🩹 Fixes
+
+- renaming stuff ([a06ffaf](https://github.com/AgentScript-AI/agentscript/commit/a06ffaf))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.4.0 (2025-01-22)
 
 ### 🚀 Features
