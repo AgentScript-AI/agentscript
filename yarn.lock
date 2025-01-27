@@ -26,10 +26,10 @@ __metadata:
   resolution: "@agentscript-ai/core@workspace:packages/core"
   dependencies:
     "@agentscript-ai/eslint": "npm:^0.4.0"
+    "@agentscript-ai/parser": "npm:^0.4.0"
     "@agentscript-ai/schema": "npm:^0.4.0"
     "@agentscript-ai/tsconfig": "npm:^0.4.0"
     "@agentscript-ai/utils": "npm:^0.4.0"
-    "@babel/parser": "npm:^7.26.5"
     "@nzyme/crypto-utils": "npm:^0.5.0"
     "@nzyme/ioc": "npm:^0.5.0"
     "@nzyme/markdown": "npm:^0.5.0"
@@ -98,6 +98,22 @@ __metadata:
     graphql-cli: "npm:^4.1.0"
     graphql-request: "npm:^7.1.2"
     typescript: "npm:^5.7.3"
+  languageName: unknown
+  linkType: soft
+
+"@agentscript-ai/parser@npm:^0.4.0, @agentscript-ai/parser@workspace:packages/parser":
+  version: 0.0.0-use.local
+  resolution: "@agentscript-ai/parser@workspace:packages/parser"
+  dependencies:
+    "@agentscript-ai/eslint": "npm:^0.4.0"
+    "@agentscript-ai/tsconfig": "npm:^0.4.0"
+    "@agentscript-ai/utils": "npm:^0.4.0"
+    "@babel/parser": "npm:^7.26.5"
+    "@nzyme/vitest": "npm:^0.5.0"
+    "@types/debug": "npm:^4.1.12"
+    "@types/node": "npm:^22.10.7"
+    typescript: "npm:^5.7.3"
+    vitest: "npm:^3.0.1"
   languageName: unknown
   linkType: soft
 
