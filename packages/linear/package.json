@@ -12,7 +12,8 @@
     },
     "files": [
         "dist",
-        "LICENSE"
+        "LICENSE",
+        "README.md"
     ],
     "type": "module",
     "main": "./dist/index.js",
@@ -23,7 +24,8 @@
         "eslint": "eslint . --fix --cache",
         "build": "tsc --build",
         "codegen": "graphql-codegen --config graphql.config.ts",
-        "watch": "yarn codegen --watch"
+        "watch": "yarn codegen --watch",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
         "@agentscript-ai/core": "^0.4.0",

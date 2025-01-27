@@ -12,7 +12,8 @@
     },
     "files": [
         "dist",
-        "LICENSE"
+        "LICENSE",
+        "README.md"
     ],
     "type": "module",
     "exports": {
@@ -25,7 +26,8 @@
     "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
-        "build": "tsc --build"
+        "build": "tsc --build",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
         "@agentscript-ai/anthropic": "^0.4.0",

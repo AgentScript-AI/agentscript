@@ -12,7 +12,8 @@
     },
     "files": [
         "dist",
-        "LICENSE"
+        "LICENSE",
+        "README.md"
     ],
     "type": "module",
     "main": "./dist/index.js",
@@ -21,7 +22,8 @@
     "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
-        "build": "tsc --build"
+        "build": "tsc --build",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
         "@nzyme/utils": "^0.5.0",

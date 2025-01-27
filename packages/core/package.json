@@ -12,11 +12,17 @@
     },
     "files": [
         "dist",
-        "LICENSE"
+        "LICENSE",
+        "README.md"
     ],
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "scripts": {
+        "eslint": "eslint . --fix --cache",
+        "build": "tsc --build",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
+    },
     "dependencies": {
         "@agentscript-ai/parser": "^0.4.0",
         "@agentscript-ai/provider": "^0.4.0",
