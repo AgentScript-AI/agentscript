@@ -39,6 +39,23 @@ test('assign variable with negative value', () => {
     expect(script).toEqual(expected);
 });
 
+test('undefined literal', () => {
+    const code = 'const a = undefined;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: { type: 'literal', value: undefined },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
 test('call function', () => {
     const code = 'foo()';
     const script = parseScript(code);

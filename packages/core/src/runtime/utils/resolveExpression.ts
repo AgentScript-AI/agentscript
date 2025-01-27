@@ -1,17 +1,20 @@
+import type {
+    Expression,
+    FunctionCall,
+    IdentifierExpression,
+    Literal,
+} from '@agentscript-ai/parser';
+
 import type { Agent } from '../../agent/agentTypes.js';
-import type { Expression, FunctionCall, Identifier, Literal } from '../../parser/astTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
 import type { StackFrame } from '../runtimeTypes.js';
 
-const allowedNativeIdentifiers = new Set([
-    'console',
-    'Date',
-    'Array',
-    'Object',
-    'String',
-    'Number',
-    'Boolean',
-]);
+/**
+ * Set of allowed native identifiers.
+ */
+export const ALLOWED_GLOBALS = Object.freeze(
+    new Set(['console', 'Date', 'Array', 'Object', 'String', 'Number', 'Boolean']),
+);
 
 /**
  * Resolve an expression.
@@ -68,7 +71,11 @@ export function resolveName(agent: Agent, frame: StackFrame, expression: Express
  * @param expression - Identifier to resolve.
  * @returns Resolved identifier.
  */
-export function resolveIdentifier(agent: Agent, frame: StackFrame, expression: Identifier) {
+export function resolveIdentifier(
+    agent: Agent,
+    frame: StackFrame,
+    expression: IdentifierExpression,
+) {
     const name = expression.name;
     if (name === 'undefined') {
         return undefined;
@@ -89,11 +96,11 @@ export function resolveIdentifier(agent: Agent, frame: StackFrame, expression: I
     }
 
     const tools = agent.def.tools;
-    if (name in tools) {
+    if (tools && name in tools) {
         return tools[name];
     }
 
-    if (allowedNativeIdentifiers.has(name)) {
+    if (ALLOWED_GLOBALS.has(name)) {
         return (globalThis as Record<string, unknown>)[name];
     }
 
@@ -107,6 +114,10 @@ export function resolveIdentifier(agent: Agent, frame: StackFrame, expression: I
  */
 export function resolveLiteral(expression: Literal) {
     const value = expression.value;
+    if (!value) {
+        return value;
+    }
+
     if (typeof value === 'object') {
         return JSON.parse(JSON.stringify(value)) as unknown;
     }

@@ -12,15 +12,22 @@
     },
     "files": [
         "dist",
-        "LICENSE"
+        "LICENSE",
+        "README.md"
     ],
     "type": "module",
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
+    "scripts": {
+        "eslint": "eslint . --fix --cache",
+        "build": "tsc --build",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
+    },
     "dependencies": {
+        "@agentscript-ai/parser": "^0.4.0",
+        "@agentscript-ai/provider": "^0.4.0",
         "@agentscript-ai/schema": "^0.4.0",
         "@agentscript-ai/utils": "^0.4.0",
-        "@babel/parser": "^7.26.5",
         "@nzyme/crypto-utils": "^0.5.0",
         "@nzyme/ioc": "^0.5.0",
         "@nzyme/markdown": "^0.5.0",

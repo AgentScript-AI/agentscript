@@ -10,8 +10,16 @@
     "publishConfig": {
         "access": "public"
     },
+    "files": [
+        "*.json",
+        "LICENSE",
+        "README.md"
+    ],
     "sideEffects": false,
     "main": "./base.json",
+    "scripts": {
+        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
+    },
     "dependencies": {
         "@types/node": "^22.10.7"
     }

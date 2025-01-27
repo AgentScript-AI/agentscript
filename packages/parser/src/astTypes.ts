@@ -133,7 +133,7 @@ export interface Literal extends AstNodeBase {
 /**
  * Identifier expression.
  */
-export interface Identifier extends AstNodeBase {
+export interface IdentifierExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -165,7 +165,7 @@ export interface MemberExpression extends AstNodeBase {
 /**
  * Assignment expression.
  */
-export interface Assignment extends AstNodeBase {
+export interface AssignmentExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -271,7 +271,7 @@ export interface ArrowFunctionExpression extends AstNodeBase {
     /**
      * Parameters of the function.
      */
-    params: Identifier[];
+    params: IdentifierExpression[];
     /**
      * Body of the function.
      */
@@ -320,9 +320,9 @@ export interface TernaryExpression extends AstNodeBase {
 export type Expression =
     | FunctionCall
     | Literal
-    | Identifier
+    | IdentifierExpression
     | MemberExpression
-    | Assignment
+    | AssignmentExpression
     | ObjectExpression
     | ArrayExpression
     | NewExpression

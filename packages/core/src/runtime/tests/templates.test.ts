@@ -1,9 +1,9 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
 import { joinLines } from '@agentscript-ai/utils';
 
 import { createAgent } from '../../agent/createAgent.js';
-import { parseScript } from '../../parser/parseScript.js';
 import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 
@@ -15,10 +15,10 @@ test('template literal without interpolation', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'template',
                 value: 'Hello, world!',
             }),
         ],
@@ -44,21 +44,18 @@ test('template literal with var interpolation in the middle', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
+            completedFrame({ node: 'var' }),
             completedFrame({
-                trace: '0:0',
-                children: [completedFrame({ trace: '0:0:0', value: 'John' })],
-            }),
-            completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'template',
                         value: 'Hello, John!',
                         children: [
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
                                 value: 'John',
                             }),
                         ],
@@ -73,6 +70,7 @@ test('template literal with var interpolation in the middle', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
 });
 
 test('template literal with var interpolation at the end', async () => {
@@ -92,21 +90,18 @@ test('template literal with var interpolation at the end', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
+            completedFrame({ node: 'var' }),
             completedFrame({
-                trace: '0:0',
-                children: [completedFrame({ trace: '0:0:0', value: 'John' })],
-            }),
-            completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'template',
                         value: 'Hello, John',
                         children: [
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
                                 value: 'John',
                             }),
                         ],
@@ -121,6 +116,7 @@ test('template literal with var interpolation at the end', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
 });
 
 test('template literal with var interpolation at the beginning', async () => {
@@ -140,21 +136,18 @@ test('template literal with var interpolation at the beginning', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
+            completedFrame({ node: 'var' }),
             completedFrame({
-                trace: '0:0',
-                children: [completedFrame({ trace: '0:0:0', value: 'John' })],
-            }),
-            completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'template',
                         value: 'John, hello!',
                         children: [
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
                                 value: 'John',
                             }),
                         ],
@@ -188,22 +181,27 @@ test('template literal with function call', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
+            completedFrame({ node: 'var' }),
             completedFrame({
-                trace: '0:0',
-                children: [completedFrame({ trace: '0:0:0', value: 'John' })],
-            }),
-            completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'template',
                         value: 'Hello, JOHN!',
                         children: [
+                            // toUpperCase()
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'call',
                                 value: 'JOHN',
+                                children: [
+                                    // this arg
+                                    completedFrame({
+                                        node: 'ident',
+                                        value: 'John',
+                                    }),
+                                ],
                             }),
                         ],
                     }),

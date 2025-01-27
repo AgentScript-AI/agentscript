@@ -14,7 +14,9 @@ import type { AgentDefinition } from '../agent/defineAgent.js';
 export function renderRuntime(agent: AgentDefinition): AgentRuntime {
     const ctx = createRenderContext();
 
-    renderModule(agent.tools, ctx);
+    if (agent.tools) {
+        renderModule(agent.tools, ctx);
+    }
 
     if (agent.output) {
         renderVariable({

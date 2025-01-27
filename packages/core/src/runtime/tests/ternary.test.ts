@@ -1,11 +1,13 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
+import * as s from '@agentscript-ai/schema';
 import { joinLines } from '@agentscript-ai/utils';
 
 import { createAgent } from '../../agent/createAgent.js';
-import { parseScript } from '../../parser/parseScript.js';
 import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
+import { defineTool } from '../../tools/defineTool.js';
 
 test('ternary operator with literals, true', async () => {
     const code = joinLines([
@@ -23,30 +25,18 @@ test('ternary operator with literals, true', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
-                trace: '0:0',
+                node: 'ternary',
                 value: 1,
-                children: [
-                    // condition
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: true,
-                    }),
-                    // then
-                    completedFrame({
-                        trace: '0:0:1',
-                        value: 1,
-                    }),
-                ],
             }),
         ],
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with literals, false', async () => {
@@ -65,30 +55,18 @@ test('ternary operator with literals, false', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
-                trace: '0:0',
+                node: 'ternary',
                 value: 2,
-                children: [
-                    // condition
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: false,
-                    }),
-                    // then
-                    completedFrame({
-                        trace: '0:0:1',
-                        value: 2,
-                    }),
-                ],
             }),
         ],
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with literals, undefined', async () => {
@@ -107,37 +85,25 @@ test('ternary operator with literals, undefined', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
-                trace: '0:0',
+                node: 'ternary',
                 value: 2,
-                children: [
-                    // condition
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: undefined,
-                    }),
-                    // then
-                    completedFrame({
-                        trace: '0:0:1',
-                        value: 2,
-                    }),
-                ],
             }),
         ],
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with expressions', async () => {
     const code = joinLines([
         //
         'let a = 3',
-        'a < 1 ? 1 : 2',
+        'a < 1 ? 1 : a + 1',
     ]);
 
     const script = parseScript(code);
@@ -150,48 +116,41 @@ test('ternary operator with expressions', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 3,
         },
         children: [
             // var a declaration
-            completedFrame({
-                trace: '0:0',
-                children: [
-                    // literal
-                    completedFrame({
-                        trace: '0:0:0',
-                        value: 3,
-                    }),
-                ],
-            }),
+            completedFrame({ node: 'var' }),
             // ternary operator
             completedFrame({
-                trace: '0:1',
-                value: 2,
+                node: 'ternary',
+                value: 4,
                 children: [
                     // condition
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: false,
                         children: [
                             // left operand
                             completedFrame({
-                                trace: '0:1:0:0',
+                                node: 'ident',
                                 value: 3,
-                            }),
-                            // right operand
-                            completedFrame({
-                                trace: '0:1:0:1',
-                                value: 1,
                             }),
                         ],
                     }),
                     // else
                     completedFrame({
-                        trace: '0:1:1',
-                        value: 2,
+                        node: 'operator',
+                        value: 4,
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 3,
+                            }),
+                        ],
                     }),
                 ],
             }),
@@ -199,5 +158,71 @@ test('ternary operator with expressions', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
+});
+
+test('ternary operator with async tool', async () => {
+    const tool = defineTool({
+        description: 'foo',
+        output: s.string(),
+        handler: () => {
+            return Promise.resolve('bar');
+        },
+    });
+
+    const code = joinLines([
+        //
+        'foo() === "bar" ? "foo" + foo() : "foo"',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: { foo: tool },
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // ternary operator
+            completedFrame({
+                node: 'ternary',
+                value: 'foobar',
+                children: [
+                    // condition
+                    completedFrame({
+                        node: 'operator',
+                        value: true,
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'call',
+                                value: 'bar',
+                            }),
+                        ],
+                    }),
+                    // then
+                    completedFrame({
+                        node: 'operator',
+                        value: 'foobar',
+                        children: [
+                            // left operand
+                            null,
+                            // right operand
+                            completedFrame({
+                                node: 'call',
+                                value: 'bar',
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
 });

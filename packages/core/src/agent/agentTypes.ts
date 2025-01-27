@@ -1,5 +1,7 @@
 import type { LiteralExclude, LiteralPick } from '@nzyme/types';
 
+import type { Script } from '@agentscript-ai/parser';
+
 import type {
     AgentDefinition,
     AgentInputBase,
@@ -8,7 +10,6 @@ import type {
     AgentTools,
 } from './defineAgent.js';
 import type { Heap } from '../heap/heapTypes.js';
-import type { Script } from '../parser/astTypes.js';
 import type {
     StackFrame,
     StackFrameSerialized,
@@ -73,7 +74,7 @@ type AgentStateComplete<TOutput extends AgentOutputBase> = {
     /**
      * Status of the agent execution.
      */
-    status: LiteralPick<StackFrameStatus, 'finished'>;
+    status: LiteralPick<StackFrameStatus, 'done'>;
     /**
      * Output of the agent.
      */
@@ -84,7 +85,7 @@ type AgentStateRunning = {
     /**
      * Status of the agent execution.
      */
-    status: LiteralExclude<StackFrameStatus, 'finished'>;
+    status: LiteralExclude<StackFrameStatus, 'done'>;
     /**
      * Output of the agent.
      */

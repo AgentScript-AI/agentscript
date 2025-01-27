@@ -1,9 +1,11 @@
+import type { AstNode } from '@agentscript-ai/parser';
+
 import type { ToolEvent, ToolEventSerialized } from '../tools/defineTool.js';
 
 /**
  * Status of the stack frame.
  */
-export type StackFrameStatus = 'running' | 'finished' | 'error' | 'awaiting';
+export type StackFrameStatus = 'running' | 'done' | 'error' | 'awaiting';
 
 /**
  * Stack frame.
@@ -26,6 +28,10 @@ export interface StackFrame {
      * Updated at.
      */
     updatedAt: Date;
+    /**
+     * AST node - for debugging purposes.
+     */
+    node?: AstNode;
     /**
      * Variables.
      */
@@ -53,13 +59,13 @@ export interface StackFrame {
     /**
      * Children frames.
      */
-    children?: StackFrame[];
+    children?: (StackFrame | null)[];
 }
 
 /**
  * Serialized stack frame status.
  */
-export type StackFrameStatusSerialized = 'R' | 'F' | 'E' | 'A';
+export type StackFrameStatusSerialized = 'R' | 'D' | 'E' | 'A';
 
 /**
  * Serialized stack frame.
@@ -103,5 +109,5 @@ export interface StackFrameSerialized {
     /**
      * Children frames.
      */
-    c?: StackFrameSerialized[];
+    c?: (StackFrameSerialized | null)[];
 }

@@ -1,6 +1,6 @@
+import { type LanguageModelInput, normalizeModel } from '@agentscript-ai/provider';
 import { type Schema, coerce } from '@agentscript-ai/schema';
 
-import type { LanguageModel } from './LanguageModel.js';
 import { createRenderContext } from './modules/renderContext.js';
 import { renderType } from './modules/renderType.js';
 
@@ -11,7 +11,7 @@ export type InferResultParams<T extends Schema> = {
     /**
      * Language model to use.
      */
-    model: LanguageModel;
+    model: LanguageModelInput;
 
     /**
      * Prompt to infer the result.
@@ -50,7 +50,7 @@ export async function inferResult<T extends Schema>(params: InferResultParams<T>
         params.prompt,
     ].join('\n');
 
-    const response = await params.model.invoke({
+    const response = await normalizeModel(params.model).invoke({
         systemPrompt,
         messages: [{ role: 'user', content: params.prompt }],
     });

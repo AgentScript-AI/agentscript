@@ -37,7 +37,7 @@ export type AgentDefinition<
     /**
      * Tools available to the agent.
      */
-    readonly tools: TTools;
+    readonly tools?: TTools;
     /**
      * Schema for the input of the runtime.
      * Provide if you want the agent to accept a specific input.

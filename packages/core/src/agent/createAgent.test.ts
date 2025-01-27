@@ -1,8 +1,9 @@
 import { validate } from 'uuid';
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
+
 import { createAgent } from './createAgent.js';
-import { parseScript } from '../parser/parseScript.js';
 
 test('create agent with id', () => {
     const script = parseScript('foo()');

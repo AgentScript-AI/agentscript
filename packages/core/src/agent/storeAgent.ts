@@ -43,12 +43,8 @@ function serializeState(
     };
 }
 
-function serializeFrame(
-    frame: StackFrame,
-    heap: HeapSerializer,
-    timestamp: number,
-): StackFrameSerialized {
-    return {
+function serializeFrame(frame: StackFrame, heap: HeapSerializer, timestamp: number) {
+    const serialized: StackFrameSerialized = {
         s: serializeStatus(frame.status),
         t: frame.startedAt.getTime() - timestamp,
         u: frame.updatedAt.getTime() - timestamp,
@@ -61,16 +57,25 @@ function serializeFrame(
             payload: heap.push(event.payload),
             processed: event.processed,
         })),
-        c: frame.children?.map(child => serializeFrame(child, heap, timestamp)),
     };
+
+    const children = frame.children?.map(child =>
+        child ? serializeFrame(child, heap, timestamp) : null,
+    );
+
+    if (children?.length) {
+        serialized.c = children;
+    }
+
+    return serialized;
 }
 
 function serializeStatus(status: StackFrameStatus): StackFrameStatusSerialized {
     switch (status) {
         case 'running':
             return 'R';
-        case 'finished':
-            return 'F';
+        case 'done':
+            return 'D';
         case 'error':
             return 'E';
         case 'awaiting':

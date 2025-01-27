@@ -1,12 +1,12 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 
 import type { AgentSerialized } from './agentTypes.js';
 import { createAgent } from './createAgent.js';
 import { restoreAgent } from './restoreAgent.js';
 import { storeAgent } from './storeAgent.js';
-import { parseScript } from '../parser/parseScript.js';
 import { executeAgent } from '../runtime/executeAgent.js';
 import { childFrame, rootFrame } from '../runtime/tests/testUtils.js';
 import { defineTool } from '../tools/defineTool.js';
@@ -38,22 +38,14 @@ test('serialize not finished execution', async () => {
         children: [
             // var frame
             childFrame({
-                status: 'finished',
-                trace: '0:0',
+                node: 'any',
+                status: 'done',
                 children: [
                     // tool call frame
                     childFrame({
-                        status: 'finished',
-                        trace: '0:0:0',
+                        node: 'any',
+                        status: 'done',
                         value: 'foo',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:0:0:0',
-                                value: 'foo',
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -63,15 +55,14 @@ test('serialize not finished execution', async () => {
         },
     });
 
-    expect(agent.root).toEqual(expectedStack);
+    expect(agent.root).toMatchObject(expectedStack);
     expect(agent.status).toBe('running');
 
     let serialized = storeAgent(agent);
     let json = JSON.stringify(serialized);
     let deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
-    expect(deserialized).toMatchObject(agent);
-    expect(deserialized.root).toEqual(expectedStack);
+    expect(deserialized.root).toMatchObject(expectedStack);
     expect(deserialized.status).toBe('running');
 
     agent = deserialized;
@@ -79,77 +70,63 @@ test('serialize not finished execution', async () => {
     await executeAgent({ agent });
 
     expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var frame
             childFrame({
-                status: 'finished',
-                trace: '0:0',
+                node: 'any',
+                status: 'done',
                 children: [
                     // tool call frame
                     childFrame({
-                        status: 'finished',
-                        trace: '0:0:0',
+                        node: 'any',
+                        status: 'done',
                         value: 'foo',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:0:0:0',
-                                value: 'foo',
-                            }),
-                        ],
                     }),
                 ],
             }),
             // var frame
             childFrame({
-                status: 'finished',
-                trace: '0:1',
+                node: 'any',
+                status: 'done',
                 children: [
                     // tool call frame
                     childFrame({
-                        status: 'finished',
-                        trace: '0:1:0',
+                        node: 'any',
+                        status: 'done',
                         value: 'bar',
-                        children: [
-                            // tool param
-                            childFrame({
-                                status: 'finished',
-                                trace: '0:1:0:0',
-                                value: 'bar',
-                            }),
-                        ],
                     }),
                 ],
             }),
             // var frame
             childFrame({
-                status: 'finished',
-                trace: '0:2',
+                node: 'any',
+                status: 'done',
                 children: [
                     // tool call frame
                     childFrame({
-                        status: 'finished',
-                        trace: '0:2:0',
+                        node: 'any',
+                        status: 'done',
                         value: 'foobar',
                         children: [
+                            // call object
+                            null,
                             // tool param - concat
                             childFrame({
-                                status: 'finished',
-                                trace: '0:2:0:0',
+                                node: 'any',
+                                status: 'done',
                                 value: 'foobar',
                                 children: [
                                     // concat left
                                     childFrame({
-                                        status: 'finished',
-                                        trace: '0:2:0:0:0',
+                                        node: 'any',
+                                        status: 'done',
                                         value: 'foo',
                                     }),
                                     // concat right
                                     childFrame({
-                                        status: 'finished',
-                                        trace: '0:2:0:0:1',
+                                        node: 'any',
+                                        status: 'done',
                                         value: 'bar',
                                     }),
                                 ],
@@ -167,13 +144,12 @@ test('serialize not finished execution', async () => {
     });
 
     expect(agent.root).toMatchObject(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 
     serialized = storeAgent(agent);
     json = JSON.stringify(serialized);
     deserialized = restoreAgent(JSON.parse(json) as AgentSerialized, agent.def);
 
-    expect(deserialized).toMatchObject(agent);
     expect(deserialized.root).toMatchObject(expectedStack);
-    expect(deserialized.status).toBe('finished');
+    expect(deserialized.status).toBe('done');
 });

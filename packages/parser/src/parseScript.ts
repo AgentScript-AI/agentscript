@@ -4,7 +4,7 @@ import type * as babel from '@babel/types';
 import { ParseError } from './ParseError.js';
 import type {
     ArrayExpression,
-    Assignment,
+    AssignmentExpression,
     AstNode,
     Expression,
     Literal,
@@ -107,6 +107,13 @@ function parseStatement(statement: babel.Statement): AstNode {
 function parseExpression(expression: babel.Expression): Expression {
     switch (expression.type) {
         case 'Identifier':
+            if (expression.name === 'undefined') {
+                return {
+                    type: 'literal',
+                    value: undefined,
+                };
+            }
+
             return {
                 type: 'ident',
                 name: expression.name,
@@ -295,7 +302,7 @@ function parseTemplateLiteral(expression: babel.TemplateLiteral): TemplateLitera
     };
 }
 
-function parseLeftValue(left: babel.LVal): Assignment['left'] {
+function parseLeftValue(left: babel.LVal): AssignmentExpression['left'] {
     const expression = parseExpression(left as babel.Expression);
 
     switch (expression.type) {

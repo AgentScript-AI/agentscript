@@ -58,7 +58,7 @@ function deserializeState(
     return {
         script: state.script,
         plan: state.plan,
-        status: root.status as LiteralPick<StackFrameStatus, 'finished'>,
+        status: root.status as LiteralPick<StackFrameStatus, 'done'>,
         root,
         output,
     };
@@ -87,12 +87,13 @@ function deserializeFrame(
             payload: heap.get(event.payload),
             processed: event.processed,
         })),
-        children: frameSerialized.c?.map((child, index) =>
-            deserializeFrame(child, heap, `${trace}:${index}`, timestamp),
-        ),
     };
 
     frame.children = frameSerialized.c?.map((child, index) => {
+        if (!child) {
+            return null;
+        }
+
         const childFrame = deserializeFrame(child, heap, `${trace}:${index}`, timestamp);
         childFrame.parent = frame;
         return childFrame;
@@ -105,8 +106,8 @@ function deserializeStatus(status: StackFrameStatusSerialized): StackFrameStatus
     switch (status) {
         case 'R':
             return 'running';
-        case 'F':
-            return 'finished';
+        case 'D':
+            return 'done';
         case 'E':
             return 'error';
         case 'A':

@@ -1,5 +1,7 @@
 import type { EmptyObject } from '@nzyme/types';
 
+import type { Script } from '@agentscript-ai/parser';
+
 import type { Agent } from './agentTypes.js';
 import { createAgentInternal } from './createAgentInternal.js';
 import type {
@@ -9,7 +11,6 @@ import type {
     AgentTools,
 } from './defineAgent.js';
 import { renderRuntime } from '../modules/renderRuntime.js';
-import type { Script } from '../parser/astTypes.js';
 
 /**
  * Parameters for {@link createAgent}.

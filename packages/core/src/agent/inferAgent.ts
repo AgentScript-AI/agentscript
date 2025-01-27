@@ -1,6 +1,7 @@
 import type { EmptyObject } from '@nzyme/types';
 
-import type { LanguageModel } from '../LanguageModel.js';
+import type { LanguageModelInput } from '@agentscript-ai/provider';
+
 import type { Agent } from './agentTypes.js';
 import type {
     AgentDefinition,
@@ -26,7 +27,7 @@ export interface InferAgentParams<
     /**
      * Language model to use.
      */
-    model: LanguageModel;
+    model: LanguageModelInput;
     /**
      * Prompt to infer the agent from.
      */

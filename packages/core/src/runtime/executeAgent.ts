@@ -1,5 +1,22 @@
 import type { Constructor, EmptyObject } from '@nzyme/types';
 
+import type {
+    ArrayExpression,
+    AssignmentExpression,
+    AstNode,
+    Expression,
+    FunctionCall,
+    IdentifierExpression,
+    IfStatement,
+    MemberExpression,
+    NewExpression,
+    ObjectExpression,
+    OperatorExpression,
+    ReturnStatement,
+    TemplateLiteral,
+    TernaryExpression,
+    VariableDeclaration,
+} from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
 
@@ -17,28 +34,9 @@ import type {
     AgentOutputBase,
     AgentTools,
 } from '../agent/defineAgent.js';
-import type {
-    ArrayExpression,
-    AstNode,
-    Expression,
-    FunctionCall,
-    IfStatement,
-    MemberExpression,
-    NewExpression,
-    ObjectExpression,
-    OperatorExpression,
-    ReturnStatement,
-    TemplateLiteral,
-    TernaryExpression,
-} from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
-import {
-    resolveExpression,
-    resolveFunctionCall,
-    resolveIdentifier,
-    resolveLiteral,
-} from './utils/resolveExpression.js';
+import { ALLOWED_GLOBALS, resolveExpression, resolveLiteral } from './utils/resolveExpression.js';
 import { TOOL_AWAIT_RESULT, toolResultHelper } from '../tools/toolResult.js';
 
 type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends EmptyObject
@@ -101,6 +99,27 @@ export interface ExecuteAgentResult {
     ticks: number;
 }
 
+interface StackFrameResult {
+    /**
+     * Value of the frame.
+     */
+    value?: unknown;
+    /**
+     * Status of the frame.
+     */
+    status: StackFrameStatus;
+
+    /**
+     * Unsafe value of the frame.
+     */
+    unsafe?: boolean;
+
+    /**
+     * Used only for member expressions.
+     */
+    object?: unknown;
+}
+
 /**
  * Execute an agent.
  * @param options - Options for the agent.
@@ -117,11 +136,11 @@ export async function executeAgent<
 
     const root = agent.root;
     const script = agent.script.ast;
-    const status = await runBlock(agent, controller, root, root, script);
+    const result = await runBlockStatement(agent, controller, root, root, script);
 
-    agent.status = status;
+    agent.status = result.status;
 
-    if (status === 'finished' && agent.def.output) {
+    if (result.status === 'done' && agent.def.output) {
         const result = root.variables?.result as AgentOutput<TOutput>;
         validateOrThrow(agent.def.output, result);
         agent.output = result;
@@ -130,28 +149,29 @@ export async function executeAgent<
     return { ticks: controller.ticks };
 }
 
-async function runBlock(
+async function runBlockStatement(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
     block: StackFrame,
     nodes: AstNode[],
-): Promise<StackFrameStatus> {
+): Promise<StackFrameResult> {
     if (!block.children) {
         block.children = [];
     }
 
-    let index = block.children.length - 1;
-    let frame: StackFrame | undefined;
+    let index = Math.max(0, block.children.length - 1);
+    let frame: StackFrame | undefined | null;
 
     while (true) {
-        if (block.status === 'finished') {
-            return 'finished';
+        // block can be completed early by a return statement
+        if (block.status === 'done') {
+            return block;
         }
 
         if (index >= nodes.length) {
             // went through all statements in block
-            return updateFrame(block, 'finished');
+            return updateFrame(block, 'done');
         }
 
         if (!controller.continue()) {
@@ -159,19 +179,14 @@ async function runBlock(
         }
 
         frame = block.children[index];
-        if (!frame) {
-            ({ frame, index } = pushNewFrame(block));
-        }
-
-        if (frame.status === 'finished') {
+        if (frame?.status === 'done') {
             index++;
             continue;
         }
 
-        const node = nodes[index];
-        const frameStatus = await runNode(agent, controller, closure, block, frame, node);
-        if (frameStatus !== 'finished') {
-            return updateFrame(block, frameStatus);
+        const frameResult = await runNode(agent, controller, closure, block, index, nodes[index]);
+        if (frameResult.status !== 'done') {
+            return updateFrame(block, frameResult.status);
         }
 
         index++;
@@ -182,174 +197,153 @@ async function runNode(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     node: AstNode,
-): Promise<StackFrameStatus> {
+): Promise<StackFrameResult> {
     switch (node.type) {
-        case 'var': {
-            const name = node.name;
+        case 'var':
+            return await runVarStatement(agent, controller, closure, parent, index, node);
 
-            if (!block.variables) {
-                block.variables = {};
-            }
-
-            if (name in block.variables) {
-                throw new RuntimeError(`Variable ${name} already exists`);
-            }
-
-            if (!node.value) {
-                block.variables[name] = undefined;
-                return updateFrame(frame, 'finished');
-            }
-
-            const valueFrame = getFrame(frame, 0);
-            const status = await runExpression(
-                agent,
-                controller,
-                closure,
-                block,
-                valueFrame,
-                node.value,
-            );
-
-            if (status !== 'finished') {
-                return updateFrame(frame, status);
-            }
-
-            block.variables[name] = valueFrame.value;
-            return updateFrame(frame, 'finished');
+        case 'block': {
+            const frame = getFrame(parent, index, node);
+            return await runBlockStatement(agent, controller, closure, frame, node.body);
         }
 
-        case 'block':
-            return await runBlock(agent, controller, closure, frame, node.body);
-
         case 'if':
-            return await runIf(agent, controller, closure, block, frame, node);
+            return await runIfStatement(agent, controller, closure, parent, index, node);
 
         case 'return':
-            return await runReturn(agent, controller, closure, block, frame, node);
+            return await runReturnStatement(agent, controller, closure, parent, index, node);
 
         default:
-            return await runExpression(agent, controller, closure, block, frame, node);
+            return await runExpression(agent, controller, closure, parent, index, node);
     }
 }
 
-async function runIf(
+async function runVarStatement(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
+    node: VariableDeclaration,
+): Promise<StackFrameResult> {
+    const frame = getFrame(parent, index, node);
+    if (frame.status === 'done') {
+        return frame;
+    }
+
+    const name = node.name;
+
+    if (!parent.variables) {
+        parent.variables = {};
+    }
+
+    if (name in parent.variables) {
+        throw new RuntimeError(`Variable ${name} already exists`);
+    }
+
+    if (!node.value) {
+        parent.variables[name] = undefined;
+        return updateFrame(frame, 'done');
+    }
+
+    const valueResult = await runExpression(agent, controller, closure, frame, 0, node.value);
+    if (valueResult.status !== 'done') {
+        return updateFrame(frame, valueResult.status);
+    }
+
+    parent.variables[name] = valueResult.value;
+    return updateFrame(frame, 'done');
+}
+
+async function runIfStatement(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
     node: IfStatement,
 ) {
-    const conditionFrame = getFrame(frame, 0);
-    const conditionStatus = await runExpression(
-        agent,
-        controller,
-        closure,
-        block,
-        conditionFrame,
-        node.if,
-    );
-
-    if (conditionStatus !== 'finished') {
-        return updateFrame(frame, conditionStatus);
+    const frame = getFrame(parent, index, node);
+    if (frame.status === 'done') {
+        return frame;
     }
 
-    if (conditionFrame.value) {
-        const thenFrame = getFrame(frame, 1);
-        const thenStatus = await runNode(agent, controller, closure, block, thenFrame, node.then);
-        return updateFrame(frame, thenStatus);
+    const condition = await runExpression(agent, controller, closure, frame, 0, node.if);
+    if (condition.status !== 'done') {
+        return updateFrame(frame, condition.status);
     }
 
-    if (node.else) {
-        const elseFrame = getFrame(frame, 1);
-        const elseStatus = await runNode(agent, controller, closure, block, elseFrame, node.else);
-        return updateFrame(frame, elseStatus);
+    const thenNode = condition.value ? node.then : node.else;
+    if (thenNode) {
+        const thenResult = await runNode(agent, controller, closure, frame, 1, thenNode);
+        return updateFrame(frame, thenResult.status);
     }
 
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: Expression,
-): Promise<StackFrameStatus> {
-    if (frame.status === 'finished') {
-        return 'finished';
-    }
-
+): Promise<StackFrameResult> {
     switch (expression.type) {
-        case 'ident': {
-            frame.value = resolveIdentifier(agent, frame, expression);
-            return updateFrame(frame, 'finished');
-        }
+        case 'ident':
+            return runIdentifierExpression(agent, parent, index, expression);
 
         case 'literal': {
-            frame.value = resolveLiteral(expression);
-            return updateFrame(frame, 'finished');
+            return {
+                value: resolveLiteral(expression),
+                status: 'done',
+            };
         }
 
         case 'member':
-            return await runMemberExpression(agent, controller, closure, block, frame, expression);
+            return await runMemberExpression(agent, controller, closure, parent, index, expression);
 
         case 'operator':
             return await runOperatorExpression(
                 agent,
                 controller,
                 closure,
-                block,
-                frame,
+                parent,
+                index,
                 expression,
             );
 
         case 'ternary':
-            return await runTernaryExpression(agent, controller, closure, block, frame, expression);
-
-        case 'object':
-            return await runObjectExpression(agent, controller, closure, block, frame, expression);
-
-        case 'array':
-            return await runArrayExpression(agent, controller, closure, block, frame, expression);
-
-        case 'assign': {
-            const rightFrame = getFrame(frame, 0);
-
-            const status = await runExpression(
+            return await runTernaryExpression(
                 agent,
                 controller,
                 closure,
-                block,
-                rightFrame,
-                expression.right,
+                parent,
+                index,
+                expression,
             );
 
-            if (status !== 'finished') {
-                return updateFrame(frame, status);
-            }
+        case 'object':
+            return await runObjectExpression(agent, controller, closure, parent, index, expression);
 
-            if (expression.left.type === 'ident') {
-                setVariable(block, expression.left.name, rightFrame.value);
-                frame.value = rightFrame.value;
-                return updateFrame(frame, 'finished');
-            }
+        case 'array':
+            return await runArrayExpression(agent, controller, closure, parent, index, expression);
 
-            throw new Error('Assignment left must be a variable');
-        }
+        case 'assign':
+            return await runAssignExpression(agent, controller, closure, parent, index, expression);
 
         case 'call':
-            return await runFunctionCall(agent, controller, closure, block, frame, expression);
+            return await runFunctionCall(agent, controller, closure, parent, index, expression);
 
         case 'new':
-            return await runNewExpression(agent, controller, closure, block, frame, expression);
+            return await runNewExpression(agent, controller, closure, parent, index, expression);
 
         case 'template':
-            return await runTemplateLiteral(agent, controller, closure, block, frame, expression);
+            return await runTemplateLiteral(agent, controller, closure, parent, index, expression);
 
         default:
             throw new RuntimeError(
@@ -358,64 +352,118 @@ async function runExpression(
     }
 }
 
+function runIdentifierExpression(
+    agent: Agent,
+    parent: StackFrame,
+    index: number,
+    expression: IdentifierExpression,
+): StackFrameResult {
+    const name = expression.name;
+
+    let variableFrame: StackFrame | undefined = parent;
+    while (variableFrame) {
+        const variables = variableFrame.variables;
+        if (variables && name in variables) {
+            const frame = getFrame(parent, index, expression);
+
+            frame.value = variables[name];
+            return updateFrame(frame, 'done');
+        }
+
+        variableFrame = variableFrame.parent;
+    }
+
+    const tools = agent.def.tools;
+    if (tools && name in tools) {
+        return {
+            status: 'done',
+            value: tools[name],
+            unsafe: true,
+        };
+    }
+
+    if (ALLOWED_GLOBALS.has(name)) {
+        return {
+            value: (globalThis as Record<string, unknown>)[name],
+            unsafe: true,
+            status: 'done',
+        };
+    }
+
+    throw new RuntimeError(`Variable ${expression.name} not found`);
+}
+
 async function runMemberExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: MemberExpression,
-): Promise<StackFrameStatus> {
-    const objectFrame = getFrame(frame, 0);
-    const objectStatus = await runExpression(
-        agent,
-        controller,
-        closure,
-        block,
-        objectFrame,
-        expression.obj,
-    );
+): Promise<StackFrameResult> {
+    const frame = getFrame(parent, index, expression);
+    if (frame.status === 'done' && frame.value !== undefined) {
+        return frame;
+    }
 
-    if (objectStatus !== 'finished') {
-        return updateFrame(frame, objectStatus);
+    const objectResult = await runExpression(agent, controller, closure, frame, 0, expression.obj);
+    if (objectResult.status !== 'done') {
+        return updateFrame(frame, objectResult.status);
     }
 
     let property: string;
+    let unsafe = objectResult.unsafe;
     if (expression.prop.type === 'ident') {
         property = expression.prop.name;
     } else {
-        const propertyFrame = getFrame(frame, 1);
-        const propertyStatus = await runExpression(
+        const propertyResult = await runExpression(
             agent,
             controller,
             closure,
-            block,
-            propertyFrame,
+            frame,
+            1,
             expression.prop,
         );
 
-        if (propertyStatus !== 'finished') {
-            return updateFrame(frame, propertyStatus);
+        if (propertyResult.status !== 'done') {
+            return updateFrame(frame, propertyResult.status);
         }
 
-        property = propertyFrame.value as string;
+        property = String(propertyResult.value);
+        unsafe = unsafe || propertyResult.unsafe;
     }
 
-    frame.value = (objectFrame.value as Record<string, unknown>)[property];
-    return updateFrame(frame, 'finished');
+    const value = (objectResult.value as Record<string, unknown>)[property];
+
+    unsafe = unsafe || !isSafeValue(value);
+
+    // only set value if it's safe
+    if (!unsafe) {
+        frame.value = value;
+    }
+
+    updateFrame(frame, 'done');
+
+    return {
+        value,
+        unsafe,
+        status: 'done',
+        object: objectResult.value,
+    };
 }
 
 async function runObjectExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: ObjectExpression,
-): Promise<StackFrameStatus> {
+): Promise<StackFrameResult> {
+    const frame = getFrame(parent, index, expression);
     const result: Record<string, unknown> = {};
 
-    let index = 0;
+    let propIndex = 0;
 
     // todo: run in parallel
     for (const prop of expression.props) {
@@ -423,101 +471,151 @@ async function runObjectExpression(
         if (prop.key.type === 'ident') {
             key = prop.key.name;
         } else {
-            const keyFrame = getFrame(frame, index);
-            const keyStatus = await runExpression(
+            const keyResult = await runExpression(
                 agent,
                 controller,
                 closure,
-                block,
-                keyFrame,
+                frame,
+                propIndex,
                 prop.key,
             );
 
-            if (keyStatus !== 'finished') {
-                return updateFrame(frame, keyStatus);
+            if (keyResult.status !== 'done') {
+                return updateFrame(frame, keyResult.status);
             }
 
-            key = keyFrame.value as string;
-            index++;
+            key = keyResult.value as string;
         }
 
-        const valueFrame = getFrame(frame, index);
-        const valueStatus = await runExpression(
+        // always increment propIndex for both key and value
+        // so that frames are deterministic
+        propIndex++;
+
+        const valueResult = await runExpression(
             agent,
             controller,
             closure,
-            block,
-            valueFrame,
+            frame,
+            propIndex,
             prop.value,
         );
 
-        if (valueStatus !== 'finished') {
-            return updateFrame(frame, valueStatus);
+        if (valueResult.status !== 'done') {
+            return updateFrame(frame, valueResult.status);
         }
 
-        result[key] = valueFrame.value;
-        index++;
+        result[key] = valueResult.value;
+        propIndex++;
     }
 
     frame.value = result;
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runArrayExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: ArrayExpression,
 ) {
-    const result = await runExpressionArray(
-        agent,
-        controller,
-        closure,
-        block,
-        frame,
-        expression.items,
-    );
+    const frame = getFrame(parent, index, expression);
+    const result = await runExpressionArray(agent, controller, closure, frame, 0, expression.items);
 
     if (Array.isArray(result)) {
         frame.value = result;
-        return updateFrame(frame, 'finished');
+        return updateFrame(frame, 'done');
     }
 
     return updateFrame(frame, result);
+}
+
+async function runAssignExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expr: AssignmentExpression,
+): Promise<StackFrameResult> {
+    const frame = getFrame(parent, index, expr);
+    if (frame.status === 'done') {
+        return frame;
+    }
+
+    if (expr.left.type !== 'ident') {
+        throw new Error('Assignment left must be a variable');
+    }
+
+    const right = await runExpression(agent, controller, closure, frame, 1, expr.right);
+    if (right.status !== 'done') {
+        return updateFrame(frame, right.status);
+    }
+
+    setVariable(parent, expr.left.name, right.value);
+    frame.value = right.value;
+    return updateFrame(frame, 'done');
 }
 
 async function runFunctionCall(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expr: FunctionCall,
-): Promise<StackFrameStatus> {
-    const { func, obj } = resolveFunctionCall(agent, frame, expr);
+): Promise<StackFrameResult> {
+    const frame = getFrame(parent, index, expr);
+    if (frame.status === 'done') {
+        return frame;
+    }
+
+    let func: unknown;
+    let obj: Record<string, unknown> | undefined;
+
+    if (expr.func.type === 'member') {
+        if (expr.func.prop.type !== 'ident') {
+            throw new RuntimeError('Dynamic method calls are not supported');
+        }
+
+        const objResult = await runExpression(agent, controller, closure, frame, 0, expr.func.obj);
+        if (objResult.status !== 'done') {
+            return updateFrame(frame, objResult.status);
+        }
+
+        obj = objResult.value as Record<string, unknown>;
+        func = obj[expr.func.prop.name];
+    } else {
+        const funcResult = await runExpression(agent, controller, closure, frame, 0, expr.func);
+        if (funcResult.status !== 'done') {
+            return updateFrame(frame, funcResult.status);
+        }
+
+        func = funcResult.value;
+        obj = funcResult.object as Record<string, unknown>;
+    }
 
     if (isTool(func)) {
-        return await runFunctionCustom(agent, controller, closure, block, frame, expr, func);
+        return await runToolCall(agent, controller, closure, frame, 1, expr, func);
     }
 
     switch (func) {
         case Array.prototype.map:
-            return await runArrayMap(agent, controller, frame, expr, obj);
+            return await runArrayMap(agent, controller, frame, 1, expr, obj);
 
         case Array.prototype.filter:
-            return await runArrayFilter(agent, controller, frame, expr, obj);
+            return await runArrayFilter(agent, controller, frame, 1, expr, obj);
 
         case Array.prototype.some:
-            return await runArraySome(agent, controller, frame, expr, obj);
+            return await runArraySome(agent, controller, frame, 1, expr, obj);
 
         case Array.prototype.every:
-            return await runArrayEvery(agent, controller, frame, expr, obj);
+            return await runArrayEvery(agent, controller, frame, 1, expr, obj);
     }
 
     if (typeof func === 'function') {
-        return await runFunctionNative(agent, controller, closure, block, frame, expr, func, obj);
+        return await runFunctionNative(agent, controller, closure, frame, 1, expr, func, obj);
     }
 
     throw new RuntimeError(`Expression is not a function`);
@@ -527,106 +625,137 @@ async function runArrayMap(
     agent: Agent,
     controller: RuntimeController,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     arr: unknown,
 ) {
-    const result: unknown[] = [];
+    const mapResult: unknown[] = [];
+    const arrResult = await runArrayFunc(
+        agent,
+        controller,
+        frame,
+        index,
+        expr,
+        arr,
+        'map',
+        value => {
+            mapResult.push(value);
+        },
+    );
 
-    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'map', value => {
-        result.push(value);
-    });
-
-    if (status !== 'finished') {
-        return updateFrame(frame, status);
+    if (arrResult.status !== 'done') {
+        return updateFrame(frame, arrResult.status);
     }
 
-    frame.value = result;
-    return updateFrame(frame, 'finished');
+    frame.value = mapResult;
+    return updateFrame(frame, 'done');
 }
 
 async function runArrayFilter(
     agent: Agent,
     controller: RuntimeController,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     arr: unknown,
 ) {
-    const result: unknown[] = [];
-
-    const status = await runArrayFunc(
+    const filterResult: unknown[] = [];
+    const arrResult = await runArrayFunc(
         agent,
         controller,
         frame,
+        index,
         expr,
         arr,
         'filter',
         (value, item) => {
             if (value) {
-                result.push(item);
+                filterResult.push(item);
             }
         },
     );
 
-    if (status !== 'finished') {
-        return updateFrame(frame, status);
+    if (arrResult.status !== 'done') {
+        return updateFrame(frame, arrResult.status);
     }
 
-    frame.value = result;
-    return updateFrame(frame, 'finished');
+    frame.value = filterResult;
+    return updateFrame(frame, 'done');
 }
 
 async function runArraySome(
     agent: Agent,
     controller: RuntimeController,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     arr: unknown,
 ) {
     let result = false;
 
-    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'some', value => {
-        if (value) {
-            result = true;
-            return false;
-        }
-    });
+    const arrResult = await runArrayFunc(
+        agent,
+        controller,
+        frame,
+        index,
+        expr,
+        arr,
+        'some',
+        value => {
+            if (value) {
+                result = true;
+                return false;
+            }
+        },
+    );
 
-    if (status !== 'finished') {
-        return updateFrame(frame, status);
+    if (arrResult.status !== 'done') {
+        return updateFrame(frame, arrResult.status);
     }
 
     frame.value = result;
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runArrayEvery(
     agent: Agent,
     controller: RuntimeController,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     arr: unknown,
 ) {
     let result = true;
 
-    const status = await runArrayFunc(agent, controller, frame, expr, arr, 'every', value => {
-        if (!value) {
-            result = false;
-            return false;
-        }
-    });
+    const arrResult = await runArrayFunc(
+        agent,
+        controller,
+        frame,
+        index,
+        expr,
+        arr,
+        'every',
+        value => {
+            if (!value) {
+                result = false;
+                return false;
+            }
+        },
+    );
 
-    if (status !== 'finished') {
-        return updateFrame(frame, status);
+    if (arrResult.status !== 'done') {
+        return updateFrame(frame, arrResult.status);
     }
 
     frame.value = result;
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runArrayFunc(
     agent: Agent,
     controller: RuntimeController,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     arr: unknown,
     funcName: string,
@@ -646,7 +775,7 @@ async function runArrayFunc(
 
     for (let i = 0; i < arr.length; i++) {
         const item = arr[i] as unknown;
-        const itemFrame = getFrame(frame, i);
+        const itemFrame = getFrame(frame, index, fn.body);
 
         if (!itemFrame.variables) {
             itemFrame.variables = {};
@@ -660,9 +789,9 @@ async function runArrayFunc(
             }
         }
 
-        const status = await runNode(agent, controller, itemFrame, itemFrame, itemFrame, fn.body);
-        if (status !== 'finished') {
-            return updateFrame(frame, status);
+        const itemResult = await runNode(agent, controller, itemFrame, frame, index++, fn.body);
+        if (itemResult.status !== 'done') {
+            return updateFrame(frame, itemResult.status);
         }
 
         const value = func(itemFrame.value, item, i);
@@ -671,26 +800,27 @@ async function runArrayFunc(
         }
     }
 
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
-async function runFunctionCustom(
+async function runToolCall(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
     frame: StackFrame,
+    index: number,
     expr: FunctionCall,
     tool: ToolDefinition,
-): Promise<StackFrameStatus> {
+): Promise<StackFrameResult> {
     const args = await runExpressionArray(
         agent,
         controller,
         closure,
-        block,
         frame,
+        index,
         expr.args ?? [],
     );
+
     if (!Array.isArray(args)) {
         return updateFrame(frame, args);
     }
@@ -744,15 +874,15 @@ async function runFunctionCustom(
     }
 
     frame.value = result;
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runFunctionNative(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
     frame: StackFrame,
+    index: number,
     call: FunctionCall,
     func: NativeFunction,
     thisArg: unknown,
@@ -766,190 +896,176 @@ async function runFunctionNative(
         agent,
         controller,
         closure,
-        block,
         frame,
+        index,
         call.args ?? [],
     );
     if (!Array.isArray(args)) {
         return updateFrame(frame, args);
     }
 
-    const result = func.apply(thisArg, args) as unknown;
-    if (result instanceof Promise) {
-        frame.value = await result;
+    let result = func.apply(thisArg, args) as unknown;
+    while (result instanceof Promise) {
+        result = await result;
         controller.tick();
-    } else {
-        frame.value = result;
     }
 
-    return updateFrame(frame, 'finished');
+    if (!isSafeValue(result)) {
+        throw new RuntimeError(`Function ${func.name} returned unsafe value`);
+    }
+
+    frame.value = result;
+    return updateFrame(frame, 'done');
 }
 
 async function runOperatorExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: OperatorExpression,
 ) {
-    let frameIndex = 0;
+    const frame = getFrame(parent, index, expression);
 
-    let leftFrame: StackFrame | undefined;
-    let rightFrame: StackFrame | undefined;
+    let leftResult: StackFrameResult | undefined;
+    let rightResult: StackFrameResult | undefined;
 
     if (expression.left) {
-        leftFrame = getFrame(frame, frameIndex++);
-        const leftStatus = await runExpression(
-            agent,
-            controller,
-            closure,
-            block,
-            leftFrame,
-            expression.left,
-        );
+        leftResult = await runExpression(agent, controller, closure, frame, 0, expression.left);
 
-        if (leftStatus !== 'finished') {
-            return updateFrame(frame, leftStatus);
+        if (leftResult.status !== 'done') {
+            return updateFrame(frame, leftResult.status);
         }
     }
 
     if (expression.right) {
-        rightFrame = getFrame(frame, frameIndex++);
-        const rightStatus = await runExpression(
-            agent,
-            controller,
-            closure,
-            block,
-            rightFrame,
-            expression.right,
-        );
+        rightResult = await runExpression(agent, controller, closure, frame, 1, expression.right);
 
-        if (rightStatus !== 'finished') {
-            return updateFrame(frame, rightStatus);
+        if (rightResult.status !== 'done') {
+            return updateFrame(frame, rightResult.status);
         }
     }
 
+    const leftValue = leftResult?.value;
+    const rightValue = rightResult?.value;
+
     switch (expression.operator) {
         case '+':
-            frame.value = (leftFrame?.value as number) + (rightFrame?.value as number);
+            frame.value = (leftValue as number) + (rightValue as number);
             break;
 
         case '-':
-            frame.value = (leftFrame?.value as number) - (rightFrame?.value as number);
+            frame.value = (leftValue as number) - (rightValue as number);
             break;
 
         case '*':
-            frame.value = (leftFrame?.value as number) * (rightFrame?.value as number);
+            frame.value = (leftValue as number) * (rightValue as number);
             break;
 
         case '/':
-            frame.value = (leftFrame?.value as number) / (rightFrame?.value as number);
+            frame.value = (leftValue as number) / (rightValue as number);
             break;
 
         case '%':
-            frame.value = (leftFrame?.value as number) % (rightFrame?.value as number);
+            frame.value = (leftValue as number) % (rightValue as number);
             break;
 
         case '==':
-            frame.value = (leftFrame?.value as number) == (rightFrame?.value as number);
+            frame.value = leftValue == rightValue;
             break;
 
         case '===':
-            frame.value = (leftFrame?.value as number) === (rightFrame?.value as number);
+            frame.value = leftValue === rightValue;
             break;
 
         case '!=':
-            frame.value = (leftFrame?.value as number) != (rightFrame?.value as number);
+            frame.value = leftValue != rightValue;
             break;
 
         case '!==':
-            frame.value = (leftFrame?.value as number) !== (rightFrame?.value as number);
+            frame.value = leftValue !== rightValue;
             break;
 
         case '>':
-            frame.value = (leftFrame?.value as number) > (rightFrame?.value as number);
+            frame.value = (leftValue as number) > (rightValue as number);
             break;
 
         case '>=':
-            frame.value = (leftFrame?.value as number) >= (rightFrame?.value as number);
+            frame.value = (leftValue as number) >= (rightValue as number);
             break;
 
         case '<':
-            frame.value = (leftFrame?.value as number) < (rightFrame?.value as number);
+            frame.value = (leftValue as number) < (rightValue as number);
             break;
 
         case '<=':
-            frame.value = (leftFrame?.value as number) <= (rightFrame?.value as number);
+            frame.value = (leftValue as number) <= (rightValue as number);
             break;
 
         case '&&':
-            frame.value = (leftFrame?.value as boolean) && (rightFrame?.value as boolean);
+            frame.value = (leftValue as boolean) && (rightValue as boolean);
             break;
 
         case '||':
-            frame.value = (leftFrame?.value as boolean) || (rightFrame?.value as boolean);
+            frame.value = (leftValue as boolean) || (rightValue as boolean);
             break;
 
         case '??':
-            frame.value = leftFrame?.value ?? rightFrame?.value;
+            frame.value = leftValue ?? rightValue;
             break;
 
         default:
             throw new RuntimeError(`Unsupported operator: ${expression.operator as string}`);
     }
 
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runTernaryExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: TernaryExpression,
 ) {
-    const conditionFrame = getFrame(frame, 0);
+    const frame = getFrame(parent, index, expression);
 
-    const conditionStatus = await runExpression(
+    const conditionResult = await runExpression(
         agent,
         controller,
         closure,
-        block,
-        conditionFrame,
+        frame,
+        0,
         expression.if,
     );
-    if (conditionStatus !== 'finished') {
-        return updateFrame(frame, conditionStatus);
+
+    if (conditionResult.status !== 'done') {
+        return updateFrame(frame, conditionResult.status);
     }
 
-    const thenFrame = getFrame(frame, 1);
-    const thenExpression = conditionFrame.value ? expression.then : expression.else;
-    const thenStatus = await runExpression(
-        agent,
-        controller,
-        closure,
-        block,
-        thenFrame,
-        thenExpression,
-    );
-    if (thenStatus !== 'finished') {
-        return updateFrame(frame, thenStatus);
+    const thenExpression = conditionResult.value ? expression.then : expression.else;
+    const thenResult = await runExpression(agent, controller, closure, frame, 1, thenExpression);
+
+    if (thenResult.status !== 'done') {
+        return updateFrame(frame, thenResult.status);
     }
 
-    frame.value = thenFrame.value;
-    return updateFrame(frame, 'finished');
+    frame.value = thenResult.value;
+    return updateFrame(frame, 'done');
 }
 
 async function runNewExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: NewExpression,
 ) {
+    const frame = getFrame(parent, index, expression);
+
     const constructor = resolveExpression(agent, frame, expression.func) as Constructor;
     if (typeof constructor !== 'function') {
         throw new RuntimeError(`Expression is not a function`);
@@ -963,14 +1079,14 @@ async function runNewExpression(
         agent,
         controller,
         closure,
-        block,
         frame,
+        0,
         expression.args ?? [],
     );
 
     if (Array.isArray(args)) {
         frame.value = new constructor(...args);
-        return updateFrame(frame, 'finished');
+        return updateFrame(frame, 'done');
     }
 
     return updateFrame(frame, args);
@@ -980,10 +1096,12 @@ async function runTemplateLiteral(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     expression: TemplateLiteral,
 ) {
+    const frame = getFrame(parent, index, expression);
+
     let result = '';
     let frameIndex = 0;
 
@@ -991,86 +1109,105 @@ async function runTemplateLiteral(
         if (typeof part === 'string') {
             result += part;
         } else {
-            const partFrame = getFrame(frame, frameIndex++);
-            const partStatus = await runExpression(
+            const partResult = await runExpression(
                 agent,
                 controller,
                 closure,
-                block,
-                partFrame,
+                frame,
+                frameIndex++,
                 part,
             );
 
-            if (partStatus !== 'finished') {
-                return updateFrame(frame, partStatus);
+            if (partResult.status !== 'done') {
+                return updateFrame(frame, partResult.status);
             }
 
-            result += String(partFrame.value);
+            result += String(partResult.value);
         }
     }
 
     frame.value = result;
-    return updateFrame(frame, 'finished');
+    return updateFrame(frame, 'done');
 }
 
 async function runExpressionArray(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
     frame: StackFrame,
-    expressions: Expression[],
-) {
+    index: number,
+    items: Expression[],
+): Promise<unknown[] | StackFrameStatus> {
     const result: unknown[] = [];
 
     // todo: run in parallel
-    for (let i = 0; i < expressions.length; i++) {
-        const arg = expressions[i];
-        const argFrame = getFrame(frame, i);
-        const argStatus = await runExpression(agent, controller, closure, block, argFrame, arg);
-        if (argStatus !== 'finished') {
-            return updateFrame(frame, argStatus);
+    for (const item of items) {
+        const itemResult = await runExpression(agent, controller, closure, frame, index++, item);
+
+        if (itemResult.status !== 'done') {
+            return itemResult.status;
         }
 
-        result.push(argFrame.value);
+        result.push(itemResult.value);
 
         if (!controller.continue()) {
-            return updateFrame(frame, 'running');
+            return 'running';
         }
     }
 
     return result;
 }
 
-async function runReturn(
+async function runReturnStatement(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
-    block: StackFrame,
-    frame: StackFrame,
+    parent: StackFrame,
+    index: number,
     node: ReturnStatement,
 ) {
+    const frame = getFrame(parent, index, node);
+
+    let value: unknown;
     if (node.value) {
-        const status = await runExpression(agent, controller, closure, block, frame, node.value);
-        if (status !== 'finished') {
-            return updateFrame(frame, status);
+        const result = await runExpression(agent, controller, closure, frame, 0, node.value);
+        if (result.status !== 'done') {
+            return updateFrame(frame, result.status);
         }
+
+        value = result.value;
     }
 
-    let parent = frame.parent;
+    while (parent) {
+        updateFrame(parent, 'done');
 
-    while (parent && parent !== closure) {
-        updateFrame(parent, 'finished');
+        if (!parent.parent || parent === closure) {
+            break;
+        }
+
         parent = parent.parent;
     }
 
-    closure.value = frame.value;
-    return updateFrame(frame, 'finished');
+    closure.value = value;
+    return updateFrame(frame, 'done');
 }
 
-function pushNewFrame(parent: StackFrame) {
-    if (!parent.children) {
-        parent.children = [];
+function getFrame(parent: StackFrame, index: number, node: AstNode) {
+    let children = parent.children;
+
+    if (!children) {
+        parent.children = children = [];
+    }
+
+    while (index >= children.length) {
+        children.push(null);
+    }
+
+    if (children[index]) {
+        const frame = children[index];
+        frame.node = node;
+
+        return frame;
     }
 
     const startedAt = new Date();
@@ -1079,49 +1216,21 @@ function pushNewFrame(parent: StackFrame) {
         startedAt,
         updatedAt: startedAt,
         parent,
-        trace: `${parent.trace}:${parent.children.length}`,
+        trace: `${parent.trace}:${index}`,
         status: 'running',
+        node,
     };
 
-    parent.children.push(frame);
+    children[index] = frame;
 
-    return {
-        frame,
-        index: parent.children.length - 1,
-    };
-}
-
-function getFrame(parent: StackFrame, index: number) {
-    if (!parent.children) {
-        parent.children = [];
-    }
-
-    if (index < parent.children.length) {
-        return parent.children[index];
-    }
-
-    if (index === parent.children.length) {
-        const startedAt = new Date();
-
-        const frame: StackFrame = {
-            startedAt,
-            updatedAt: startedAt,
-            parent,
-            trace: `${parent.trace}:${index}`,
-            status: 'running',
-        };
-        parent.children.push(frame);
-        return frame;
-    }
-
-    throw new RuntimeError(`Frame index out of bounds: ${index}`);
+    return frame;
 }
 
 function updateFrame(frame: StackFrame, status: StackFrameStatus) {
     frame.updatedAt = new Date();
     frame.status = status;
 
-    return status;
+    return frame;
 }
 
 function setVariable(frame: StackFrame, name: string, value: unknown) {
@@ -1137,4 +1246,8 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
 
         frame = frame.parent;
     } while (frame);
+}
+
+function isSafeValue(value: unknown) {
+    return typeof value !== 'function';
 }

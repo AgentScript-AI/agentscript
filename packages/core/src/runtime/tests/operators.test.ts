@@ -1,46 +1,45 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
+
 import { createAgent } from '../../agent/createAgent.js';
-import { parseScript } from '../../parser/parseScript.js';
 import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 
 test('add operator', async () => {
     const script = parseScript([
         //
-        'const a = 1 + 2;',
+        'const a = 2;',
+        'const b = 1 + a;',
     ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
-            a: 3,
+            a: 2,
+            b: 3,
         },
         children: [
-            // var frame
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
                     // operator frame
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: 3,
                         children: [
-                            // left frame
+                            // left operand literal
+                            null,
+                            // right operand
                             completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            // right frame
-                            completedFrame({
-                                trace: '0:0:0:1',
+                                node: 'ident',
                                 value: 2,
                             }),
                         ],
@@ -51,38 +50,43 @@ test('add operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('subtract operator', async () => {
-    const script = parseScript(['const a = 5 - 3;']);
+    const script = parseScript([
+        //
+        'const a = 3;',
+        'const b = 5 - a;',
+    ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
-            a: 2,
+            a: 3,
+            b: 2,
         },
         children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
+                    // operator frame
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: 2,
                         children: [
+                            // left operand
+                            null,
+                            // right operand
                             completedFrame({
-                                trace: '0:0:0:0',
-                                value: 5,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
+                                node: 'ident',
                                 value: 3,
                             }),
                         ],
@@ -93,39 +97,44 @@ test('subtract operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('multiply operator', async () => {
-    const script = parseScript(['const a = 4 * 3;']);
+    const script = parseScript([
+        //
+        'const a = 4;',
+        'const b = 3 * a;',
+    ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
-            a: 12,
+            a: 4,
+            b: 12,
         },
         children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
+                    // operator frame
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: 12,
                         children: [
+                            // left operand
+                            null,
+                            // right operand
                             completedFrame({
-                                trace: '0:0:0:0',
+                                node: 'ident',
                                 value: 4,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 3,
                             }),
                         ],
                     }),
@@ -135,38 +144,43 @@ test('multiply operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('divide operator', async () => {
-    const script = parseScript(['const a = 6 / 2;']);
+    const script = parseScript([
+        //
+        'const a = 2;',
+        'const b = 6 / a;',
+    ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
-            a: 3,
+            a: 2,
+            b: 3,
         },
         children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
+                    // operator frame
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: 3,
                         children: [
+                            // left operand
+                            null,
+                            // right operand
                             completedFrame({
-                                trace: '0:0:0:0',
-                                value: 6,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
+                                node: 'ident',
                                 value: 2,
                             }),
                         ],
@@ -177,39 +191,44 @@ test('divide operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('modulo operator', async () => {
-    const script = parseScript(['const a = 7 % 4;']);
+    const script = parseScript([
+        //
+        'const a = 3;',
+        'const b = 7 % a;',
+    ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 3,
+            b: 1,
         },
         children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
+                    // operator frame
                     completedFrame({
-                        trace: '0:0:0',
-                        value: 3,
+                        node: 'operator',
+                        value: 1,
                         children: [
+                            // left operand
+                            null,
+                            // right operand
                             completedFrame({
-                                trace: '0:0:0:0',
-                                value: 7,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 4,
+                                node: 'ident',
+                                value: 3,
                             }),
                         ],
                     }),
@@ -219,7 +238,7 @@ test('modulo operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('equality operators', async () => {
@@ -230,15 +249,12 @@ test('equality operators', async () => {
         'const d = 1 !== 2;',
     ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
@@ -247,78 +263,38 @@ test('equality operators', async () => {
         },
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 1,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:1:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:1:0:1',
-                                value: 1,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:2',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:2:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:2:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:2:0:1',
-                                value: 2,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:3',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:3:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:3:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:3:0:1',
-                                value: 2,
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -326,7 +302,7 @@ test('equality operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('comparison operators', async () => {
@@ -337,15 +313,12 @@ test('comparison operators', async () => {
         'const d = 1 <= 2;',
     ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
@@ -354,78 +327,38 @@ test('comparison operators', async () => {
         },
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: 1,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:1:0:0',
-                                value: 2,
-                            }),
-                            completedFrame({
-                                trace: '0:1:0:1',
-                                value: 1,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:2',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:2:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:2:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:2:0:1',
-                                value: 2,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:3',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:3:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:3:0:0',
-                                value: 1,
-                            }),
-                            completedFrame({
-                                trace: '0:3:0:1',
-                                value: 2,
-                            }),
-                        ],
                     }),
                 ],
             }),
@@ -433,7 +366,7 @@ test('comparison operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('logical operators', async () => {
@@ -441,77 +374,55 @@ test('logical operators', async () => {
         'const a = true && true;',
         'const b = true || false;',
         'const c = null ?? "default";',
+        'const d = undefined ?? "default";',
     ]);
 
-    const agent = createAgent({
-        tools: {},
-        script,
-    });
+    const agent = createAgent({ script });
 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
             c: 'default',
+            d: 'default',
         },
         children: [
             completedFrame({
-                trace: '0:0',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:0:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:0:0:0',
-                                value: true,
-                            }),
-                            completedFrame({
-                                trace: '0:0:0:1',
-                                value: true,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:1',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:1:0',
+                        node: 'operator',
                         value: true,
-                        children: [
-                            completedFrame({
-                                trace: '0:1:0:0',
-                                value: true,
-                            }),
-                            completedFrame({
-                                trace: '0:1:0:1',
-                                value: false,
-                            }),
-                        ],
                     }),
                 ],
             }),
             completedFrame({
-                trace: '0:2',
+                node: 'var',
                 children: [
                     completedFrame({
-                        trace: '0:2:0',
+                        node: 'operator',
                         value: 'default',
-                        children: [
-                            completedFrame({
-                                trace: '0:2:0:0',
-                                value: null,
-                            }),
-                            completedFrame({
-                                trace: '0:2:0:1',
-                                value: 'default',
-                            }),
-                        ],
+                    }),
+                ],
+            }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'operator',
+                        value: 'default',
                     }),
                 ],
             }),
@@ -519,5 +430,5 @@ test('logical operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
