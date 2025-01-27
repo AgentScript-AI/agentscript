@@ -126,8 +126,10 @@ __metadata:
     "@agentscript-ai/eslint": "npm:^0.4.0"
     "@agentscript-ai/tsconfig": "npm:^0.4.0"
     "@agentscript-ai/utils": "npm:^0.4.0"
+    "@ai-sdk/anthropic": "npm:^1.1.4"
     "@ai-sdk/openai": "npm:^1.1.4"
     "@ai-sdk/provider": "npm:^1.0.6"
+    "@langchain/anthropic": "npm:^0.3.12"
     "@langchain/core": "npm:^0.3.36"
     "@langchain/openai": "npm:^0.4.2"
     "@nzyme/ioc": "npm:^0.5.0"
@@ -195,6 +197,18 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@ai-sdk/anthropic@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@ai-sdk/anthropic@npm:1.1.4"
+  dependencies:
+    "@ai-sdk/provider": "npm:1.0.6"
+    "@ai-sdk/provider-utils": "npm:2.1.4"
+  peerDependencies:
+    zod: ^3.0.0
+  checksum: 10c0/0ff3a3425327fdb34424fbe2460826a30bba1767844da238a9eb4956eb8d879a513ab7e4765abe49c3a315e75e42b9cc224ba6240bb6c04d5631d169ed2d6a7c
+  languageName: node
+  linkType: hard
+
 "@ai-sdk/openai@npm:^1.1.4":
   version: 1.1.4
   resolution: "@ai-sdk/openai@npm:1.1.4"
@@ -240,6 +254,21 @@ __metadata:
     "@jridgewell/gen-mapping": "npm:^0.3.5"
     "@jridgewell/trace-mapping": "npm:^0.3.24"
   checksum: 10c0/81d63cca5443e0f0c72ae18b544cc28c7c0ec2cea46e7cb888bb0e0f411a1191d0d6b7af798d54e30777d8d1488b2ec0732aac2be342d3d7d3ffd271c6f489ed
+  languageName: node
+  linkType: hard
+
+"@anthropic-ai/sdk@npm:^0.32.1":
+  version: 0.32.1
+  resolution: "@anthropic-ai/sdk@npm:0.32.1"
+  dependencies:
+    "@types/node": "npm:^18.11.18"
+    "@types/node-fetch": "npm:^2.6.4"
+    abort-controller: "npm:^3.0.0"
+    agentkeepalive: "npm:^4.2.1"
+    form-data-encoder: "npm:1.7.2"
+    formdata-node: "npm:^4.3.2"
+    node-fetch: "npm:^2.6.7"
+  checksum: 10c0/a8924ada337b676e473d4fe1a06a0099f9ae6e50ffeca62ed01a5a1bf6d465cd0ee10d64c0f45b85d849836e9221b399b33d697acae7fe1c5a7f18c9949959e1
   languageName: node
   linkType: hard
 
@@ -3084,6 +3113,20 @@ __metadata:
   version: 1.1.1
   resolution: "@kwsites/promise-deferred@npm:1.1.1"
   checksum: 10c0/ef1ad3f1f50991e3bed352b175986d8b4bc684521698514a2ed63c1d1fc9848843da4f2bc2df961c9b148c94e1c34bf33f0da8a90ba2234e452481f2cc9937b1
+  languageName: node
+  linkType: hard
+
+"@langchain/anthropic@npm:^0.3.12":
+  version: 0.3.12
+  resolution: "@langchain/anthropic@npm:0.3.12"
+  dependencies:
+    "@anthropic-ai/sdk": "npm:^0.32.1"
+    fast-xml-parser: "npm:^4.4.1"
+    zod: "npm:^3.22.4"
+    zod-to-json-schema: "npm:^3.22.4"
+  peerDependencies:
+    "@langchain/core": ">=0.2.21 <0.4.0"
+  checksum: 10c0/5a104088caa655ffc8aa6740a620711d498ce072c104c9c4e4fd21519227c764cd7f9458527b314c5cbf4e681fd90682ecd72fa1dad743dc56ce881eba0b8d43
   languageName: node
   linkType: hard
 
@@ -7443,6 +7486,17 @@ __metadata:
   version: 2.1.1
   resolution: "fast-safe-stringify@npm:2.1.1"
   checksum: 10c0/d90ec1c963394919828872f21edaa3ad6f1dddd288d2bd4e977027afff09f5db40f94e39536d4646f7e01761d704d72d51dce5af1b93717f3489ef808f5f4e4d
+  languageName: node
+  linkType: hard
+
+"fast-xml-parser@npm:^4.4.1":
+  version: 4.5.1
+  resolution: "fast-xml-parser@npm:4.5.1"
+  dependencies:
+    strnum: "npm:^1.0.5"
+  bin:
+    fxparser: src/cli/cli.js
+  checksum: 10c0/70c6c675770d57d4b73716a1cdccff3780a5f818cffdab9c7560003e1724209001af32fbe7bb27a01107389b1998191c62e20104788ba17e218dfe063aa15b57
   languageName: node
   linkType: hard
 
@@ -12756,6 +12810,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"strnum@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "strnum@npm:1.0.5"
+  checksum: 10c0/64fb8cc2effbd585a6821faa73ad97d4b553c8927e49086a162ffd2cc818787643390b89d567460a8e74300148d11ac052e21c921ef2049f2987f4b1b89a7ff1
+  languageName: node
+  linkType: hard
+
 "subscriptions-transport-ws@npm:^0.9.18":
   version: 0.9.19
   resolution: "subscriptions-transport-ws@npm:0.9.19"
@@ -14371,7 +14432,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.22.3":
+"zod-to-json-schema@npm:^3.22.3, zod-to-json-schema@npm:^3.22.4":
   version: 3.24.1
   resolution: "zod-to-json-schema@npm:3.24.1"
   peerDependencies:
