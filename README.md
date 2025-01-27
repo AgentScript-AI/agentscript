@@ -55,11 +55,14 @@ Let's build an agent doing stuff with [Linear](https://linear.app). \
 You can see full example [here](https://github.com/AgentScript-AI/examples/tree/main/linear-agent).
 
 ```typescript
+import { executeAgent, inferAgent } from 'agentscript-ai';
+import * as s from 'agentscript-ai/schema';
+import { addToDate, summarizeData } from 'agentscript-ai/tools';
+import { LinearClient, searchIssues } from '@agentscript-ai/linear';
+import { anthropic } from '@ai-sdk/anthropic';
+
 // Configure the language model
-const model = AnthropicModel({
-    model: 'claude-3-5-sonnet-latest',
-    apiKey: process.env.ANTHROPIC_API_KEY,
-});
+const model = anthropic('claude-3-5-sonnet-latest');
 
 // Configure the Linear client
 const linear = LinearClient({

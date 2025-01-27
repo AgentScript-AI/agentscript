@@ -19,7 +19,8 @@
         ".": "./dist/core.js",
         "./anthropic": "./dist/anthropic.js",
         "./schema": "./dist/schema.js",
-        "./tools": "./dist/tools.js"
+        "./tools": "./dist/tools.js",
+        "./provider": "./dist/provider.js"
     },
     "sideEffects": false,
     "scripts": {
@@ -29,6 +30,7 @@
     "dependencies": {
         "@agentscript-ai/anthropic": "^0.4.0",
         "@agentscript-ai/core": "^0.4.0",
+        "@agentscript-ai/provider": "^0.4.0",
         "@agentscript-ai/schema": "^0.4.0",
         "@agentscript-ai/tools": "^0.4.0",
         "@agentscript-ai/utils": "^0.4.0"

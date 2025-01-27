@@ -1,6 +1,7 @@
 import { defineService } from '@nzyme/ioc';
 
-import { LanguageModel, defineTool } from '@agentscript-ai/core';
+import { defineTool } from '@agentscript-ai/core';
+import { LanguageModelInput, normalizeModel } from '@agentscript-ai/provider';
 import * as s from '@agentscript-ai/schema';
 import { getCurrentDatePrompt } from '@agentscript-ai/utils';
 
@@ -10,7 +11,7 @@ import { getCurrentDatePrompt } from '@agentscript-ai/utils';
 export const summarizeData = defineService({
     name: 'summarizeData',
     deps: {
-        model: LanguageModel,
+        model: LanguageModelInput,
     },
     setup({ model }) {
         return defineTool({
@@ -30,7 +31,7 @@ export const summarizeData = defineService({
             }),
             output: s.string(),
             async handler({ input: { data, prompt } }) {
-                const result = await model.invoke({
+                const result = await normalizeModel(model).invoke({
                     systemPrompt: [
                         `Your task is to summarize the following data based on the user prompt:`,
                         JSON.stringify(data),

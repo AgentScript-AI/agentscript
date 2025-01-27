@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript-ai/anthropic",
+    "name": "@agentscript-ai/provider",
     "version": "0.4.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
@@ -24,9 +24,8 @@
         "build": "tsc --build"
     },
     "dependencies": {
-        "@agentscript-ai/provider": "^0.4.0",
         "@agentscript-ai/utils": "^0.4.0",
-        "@anthropic-ai/sdk": "^0.35.0",
+        "@ai-sdk/provider": "^1.0.6",
         "@nzyme/ioc": "^0.5.0",
         "@nzyme/utils": "^0.5.0"
     },

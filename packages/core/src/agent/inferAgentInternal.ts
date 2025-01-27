@@ -1,9 +1,13 @@
 import { codeSnippet } from '@nzyme/markdown';
 
 import { parseCodeResponse, parseScript } from '@agentscript-ai/parser';
+import {
+    type LanguageModelInput,
+    type LanguageModelMessage,
+    normalizeModel,
+} from '@agentscript-ai/provider';
 import { joinLines } from '@agentscript-ai/utils';
 
-import type { LanguageModel, LanguageModelMessage } from '../LanguageModel.js';
 import type { AgentState } from './agentTypes.js';
 import { createAgentInternal } from './createAgentInternal.js';
 import type { AgentDefinition } from './defineAgent.js';
@@ -12,7 +16,7 @@ import { renderRuntime } from '../modules/renderRuntime.js';
 interface InferAgentInternalOptions {
     def: AgentDefinition;
     id?: string;
-    model: LanguageModel;
+    model: LanguageModelInput;
     systemPrompt?: string | string[];
     chain?: AgentState[];
     messages?: LanguageModelMessage[];
@@ -37,6 +41,7 @@ Don't explain the code later.`;
  * @returns Inferred agent.
  */
 export async function inferAgentInternal(params: InferAgentInternalOptions) {
+    const model = normalizeModel(params.model);
     const runtime = renderRuntime(params.def);
 
     const basePrompt = joinLines(params.systemPrompt);
@@ -61,7 +66,7 @@ export async function inferAgentInternal(params: InferAgentInternalOptions) {
         content: prompt,
     });
 
-    const response = await params.model.invoke({
+    const response = await model.invoke({
         systemPrompt,
         messages,
     });

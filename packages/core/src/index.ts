@@ -1,4 +1,3 @@
-export * from './LanguageModel.js';
 export * from './inferResult.js';
 
 export * from './agent/agentTypes.js';

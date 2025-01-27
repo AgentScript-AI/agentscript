@@ -1,7 +1,8 @@
 import { defineService } from '@nzyme/ioc';
 import createDebug from 'debug';
 
-import { LanguageModel, defineTool, inferResult } from '@agentscript-ai/core';
+import { defineTool, inferResult } from '@agentscript-ai/core';
+import { LanguageModelInput } from '@agentscript-ai/provider';
 import * as s from '@agentscript-ai/schema';
 
 import { LinearClient } from '../LinearClient.js';
@@ -18,7 +19,7 @@ const debug = createDebug('agentscript:linear:searchIssues');
 export const searchIssues = defineService({
     name: 'LinearSearchIssues',
     deps: {
-        model: LanguageModel,
+        model: LanguageModelInput,
         linear: LinearClient,
     },
     setup({ model, linear }) {

@@ -1,9 +1,9 @@
 import { codeSnippet } from '@nzyme/markdown';
 import type { SomeObject } from '@nzyme/types';
 
+import type { LanguageModelInput, LanguageModelMessage } from '@agentscript-ai/provider';
 import { joinLines } from '@agentscript-ai/utils';
 
-import type { LanguageModel, LanguageModelMessage } from '../LanguageModel.js';
 import type { Agent, AgentState } from './agentTypes.js';
 import type { AgentTools } from './defineAgent.js';
 import { inferAgentInternal } from './inferAgentInternal.js';
@@ -20,7 +20,7 @@ export type ChainAgentParams<TTools extends AgentTools> = {
     /**
      * Language model to use.
      */
-    model: LanguageModel;
+    model: LanguageModelInput;
     /**
      * Prompt to use.
      */
