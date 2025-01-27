@@ -74,8 +74,8 @@ function serializeStatus(status: StackFrameStatus): StackFrameStatusSerialized {
     switch (status) {
         case 'running':
             return 'R';
-        case 'finished':
-            return 'F';
+        case 'done':
+            return 'D';
         case 'error':
             return 'E';
         case 'awaiting':

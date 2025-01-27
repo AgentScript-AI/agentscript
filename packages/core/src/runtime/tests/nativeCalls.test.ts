@@ -13,7 +13,7 @@ test('new Date()', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'new',
@@ -24,7 +24,7 @@ test('new Date()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('literal.toString()', async () => {
@@ -34,7 +34,7 @@ test('literal.toString()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // toString()
             completedFrame({
@@ -46,7 +46,7 @@ test('literal.toString()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('variable.toString()', async () => {
@@ -59,7 +59,7 @@ test('variable.toString()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: { a: true },
         children: [
             // variable init
@@ -81,7 +81,7 @@ test('variable.toString()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('Number()', async () => {
@@ -91,7 +91,7 @@ test('Number()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -102,7 +102,7 @@ test('Number()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('Boolean("true")', async () => {
@@ -111,7 +111,7 @@ test('Boolean("true")', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -122,7 +122,7 @@ test('Boolean("true")', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('Boolean(true.toString())', async () => {
@@ -131,7 +131,7 @@ test('Boolean(true.toString())', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -151,7 +151,7 @@ test('Boolean(true.toString())', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('String()', async () => {
@@ -160,7 +160,7 @@ test('String()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -171,7 +171,7 @@ test('String()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array.push()', async () => {
@@ -185,7 +185,7 @@ test('array.push()', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // variable init
             completedFrame({ node: 'var' }),
@@ -208,5 +208,5 @@ test('array.push()', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

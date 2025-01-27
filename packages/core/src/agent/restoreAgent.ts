@@ -58,7 +58,7 @@ function deserializeState(
     return {
         script: state.script,
         plan: state.plan,
-        status: root.status as LiteralPick<StackFrameStatus, 'finished'>,
+        status: root.status as LiteralPick<StackFrameStatus, 'done'>,
         root,
         output,
     };
@@ -106,8 +106,8 @@ function deserializeStatus(status: StackFrameStatusSerialized): StackFrameStatus
     switch (status) {
         case 'R':
             return 'running';
-        case 'F':
-            return 'finished';
+        case 'D':
+            return 'done';
         case 'E':
             return 'error';
         case 'A':

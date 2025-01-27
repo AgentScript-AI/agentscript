@@ -18,7 +18,7 @@ test('add operator', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 2,
             b: 3,
@@ -50,7 +50,7 @@ test('add operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('subtract operator', async () => {
@@ -65,7 +65,7 @@ test('subtract operator', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 3,
             b: 2,
@@ -97,7 +97,7 @@ test('subtract operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('multiply operator', async () => {
@@ -112,7 +112,7 @@ test('multiply operator', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 4,
             b: 12,
@@ -144,7 +144,7 @@ test('multiply operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('divide operator', async () => {
@@ -159,7 +159,7 @@ test('divide operator', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 2,
             b: 3,
@@ -191,7 +191,7 @@ test('divide operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('modulo operator', async () => {
@@ -206,7 +206,7 @@ test('modulo operator', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 3,
             b: 1,
@@ -238,7 +238,7 @@ test('modulo operator', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('equality operators', async () => {
@@ -254,7 +254,7 @@ test('equality operators', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
@@ -302,7 +302,7 @@ test('equality operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('comparison operators', async () => {
@@ -318,7 +318,7 @@ test('comparison operators', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
@@ -366,7 +366,7 @@ test('comparison operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('logical operators', async () => {
@@ -382,7 +382,7 @@ test('logical operators', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: true,
             b: true,
@@ -430,5 +430,5 @@ test('logical operators', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

@@ -57,7 +57,7 @@ export function completedFrame(
 ): StackFrame {
     return childFrame({
         ...frame,
-        status: 'finished',
+        status: 'done',
     });
 }
 

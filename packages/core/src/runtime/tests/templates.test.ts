@@ -15,7 +15,7 @@ test('template literal without interpolation', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'template',
@@ -44,7 +44,7 @@ test('template literal with var interpolation in the middle', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({ node: 'var' }),
             completedFrame({
@@ -70,7 +70,7 @@ test('template literal with var interpolation in the middle', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('template literal with var interpolation at the end', async () => {
@@ -90,7 +90,7 @@ test('template literal with var interpolation at the end', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({ node: 'var' }),
             completedFrame({
@@ -116,7 +116,7 @@ test('template literal with var interpolation at the end', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('template literal with var interpolation at the beginning', async () => {
@@ -136,7 +136,7 @@ test('template literal with var interpolation at the beginning', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({ node: 'var' }),
             completedFrame({
@@ -181,7 +181,7 @@ test('template literal with function call', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({ node: 'var' }),
             completedFrame({

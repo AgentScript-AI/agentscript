@@ -35,7 +35,7 @@ test('simple tool state', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -49,5 +49,5 @@ test('simple tool state', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

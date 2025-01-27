@@ -53,7 +53,7 @@ test('single function call', async () => {
 
     const result = await executeAgent({ agent });
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -64,7 +64,7 @@ test('single function call', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 1 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('multiple function calls', async () => {
@@ -79,7 +79,7 @@ test('multiple function calls', async () => {
 
     let result = await executeAgent({ agent, ticks: 3 });
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 1,
             b: 2,
@@ -145,12 +145,12 @@ test('multiple function calls', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 2 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 
     result = await executeAgent({ agent, ticks: 1 });
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 describe('nested function calls', () => {
@@ -208,7 +208,7 @@ describe('nested function calls', () => {
 
         result = await executeAgent({ agent, ticks: 1 });
         expectedStack = rootFrame({
-            status: 'finished',
+            status: 'done',
             children: [
                 completedFrame({
                     node: 'call',
@@ -232,7 +232,7 @@ describe('nested function calls', () => {
         });
         expect(result).toEqual(agentResult({ ticks: 1 }));
         expect(agent.root).toEqual(expectedStack);
-        expect(agent.status).toBe('finished');
+        expect(agent.status).toBe('done');
     });
 
     test('run all ticks', async () => {
@@ -240,7 +240,7 @@ describe('nested function calls', () => {
 
         const result = await executeAgent({ agent });
         const expectedStack = rootFrame({
-            status: 'finished',
+            status: 'done',
             children: [
                 completedFrame({
                     node: 'call',
@@ -265,7 +265,7 @@ describe('nested function calls', () => {
 
         expect(result).toEqual(agentResult({ ticks: 3 }));
         expect(agent.root).toEqual(expectedStack);
-        expect(agent.status).toBe('finished');
+        expect(agent.status).toBe('done');
     });
 });
 
@@ -286,7 +286,7 @@ test('module function', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 1,
         },
@@ -316,7 +316,7 @@ test('module function', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 1 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('more than two arguments are turned into a single arg', async () => {
@@ -347,7 +347,7 @@ test('more than two arguments are turned into a single arg', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             b: 2,
         },
@@ -388,7 +388,7 @@ test('more than two arguments are turned into a single arg', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('explicit single arg literal', async () => {
@@ -414,7 +414,7 @@ test('explicit single arg literal', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({
                 node: 'call',
@@ -426,7 +426,7 @@ test('explicit single arg literal', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('explicit single arg object', async () => {
@@ -456,7 +456,7 @@ test('explicit single arg object', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             b: 2,
         },
@@ -497,7 +497,7 @@ test('explicit single arg object', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('agent output', async () => {
@@ -510,7 +510,7 @@ test('agent output', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
 
         children: [
             completedFrame({
@@ -532,6 +532,6 @@ test('agent output', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 1 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
     expect(agent.output).toBe(3);
 });

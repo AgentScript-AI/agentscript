@@ -18,7 +18,7 @@ test('single variable declaration', async () => {
     expect(result).toEqual(agentResult({ ticks: 0 }));
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 1,
         },
@@ -26,13 +26,13 @@ test('single variable declaration', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 
     result = await executeAgent({ agent });
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('multiple variable declarations', async () => {
@@ -48,7 +48,7 @@ test('multiple variable declarations', async () => {
     expect(result).toEqual(agentResult({ ticks: 0 }));
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 1,
             b: 2,
@@ -61,12 +61,12 @@ test('multiple variable declarations', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 
     result = await executeAgent({ agent });
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('assign literal to variable', async () => {
@@ -76,7 +76,7 @@ test('assign literal to variable', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: { a: 2 },
         children: [
             completedFrame({ node: 'var' }),
@@ -89,7 +89,7 @@ test('assign literal to variable', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('assign expression to variable', async () => {
@@ -99,7 +99,7 @@ test('assign expression to variable', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: { a: 2 },
         children: [
             completedFrame({ node: 'var' }),
@@ -128,7 +128,7 @@ test('assign expression to variable', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('member expression', async () => {
@@ -142,7 +142,7 @@ test('member expression', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: { a: { b: 1 }, c: 1 },
         children: [
             completedFrame({ node: 'var' }),
@@ -166,7 +166,7 @@ test('member expression', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array.length', async () => {
@@ -180,7 +180,7 @@ test('array.length', async () => {
     const result = await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             completedFrame({ node: 'var' }),
             completedFrame({
@@ -207,5 +207,5 @@ test('array.length', async () => {
 
     expect(result).toEqual(agentResult({ ticks: 0 }));
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

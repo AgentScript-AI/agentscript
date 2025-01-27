@@ -30,6 +30,7 @@ __metadata:
     "@agentscript-ai/schema": "npm:^0.4.0"
     "@agentscript-ai/tsconfig": "npm:^0.4.0"
     "@agentscript-ai/utils": "npm:^0.4.0"
+    "@ai-sdk/provider": "npm:^1.0.6"
     "@nzyme/crypto-utils": "npm:^0.5.0"
     "@nzyme/ioc": "npm:^0.5.0"
     "@nzyme/markdown": "npm:^0.5.0"
@@ -173,6 +174,15 @@ __metadata:
     vitest: "npm:^3.0.1"
   languageName: unknown
   linkType: soft
+
+"@ai-sdk/provider@npm:^1.0.6":
+  version: 1.0.6
+  resolution: "@ai-sdk/provider@npm:1.0.6"
+  dependencies:
+    json-schema: "npm:^0.4.0"
+  checksum: 10c0/251c8cd4fa53b89dcf751d0faba5482762d88fcc5ffe1cdb660327c14817a4d94206317e95e6e69fc4ae3071001191b5c418b4b9e1212d6a554a90114db216fc
+  languageName: node
+  linkType: hard
 
 "@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.3.0":
   version: 2.3.0
@@ -9254,7 +9264,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json-schema@npm:0.4.0":
+"json-schema@npm:0.4.0, json-schema@npm:^0.4.0":
   version: 0.4.0
   resolution: "json-schema@npm:0.4.0"
   checksum: 10c0/d4a637ec1d83544857c1c163232f3da46912e971d5bf054ba44fdb88f07d8d359a462b4aec46f2745efbc57053365608d88bc1d7b1729f7b4fc3369765639ed3

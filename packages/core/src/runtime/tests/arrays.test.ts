@@ -26,7 +26,7 @@ test('array variable map with inline arrow function', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({ node: 'var' }),
@@ -101,7 +101,7 @@ test('array variable map with inline arrow function', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array literal map with inline arrow function', async () => {
@@ -120,7 +120,7 @@ test('array literal map with inline arrow function', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // array map call
             completedFrame({
@@ -165,7 +165,7 @@ test('array literal map with inline arrow function', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array member map with inline arrow function', async () => {
@@ -185,7 +185,7 @@ test('array member map with inline arrow function', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: { b: [1, 2] },
         },
@@ -245,7 +245,7 @@ test('array member map with inline arrow function', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array variable map with block arrow function', async () => {
@@ -268,7 +268,7 @@ test('array variable map with block arrow function', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({
@@ -425,7 +425,7 @@ test('array variable map with block arrow function', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array variable map with block arrow function and nested return', async () => {
@@ -451,7 +451,7 @@ test('array variable map with block arrow function and nested return', async () 
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({
@@ -560,7 +560,7 @@ test('array variable map with block arrow function and nested return', async () 
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array variable map with async tool inline', async () => {
@@ -590,7 +590,7 @@ test('array variable map with async tool inline', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({
@@ -675,7 +675,7 @@ test('array variable map with async tool inline', async () => {
         },
     });
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('array variable map with async tool in block', async () => {
@@ -708,7 +708,7 @@ test('array variable map with async tool in block', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({
@@ -866,7 +866,7 @@ test('array variable map with async tool in block', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 // todo: test array filter

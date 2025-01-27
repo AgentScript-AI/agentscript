@@ -25,7 +25,7 @@ test('ternary operator with literals, true', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
@@ -36,7 +36,7 @@ test('ternary operator with literals, true', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with literals, false', async () => {
@@ -55,7 +55,7 @@ test('ternary operator with literals, false', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
@@ -66,7 +66,7 @@ test('ternary operator with literals, false', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with literals, undefined', async () => {
@@ -85,7 +85,7 @@ test('ternary operator with literals, undefined', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
@@ -96,7 +96,7 @@ test('ternary operator with literals, undefined', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with expressions', async () => {
@@ -116,7 +116,7 @@ test('ternary operator with expressions', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         variables: {
             a: 3,
         },
@@ -158,7 +158,7 @@ test('ternary operator with expressions', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('ternary operator with async tool', async () => {
@@ -185,7 +185,7 @@ test('ternary operator with async tool', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // ternary operator
             completedFrame({
@@ -224,5 +224,5 @@ test('ternary operator with async tool', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

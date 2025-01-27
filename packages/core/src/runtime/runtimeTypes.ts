@@ -5,7 +5,7 @@ import type { ToolEvent, ToolEventSerialized } from '../tools/defineTool.js';
 /**
  * Status of the stack frame.
  */
-export type StackFrameStatus = 'running' | 'finished' | 'error' | 'awaiting';
+export type StackFrameStatus = 'running' | 'done' | 'error' | 'awaiting';
 
 /**
  * Stack frame.
@@ -65,7 +65,7 @@ export interface StackFrame {
 /**
  * Serialized stack frame status.
  */
-export type StackFrameStatusSerialized = 'R' | 'F' | 'E' | 'A';
+export type StackFrameStatusSerialized = 'R' | 'D' | 'E' | 'A';
 
 /**
  * Serialized stack frame.

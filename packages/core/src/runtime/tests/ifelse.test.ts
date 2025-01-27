@@ -22,7 +22,7 @@ test('if statement, passed', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({ node: 'var' }),
@@ -62,7 +62,7 @@ test('if statement, passed', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('if statement, failed', async () => {
@@ -81,7 +81,7 @@ test('if statement, failed', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({ node: 'var' }),
@@ -110,7 +110,7 @@ test('if statement, failed', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('if statement, else', async () => {
@@ -130,7 +130,7 @@ test('if statement, else', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({ node: 'var' }),
@@ -172,7 +172,7 @@ test('if statement, else', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });
 
 test('if statement, else if', async () => {
@@ -193,7 +193,7 @@ test('if statement, else if', async () => {
     await executeAgent({ agent });
 
     const expectedStack = rootFrame({
-        status: 'finished',
+        status: 'done',
         children: [
             // var a declaration
             completedFrame({ node: 'var' }),
@@ -251,5 +251,5 @@ test('if statement, else if', async () => {
     });
 
     expect(agent.root).toEqual(expectedStack);
-    expect(agent.status).toBe('finished');
+    expect(agent.status).toBe('done');
 });

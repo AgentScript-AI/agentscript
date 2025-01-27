@@ -74,7 +74,7 @@ type AgentStateComplete<TOutput extends AgentOutputBase> = {
     /**
      * Status of the agent execution.
      */
-    status: LiteralPick<StackFrameStatus, 'finished'>;
+    status: LiteralPick<StackFrameStatus, 'done'>;
     /**
      * Output of the agent.
      */
@@ -85,7 +85,7 @@ type AgentStateRunning = {
     /**
      * Status of the agent execution.
      */
-    status: LiteralExclude<StackFrameStatus, 'finished'>;
+    status: LiteralExclude<StackFrameStatus, 'done'>;
     /**
      * Output of the agent.
      */
