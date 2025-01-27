@@ -370,6 +370,8 @@ export type AuditEntryEdge = {
 export type AuditEntryFilter = {
   /** Filters that the audit entry actor must satisfy. */
   actor?: InputMaybe<NullableUserFilter>;
+  /** Compound filters, all of which need to be matched by the issue. */
+  and?: InputMaybe<Array<AuditEntryFilter>>;
   /** Comparator for the country code. */
   countryCode?: InputMaybe<StringComparator>;
   /** Comparator for the created at date. */
@@ -378,6 +380,8 @@ export type AuditEntryFilter = {
   id?: InputMaybe<IdComparator>;
   /** Comparator for the IP address. */
   ip?: InputMaybe<StringComparator>;
+  /** Compound filters, one of which need to be matched by the issue. */
+  or?: InputMaybe<Array<AuditEntryFilter>>;
   /** Comparator for the type. */
   type?: InputMaybe<StringComparator>;
   /** Comparator for the updated at date. */
@@ -3369,7 +3373,7 @@ export type InitiativeCollectionFilter = {
   creator?: InputMaybe<UserFilter>;
   /** Filters that needs to be matched by all initiatives. */
   every?: InputMaybe<InitiativeFilter>;
-  /** Comparator for the initiative health: onTrack, atRisk, offTrack */
+  /** [Internal] Comparator for the initiative health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
   /** [Internal] Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
@@ -3439,7 +3443,7 @@ export type InitiativeFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
-  /** Comparator for the initiative health: onTrack, atRisk, offTrack */
+  /** [Internal] Comparator for the initiative health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
   /** [Internal] Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
   healthWithAge?: InputMaybe<StringComparator>;
@@ -12212,6 +12216,7 @@ export type QueryInitiativeToProjectsArgs = {
 export type QueryInitiativesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<InitiativeFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
