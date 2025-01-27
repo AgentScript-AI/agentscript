@@ -1,5 +1,6 @@
+import type { AstNode } from '@agentscript-ai/parser';
+
 import type { Agent } from '../../agent/agentTypes.js';
-import type { AstNode } from '../../parser/astTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
 import type { StackFrame } from '../runtimeTypes.js';
 import { getChild } from './getChild.js';

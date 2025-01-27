@@ -1,10 +1,11 @@
-import type { Agent } from '../../agent/agentTypes.js';
 import type {
     Expression,
     FunctionCall,
     IdentifierExpression,
     Literal,
-} from '../../parser/astTypes.js';
+} from '@agentscript-ai/parser';
+
+import type { Agent } from '../../agent/agentTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
 import type { StackFrame } from '../runtimeTypes.js';
 

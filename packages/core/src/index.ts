@@ -9,10 +9,6 @@ export * from './agent/restoreAgent.js';
 export * from './agent/storeAgent.js';
 export * from './agent/chainAgent.js';
 
-export * from './parser/parseScript.js';
-export * from './parser/astTypes.js';
-export * from './parser/ParseError.js';
-
 export * from './runtime/executeAgent.js';
 export * from './runtime/pushEvent.js';
 export * from './runtime/RuntimeError.js';

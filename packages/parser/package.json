@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript-ai/core",
+    "name": "@agentscript-ai/parser",
     "version": "0.4.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
@@ -18,16 +18,8 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "dependencies": {
-        "@agentscript-ai/parser": "^0.4.0",
-        "@agentscript-ai/schema": "^0.4.0",
         "@agentscript-ai/utils": "^0.4.0",
-        "@nzyme/crypto-utils": "^0.5.0",
-        "@nzyme/ioc": "^0.5.0",
-        "@nzyme/markdown": "^0.5.0",
-        "@nzyme/types": "^0.5.0",
-        "@nzyme/utils": "^0.5.0",
-        "debug": "^4.4.0",
-        "uuid": "^11.0.5"
+        "@babel/parser": "^7.26.5"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.4.0",

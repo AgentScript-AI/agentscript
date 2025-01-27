@@ -1,5 +1,7 @@
 import type { LiteralExclude, LiteralPick } from '@nzyme/types';
 
+import type { Script } from '@agentscript-ai/parser';
+
 import type {
     AgentDefinition,
     AgentInputBase,
@@ -8,7 +10,6 @@ import type {
     AgentTools,
 } from './defineAgent.js';
 import type { Heap } from '../heap/heapTypes.js';
-import type { Script } from '../parser/astTypes.js';
 import type {
     StackFrame,
     StackFrameSerialized,

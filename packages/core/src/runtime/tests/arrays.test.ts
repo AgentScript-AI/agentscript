@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { joinLines } from '@agentscript-ai/utils';
 
 import { createAgent } from '../../agent/createAgent.js';
-import { parseScript } from '../../parser/parseScript.js';
 import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 import { defineTool } from '../../tools/defineTool.js';

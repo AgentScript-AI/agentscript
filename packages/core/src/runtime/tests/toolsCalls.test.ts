@@ -1,9 +1,9 @@
 import { describe, expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 
 import { createAgent } from '../../agent/createAgent.js';
-import { parseScript } from '../../parser/parseScript.js';
 import { defineTool } from '../../tools/defineTool.js';
 import { executeAgent } from '../executeAgent.js';
 import { agentResult, childFrame, completedFrame, rootFrame } from './testUtils.js';

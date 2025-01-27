@@ -1,5 +1,6 @@
 import { codeSnippet } from '@nzyme/markdown';
 
+import { parseCodeResponse, parseScript } from '@agentscript-ai/parser';
 import { joinLines } from '@agentscript-ai/utils';
 
 import type { LanguageModel, LanguageModelMessage } from '../LanguageModel.js';
@@ -7,8 +8,6 @@ import type { AgentState } from './agentTypes.js';
 import { createAgentInternal } from './createAgentInternal.js';
 import type { AgentDefinition } from './defineAgent.js';
 import { renderRuntime } from '../modules/renderRuntime.js';
-import { parseCodeResponse } from '../parser/parseCodeResponse.js';
-import { parseScript } from '../parser/parseScript.js';
 
 interface InferAgentInternalOptions {
     def: AgentDefinition;

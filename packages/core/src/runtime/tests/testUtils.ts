@@ -1,7 +1,8 @@
 /* eslint-disable jsdoc/require-jsdoc */
 import { expect } from 'vitest';
 
-import type { AstNode } from '../../parser/astTypes.js';
+import type { AstNode } from '@agentscript-ai/parser';
+
 import type { ExecuteAgentResult } from '../executeAgent.js';
 import type { StackFrame } from '../runtimeTypes.js';
 

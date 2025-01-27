@@ -1,4 +1,5 @@
-import type { AstNode } from '../parser/astTypes.js';
+import type { AstNode } from '@agentscript-ai/parser';
+
 import type { ToolEvent, ToolEventSerialized } from '../tools/defineTool.js';
 
 /**

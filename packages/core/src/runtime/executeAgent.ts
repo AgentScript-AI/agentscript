@@ -1,5 +1,22 @@
 import type { Constructor, EmptyObject } from '@nzyme/types';
 
+import type {
+    ArrayExpression,
+    AssignmentExpression,
+    AstNode,
+    Expression,
+    FunctionCall,
+    IdentifierExpression,
+    IfStatement,
+    MemberExpression,
+    NewExpression,
+    ObjectExpression,
+    OperatorExpression,
+    ReturnStatement,
+    TemplateLiteral,
+    TernaryExpression,
+    VariableDeclaration,
+} from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
 
@@ -17,23 +34,6 @@ import type {
     AgentOutputBase,
     AgentTools,
 } from '../agent/defineAgent.js';
-import type {
-    ArrayExpression,
-    AssignmentExpression,
-    AstNode,
-    Expression,
-    FunctionCall,
-    IdentifierExpression,
-    IfStatement,
-    MemberExpression,
-    NewExpression,
-    ObjectExpression,
-    OperatorExpression,
-    ReturnStatement,
-    TemplateLiteral,
-    TernaryExpression,
-    VariableDeclaration,
-} from '../parser/astTypes.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
 import { ALLOWED_GLOBALS, resolveExpression, resolveLiteral } from './utils/resolveExpression.js';

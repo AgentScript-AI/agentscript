@@ -1,12 +1,12 @@
 import { expect, test } from 'vitest';
 
+import { parseScript } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 
 import type { AgentSerialized } from './agentTypes.js';
 import { createAgent } from './createAgent.js';
 import { restoreAgent } from './restoreAgent.js';
 import { storeAgent } from './storeAgent.js';
-import { parseScript } from '../parser/parseScript.js';
 import { executeAgent } from '../runtime/executeAgent.js';
 import { childFrame, rootFrame } from '../runtime/tests/testUtils.js';
 import { defineTool } from '../tools/defineTool.js';
