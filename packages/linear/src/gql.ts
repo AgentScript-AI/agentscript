@@ -15142,6 +15142,7 @@ export const ViewType = {
   MyIssuesSubscribedTo: 'myIssuesSubscribedTo',
   MyReviews: 'myReviews',
   Project: 'project',
+  ProjectCustomerNeeds: 'projectCustomerNeeds',
   ProjectDocuments: 'projectDocuments',
   Projects: 'projects',
   ProjectsAll: 'projectsAll',
