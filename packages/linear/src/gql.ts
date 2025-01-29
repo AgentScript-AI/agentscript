@@ -1308,10 +1308,14 @@ export type CustomerNeedCreateInput = {
   bodyData?: InputMaybe<Scalars['JSON']['input']>;
   /** The comment this need is referencing. */
   commentId?: InputMaybe<Scalars['String']['input']>;
+  /** Create need as a user with the provided name. This option is only available to OAuth applications creating needs in `actor=application` mode. */
+  createAsUser?: InputMaybe<Scalars['String']['input']>;
   /** The external ID of the customer the need belongs to. */
   customerExternalId?: InputMaybe<Scalars['String']['input']>;
   /** The uuid of the customer the need belongs to. */
   customerId?: InputMaybe<Scalars['String']['input']>;
+  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating needs in `actor=application` mode. */
+  displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
   /** The issue this need is referencing. */
@@ -4507,6 +4511,8 @@ export type IssueCreateInput = {
   cycleId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The issue description as a Prosemirror document. */
+  descriptionData?: InputMaybe<Scalars['JSON']['input']>;
   /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating comments in `actor=application` mode. */
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   /** The date at which the issue is due. */
@@ -5636,6 +5642,8 @@ export type IssueUpdateInput = {
   cycleId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The issue description as a Prosemirror document. */
+  descriptionData?: InputMaybe<Scalars['JSON']['input']>;
   /** The date at which the issue is due. */
   dueDate?: InputMaybe<Scalars['TimelessDate']['input']>;
   /** The estimated complexity of the issue. */
@@ -8976,6 +8984,8 @@ export type NullableUserFilter = {
   email?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
+  /** Comparator for the user's invited status. */
+  invited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the user's name. */
@@ -9899,6 +9909,8 @@ export type Project = Node & {
   initiatives: InitiativeConnection;
   /** Settings for all integrations associated with that project. */
   integrationsSettings?: Maybe<IntegrationsSettings>;
+  /** Inverse relations associated with this project. */
+  inverseRelations: ProjectRelationConnection;
   /** The total number of issues in the project after each week. */
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the project. */
@@ -9927,6 +9939,8 @@ export type Project = Node & {
   projectUpdateRemindersPausedUntilAt?: Maybe<Scalars['DateTime']['output']>;
   /** Project updates associated with the project. */
   projectUpdates: ProjectUpdateConnection;
+  /** Relations associated with this project. */
+  relations: ProjectRelationConnection;
   /** The overall scope (total estimate points) of the project. */
   scope: Scalars['Float']['output'];
   /** The total number of estimation points after each week. */
@@ -10047,6 +10061,17 @@ export type ProjectInitiativesArgs = {
 
 
 /** A project. */
+export type ProjectInverseRelationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** A project. */
 export type ProjectIssuesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -10085,6 +10110,17 @@ export type ProjectProjectMilestonesArgs = {
 
 /** A project. */
 export type ProjectProjectUpdatesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** A project. */
+export type ProjectRelationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -10885,6 +10921,8 @@ export type ProjectSearchResult = Node & {
   initiatives: InitiativeConnection;
   /** Settings for all integrations associated with that project. */
   integrationsSettings?: Maybe<IntegrationsSettings>;
+  /** Inverse relations associated with this project. */
+  inverseRelations: ProjectRelationConnection;
   /** The total number of issues in the project after each week. */
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the project. */
@@ -10915,6 +10953,8 @@ export type ProjectSearchResult = Node & {
   projectUpdateRemindersPausedUntilAt?: Maybe<Scalars['DateTime']['output']>;
   /** Project updates associated with the project. */
   projectUpdates: ProjectUpdateConnection;
+  /** Relations associated with this project. */
+  relations: ProjectRelationConnection;
   /** The overall scope (total estimate points) of the project. */
   scope: Scalars['Float']['output'];
   /** The total number of estimation points after each week. */
@@ -11029,6 +11069,16 @@ export type ProjectSearchResultInitiativesArgs = {
 };
 
 
+export type ProjectSearchResultInverseRelationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
 export type ProjectSearchResultIssuesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -11064,6 +11114,16 @@ export type ProjectSearchResultProjectMilestonesArgs = {
 
 
 export type ProjectSearchResultProjectUpdatesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type ProjectSearchResultRelationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -14731,6 +14791,8 @@ export type UserCollectionFilter = {
   every?: InputMaybe<UserFilter>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
+  /** Comparator for the user's invited status. */
+  invited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the collection length. */
@@ -14782,6 +14844,8 @@ export type UserFilter = {
   email?: InputMaybe<StringComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
+  /** Comparator for the user's invited status. */
+  invited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the user's name. */
