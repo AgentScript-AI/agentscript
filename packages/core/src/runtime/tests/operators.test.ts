@@ -432,3 +432,123 @@ test('logical operators', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('post increment variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'a++;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 2,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 1,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('pre increment variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        '++a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 2,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 2,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('post decrement variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'a--;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 0,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 1,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('pre decrement variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        '--a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 0,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 0,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});

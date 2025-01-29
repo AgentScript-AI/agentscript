@@ -90,6 +90,18 @@ function parseStatement(statement: babel.Statement): AstNode {
             break;
         }
 
+        case 'WhileStatement':
+            return {
+                type: 'while',
+                if: parseExpression(statement.test),
+                body: parseStatement(statement.body),
+            };
+
+        case 'BreakStatement':
+            return {
+                type: 'break',
+            };
+
         default:
             throw new ParseError(`Unknown statement type: ${statement.type}`, {
                 cause: statement,
@@ -142,6 +154,14 @@ function parseExpression(expression: babel.Expression): Expression {
             }
 
             break;
+
+        case 'UpdateExpression':
+            return {
+                type: 'update',
+                operator: expression.operator,
+                expr: parseExpression(expression.argument),
+                pre: expression.prefix,
+            };
 
         case 'MemberExpression':
             return {

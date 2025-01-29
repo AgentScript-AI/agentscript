@@ -4,6 +4,7 @@ import type {
     ArrayExpression,
     AssignmentExpression,
     AstNode,
+    BreakStatement,
     Expression,
     FunctionCall,
     IdentifierExpression,
@@ -15,7 +16,9 @@ import type {
     ReturnStatement,
     TemplateLiteral,
     TernaryExpression,
+    UpdateExpression,
     VariableDeclaration,
+    WhileStatement,
 } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
@@ -175,7 +178,7 @@ async function runBlockStatement(
         }
 
         if (!controller.continue()) {
-            return updateFrame(block, 'running');
+            return block;
         }
 
         frame = block.children[index];
@@ -213,6 +216,12 @@ async function runNode(
         case 'if':
             return await runIfStatement(agent, controller, closure, parent, index, node);
 
+        case 'while':
+            return await runWhileStatement(agent, controller, closure, parent, index, node);
+
+        case 'break':
+            return runBreakStatement(parent, index, node);
+
         case 'return':
             return await runReturnStatement(agent, controller, closure, parent, index, node);
 
@@ -230,7 +239,7 @@ async function runVarStatement(
     node: VariableDeclaration,
 ): Promise<StackFrameResult> {
     const frame = getFrame(parent, index, node);
-    if (frame.status === 'done') {
+    if (isDone(frame)) {
         return frame;
     }
 
@@ -267,7 +276,7 @@ async function runIfStatement(
     node: IfStatement,
 ) {
     const frame = getFrame(parent, index, node);
-    if (frame.status === 'done') {
+    if (isDone(frame)) {
         return frame;
     }
 
@@ -285,70 +294,123 @@ async function runIfStatement(
     return updateFrame(frame, 'done');
 }
 
+async function runWhileStatement(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    node: WhileStatement,
+) {
+    const frame = getFrame(parent, index, node);
+    if (isDone(frame)) {
+        return frame;
+    }
+
+    // child frames are alterating condition and body blocks
+    let i = frame.children?.length ?? 0;
+    if (i % 2 !== 0) {
+        // normalize to the condition frame
+        i--;
+    }
+
+    while (true) {
+        if (isDone(frame)) {
+            return frame;
+        }
+
+        if (!controller.continue()) {
+            return frame;
+        }
+
+        const ticks = controller.ticks;
+        const condition = await runExpression(agent, controller, closure, frame, i++, node.if);
+        if (condition.status !== 'done') {
+            return updateFrame(frame, condition.status);
+        }
+
+        if (!condition.value) {
+            return updateFrame(frame, 'done');
+        }
+
+        const body = await runNode(agent, controller, closure, frame, i++, node.body);
+        if (body.status !== 'done') {
+            return updateFrame(frame, body.status);
+        }
+
+        if (controller.ticks === ticks) {
+            controller.tick();
+        }
+    }
+}
+
+function runBreakStatement(parent: StackFrame, index: number, node: BreakStatement) {
+    const frame = getFrame(parent, index, node);
+
+    while (true) {
+        updateFrame(parent, 'done');
+
+        if (parent.node?.type === 'while') {
+            break;
+        }
+
+        if (!parent.parent) {
+            throw new RuntimeError('Break statement outside of loop');
+        }
+
+        parent = parent.parent;
+    }
+
+    return updateFrame(frame, 'done');
+}
+
 async function runExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: Expression,
+    expr: Expression,
 ): Promise<StackFrameResult> {
-    switch (expression.type) {
+    switch (expr.type) {
         case 'ident':
-            return runIdentifierExpression(agent, parent, index, expression);
+            return runIdentifierExpression(agent, parent, index, expr);
 
-        case 'literal': {
-            return {
-                value: resolveLiteral(expression),
-                status: 'done',
-            };
-        }
+        case 'literal':
+            return { value: resolveLiteral(expr), status: 'done' };
 
         case 'member':
-            return await runMemberExpression(agent, controller, closure, parent, index, expression);
+            return await runMemberExpression(agent, controller, closure, parent, index, expr);
 
         case 'operator':
-            return await runOperatorExpression(
-                agent,
-                controller,
-                closure,
-                parent,
-                index,
-                expression,
-            );
+            return await runOperatorExpression(agent, controller, closure, parent, index, expr);
+
+        case 'update':
+            return await runUpdateExpression(agent, controller, closure, parent, index, expr);
 
         case 'ternary':
-            return await runTernaryExpression(
-                agent,
-                controller,
-                closure,
-                parent,
-                index,
-                expression,
-            );
+            return await runTernaryExpression(agent, controller, closure, parent, index, expr);
 
         case 'object':
-            return await runObjectExpression(agent, controller, closure, parent, index, expression);
+            return await runObjectExpression(agent, controller, closure, parent, index, expr);
 
         case 'array':
-            return await runArrayExpression(agent, controller, closure, parent, index, expression);
+            return await runArrayExpression(agent, controller, closure, parent, index, expr);
 
         case 'assign':
-            return await runAssignExpression(agent, controller, closure, parent, index, expression);
+            return await runAssignExpression(agent, controller, closure, parent, index, expr);
 
         case 'call':
-            return await runFunctionCall(agent, controller, closure, parent, index, expression);
+            return await runFunctionCall(agent, controller, closure, parent, index, expr);
 
         case 'new':
-            return await runNewExpression(agent, controller, closure, parent, index, expression);
+            return await runNewExpression(agent, controller, closure, parent, index, expr);
 
         case 'template':
-            return await runTemplateLiteral(agent, controller, closure, parent, index, expression);
+            return await runTemplateLiteral(agent, controller, closure, parent, index, expr);
 
         default:
-            throw new RuntimeError(
-                `Unsupported expression type: ${(expression as Expression).type}`,
-            );
+            throw new RuntimeError(`Unsupported expression type: ${(expr as Expression).type}`);
     }
 }
 
@@ -540,7 +602,7 @@ async function runAssignExpression(
     expr: AssignmentExpression,
 ): Promise<StackFrameResult> {
     const frame = getFrame(parent, index, expr);
-    if (frame.status === 'done') {
+    if (isDone(frame)) {
         return frame;
     }
 
@@ -567,7 +629,7 @@ async function runFunctionCall(
     expr: FunctionCall,
 ): Promise<StackFrameResult> {
     const frame = getFrame(parent, index, expr);
-    if (frame.status === 'done') {
+    if (isDone(frame)) {
         return frame;
     }
 
@@ -1022,6 +1084,39 @@ async function runOperatorExpression(
     return updateFrame(frame, 'done');
 }
 
+async function runUpdateExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expr: UpdateExpression,
+) {
+    const frame = getFrame(parent, index, expr);
+    if (isDone(frame)) {
+        return frame;
+    }
+
+    const exprResult = await runExpression(agent, controller, closure, frame, 0, expr.expr);
+    if (exprResult.status !== 'done') {
+        return updateFrame(frame, exprResult.status);
+    }
+
+    const diff = expr.operator === '++' ? 1 : -1;
+
+    if (expr.pre) {
+        frame.value = (exprResult.value as number) + diff;
+    } else {
+        frame.value = exprResult.value;
+    }
+
+    if (expr.expr.type === 'ident') {
+        setVariable(frame, expr.expr.name, (exprResult.value as number) + diff);
+    }
+
+    return updateFrame(frame, 'done');
+}
+
 async function runTernaryExpression(
     agent: Agent,
     controller: RuntimeController,
@@ -1250,4 +1345,8 @@ function setVariable(frame: StackFrame, name: string, value: unknown) {
 
 function isSafeValue(value: unknown) {
     return typeof value !== 'function';
+}
+
+function isDone(frame: StackFrame | StackFrameResult) {
+    return frame.status === 'done';
 }

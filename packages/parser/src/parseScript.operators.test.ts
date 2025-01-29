@@ -332,3 +332,75 @@ test('logical OR operator', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('post increment operator', () => {
+    const code = 'a++;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '++',
+                expr: { type: 'ident', name: 'a' },
+                pre: false,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('pre increment operator', () => {
+    const code = '++a;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '++',
+                expr: { type: 'ident', name: 'a' },
+                pre: true,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('post decrement operator', () => {
+    const code = 'a--;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '--',
+                expr: { type: 'ident', name: 'a' },
+                pre: false,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('pre decrement operator', () => {
+    const code = '--a;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '--',
+                expr: { type: 'ident', name: 'a' },
+                pre: true,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});

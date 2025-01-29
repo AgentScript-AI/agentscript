@@ -81,6 +81,34 @@ export interface IfStatement extends AstNodeBase {
 }
 
 /**
+ * While statement.
+ */
+export interface WhileStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'while';
+    /**
+     * Condition of the while statement.
+     */
+    if: Expression;
+    /**
+     * Body of the while statement.
+     */
+    body: AstNode;
+}
+
+/**
+ * Break statement.
+ */
+export interface BreakStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'break';
+}
+
+/**
  * Function call expression.
  */
 export interface FunctionCall extends AstNodeBase {
@@ -219,6 +247,28 @@ export interface OperatorExpression extends AstNodeBase {
 }
 
 /**
+ * Update expression.
+ */
+export interface UpdateExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'update';
+    /**
+     * Operator.
+     */
+    operator: '++' | '--';
+    /**
+     * Expression to update.
+     */
+    expr: Expression;
+    /**
+     * Whether the update is prefix or postfix.
+     */
+    pre: boolean;
+}
+
+/**
  * Object expression.
  */
 export interface ObjectExpression extends AstNodeBase {
@@ -329,12 +379,19 @@ export type Expression =
     | OperatorExpression
     | ArrowFunctionExpression
     | TemplateLiteral
-    | TernaryExpression;
+    | TernaryExpression
+    | UpdateExpression;
 
 /**
  * Script statement.
  */
-export type Statement = VariableDeclaration | BlockStatement | ReturnStatement | IfStatement;
+export type Statement =
+    | VariableDeclaration
+    | BlockStatement
+    | ReturnStatement
+    | IfStatement
+    | WhileStatement
+    | BreakStatement;
 
 /**
  * AST node.
