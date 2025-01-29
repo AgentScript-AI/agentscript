@@ -211,11 +211,11 @@ export interface AssignmentExpression extends AstNodeBase {
 /**
  * Operator expression.
  */
-export interface OperatorExpression extends AstNodeBase {
+export interface BinaryExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
-    type: 'operator';
+    type: 'binary';
     /**
      * Operator.
      */
@@ -239,11 +239,29 @@ export interface OperatorExpression extends AstNodeBase {
     /**
      * Left side of the operator.
      */
-    left?: Expression;
+    left: Expression;
     /**
      * Right side of the operator.
      */
-    right?: Expression;
+    right: Expression;
+}
+
+/**
+ * Unary expression.
+ */
+export interface UnaryExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'unary';
+    /**
+     * Operator.
+     */
+    operator: '+' | '-' | '!' | 'typeof';
+    /**
+     * Expression to apply the operator to.
+     */
+    expr: Expression;
 }
 
 /**
@@ -376,7 +394,8 @@ export type Expression =
     | ObjectExpression
     | ArrayExpression
     | NewExpression
-    | OperatorExpression
+    | BinaryExpression
+    | UnaryExpression
     | ArrowFunctionExpression
     | TemplateLiteral
     | TernaryExpression

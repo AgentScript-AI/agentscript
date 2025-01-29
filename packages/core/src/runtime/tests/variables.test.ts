@@ -111,7 +111,7 @@ test('assign expression to variable', async () => {
                     null,
                     // right side
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 2,
                         children: [
                             // left side

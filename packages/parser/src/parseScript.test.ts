@@ -358,7 +358,7 @@ test('array map inline', () => {
                             type: 'arrowfn',
                             params: [{ type: 'ident', name: 'x' }],
                             body: {
-                                type: 'operator',
+                                type: 'binary',
                                 operator: '*',
                                 left: { type: 'ident', name: 'x' },
                                 right: { type: 'literal', value: 2 },
@@ -417,7 +417,7 @@ test('array map with function', () => {
                                         type: 'return',
                                         comment: 'multiply x by 2',
                                         value: {
-                                            type: 'operator',
+                                            type: 'binary',
                                             operator: '*',
                                             left: { type: 'ident', name: 'x' },
                                             right: { type: 'literal', value: 2 },

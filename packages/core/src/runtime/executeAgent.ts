@@ -12,13 +12,14 @@ import type {
     MemberExpression,
     NewExpression,
     ObjectExpression,
-    OperatorExpression,
+    BinaryExpression,
     ReturnStatement,
     TemplateLiteral,
     TernaryExpression,
     UpdateExpression,
     VariableDeclaration,
     WhileStatement,
+    UnaryExpression,
 } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';
@@ -382,8 +383,11 @@ async function runExpression(
         case 'member':
             return await runMemberExpression(agent, controller, closure, parent, index, expr);
 
-        case 'operator':
-            return await runOperatorExpression(agent, controller, closure, parent, index, expr);
+        case 'binary':
+            return await runBinaryExpression(agent, controller, closure, parent, index, expr);
+
+        case 'unary':
+            return await runUnaryExpression(agent, controller, closure, parent, index, expr);
 
         case 'update':
             return await runUpdateExpression(agent, controller, closure, parent, index, expr);
@@ -980,39 +984,30 @@ async function runFunctionNative(
     return updateFrame(frame, 'done');
 }
 
-async function runOperatorExpression(
+async function runBinaryExpression(
     agent: Agent,
     controller: RuntimeController,
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: OperatorExpression,
+    expr: BinaryExpression,
 ) {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
 
-    let leftResult: StackFrameResult | undefined;
-    let rightResult: StackFrameResult | undefined;
-
-    if (expression.left) {
-        leftResult = await runExpression(agent, controller, closure, frame, 0, expression.left);
-
-        if (leftResult.status !== 'done') {
-            return updateFrame(frame, leftResult.status);
-        }
+    const leftResult = await runExpression(agent, controller, closure, frame, 0, expr.left);
+    if (leftResult.status !== 'done') {
+        return updateFrame(frame, leftResult.status);
     }
 
-    if (expression.right) {
-        rightResult = await runExpression(agent, controller, closure, frame, 1, expression.right);
-
-        if (rightResult.status !== 'done') {
-            return updateFrame(frame, rightResult.status);
-        }
+    const rightResult = await runExpression(agent, controller, closure, frame, 1, expr.right);
+    if (rightResult.status !== 'done') {
+        return updateFrame(frame, rightResult.status);
     }
 
     const leftValue = leftResult?.value;
     const rightValue = rightResult?.value;
 
-    switch (expression.operator) {
+    switch (expr.operator) {
         case '+':
             frame.value = (leftValue as number) + (rightValue as number);
             break;
@@ -1078,7 +1073,47 @@ async function runOperatorExpression(
             break;
 
         default:
-            throw new RuntimeError(`Unsupported operator: ${expression.operator as string}`);
+            throw new RuntimeError(`Unsupported operator: ${expr.operator as string}`);
+    }
+
+    return updateFrame(frame, 'done');
+}
+
+async function runUnaryExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expr: UnaryExpression,
+) {
+    const frame = getFrame(parent, index, expr);
+    const exprResult = await runExpression(agent, controller, closure, frame, 0, expr.expr);
+    if (!isDone(exprResult)) {
+        return updateFrame(frame, exprResult.status);
+    }
+
+    const value = exprResult.value;
+
+    switch (expr.operator) {
+        case '-':
+            frame.value = -(value as number);
+            break;
+
+        case '+':
+            frame.value = +(value as number);
+            break;
+
+        case 'typeof':
+            frame.value = typeof value;
+            break;
+
+        case '!':
+            frame.value = !(value as boolean);
+            break;
+
+        default:
+            throw new RuntimeError(`Unsupported unary operator: ${expr.operator as string}`);
     }
 
     return updateFrame(frame, 'done');

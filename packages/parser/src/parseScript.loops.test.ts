@@ -26,7 +26,7 @@ test('increment variable in while loop', () => {
             {
                 type: 'while',
                 if: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '<',
                     left: { type: 'ident', name: 'a' },
                     right: { type: 'literal', value: 3 },
@@ -78,7 +78,7 @@ test('while loop, increment variable, with break', () => {
                         {
                             type: 'if',
                             if: {
-                                type: 'operator',
+                                type: 'binary',
                                 operator: '>',
                                 left: {
                                     type: 'update',

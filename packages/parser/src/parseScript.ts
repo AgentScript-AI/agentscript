@@ -10,9 +10,10 @@ import type {
     Literal,
     ObjectExpression,
     ObjectProperty,
-    OperatorExpression,
+    BinaryExpression,
     Script,
     TemplateLiteral,
+    UnaryExpression,
 } from './astTypes.js';
 
 /**
@@ -153,7 +154,11 @@ function parseExpression(expression: babel.Expression): Expression {
                 };
             }
 
-            break;
+            return {
+                type: 'unary',
+                operator: expression.operator as UnaryExpression['operator'],
+                expr: parseExpression(expression.argument),
+            };
 
         case 'UpdateExpression':
             return {
@@ -204,8 +209,8 @@ function parseExpression(expression: babel.Expression): Expression {
         case 'BinaryExpression':
         case 'LogicalExpression':
             return {
-                type: 'operator',
-                operator: expression.operator as OperatorExpression['operator'],
+                type: 'binary',
+                operator: expression.operator as BinaryExpression['operator'],
                 left: parseExpression(expression.left as babel.Expression),
                 right: parseExpression(expression.right),
             };

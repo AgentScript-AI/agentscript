@@ -21,7 +21,7 @@ test('if statement', () => {
             {
                 type: 'if',
                 if: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '>',
                     left: { type: 'ident', name: 'a' },
                     right: { type: 'literal', value: 0 },
@@ -60,7 +60,7 @@ test('if-else statement', () => {
             {
                 type: 'if',
                 if: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '>',
                     left: { type: 'ident', name: 'a' },
                     right: { type: 'literal', value: 0 },
@@ -100,7 +100,7 @@ test('if-elseif-else statement', () => {
             {
                 type: 'if',
                 if: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '>',
                     left: { type: 'ident', name: 'a' },
                     right: { type: 'literal', value: 0 },
@@ -112,7 +112,7 @@ test('if-elseif-else statement', () => {
                 else: {
                     type: 'if',
                     if: {
-                        type: 'operator',
+                        type: 'binary',
                         operator: '>',
                         left: { type: 'ident', name: 'b' },
                         right: { type: 'literal', value: 0 },

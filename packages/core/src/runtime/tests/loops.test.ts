@@ -33,7 +33,7 @@ test('while loop, increment variable', async () => {
                     // first iteration
                     // - condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                         children: [
                             // left operand
@@ -58,7 +58,7 @@ test('while loop, increment variable', async () => {
                     // second iteration
                     // - condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                         children: [completedFrame({ node: 'ident', value: 2 })],
                     }),
@@ -77,7 +77,7 @@ test('while loop, increment variable', async () => {
                     // third iteration
                     // - condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: false,
                         children: [completedFrame({ node: 'ident', value: 3 })],
                     }),
@@ -133,7 +133,7 @@ test('while loop, break', async () => {
                                 children: [
                                     // condition
                                     completedFrame({
-                                        node: 'operator',
+                                        node: 'binary',
                                         value: false,
                                         children: [
                                             // left operand
@@ -162,7 +162,7 @@ test('while loop, break', async () => {
                                 children: [
                                     // condition
                                     completedFrame({
-                                        node: 'operator',
+                                        node: 'binary',
                                         value: true,
                                         children: [
                                             // left operand
