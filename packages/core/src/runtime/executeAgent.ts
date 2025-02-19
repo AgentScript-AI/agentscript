@@ -4,6 +4,7 @@ import type {
     ArrayExpression,
     AssignmentExpression,
     AstNode,
+    BinaryExpression,
     BreakStatement,
     Expression,
     FunctionCall,
@@ -12,14 +13,13 @@ import type {
     MemberExpression,
     NewExpression,
     ObjectExpression,
-    BinaryExpression,
     ReturnStatement,
     TemplateLiteral,
     TernaryExpression,
+    UnaryExpression,
     UpdateExpression,
     VariableDeclaration,
     WhileStatement,
-    UnaryExpression,
 } from '@agentscript-ai/parser';
 import * as s from '@agentscript-ai/schema';
 import { validateOrThrow } from '@agentscript-ai/schema';

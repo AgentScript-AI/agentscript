@@ -10,6 +10,7 @@ import type {
     AgentTools,
 } from './defineAgent.js';
 import type { Heap } from '../heap/heapTypes.js';
+import type { Metadata } from '../meta/defineMetadata.js';
 import type {
     StackFrame,
     StackFrameSerialized,
@@ -51,23 +52,18 @@ export type Agent<
  */
 export type AgentState<TOutput extends AgentOutputBase = AgentOutputBase> = {
     /**
-     * Prompt used to create the agent.
-     */
-    readonly prompt?: string;
-    /**
      * AgentScript script to execute.
      */
     readonly script: Script;
-    /**
-     * Plan for the agent.
-     */
-    readonly plan?: string;
-
     /**
      * Root frame of the agent execution stack.
      * Execution progress is stored here.
      */
     root: StackFrame;
+    /**
+     * Metadata of the agent.
+     */
+    metadata: Metadata;
 } & (AgentStateComplete<TOutput> | AgentStateRunning);
 
 type AgentStateComplete<TOutput extends AgentOutputBase> = {
@@ -149,10 +145,6 @@ export type AgentStateSerialized = {
      */
     script: Script;
     /**
-     * Agent plan.
-     */
-    plan?: string;
-    /**
      * Root frame.
      */
     root: StackFrameSerialized;
@@ -161,4 +153,8 @@ export type AgentStateSerialized = {
      * Refers to the index of the output in the heap.
      */
     output?: number;
+    /**
+     * Metadata ref of the agent.
+     */
+    metadata: number;
 };

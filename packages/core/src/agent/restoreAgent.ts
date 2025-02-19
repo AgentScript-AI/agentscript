@@ -10,6 +10,7 @@ import type {
 import { rechainAgent } from './rechainAgent.js';
 import type { HeapDeserializer } from '../heap/createHeapDeserializer.js';
 import { createHeapDeserializer } from '../heap/createHeapDeserializer.js';
+import type { Metadata } from '../meta/defineMetadata.js';
 import type {
     StackFrame,
     StackFrameSerialized,
@@ -54,13 +55,14 @@ function deserializeState(
 ): AgentState {
     const root = deserializeFrame(state.root, heap, '0', timestamp);
     const output = state.output ? heap.get(state.output) : undefined;
+    const metadata: Metadata = (heap.get(state.metadata) as Metadata) ?? {};
 
     return {
         script: state.script,
-        plan: state.plan,
         status: root.status as LiteralPick<StackFrameStatus, 'done'>,
         root,
         output,
+        metadata,
     };
 }
 
