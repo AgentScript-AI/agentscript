@@ -65,4 +65,5 @@ node_modules/
 dist
 .nx
 .turbo
-tsconfig.dev.json
+tsconfig.cjs.dev.json
+tsconfig.esm.dev.json

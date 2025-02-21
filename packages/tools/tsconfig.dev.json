@@ -1,0 +1,14 @@
+{
+    "extends": "./tsconfig.json",
+    "references": [
+        {
+            "path": "../core/tsconfig.dev.json"
+        },
+        {
+            "path": "../schema/tsconfig.dev.json"
+        },
+        {
+            "path": "../utils/tsconfig.dev.json"
+        }
+    ]
+}

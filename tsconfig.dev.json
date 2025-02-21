@@ -1,0 +1,26 @@
+{
+    "extends": "./tsconfig.json",
+    "references": [
+        {
+            "path": "./packages/anthropic/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/bundle/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/core/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/linear/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/schema/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/tools/tsconfig.dev.json"
+        },
+        {
+            "path": "./packages/utils/tsconfig.dev.json"
+        }
+    ]
+}
