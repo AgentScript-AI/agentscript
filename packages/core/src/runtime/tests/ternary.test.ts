@@ -130,7 +130,7 @@ test('ternary operator with expressions', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: false,
                         children: [
                             // left operand
@@ -142,7 +142,7 @@ test('ternary operator with expressions', async () => {
                     }),
                     // else
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 4,
                         children: [
                             // left operand
@@ -194,7 +194,7 @@ test('ternary operator with async tool', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                         children: [
                             // left operand
@@ -206,7 +206,7 @@ test('ternary operator with async tool', async () => {
                     }),
                     // then
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 'foobar',
                         children: [
                             // left operand

@@ -3,6 +3,7 @@ import { v7 as uuid } from 'uuid';
 import type { Agent, AgentRuntime, AgentState } from './agentTypes.js';
 import type { CreateAgentOptions } from './createAgent.js';
 import type { AgentInputBase, AgentOutputBase, AgentTools } from './defineAgent.js';
+import { planMetadata, promptMetadata } from '../meta/defaultMetadata.js';
 import type { StackFrame } from '../runtime/runtimeTypes.js';
 
 /**
@@ -43,15 +44,25 @@ export function createAgentInternal(options: CreateAgentInternalOptions): Agent 
         root.variables = { result: undefined };
     }
 
-    return {
+    const agent: Agent = {
         id,
         def: options,
         script: options.script,
-        plan: options.plan,
         status: 'running',
+        metadata: {},
         root,
         createdAt: new Date(),
         runtime: options.runtime,
         chain: options.chain,
     };
+
+    if (options.plan) {
+        planMetadata(agent, options.plan);
+    }
+
+    if (options.prompt) {
+        promptMetadata(agent, options.prompt);
+    }
+
+    return agent;
 }

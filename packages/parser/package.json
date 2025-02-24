@@ -16,24 +16,39 @@
         "README.md"
     ],
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.cjs"
+            }
+        }
+    },
     "scripts": {
         "eslint": "eslint . --fix --cache",
         "build": "tsc --build",
+        "smoke:mjs": "node tests/smoke.test.mjs",
+        "smoke:cjs": "node tests/smoke.test.cjs",
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
         "@agentscript-ai/utils": "^0.5.0",
-        "@babel/parser": "^7.26.5"
+        "@babel/parser": "^7.26.9",
+        "@babel/types": "^7.26.9"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.5.0",
         "@agentscript-ai/tsconfig": "^0.5.0",
-        "@nzyme/vitest": "^0.5.0",
+        "@nzyme/vitest": "^0.6.1",
         "@types/debug": "^4.1.12",
-        "@types/node": "^22.10.7",
+        "@types/node": "^22.13.4",
         "typescript": "^5.7.3",
-        "vitest": "^3.0.1"
+        "vitest": "^3.0.6"
     }
 }

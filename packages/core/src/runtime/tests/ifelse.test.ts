@@ -32,7 +32,7 @@ test('if statement, passed', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                         children: [
                             // left operand
@@ -91,7 +91,7 @@ test('if statement, failed', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: false,
                         children: [
                             // left operand
@@ -140,7 +140,7 @@ test('if statement, else', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: false,
                         children: [
                             // left operand (litaral)
@@ -203,7 +203,7 @@ test('if statement, else if', async () => {
                 children: [
                     // condition
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: false,
                         children: [
                             // left operand
@@ -219,7 +219,7 @@ test('if statement, else if', async () => {
                         children: [
                             // condition
                             completedFrame({
-                                node: 'operator',
+                                node: 'binary',
                                 value: true,
                                 children: [
                                     // left operand

@@ -8,6 +8,7 @@ import type { Agent, AgentState } from './agentTypes.js';
 import type { AgentTools } from './defineAgent.js';
 import { inferAgentInternal } from './inferAgentInternal.js';
 import { rechainAgent } from './rechainAgent.js';
+import { promptMetadata } from '../meta/defaultMetadata.js';
 
 /**
  * Parameters for {@link chainAgent}.
@@ -48,10 +49,11 @@ export async function chainAgent<TTools extends AgentTools>(params: ChainAgentPa
     chain.push(params.agent);
 
     for (const agent of chain) {
-        if (agent.prompt) {
+        const prompt = promptMetadata(agent);
+        if (prompt) {
             messages.push({
                 role: 'user',
-                content: agent.prompt,
+                content: prompt,
             });
         }
 

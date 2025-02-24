@@ -46,7 +46,7 @@ test('array variable map with inline arrow function', async () => {
                             }),
                             // array map item / operator call
                             completedFrame({
-                                node: 'operator',
+                                node: 'binary',
                                 value: 2,
                                 variables: {
                                     x: 1,
@@ -61,7 +61,7 @@ test('array variable map with inline arrow function', async () => {
                             }),
                             // array map item / operator call
                             completedFrame({
-                                node: 'operator',
+                                node: 'binary',
                                 value: 4,
                                 variables: {
                                     x: 2,
@@ -76,7 +76,7 @@ test('array variable map with inline arrow function', async () => {
                             }),
                             // array map item / operator call
                             completedFrame({
-                                node: 'operator',
+                                node: 'binary',
                                 value: 6,
                                 variables: {
                                     x: 3,
@@ -131,7 +131,7 @@ test('array literal map with inline arrow function', async () => {
                     null,
                     // array map item / operator call
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 2,
                         variables: {
                             x: 1,
@@ -146,7 +146,7 @@ test('array literal map with inline arrow function', async () => {
                     }),
                     // array map item / operator call
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 4,
                         variables: {
                             x: 2,
@@ -211,7 +211,7 @@ test('array member map with inline arrow function', async () => {
                     }),
                     // array map item / operator call
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 2,
                         variables: {
                             x: 1,
@@ -226,7 +226,7 @@ test('array member map with inline arrow function', async () => {
                     }),
                     // array map item / operator call
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 4,
                         variables: {
                             x: 2,
@@ -303,7 +303,7 @@ test('array variable map with block arrow function', async () => {
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                node: 'operator',
+                                                node: 'binary',
                                                 value: 2,
                                                 children: [
                                                     // left operand
@@ -345,7 +345,7 @@ test('array variable map with block arrow function', async () => {
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                node: 'operator',
+                                                node: 'binary',
                                                 value: 4,
                                                 children: [
                                                     // left operand
@@ -387,7 +387,7 @@ test('array variable map with block arrow function', async () => {
                                         children: [
                                             // operator call
                                             completedFrame({
-                                                node: 'operator',
+                                                node: 'binary',
                                                 value: 6,
                                                 children: [
                                                     // left operand
@@ -485,7 +485,7 @@ test('array variable map with block arrow function and nested return', async () 
                                         children: [
                                             // condition
                                             completedFrame({
-                                                node: 'operator',
+                                                node: 'binary',
                                                 value: true,
                                                 children: [
                                                     // left operand
@@ -523,7 +523,7 @@ test('array variable map with block arrow function and nested return', async () 
                                         children: [
                                             // condition
                                             completedFrame({
-                                                node: 'operator',
+                                                node: 'binary',
                                                 value: false,
                                                 children: [
                                                     // left operand

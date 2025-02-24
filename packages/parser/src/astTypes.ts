@@ -81,6 +81,34 @@ export interface IfStatement extends AstNodeBase {
 }
 
 /**
+ * While statement.
+ */
+export interface WhileStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'while';
+    /**
+     * Condition of the while statement.
+     */
+    if: Expression;
+    /**
+     * Body of the while statement.
+     */
+    body: AstNode;
+}
+
+/**
+ * Break statement.
+ */
+export interface BreakStatement extends AstNodeBase {
+    /**
+     * Type of the statement.
+     */
+    type: 'break';
+}
+
+/**
  * Function call expression.
  */
 export interface FunctionCall extends AstNodeBase {
@@ -183,11 +211,11 @@ export interface AssignmentExpression extends AstNodeBase {
 /**
  * Operator expression.
  */
-export interface OperatorExpression extends AstNodeBase {
+export interface BinaryExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
-    type: 'operator';
+    type: 'binary';
     /**
      * Operator.
      */
@@ -211,11 +239,51 @@ export interface OperatorExpression extends AstNodeBase {
     /**
      * Left side of the operator.
      */
-    left?: Expression;
+    left: Expression;
     /**
      * Right side of the operator.
      */
-    right?: Expression;
+    right: Expression;
+}
+
+/**
+ * Unary expression.
+ */
+export interface UnaryExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'unary';
+    /**
+     * Operator.
+     */
+    operator: '+' | '-' | '!' | 'typeof';
+    /**
+     * Expression to apply the operator to.
+     */
+    expr: Expression;
+}
+
+/**
+ * Update expression.
+ */
+export interface UpdateExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'update';
+    /**
+     * Operator.
+     */
+    operator: '++' | '--';
+    /**
+     * Expression to update.
+     */
+    expr: Expression;
+    /**
+     * Whether the update is prefix or postfix.
+     */
+    pre: boolean;
 }
 
 /**
@@ -326,15 +394,23 @@ export type Expression =
     | ObjectExpression
     | ArrayExpression
     | NewExpression
-    | OperatorExpression
+    | BinaryExpression
+    | UnaryExpression
     | ArrowFunctionExpression
     | TemplateLiteral
-    | TernaryExpression;
+    | TernaryExpression
+    | UpdateExpression;
 
 /**
  * Script statement.
  */
-export type Statement = VariableDeclaration | BlockStatement | ReturnStatement | IfStatement;
+export type Statement =
+    | VariableDeclaration
+    | BlockStatement
+    | ReturnStatement
+    | IfStatement
+    | WhileStatement
+    | BreakStatement;
 
 /**
  * AST node.

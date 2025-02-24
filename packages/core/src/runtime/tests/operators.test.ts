@@ -32,7 +32,7 @@ test('add operator', async () => {
                 children: [
                     // operator frame
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 3,
                         children: [
                             // left operand literal
@@ -79,7 +79,7 @@ test('subtract operator', async () => {
                 children: [
                     // operator frame
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 2,
                         children: [
                             // left operand
@@ -126,7 +126,7 @@ test('multiply operator', async () => {
                 children: [
                     // operator frame
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 12,
                         children: [
                             // left operand
@@ -173,7 +173,7 @@ test('divide operator', async () => {
                 children: [
                     // operator frame
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 3,
                         children: [
                             // left operand
@@ -220,7 +220,7 @@ test('modulo operator', async () => {
                 children: [
                     // operator frame
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 1,
                         children: [
                             // left operand
@@ -266,7 +266,7 @@ test('equality operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -275,7 +275,7 @@ test('equality operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -284,7 +284,7 @@ test('equality operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -293,7 +293,7 @@ test('equality operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -330,7 +330,7 @@ test('comparison operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -339,7 +339,7 @@ test('comparison operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -348,7 +348,7 @@ test('comparison operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -357,7 +357,7 @@ test('comparison operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -394,7 +394,7 @@ test('logical operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -403,7 +403,7 @@ test('logical operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: true,
                     }),
                 ],
@@ -412,7 +412,7 @@ test('logical operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 'default',
                     }),
                 ],
@@ -421,8 +421,268 @@ test('logical operators', async () => {
                 node: 'var',
                 children: [
                     completedFrame({
-                        node: 'operator',
+                        node: 'binary',
                         value: 'default',
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('post increment variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'a++;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 2,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 1,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('pre increment variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        '++a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 2,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 2,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('post decrement variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'a--;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 0,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 1,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('pre decrement variable', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        '--a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 0,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'update',
+                value: 0,
+                children: [completedFrame({ node: 'ident', value: 1 })],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('negate operator', async () => {
+    const script = parseScript([
+        //
+        'const a = 1;',
+        'const b = -a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 1,
+            b: -1,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'unary',
+                        value: -1,
+                        children: [completedFrame({ node: 'ident', value: 1 })],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('plus operator', async () => {
+    const script = parseScript([
+        //
+        'const a = "1";',
+        'const b = +a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: '1',
+            b: 1,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'unary',
+                        value: 1,
+                        children: [completedFrame({ node: 'ident', value: '1' })],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('typeof operator', async () => {
+    const script = parseScript(['const a = "foo";', 'const b = typeof a;']);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: 'foo',
+            b: 'string',
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'unary',
+                        value: 'string',
+                        children: [completedFrame({ node: 'ident', value: 'foo' })],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('not operator', async () => {
+    const script = parseScript([
+        //
+        'const a = true;',
+        'const b = !a;',
+    ]);
+
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: true,
+            b: false,
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'unary',
+                        value: false,
+                        children: [completedFrame({ node: 'ident', value: true })],
                     }),
                 ],
             }),

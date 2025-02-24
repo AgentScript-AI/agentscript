@@ -41,6 +41,7 @@ jobs:
       - run: yarn monorepo
       - run: yarn build
       - run: yarn test
+      - run: yarn smoke
 
       - run: yarn release
         if: ${{ inputs.dry_run != true }}

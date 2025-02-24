@@ -10,9 +10,10 @@ import type {
     Literal,
     ObjectExpression,
     ObjectProperty,
-    OperatorExpression,
+    BinaryExpression,
     Script,
     TemplateLiteral,
+    UnaryExpression,
 } from './astTypes.js';
 
 /**
@@ -90,6 +91,18 @@ function parseStatement(statement: babel.Statement): AstNode {
             break;
         }
 
+        case 'WhileStatement':
+            return {
+                type: 'while',
+                if: parseExpression(statement.test),
+                body: parseStatement(statement.body),
+            };
+
+        case 'BreakStatement':
+            return {
+                type: 'break',
+            };
+
         default:
             throw new ParseError(`Unknown statement type: ${statement.type}`, {
                 cause: statement,
@@ -141,7 +154,19 @@ function parseExpression(expression: babel.Expression): Expression {
                 };
             }
 
-            break;
+            return {
+                type: 'unary',
+                operator: expression.operator as UnaryExpression['operator'],
+                expr: parseExpression(expression.argument),
+            };
+
+        case 'UpdateExpression':
+            return {
+                type: 'update',
+                operator: expression.operator,
+                expr: parseExpression(expression.argument),
+                pre: expression.prefix,
+            };
 
         case 'MemberExpression':
             return {
@@ -184,8 +209,8 @@ function parseExpression(expression: babel.Expression): Expression {
         case 'BinaryExpression':
         case 'LogicalExpression':
             return {
-                type: 'operator',
-                operator: expression.operator as OperatorExpression['operator'],
+                type: 'binary',
+                operator: expression.operator as BinaryExpression['operator'],
                 left: parseExpression(expression.left as babel.Expression),
                 right: parseExpression(expression.right),
             };

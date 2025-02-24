@@ -56,8 +56,6 @@ jobs:
             git push
           fi
 
-      - name: Build
-        run: yarn build
-
-      - name: Test
-        run: yarn test
+      - run: yarn build
+      - run: yarn test
+      - run: yarn smoke

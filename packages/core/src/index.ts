@@ -13,5 +13,8 @@ export * from './runtime/pushEvent.js';
 export * from './runtime/RuntimeError.js';
 export * from './runtime/runtimeTypes.js';
 
+export * from './meta/defineMetadata.js';
+export * from './meta/defaultMetadata.js';
+
 export * from './tools/defineTool.js';
 export type * from './tools/toolResult.js';

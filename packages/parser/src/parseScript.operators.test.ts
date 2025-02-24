@@ -13,7 +13,7 @@ test('add operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '+',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -35,7 +35,7 @@ test('multiply operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '*',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -57,7 +57,7 @@ test('subtract operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '-',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -79,7 +79,7 @@ test('divide operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '/',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -101,7 +101,7 @@ test('modulo operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '%',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -123,7 +123,7 @@ test('equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '==',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -145,7 +145,7 @@ test('strict equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '===',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -167,7 +167,7 @@ test('not equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '!=',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -189,7 +189,7 @@ test('strict not equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '!==',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -211,7 +211,7 @@ test('greater than operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '>',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -233,7 +233,7 @@ test('less than operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '<',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -255,7 +255,7 @@ test('greater than or equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '>=',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -277,7 +277,7 @@ test('less than or equal operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '<=',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -299,7 +299,7 @@ test('logical AND operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '&&',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -321,10 +321,166 @@ test('logical OR operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'operator',
+                    type: 'binary',
                     operator: '||',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('post increment operator', () => {
+    const code = 'a++;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '++',
+                expr: { type: 'ident', name: 'a' },
+                pre: false,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('pre increment operator', () => {
+    const code = '++a;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '++',
+                expr: { type: 'ident', name: 'a' },
+                pre: true,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('post decrement operator', () => {
+    const code = 'a--;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '--',
+                expr: { type: 'ident', name: 'a' },
+                pre: false,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('pre decrement operator', () => {
+    const code = '--a;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'update',
+                operator: '--',
+                expr: { type: 'ident', name: 'a' },
+                pre: true,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('negate operator', () => {
+    const code = 'const a = -b;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'unary',
+                    operator: '-',
+                    expr: { type: 'ident', name: 'b' },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('plus operator', () => {
+    const code = 'const a = +b;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'unary',
+                    operator: '+',
+                    expr: { type: 'ident', name: 'b' },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('typeof operator', () => {
+    const code = 'const a = typeof b;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'unary',
+                    operator: 'typeof',
+                    expr: { type: 'ident', name: 'b' },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('not operator', () => {
+    const code = 'const a = !b;';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'unary',
+                    operator: '!',
+                    expr: { type: 'ident', name: 'b' },
                 },
             },
         ],

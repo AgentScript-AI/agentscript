@@ -1,0 +1,3 @@
+# smoke tests mostly
+*.cjs
+*.mjs

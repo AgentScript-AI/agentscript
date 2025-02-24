@@ -1,5 +1,0 @@
-node_modules
-dist
-.eslintrc.cjs
-apollo.config.cjs
-src/gql.ts

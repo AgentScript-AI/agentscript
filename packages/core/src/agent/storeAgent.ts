@@ -38,8 +38,8 @@ function serializeState(
     return {
         root: serializeFrame(state.root, heap, timestamp),
         script: state.script,
-        plan: state.plan,
         output: state.output !== undefined ? heap.push(state.output) : undefined,
+        metadata: heap.push(state.metadata),
     };
 }
 
