@@ -16,13 +16,27 @@
         "README.md"
     ],
     "type": "module",
-    "main": "./dist/index.js",
-    "module": "./dist/index.js",
-    "types": "./dist/index.d.ts",
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.cjs"
+            }
+        }
+    },
     "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
-        "build": "tsc --build",
+        "build:esm": "tsc --build ./tsconfig.esm.json",
+        "build:cjs": "tsc --build ./tsconfig.cjs.json",
+        "smoke:mjs": "node tests/smoke.test.mjs",
+        "smoke:cjs": "node tests/smoke.test.cjs",
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
@@ -40,6 +54,7 @@
         "@langchain/anthropic": "^0.3.13",
         "@langchain/openai": "^0.4.4",
         "@types/node": "^22.13.4",
+        "typescript": "^5.7.3",
         "vitest": "^3.0.6"
     }
 }

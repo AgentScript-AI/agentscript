@@ -9,7 +9,7 @@
     "scripts": {
         "setup": "yarn && nzyme monorepo",
         "monorepo": "nzyme monorepo",
-        "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/*.tsbuildinfo\" \"**/.tsbuildinfo\" \"!**/node_modules/**\"",
+        "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/.*.tsbuildinfo\" \"**/.tsbuildinfo\" \"!**/node_modules/**\"",
         "dev": "yarn setup && turbo run watch",
         "build:esm": "tsc --build tsconfig.esm.dev.json",
         "build:cjs": "tsc --build tsconfig.cjs.dev.json && yarn nzyme rename-cjs",

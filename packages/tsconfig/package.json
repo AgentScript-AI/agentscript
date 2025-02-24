@@ -23,5 +23,8 @@
     "dependencies": {
         "@nzyme/tsconfig": "^0.6.1",
         "@types/node": "^22.13.4"
+    },
+    "devDependencies": {
+        "typescript": "^5.7.3"
     }
 }

@@ -1,5 +1,5 @@
 {
-    "extends": "@agentscript-ai/tsconfig/base.json",
+    "extends": "@agentscript-ai/tsconfig/esm.json",
     "include": [],
     "references": []
 }

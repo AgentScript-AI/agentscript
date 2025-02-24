@@ -16,11 +16,25 @@
         "README.md"
     ],
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "main": "./dist/cjs/index.js",
+    "types": "./dist/cjs/index.d.ts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
+            },
+            "require": {
+                "types": "./dist/cjs/index.d.ts",
+                "default": "./dist/cjs/index.cjs"
+            }
+        }
+    },
     "scripts": {
         "eslint": "eslint . --fix --cache",
         "build": "tsc --build",
+        "smoke:mjs": "node tests/smoke.test.mjs",
+        "smoke:cjs": "node tests/smoke.test.cjs",
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
