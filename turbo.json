@@ -15,6 +15,14 @@
         "build": {
             "dependsOn": ["^build", "codegen"],
             "cache": true
+        },
+        "smoke:cjs": {
+            "cache": false,
+            "persistent": false
+        },
+        "smoke:mjs": {
+            "cache": false,
+            "persistent": false
         }
     },
     "ui": "stream"
