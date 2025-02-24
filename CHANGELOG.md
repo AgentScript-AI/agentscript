@@ -1,3 +1,17 @@
+## 0.6.0 (2025-02-24)
+
+### 🚀 Features
+
+- add while loop and variable increment ([9a05c34](https://github.com/AgentScript-AI/agentscript/commit/9a05c34))
+- add unary operators ([ad85b76](https://github.com/AgentScript-AI/agentscript/commit/ad85b76))
+- added custom agent metadata ([b926f63](https://github.com/AgentScript-AI/agentscript/commit/b926f63))
+- commonjs support ([d483204](https://github.com/AgentScript-AI/agentscript/commit/d483204))
+- add @agentscript/llamaindex package ([c66dec6](https://github.com/AgentScript-AI/agentscript/commit/c66dec6))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.5.0 (2025-01-27)
 
 ### 🚀 Features
