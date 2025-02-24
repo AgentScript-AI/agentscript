@@ -12,14 +12,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@agentscript-ai/anthropic@npm:^0.5.0, @agentscript-ai/anthropic@workspace:packages/anthropic":
+"@agentscript-ai/anthropic@npm:^0.6.0, @agentscript-ai/anthropic@workspace:packages/anthropic":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/anthropic@workspace:packages/anthropic"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@anthropic-ai/sdk": "npm:^0.36.3"
     "@nzyme/ioc": "npm:^0.6.1"
     "@nzyme/utils": "npm:^0.6.1"
@@ -29,16 +29,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/core@npm:^0.5.0, @agentscript-ai/core@workspace:packages/core":
+"@agentscript-ai/core@npm:^0.6.0, @agentscript-ai/core@workspace:packages/core":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/core@workspace:packages/core"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/parser": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/schema": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/parser": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/schema": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@nzyme/crypto-utils": "npm:^0.6.1"
     "@nzyme/ioc": "npm:^0.6.1"
     "@nzyme/markdown": "npm:^0.6.1"
@@ -54,7 +54,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/eslint@npm:^0.5.0, @agentscript-ai/eslint@workspace:packages/eslint":
+"@agentscript-ai/eslint@npm:^0.6.0, @agentscript-ai/eslint@workspace:packages/eslint":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/eslint@workspace:packages/eslint"
   dependencies:
@@ -89,11 +89,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/linear@workspace:packages/linear"
   dependencies:
-    "@agentscript-ai/core": "npm:^0.5.0"
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/schema": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
+    "@agentscript-ai/core": "npm:^0.6.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/schema": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
     "@graphql-codegen/cli": "npm:5.0.5"
     "@graphql-codegen/client-preset": "npm:4.6.3"
     "@graphql-codegen/typescript-graphql-request": "npm:^6.2.0"
@@ -116,10 +116,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/llamaindex@workspace:packages/llamaindex"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@llamaindex/core": "npm:^0.5.1"
     "@llamaindex/openai": "npm:^0.1.53"
     "@nzyme/utils": "npm:^0.6.1"
@@ -129,13 +129,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/parser@npm:^0.5.0, @agentscript-ai/parser@workspace:packages/parser":
+"@agentscript-ai/parser@npm:^0.6.0, @agentscript-ai/parser@workspace:packages/parser":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/parser@workspace:packages/parser"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@babel/parser": "npm:^7.26.9"
     "@babel/types": "npm:^7.26.9"
     "@nzyme/vitest": "npm:^0.6.1"
@@ -146,13 +146,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/provider@npm:^0.5.0, @agentscript-ai/provider@workspace:packages/provider":
+"@agentscript-ai/provider@npm:^0.6.0, @agentscript-ai/provider@workspace:packages/provider":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/provider@workspace:packages/provider"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@ai-sdk/anthropic": "npm:^1.1.9"
     "@ai-sdk/openai": "npm:^1.1.13"
     "@ai-sdk/provider": "npm:^1.0.8"
@@ -167,12 +167,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/schema@npm:^0.5.0, @agentscript-ai/schema@workspace:packages/schema":
+"@agentscript-ai/schema@npm:^0.6.0, @agentscript-ai/schema@workspace:packages/schema":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/schema@workspace:packages/schema"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
     "@nzyme/utils": "npm:^0.6.1"
     "@nzyme/zchema": "npm:^0.6.1"
     "@types/node": "npm:^22.13.4"
@@ -181,16 +181,16 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/tools@npm:^0.5.0, @agentscript-ai/tools@workspace:packages/tools":
+"@agentscript-ai/tools@npm:^0.6.0, @agentscript-ai/tools@workspace:packages/tools":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/tools@workspace:packages/tools"
   dependencies:
-    "@agentscript-ai/core": "npm:^0.5.0"
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/schema": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/core": "npm:^0.6.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/schema": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     "@nzyme/ioc": "npm:^0.6.1"
     "@nzyme/utils": "npm:^0.6.1"
     "@types/node": "npm:^22.13.4"
@@ -208,7 +208,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/tsconfig@npm:^0.5.0, @agentscript-ai/tsconfig@workspace:packages/tsconfig":
+"@agentscript-ai/tsconfig@npm:^0.6.0, @agentscript-ai/tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/tsconfig@workspace:packages/tsconfig"
   dependencies:
@@ -218,12 +218,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@agentscript-ai/utils@npm:^0.5.0, @agentscript-ai/utils@workspace:packages/utils":
+"@agentscript-ai/utils@npm:^0.6.0, @agentscript-ai/utils@workspace:packages/utils":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/utils@workspace:packages/utils"
   dependencies:
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
     "@nzyme/utils": "npm:^0.6.1"
     "@nzyme/zchema": "npm:^0.6.1"
     "@types/node": "npm:^22.13.4"
@@ -5191,14 +5191,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "agentscript-ai@workspace:packages/agentscript"
   dependencies:
-    "@agentscript-ai/anthropic": "npm:^0.5.0"
-    "@agentscript-ai/core": "npm:^0.5.0"
-    "@agentscript-ai/eslint": "npm:^0.5.0"
-    "@agentscript-ai/provider": "npm:^0.5.0"
-    "@agentscript-ai/schema": "npm:^0.5.0"
-    "@agentscript-ai/tools": "npm:^0.5.0"
-    "@agentscript-ai/tsconfig": "npm:^0.5.0"
-    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@agentscript-ai/anthropic": "npm:^0.6.0"
+    "@agentscript-ai/core": "npm:^0.6.0"
+    "@agentscript-ai/eslint": "npm:^0.6.0"
+    "@agentscript-ai/provider": "npm:^0.6.0"
+    "@agentscript-ai/schema": "npm:^0.6.0"
+    "@agentscript-ai/tools": "npm:^0.6.0"
+    "@agentscript-ai/tsconfig": "npm:^0.6.0"
+    "@agentscript-ai/utils": "npm:^0.6.0"
     typescript: "npm:^5.7.3"
   languageName: unknown
   linkType: soft

@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/eslint",
-    "version": "0.5.0",
+    "version": "0.6.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
