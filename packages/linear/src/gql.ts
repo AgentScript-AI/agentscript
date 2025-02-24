@@ -3460,6 +3460,8 @@ export type InitiativeCreateInput = {
   name: Scalars['String']['input'];
   /** The owner of the initiative. */
   ownerId?: InputMaybe<Scalars['String']['input']>;
+  /** [ALPHA] The parent of the initiative. */
+  parentId?: InputMaybe<Scalars['String']['input']>;
   /** The sort order of the initiative within the organization. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The initiative's status. */
@@ -3866,6 +3868,8 @@ export type InitiativeUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The owner of the initiative. */
   ownerId?: InputMaybe<Scalars['String']['input']>;
+  /** [ALPHA] The parent of the initiative. */
+  parentId?: InputMaybe<Scalars['String']['input']>;
   /** The sort order of the initiative within the organization. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The initiative's status. */
@@ -5778,6 +5782,8 @@ export type IssueTitleSuggestionFromCustomerRequestPayload = {
   __typename?: 'IssueTitleSuggestionFromCustomerRequestPayload';
   /** The identifier of the last sync operation. */
   lastSyncId: Scalars['Float']['output'];
+  /** [Internal] The log id of the ai response. */
+  logId?: Maybe<Scalars['String']['output']>;
   /** The suggested issue title. */
   title: Scalars['String']['output'];
 };
@@ -6506,16 +6512,6 @@ export type Mutation = {
    * @deprecated Use `projectUpdateArchive` instead.
    */
   projectUpdateDelete: DeletePayload;
-  /**
-   * Creates a new interaction on a project update.
-   * @deprecated ProjectUpdateInteraction is not used and will be deleted.
-   */
-  projectUpdateInteractionCreate: ProjectUpdateInteractionPayload;
-  /**
-   * Mark a project update as read.
-   * @deprecated Project uppdate interactions are not used and will be removed.
-   */
-  projectUpdateMarkAsRead: ProjectUpdateWithInteractionPayload;
   /** Unarchives a project update. */
   projectUpdateUnarchive: ProjectUpdateArchivePayload;
   /** Updates a project update. */
@@ -7897,16 +7893,6 @@ export type MutationProjectUpdateCreateArgs = {
 
 
 export type MutationProjectUpdateDeleteArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationProjectUpdateInteractionCreateArgs = {
-  input: ProjectUpdateInteractionCreateInput;
-};
-
-
-export type MutationProjectUpdateMarkAsReadArgs = {
   id: Scalars['String']['input'];
 };
 
@@ -11754,61 +11740,6 @@ export type ProjectUpdateInput = {
   updateRemindersHour?: InputMaybe<Scalars['Int']['input']>;
 };
 
-/** Holds information about when a user has interacted with a project update. */
-export type ProjectUpdateInteraction = Node & {
-  __typename?: 'ProjectUpdateInteraction';
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /** The project update that has been interacted with. */
-  projectUpdate: ProjectUpdate;
-  /** The time at which the user read the project update. */
-  readAt: Scalars['DateTime']['output'];
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-  /** The user that has interacted with the project update. */
-  user: User;
-};
-
-export type ProjectUpdateInteractionConnection = {
-  __typename?: 'ProjectUpdateInteractionConnection';
-  edges: Array<ProjectUpdateInteractionEdge>;
-  nodes: Array<ProjectUpdateInteraction>;
-  pageInfo: PageInfo;
-};
-
-export type ProjectUpdateInteractionCreateInput = {
-  /** The identifier. If none is provided, the backend will generate one. */
-  id?: InputMaybe<Scalars['String']['input']>;
-  /** The id of the project update that has been interacted with. */
-  projectUpdateId: Scalars['String']['input'];
-  /** The time at which the user read the project update. */
-  readAt: Scalars['DateTime']['input'];
-};
-
-export type ProjectUpdateInteractionEdge = {
-  __typename?: 'ProjectUpdateInteractionEdge';
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String']['output'];
-  node: ProjectUpdateInteraction;
-};
-
-export type ProjectUpdateInteractionPayload = {
-  __typename?: 'ProjectUpdateInteractionPayload';
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** The project update interaction that was created or updated. */
-  projectUpdateInteraction: ProjectUpdateInteraction;
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
-};
-
 export type ProjectUpdatePayload = {
   __typename?: 'ProjectUpdatePayload';
   /** The identifier of the last sync operation. */
@@ -11845,21 +11776,6 @@ export type ProjectUpdateUpdateInput = {
   health?: InputMaybe<ProjectUpdateHealthType>;
   /** Whether the diff between the current update and the previous one should be hidden. */
   isDiffHidden?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-export type ProjectUpdateWithInteractionPayload = {
-  __typename?: 'ProjectUpdateWithInteractionPayload';
-  /**
-   * The project update that was created or updated.
-   * @deprecated Project update interactions are not used and will be removed.
-   */
-  interaction: ProjectUpdateInteraction;
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** The project update that was created or updated. */
-  projectUpdate: ProjectUpdate;
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
 };
 
 /** Collection filtering options for filtering projects by project updates. */
@@ -12155,16 +12071,6 @@ export type Query = {
   projectStatuses: ProjectStatusConnection;
   /** A specific project update. */
   projectUpdate: ProjectUpdate;
-  /**
-   * A specific interaction on a project update.
-   * @deprecated ProjectUpdateInteraction is not used and will be deleted.
-   */
-  projectUpdateInteraction: ProjectUpdateInteraction;
-  /**
-   * All interactions on project updates.
-   * @deprecated ProjectUpdateInteraction is not used and will be deleted.
-   */
-  projectUpdateInteractions: ProjectUpdateInteractionConnection;
   /** All project updates. */
   projectUpdates: ProjectUpdateConnection;
   /** All projects. */
@@ -12845,21 +12751,6 @@ export type QueryProjectStatusesArgs = {
 
 export type QueryProjectUpdateArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryProjectUpdateInteractionArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type QueryProjectUpdateInteractionsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -14104,6 +13995,7 @@ export type TeamIssuesArgs = {
   filter?: InputMaybe<IssueFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
@@ -14158,6 +14050,7 @@ export type TeamProjectsArgs = {
   filter?: InputMaybe<ProjectFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
