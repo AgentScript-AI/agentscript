@@ -112,6 +112,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@agentscript-ai/llamaindex@workspace:packages/llamaindex":
+  version: 0.0.0-use.local
+  resolution: "@agentscript-ai/llamaindex@workspace:packages/llamaindex"
+  dependencies:
+    "@agentscript-ai/eslint": "npm:^0.5.0"
+    "@agentscript-ai/provider": "npm:^0.5.0"
+    "@agentscript-ai/tsconfig": "npm:^0.5.0"
+    "@agentscript-ai/utils": "npm:^0.5.0"
+    "@llamaindex/core": "npm:^0.5.1"
+    "@llamaindex/openai": "npm:^0.1.53"
+    "@nzyme/utils": "npm:^0.6.1"
+    "@types/node": "npm:^22.13.4"
+    typescript: "npm:^5.7.3"
+    vitest: "npm:^3.0.6"
+  languageName: unknown
+  linkType: soft
+
 "@agentscript-ai/parser@npm:^0.5.0, @agentscript-ai/parser@workspace:packages/parser":
   version: 0.0.0-use.local
   resolution: "@agentscript-ai/parser@workspace:packages/parser"
@@ -3240,6 +3257,54 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@llamaindex/core@npm:0.5.1, @llamaindex/core@npm:^0.5.1":
+  version: 0.5.1
+  resolution: "@llamaindex/core@npm:0.5.1"
+  dependencies:
+    "@llamaindex/env": "npm:0.1.28"
+    "@types/node": "npm:^22.9.0"
+    magic-bytes.js: "npm:^1.10.0"
+    zod: "npm:^3.23.8"
+    zod-to-json-schema: "npm:^3.23.3"
+  checksum: 10c0/d417beb74fdf84b4bbebf94957f99684abfeb89080544d4adc0e6e208b884b0e33bc0f440dd7d737a671b38eca748ae88cf74af3008e0eb44a0c8506020ac98a
+  languageName: node
+  linkType: hard
+
+"@llamaindex/env@npm:0.1.28":
+  version: 0.1.28
+  resolution: "@llamaindex/env@npm:0.1.28"
+  peerDependencies:
+    "@aws-crypto/sha256-js": ^5.2.0
+    "@huggingface/transformers": ^3.0.2
+    gpt-tokenizer: ^2.5.0
+    js-tiktoken: ^1.0.12
+    pathe: ^1.1.2
+  peerDependenciesMeta:
+    "@aws-crypto/sha256-js":
+      optional: true
+    "@huggingface/transformers":
+      optional: true
+    js-tiktoken:
+      optional: true
+    pathe:
+      optional: true
+    tiktoken:
+      optional: true
+  checksum: 10c0/9497b3875d5f9dd3c52088e1ee2f643f90234b5e1758643a580f9d1cb094a0e74a1161c5d4855341d9a554ae29f122981d648bddc4e17e2fd3707d73e61249fe
+  languageName: node
+  linkType: hard
+
+"@llamaindex/openai@npm:^0.1.53":
+  version: 0.1.53
+  resolution: "@llamaindex/openai@npm:0.1.53"
+  dependencies:
+    "@llamaindex/core": "npm:0.5.1"
+    "@llamaindex/env": "npm:0.1.28"
+    openai: "npm:^4.83.0"
+  checksum: 10c0/4abd543cecc0d80c9a1f70ced671e7eda1020904812956170351afc80d03e2a2ebf55e65a8b226fae283467244b31319117ce68dce4835d1e45486e08be8094b
+  languageName: node
+  linkType: hard
+
 "@microsoft/fetch-event-source@npm:2.0.1":
   version: 2.0.1
   resolution: "@microsoft/fetch-event-source@npm:2.0.1"
@@ -4590,6 +4655,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/node@npm:^22.9.0":
+  version: 22.13.5
+  resolution: "@types/node@npm:22.13.5"
+  dependencies:
+    undici-types: "npm:~6.20.0"
+  checksum: 10c0/a2e7ed7bb0690e439004779baedeb05159c5cc41ef6d81c7a6ebea5303fde4033669e1c0e41ff7453b45fd2fea8dbd55fddfcd052950c7fcae3167c970bca725
+  languageName: node
+  linkType: hard
+
 "@types/parse-json@npm:^4.0.0":
   version: 4.0.2
   resolution: "@types/parse-json@npm:4.0.2"
@@ -5113,9 +5187,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"agentscript-ai@workspace:packages/bundle":
+"agentscript-ai@workspace:packages/agentscript":
   version: 0.0.0-use.local
-  resolution: "agentscript-ai@workspace:packages/bundle"
+  resolution: "agentscript-ai@workspace:packages/agentscript"
   dependencies:
     "@agentscript-ai/anthropic": "npm:^0.5.0"
     "@agentscript-ai/core": "npm:^0.5.0"
@@ -10263,6 +10337,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"magic-bytes.js@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "magic-bytes.js@npm:1.10.0"
+  checksum: 10c0/aa751a9be6baa80da19b395a4c538e1dcf652a3760a2e507b9e04c4cb3832635b718f8a947e5b0a434a1b323792632002f98815b3389f0beb3af1c4d51eb339e
+  languageName: node
+  linkType: hard
+
 "magic-string@npm:^0.30.11, magic-string@npm:^0.30.17":
   version: 0.30.17
   resolution: "magic-string@npm:0.30.17"
@@ -11258,6 +11339,31 @@ __metadata:
   bin:
     openai: bin/cli
   checksum: 10c0/008e5d3a26bf8ee9ca7facac47190696bee72cbd3fc05d0fe766f0f06301207ccb48ab9ceba35973164064400de828e55fe22a7c4d61f95da23a73d4c4da1d33
+  languageName: node
+  linkType: hard
+
+"openai@npm:^4.83.0":
+  version: 4.85.4
+  resolution: "openai@npm:4.85.4"
+  dependencies:
+    "@types/node": "npm:^18.11.18"
+    "@types/node-fetch": "npm:^2.6.4"
+    abort-controller: "npm:^3.0.0"
+    agentkeepalive: "npm:^4.2.1"
+    form-data-encoder: "npm:1.7.2"
+    formdata-node: "npm:^4.3.2"
+    node-fetch: "npm:^2.6.7"
+  peerDependencies:
+    ws: ^8.18.0
+    zod: ^3.23.8
+  peerDependenciesMeta:
+    ws:
+      optional: true
+    zod:
+      optional: true
+  bin:
+    openai: bin/cli
+  checksum: 10c0/3c314cc4f55b646f605f25f0b234a6a3ee4c9bc7bd62fc761f0da53a49621798b0308af2c59f7818022dc942115706b9f214dadc0d1be7fc0f17fd636b131344
   languageName: node
   linkType: hard
 
@@ -15264,9 +15370,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"zod-to-json-schema@npm:^3.23.3":
+  version: 3.24.3
+  resolution: "zod-to-json-schema@npm:3.24.3"
+  peerDependencies:
+    zod: ^3.24.1
+  checksum: 10c0/5d626fa7a51539236962b1348a7b7e7111bd1722f23ad06dead2f76599e6bd918e4067ffba0695e0acac5a60f217b4953d2ad62ad403a482d034d94f025f3a4c
+  languageName: node
+  linkType: hard
+
 "zod@npm:^3.22.4":
   version: 3.24.1
   resolution: "zod@npm:3.24.1"
   checksum: 10c0/0223d21dbaa15d8928fe0da3b54696391d8e3e1e2d0283a1a070b5980a1dbba945ce631c2d1eccc088fdbad0f2dfa40155590bf83732d3ac4fcca2cc9237591b
+  languageName: node
+  linkType: hard
+
+"zod@npm:^3.23.8":
+  version: 3.24.2
+  resolution: "zod@npm:3.24.2"
+  checksum: 10c0/c638c7220150847f13ad90635b3e7d0321b36cce36f3fc6050ed960689594c949c326dfe2c6fa87c14b126ee5d370ccdebd6efb304f41ef5557a4aaca2824565
   languageName: node
   linkType: hard

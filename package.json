@@ -16,7 +16,7 @@
         "build": "yarn build:esm && yarn build:cjs",
         "build:turbo": "turbo run build:esm build:cjs",
         "codegen": "turbo run codegen",
-        "watch": "yarn build:esm --watch",
+        "watch": "yarn monorepo && yarn build:esm --watch",
         "upgrade": "yarn upgrade:nzyme && yarn upgrade-interactive",
         "upgrade:nzyme": "yarn up \"@nzyme/*\"",
         "test": "vitest run",
