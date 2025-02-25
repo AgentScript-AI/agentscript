@@ -120,8 +120,8 @@ __metadata:
     "@agentscript-ai/provider": "npm:^0.6.0"
     "@agentscript-ai/tsconfig": "npm:^0.6.0"
     "@agentscript-ai/utils": "npm:^0.6.0"
-    "@llamaindex/core": "npm:^0.5.1"
-    "@llamaindex/openai": "npm:^0.1.53"
+    "@llamaindex/core": "npm:^0.5.2"
+    "@llamaindex/openai": "npm:^0.1.54"
     "@nzyme/utils": "npm:^0.6.2"
     "@types/node": "npm:^22.13.5"
     typescript: "npm:^5.7.3"
@@ -3428,16 +3428,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@llamaindex/core@npm:0.5.1, @llamaindex/core@npm:^0.5.1":
-  version: 0.5.1
-  resolution: "@llamaindex/core@npm:0.5.1"
+"@llamaindex/core@npm:0.5.2, @llamaindex/core@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@llamaindex/core@npm:0.5.2"
   dependencies:
     "@llamaindex/env": "npm:0.1.28"
     "@types/node": "npm:^22.9.0"
     magic-bytes.js: "npm:^1.10.0"
     zod: "npm:^3.23.8"
     zod-to-json-schema: "npm:^3.23.3"
-  checksum: 10c0/d417beb74fdf84b4bbebf94957f99684abfeb89080544d4adc0e6e208b884b0e33bc0f440dd7d737a671b38eca748ae88cf74af3008e0eb44a0c8506020ac98a
+  checksum: 10c0/e4d648df044b242314d648c213463a0f1e642bd2a485e1273c89fcd65a17e81890af9eddd6efbe5063f67066dd1cf1b4999879bc9a40a10929dcddd09f5c20ce
   languageName: node
   linkType: hard
 
@@ -3465,14 +3465,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@llamaindex/openai@npm:^0.1.53":
-  version: 0.1.53
-  resolution: "@llamaindex/openai@npm:0.1.53"
+"@llamaindex/openai@npm:^0.1.54":
+  version: 0.1.54
+  resolution: "@llamaindex/openai@npm:0.1.54"
   dependencies:
-    "@llamaindex/core": "npm:0.5.1"
+    "@llamaindex/core": "npm:0.5.2"
     "@llamaindex/env": "npm:0.1.28"
     openai: "npm:^4.83.0"
-  checksum: 10c0/4abd543cecc0d80c9a1f70ced671e7eda1020904812956170351afc80d03e2a2ebf55e65a8b226fae283467244b31319117ce68dce4835d1e45486e08be8094b
+  checksum: 10c0/4864afb468a5226b813fe1409ea32abb11152765a8f15c13742a9699f733456e4e0464af127fd6dc25f5be410f11873e8e7a38bcb826b1b733bf7254d1d6c4b1
   languageName: node
   linkType: hard
 
