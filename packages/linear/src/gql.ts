@@ -1364,6 +1364,75 @@ export type CustomerNeedFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** [Internal] A customer need related notification. */
+export type CustomerNeedNotification = Entity & Node & Notification & {
+  __typename?: 'CustomerNeedNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** Related comment ID. Null if the notification is not related to a comment. */
+  commentId?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** Related customer need. */
+  customerNeedId: Scalars['String']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** Related parent comment ID. Null if the notification is not related to a comment. */
+  parentCommentId?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** Name of the reaction emoji related to the notification. */
+  reactionEmoji?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
+};
+
 export type CustomerNeedPayload = {
   __typename?: 'CustomerNeedPayload';
   /** The identifier of the last sync operation. */
@@ -1950,7 +2019,7 @@ export type DateComparator = {
   nin?: InputMaybe<Array<Scalars['DateTimeOrDuration']['input']>>;
 };
 
-/** [INTERNAL] By which resolution is a date defined. */
+/** By which resolution is a date defined. */
 export const DateResolutionType = {
   HalfYear: 'halfYear',
   Month: 'month',
@@ -8962,6 +9031,8 @@ export type NullableProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -10093,7 +10164,7 @@ export type Project = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the project. */
   creator?: Maybe<User>;
-  /** [Internal] The current progress of the project. */
+  /** [INTERNAL] The current progress of the project. */
   currentProgress: Scalars['JSONObject']['output'];
   /** The project's description. */
   description: Scalars['String']['output'];
@@ -10145,7 +10216,7 @@ export type Project = Node & {
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
   progress: Scalars['Float']['output'];
-  /** [Internal] The progress history of the project. */
+  /** [INTERNAL] The progress history of the project. */
   progressHistory: Scalars['JSONObject']['output'];
   /** Milestones associated with the project. */
   projectMilestones: ProjectMilestoneConnection;
@@ -10180,7 +10251,7 @@ export type Project = Node & {
   sortOrder: Scalars['Float']['output'];
   /** The estimated start date of the project. */
   startDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: Maybe<DateResolutionType>;
   /** The time at which the project was moved into started state. */
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -10193,7 +10264,7 @@ export type Project = Node & {
   status: ProjectStatus;
   /** The estimated completion date of the project. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: Maybe<DateResolutionType>;
   /** Teams associated with this project. */
   teams: TeamConnection;
@@ -10410,6 +10481,8 @@ export type ProjectCollectionFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Filters that needs to be matched by all projects. */
   every?: InputMaybe<ProjectFilter>;
   /** Comparator for filtering projects which are blocked. */
@@ -10512,13 +10585,13 @@ export type ProjectCreateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The planned start date of the project. */
   startDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: InputMaybe<DateResolutionType>;
   /** The ID of the project status. */
   statusId?: InputMaybe<Scalars['String']['input']>;
   /** The planned target date of the project. */
   targetDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: InputMaybe<DateResolutionType>;
   /** The identifiers of the teams this project is associated with. */
   teamIds: Array<Scalars['String']['input']>;
@@ -10547,6 +10620,8 @@ export type ProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -11135,7 +11210,7 @@ export type ProjectSearchResult = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the project. */
   creator?: Maybe<User>;
-  /** [Internal] The current progress of the project. */
+  /** [INTERNAL] The current progress of the project. */
   currentProgress: Scalars['JSONObject']['output'];
   /** The project's description. */
   description: Scalars['String']['output'];
@@ -11189,7 +11264,7 @@ export type ProjectSearchResult = Node & {
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
   progress: Scalars['Float']['output'];
-  /** [Internal] The progress history of the project. */
+  /** [INTERNAL] The progress history of the project. */
   progressHistory: Scalars['JSONObject']['output'];
   /** Milestones associated with the project. */
   projectMilestones: ProjectMilestoneConnection;
@@ -11224,7 +11299,7 @@ export type ProjectSearchResult = Node & {
   sortOrder: Scalars['Float']['output'];
   /** The estimated start date of the project. */
   startDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: Maybe<DateResolutionType>;
   /** The time at which the project was moved into started state. */
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -11237,7 +11312,7 @@ export type ProjectSearchResult = Node & {
   status: ProjectStatus;
   /** The estimated completion date of the project. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: Maybe<DateResolutionType>;
   /** Teams associated with this project. */
   teams: TeamConnection;
@@ -11718,13 +11793,13 @@ export type ProjectUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The planned start date of the project. */
   startDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: InputMaybe<DateResolutionType>;
   /** The ID of the project status. */
   statusId?: InputMaybe<Scalars['String']['input']>;
   /** The planned target date of the project. */
   targetDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: InputMaybe<DateResolutionType>;
   /** The identifiers of the teams this project is associated with. */
   teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -11814,6 +11889,75 @@ export type ProjectUpdatesFilter = {
   or?: InputMaybe<Array<ProjectUpdatesFilter>>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
+};
+
+/** [Internal] A pull request related notification. */
+export type PullRequestNotification = Entity & Node & Notification & {
+  __typename?: 'PullRequestNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** Related comment ID. Null if the notification is not related to a comment. */
+  commentId?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** Related parent comment ID. Null if the notification is not related to a comment. */
+  parentCommentId?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** Related pull request. */
+  pullRequestId: Scalars['String']['output'];
+  /** Name of the reaction emoji related to the notification. */
+  reactionEmoji?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
 };
 
 export const PullRequestReviewTool = {
