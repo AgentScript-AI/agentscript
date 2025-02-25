@@ -1,0 +1,3 @@
+{
+    "extends": "./.nzyme/tsconfig.esm.json"
+}
