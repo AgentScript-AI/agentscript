@@ -65,7 +65,7 @@ node_modules/
 dist
 .nx
 .turbo
-tsconfig.cjs.dev.json
-tsconfig.esm.dev.json
+.nzyme
+
 packages/**/README.md
 packages/**/LICENSE
