@@ -2,6 +2,9 @@ name: Check commit
 on:
   push:
     branches: [main, release]
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -31,7 +34,7 @@ jobs:
           fi
 
       - run: yarn monorepo
-      - run: yarn upgrade:nzyme
+      - run: yarn upgrade:auto
 
       - name: Commit nzyme updates
         run: |
