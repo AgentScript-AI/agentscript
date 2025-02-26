@@ -219,23 +219,29 @@ export interface BinaryExpression extends AstNodeBase {
     /**
      * Operator.
      */
-    operator:
-        | '+'
-        | '-'
-        | '*'
-        | '/'
-        | '%'
-        | '=='
-        | '==='
-        | '!='
-        | '!=='
-        | '>'
-        | '<'
-        | '>='
-        | '<='
-        | '&&'
-        | '||'
-        | '??';
+    operator: '+' | '-' | '*' | '/' | '%' | '==' | '===' | '!=' | '!==' | '>' | '<' | '>=' | '<=';
+    /**
+     * Left side of the operator.
+     */
+    left: Expression;
+    /**
+     * Right side of the operator.
+     */
+    right: Expression;
+}
+
+/**
+ * Logical expression.
+ */
+export interface LogicalExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'logical';
+    /**
+     * Operator.
+     */
+    operator: '&&' | '||' | '??';
     /**
      * Left side of the operator.
      */
@@ -395,6 +401,7 @@ export type Expression =
     | ArrayExpression
     | NewExpression
     | BinaryExpression
+    | LogicalExpression
     | UnaryExpression
     | ArrowFunctionExpression
     | TemplateLiteral

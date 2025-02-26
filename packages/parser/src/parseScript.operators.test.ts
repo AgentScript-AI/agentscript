@@ -299,7 +299,7 @@ test('logical AND operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'binary',
+                    type: 'logical',
                     operator: '&&',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
@@ -321,8 +321,30 @@ test('logical OR operator', () => {
                 type: 'var',
                 name: 'a',
                 value: {
-                    type: 'binary',
+                    type: 'logical',
                     operator: '||',
+                    left: { type: 'literal', value: 1 },
+                    right: { type: 'literal', value: 2 },
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('nullish coalescing operator', () => {
+    const code = 'const a = 1 ?? 2';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'logical',
+                    operator: '??',
                     left: { type: 'literal', value: 1 },
                     right: { type: 'literal', value: 2 },
                 },

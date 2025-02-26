@@ -13,6 +13,8 @@ export * from './runtime/pushEvent.js';
 export * from './runtime/RuntimeError.js';
 export * from './runtime/runtimeTypes.js';
 
+export * from './modules/renderRuntime.js';
+
 export * from './meta/defineMetadata.js';
 export * from './meta/defaultMetadata.js';
 
