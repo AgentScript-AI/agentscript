@@ -679,3 +679,27 @@ describe('union', () => {
         expect(ctx.code).toEqual('');
     });
 });
+
+describe('lazy', () => {
+    test('basic object', () => {
+        const inner = s.object({ props: { name: s.string() } });
+        const schema = s.lazy(() => inner);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(type).toEqual('{\n  name: string;\n}');
+        expect(ctx.code).toEqual('');
+    });
+
+    test('nullable object', () => {
+        const inner = s.object({ props: { name: s.string() } });
+        const schema = s.lazy({
+            of: () => inner,
+            nullable: true,
+        });
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.nullable(schema), ctx });
+
+        expect(type).toEqual('{\n  name: string;\n} | null');
+    });
+});

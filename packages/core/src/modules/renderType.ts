@@ -97,6 +97,8 @@ function renderTypeInternal(
             return renderUnion(schema as s.UnionSchema, ctx, skipUndefined);
         case s.record:
             return renderRecord(schema as s.RecordSchema, ctx, skipUndefined);
+        case s.lazy:
+            return renderLazy(schema as s.LazySchema, ctx, skipUndefined);
         default:
             throw new Error(`Unsupported schema ${schema.type.name}`);
     }
@@ -158,6 +160,12 @@ function renderRecord(schema: s.RecordSchema, ctx: RenderContext, skipUndefined?
     return wrapType(schema, type, skipUndefined);
 }
 
+function renderLazy(schema: s.LazySchema, ctx: RenderContext, skipUndefined?: boolean) {
+    const unwrapped = unwrapLazy(schema);
+    const type = renderTypeInternal(unwrapped, ctx, skipUndefined);
+    return wrapType(unwrapped, type, skipUndefined);
+}
+
 function renderEnum(schema: s.EnumSchema, skipUndefined?: boolean) {
     const type = schema.values.map(option => `"${option}"`).join(' | ');
     return wrapType(schema, type, skipUndefined);
@@ -185,4 +193,17 @@ function findUniqueName(name: string, ctx: RenderContext) {
     }
 
     return uniqueName;
+}
+
+function unwrapLazy(schema: s.LazySchema) {
+    const inner = schema.of();
+
+    const unwrapped: Partial<s.LazySchema> = schema;
+    delete unwrapped.of;
+
+    for (const key in inner) {
+        (unwrapped as Record<string, unknown>)[key] = inner[key as keyof typeof inner];
+    }
+
+    return unwrapped as s.Schema;
 }
