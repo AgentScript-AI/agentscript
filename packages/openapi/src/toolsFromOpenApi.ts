@@ -1,4 +1,4 @@
-import { assert, mapObject } from '@nzyme/utils';
+import { assert, mapObject, toCamelCase, toPascalCase } from '@nzyme/utils';
 import type { AnyApiDefinitionFormat } from '@scalar/openapi-parser';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { QueryObject } from 'ufo';
@@ -66,7 +66,8 @@ export async function toolsFromOpenApi(options: ToolFromOpenApiOptions) {
 
             const tool = getToolFromOperation(ctx, method, path, operation);
             if (tool) {
-                tools[operation.operationId] = tool;
+                const toolName = toCamelCase(operation.operationId);
+                tools[toolName] = tool;
             }
         }
     }
@@ -260,34 +261,32 @@ function addOperationResponse(
     };
 }
 
-function getSchema(
-    ctx: OpenApiToolContext,
-    schema: SchemaParam | null | undefined,
-    name?: string,
-): s.Schema {
+function getSchema(ctx: OpenApiToolContext, schema: SchemaParam | null | undefined): s.Schema {
     if (!schema) {
         return s.unknown();
     }
 
     if (isRef(schema)) {
-        let result = ctx.types[schema.$ref];
-        if (result) {
-            return result;
-        }
-
         const ref = getRefValue(ctx, schema);
         if (!ref) {
             return s.unknown({ openapi: schema });
         }
 
-        result = getSchema(ctx, ref.schema, ref.name);
-        if (result) {
-            ctx.types[schema.$ref] = result;
+        const existing = ctx.types[ref.name];
+        if (existing) {
+            return existing;
         }
 
-        return result;
+        const lazy = s.lazy(() => createSchema(ctx, ref.schema, ref.name));
+        ctx.types[ref.name] = lazy;
+
+        return lazy.of();
     }
 
+    return createSchema(ctx, schema);
+}
+
+function createSchema(ctx: OpenApiToolContext, schema: OpenAPIV3.SchemaObject, name?: string) {
     if (schema.enum) {
         return s.enum({
             values: schema.enum,
@@ -312,7 +311,7 @@ function getSchema(
 
             return s.integer(getSchemaProps(schema, name));
 
-        case 'object':
+        case 'object': {
             if (!schema.properties && schema.additionalProperties) {
                 const valueSchema =
                     schema.additionalProperties === true
@@ -325,10 +324,10 @@ function getSchema(
                 });
             }
 
-            assert(schema.properties, 'properties is required for object schema');
+            const props = schema.properties ?? {};
 
             return s.object({
-                props: mapObject(schema.properties, (prop, key) => {
+                props: mapObject(props, (prop, key) => {
                     let propSchema = getSchema(ctx, prop as OpenAPIV3.SchemaObject);
                     if (!schema.required?.includes(key as string)) {
                         propSchema = s.optional(propSchema);
@@ -338,6 +337,7 @@ function getSchema(
                 }),
                 ...getSchemaProps(schema, name),
             });
+        }
 
         case 'array':
             return s.array({
@@ -360,7 +360,7 @@ function getSchemaProps(schema: OpenAPIV3.SchemaObject, name?: string) {
     }
 
     if (name) {
-        props.name = name;
+        props.name = toPascalCase(name);
     }
 
     return props;
