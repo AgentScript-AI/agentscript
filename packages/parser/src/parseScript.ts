@@ -6,11 +6,11 @@ import type {
     ArrayExpression,
     AssignmentExpression,
     AstNode,
+    BinaryExpression,
     Expression,
     Literal,
     ObjectExpression,
     ObjectProperty,
-    BinaryExpression,
     Script,
     TemplateLiteral,
     UnaryExpression,
@@ -207,11 +207,18 @@ function parseExpression(expression: babel.Expression): Expression {
             return parseTemplateLiteral(expression);
 
         case 'BinaryExpression':
-        case 'LogicalExpression':
             return {
                 type: 'binary',
                 operator: expression.operator as BinaryExpression['operator'],
                 left: parseExpression(expression.left as babel.Expression),
+                right: parseExpression(expression.right),
+            };
+
+        case 'LogicalExpression':
+            return {
+                type: 'logical',
+                operator: expression.operator,
+                left: parseExpression(expression.left),
                 right: parseExpression(expression.right),
             };
 

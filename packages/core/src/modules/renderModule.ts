@@ -1,7 +1,7 @@
-import { isTool } from '../tools/defineTool.js';
+import type { RenderContext } from './renderContext.js';
 import { renderTool } from './renderTool.js';
 import type { RuntimeModule } from '../agent/defineAgent.js';
-import type { RenderContext } from './renderContext.js';
+import { isTool } from '../tools/defineTool.js';
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 

@@ -26,6 +26,8 @@ export const allowedNativeFunctions = new Set<NativeFunction | string>([
     Array.prototype.indexOf,
     Array.prototype.lastIndexOf,
     Array.prototype.concat,
+    Array.prototype.flat,
+    Array.prototype.filter,
     Date.prototype.constructor,
     Date.prototype.getTime,
     Date.prototype.getDate,

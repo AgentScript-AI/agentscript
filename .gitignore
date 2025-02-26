@@ -69,3 +69,6 @@ dist
 
 packages/**/README.md
 packages/**/LICENSE
+
+# not needed for lib and messes up monorepos
+yarn.lock

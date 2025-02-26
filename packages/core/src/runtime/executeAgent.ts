@@ -10,6 +10,7 @@ import type {
     FunctionCall,
     IdentifierExpression,
     IfStatement,
+    LogicalExpression,
     MemberExpression,
     NewExpression,
     ObjectExpression,
@@ -386,6 +387,9 @@ async function runExpression(
         case 'binary':
             return await runBinaryExpression(agent, controller, closure, parent, index, expr);
 
+        case 'logical':
+            return await runLogicalExpression(agent, controller, closure, parent, index, expr);
+
         case 'unary':
             return await runUnaryExpression(agent, controller, closure, parent, index, expr);
 
@@ -666,18 +670,20 @@ async function runFunctionCall(
         return await runToolCall(agent, controller, closure, frame, 1, expr, func);
     }
 
-    switch (func) {
-        case Array.prototype.map:
-            return await runArrayMap(agent, controller, frame, 1, expr, obj);
+    if (expr.args?.[0]?.type === 'arrowfn') {
+        switch (func) {
+            case Array.prototype.map:
+                return await runArrayMap(agent, controller, frame, 1, expr, obj);
 
-        case Array.prototype.filter:
-            return await runArrayFilter(agent, controller, frame, 1, expr, obj);
+            case Array.prototype.filter:
+                return await runArrayFilter(agent, controller, frame, 1, expr, obj);
 
-        case Array.prototype.some:
-            return await runArraySome(agent, controller, frame, 1, expr, obj);
+            case Array.prototype.some:
+                return await runArraySome(agent, controller, frame, 1, expr, obj);
 
-        case Array.prototype.every:
-            return await runArrayEvery(agent, controller, frame, 1, expr, obj);
+            case Array.prototype.every:
+                return await runArrayEvery(agent, controller, frame, 1, expr, obj);
+        }
     }
 
     if (typeof func === 'function') {
@@ -1060,22 +1066,65 @@ async function runBinaryExpression(
             frame.value = (leftValue as number) <= (rightValue as number);
             break;
 
+        default:
+            throw new RuntimeError(`Unsupported operator: ${expr.operator as string}`);
+    }
+
+    return updateFrame(frame, 'done');
+}
+
+async function runLogicalExpression(
+    agent: Agent,
+    controller: RuntimeController,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expr: LogicalExpression,
+) {
+    const frame = getFrame(parent, index, expr);
+
+    const leftResult = await runExpression(agent, controller, closure, frame, 0, expr.left);
+    if (!isDone(leftResult)) {
+        return updateFrame(frame, leftResult.status);
+    }
+
+    const leftValue = leftResult.value;
+
+    switch (expr.operator) {
         case '&&':
-            frame.value = (leftValue as boolean) && (rightValue as boolean);
+            if (!leftValue) {
+                frame.value = leftValue;
+                return updateFrame(frame, 'done');
+            }
+
             break;
 
         case '||':
-            frame.value = (leftValue as boolean) || (rightValue as boolean);
+            if (leftValue) {
+                frame.value = leftValue;
+                return updateFrame(frame, 'done');
+            }
+
             break;
 
         case '??':
-            frame.value = leftValue ?? rightValue;
+            if (leftValue != null) {
+                frame.value = leftValue;
+                return updateFrame(frame, 'done');
+            }
+
             break;
 
         default:
             throw new RuntimeError(`Unsupported operator: ${expr.operator as string}`);
     }
 
+    const rightResult = await runExpression(agent, controller, closure, frame, 1, expr.right);
+    if (!isDone(rightResult)) {
+        return updateFrame(frame, rightResult.status);
+    }
+
+    frame.value = rightResult.value;
     return updateFrame(frame, 'done');
 }
 

@@ -28,6 +28,7 @@ const SYSTEM_PROMPT = `You answer using programming language called AgentScript.
 - can't use complex computation
 - can only use predefined functions and nothing else
 - to iterate over arrays always use \`map\` function
+- never assume array in non-empty
 - each function call or code block requires a comment briefly explaining the step
 
 First explain your plan step by step in non-technical way. Do not reference code, or functions.
