@@ -93,9 +93,10 @@ function renderTypeInternal(
         }
         case s.array:
             return renderArray(schema as s.ArraySchema, ctx, skipUndefined);
-
         case s.union:
             return renderUnion(schema as s.UnionSchema, ctx, skipUndefined);
+        case s.record:
+            return renderRecord(schema as s.RecordSchema, ctx, skipUndefined);
         default:
             throw new Error(`Unsupported schema ${schema.type.name}`);
     }
@@ -149,6 +150,11 @@ function renderUnion(schema: s.UnionSchema, ctx: RenderContext, skipUndefined?: 
     const type = schema.of
         .map(option => renderTypeInternal(option, ctx, skipUndefined))
         .join(' | ');
+    return wrapType(schema, type, skipUndefined);
+}
+
+function renderRecord(schema: s.RecordSchema, ctx: RenderContext, skipUndefined?: boolean) {
+    const type = `Record<string, ${renderTypeInternal(schema.of, ctx)}>`;
     return wrapType(schema, type, skipUndefined);
 }
 
