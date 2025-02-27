@@ -210,3 +210,39 @@ test('array.push()', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('array.filter(Boolean)', async () => {
+    const script = parseScript([
+        //
+        'const a = [0, 1, 2, 3];',
+        'a.filter(Boolean)',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // variable init
+            completedFrame({ node: 'var' }),
+            // filter()
+            completedFrame({
+                node: 'call',
+                value: [1, 2, 3],
+                children: [
+                    // this
+                    completedFrame({
+                        node: 'ident',
+                        value: [0, 1, 2, 3],
+                    }),
+                ],
+            }),
+        ],
+        variables: { a: [0, 1, 2, 3] },
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});

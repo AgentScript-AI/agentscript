@@ -434,3 +434,14 @@ test('array map with function', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('top level return', () => {
+    const code = 'return 1';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [{ type: 'return', value: { type: 'literal', value: 1 } }],
+    };
+
+    expect(script).toEqual(expected);
+});
