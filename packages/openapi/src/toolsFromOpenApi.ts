@@ -12,7 +12,7 @@ import { parseOpenApiDoc } from './parseOpenApiDoc.js';
 const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'] as const;
 
 type SchemaParam = OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
-type Request = RequestInit & { path: string; query: QueryObject; headers: Headers };
+type Request = RequestInit & { path: string; query: QueryObject; headers: Record<string, string> };
 type RequestHandler = (input: Record<string, unknown>, request: Request) => void;
 type ResponseHandler = (response: Response) => unknown;
 
@@ -35,6 +35,11 @@ export interface ToolFromOpenApiOptions {
      * The base URL for the API.
      */
     baseUrl?: string;
+
+    /**
+     * The headers to be added to the request.
+     */
+    headers?: Record<string, string>;
 }
 
 /**
@@ -53,6 +58,7 @@ export async function toolsFromOpenApi(options: ToolFromOpenApiOptions) {
         spec,
         types: {},
         baseUrl,
+        headers: options.headers || {},
     };
 
     for (const path in spec.paths) {
@@ -79,6 +85,7 @@ interface OpenApiToolContext {
     spec: OpenAPIV3.Document;
     types: Record<string, s.Schema | undefined>;
     baseUrl: string;
+    headers: Record<string, string>;
 }
 
 interface OpenApiToolDefinition {
@@ -120,7 +127,9 @@ function getToolFromOperation(
                 method,
                 path,
                 query: {},
-                headers: new Headers(),
+                headers: {
+                    ...ctx.headers,
+                },
             };
 
             for (const handler of definition.request) {
@@ -212,7 +221,7 @@ function addOperationBody(
     definition.input[key] = schema;
     definition.request.push((input, request) => {
         request.body = JSON.stringify(input[key]);
-        request.headers.set('Content-Type', 'application/json');
+        request.headers['Content-Type'] = 'application/json';
     });
 
     return true;
