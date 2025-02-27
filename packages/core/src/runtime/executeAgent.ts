@@ -537,6 +537,27 @@ async function runObjectExpression(
 
     // todo: run in parallel
     for (const prop of expression.props) {
+        // handle spread
+        if (prop.type === 'spread') {
+            const spreadResult = await runExpression(
+                agent,
+                controller,
+                closure,
+                frame,
+                propIndex,
+                prop.value,
+            );
+
+            if (spreadResult.status !== 'done') {
+                return updateFrame(frame, spreadResult.status);
+            }
+
+            Object.assign(result, spreadResult.value);
+            propIndex++;
+            continue;
+        }
+
+        // handle normal prop
         let key: string;
         if (prop.key.type === 'ident') {
             key = prop.key.name;
@@ -555,11 +576,8 @@ async function runObjectExpression(
             }
 
             key = keyResult.value as string;
+            propIndex++;
         }
-
-        // always increment propIndex for both key and value
-        // so that frames are deterministic
-        propIndex++;
 
         const valueResult = await runExpression(
             agent,

@@ -368,11 +368,7 @@ test('more than two arguments are turned into a single arg', async () => {
                         node: 'object',
                         value: { a: 1, b: 2, c: 3 },
                         children: [
-                            // a key
-                            null,
                             // a value
-                            null,
-                            // b key
                             null,
                             // b value
                             completedFrame({
@@ -477,11 +473,7 @@ test('explicit single arg object', async () => {
                         node: 'object',
                         value: { a: 1, b: 2 },
                         children: [
-                            // a key
-                            null,
                             // a value
-                            null,
-                            // b key
                             null,
                             // b value
                             completedFrame({

@@ -303,7 +303,7 @@ export interface ObjectExpression extends AstNodeBase {
     /**
      * Properties of the object.
      */
-    props: ObjectProperty[];
+    props: (ObjectProperty | ObjectSpread)[];
 }
 
 /**
@@ -311,11 +311,29 @@ export interface ObjectExpression extends AstNodeBase {
  */
 export interface ObjectProperty {
     /**
+     * Type of the property.
+     */
+    type?: undefined;
+    /**
      * Key of the property.
      */
     key: Expression;
     /**
      * Value of the property.
+     */
+    value: Expression;
+}
+
+/**
+ * Object spread expression.
+ */
+export interface ObjectSpread {
+    /**
+     * Type of the expression.
+     */
+    type: 'spread';
+    /**
+     * Object to spread.
      */
     value: Expression;
 }

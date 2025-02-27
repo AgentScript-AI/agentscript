@@ -11,6 +11,7 @@ import type {
     Literal,
     ObjectExpression,
     ObjectProperty,
+    ObjectSpread,
     Script,
     TemplateLiteral,
     UnaryExpression,
@@ -259,19 +260,18 @@ function parseExpression(expression: babel.Expression): Expression {
 }
 
 function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpression | Literal {
-    const props = expression.properties.map(prop =>
-        parseObjectProperty(prop as babel.ObjectProperty),
+    const props = expression.properties.map(prop => parseObjectProperty(prop));
+
+    const isLiteral = props.every(
+        prop =>
+            !prop.type &&
+            prop.value.type === 'literal' &&
+            (prop.key.type === 'ident' || prop.key.type === 'literal'),
     );
 
-    if (
-        props.every(
-            prop =>
-                prop.value.type === 'literal' &&
-                (prop.key.type === 'ident' || prop.key.type === 'literal'),
-        )
-    ) {
+    if (isLiteral) {
         const value: Record<string, unknown> = {};
-        for (const prop of props) {
+        for (const prop of props as ObjectProperty[]) {
             if (prop.key.type === 'ident') {
                 value[prop.key.name] = (prop.value as Literal).value;
             } else {
@@ -358,11 +358,24 @@ function parseComment(comments: babel.Comment[] | undefined | null): string | un
     return comments.map(c => c.value.trim()).join('\n');
 }
 
-function parseObjectProperty(property: babel.ObjectProperty): ObjectProperty {
-    return {
-        key: parseExpression(property.key as babel.Expression),
-        value: parseExpression(property.value as babel.Expression),
-    };
+function parseObjectProperty(
+    property: babel.ObjectProperty | babel.SpreadElement | babel.ObjectMethod,
+): ObjectProperty | ObjectSpread {
+    switch (property.type) {
+        case 'ObjectProperty':
+            return {
+                key: parseExpression(property.key as babel.Expression),
+                value: parseExpression(property.value as babel.Expression),
+            };
+
+        case 'SpreadElement':
+            return {
+                type: 'spread',
+                value: parseExpression(property.argument),
+            };
+    }
+
+    throw new ParseError(`Unknown object property type: ${property.type}`, { cause: property });
 }
 
 type Argument = babel.Expression | babel.SpreadElement | babel.ArgumentPlaceholder;
