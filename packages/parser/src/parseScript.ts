@@ -26,7 +26,9 @@ export function parseScript(code: string | string[]): Script {
         code = code.join('\n');
     }
 
-    const ast = parse(code);
+    const ast = parse(code, {
+        allowReturnOutsideFunction: true,
+    });
     const parsed: AstNode[] = [];
 
     for (const node of ast.program.body) {
