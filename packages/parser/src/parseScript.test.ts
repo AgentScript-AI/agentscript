@@ -445,3 +445,44 @@ test('top level return', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('object spread', () => {
+    const code = joinLines([
+        //
+        'const a = { b: 1, c: 2 }',
+        'const d = { ...a, c: 3 }',
+    ]);
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                name: 'a',
+                value: {
+                    type: 'literal',
+                    value: { b: 1, c: 2 },
+                },
+            },
+            {
+                type: 'var',
+                name: 'd',
+                value: {
+                    type: 'object',
+                    props: [
+                        {
+                            type: 'spread',
+                            value: { type: 'ident', name: 'a' },
+                        },
+                        {
+                            key: { type: 'ident', name: 'c' },
+                            value: { type: 'literal', value: 3 },
+                        },
+                    ],
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
