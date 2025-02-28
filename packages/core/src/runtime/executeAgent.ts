@@ -27,7 +27,7 @@ import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
 import type { NativeFunction } from './common.js';
-import { allowedNativeFunctions } from './common.js';
+import { ALLOWED_GLOBALS, ALLOWED_FUNCTIONS } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type { StackFrame, StackFrameStatus } from './runtimeTypes.js';
@@ -41,8 +41,8 @@ import type {
 } from '../agent/defineAgent.js';
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
-import { ALLOWED_GLOBALS, resolveExpression, resolveLiteral } from './utils/resolveExpression.js';
 import { TOOL_AWAIT_RESULT, toolResultHelper } from '../tools/toolResult.js';
+import { resolveExpression, resolveLiteral } from './utils/resolveExpression.js';
 
 type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends EmptyObject
     ? {
@@ -1012,7 +1012,7 @@ async function runFunctionNative(
     func: NativeFunction,
     thisArg: unknown,
 ) {
-    const allowed = allowedNativeFunctions.has(func) || allowedNativeFunctions.has(func.name);
+    const allowed = ALLOWED_FUNCTIONS.has(func) || ALLOWED_FUNCTIONS.has(func.name);
     if (!allowed) {
         throw new RuntimeError(`Function ${func.name} is not allowed`);
     }
@@ -1303,7 +1303,7 @@ async function runNewExpression(
         throw new RuntimeError(`Expression is not a function`);
     }
 
-    if (!allowedNativeFunctions.has(constructor)) {
+    if (!ALLOWED_FUNCTIONS.has(constructor)) {
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 
