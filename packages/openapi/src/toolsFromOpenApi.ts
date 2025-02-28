@@ -1,5 +1,4 @@
 import { assert, mapObject, toCamelCase, toPascalCase } from '@nzyme/utils';
-import type { AnyApiDefinitionFormat } from '@scalar/openapi-parser';
 import type { OpenAPIV3 } from 'openapi-types';
 import type { QueryObject } from 'ufo';
 import { joinURL, withQuery } from 'ufo';
@@ -7,10 +6,9 @@ import { joinURL, withQuery } from 'ufo';
 import { type ToolDefinition, defineTool } from '@agentscript-ai/core';
 import * as s from '@agentscript-ai/schema';
 
-import { parseOpenApiDoc } from './parseOpenApiDoc.js';
-
 const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'] as const;
 
+type HttpMethod = (typeof methods)[number];
 type SchemaParam = OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
 type Request = RequestInit & { path: string; query: QueryObject; headers: Record<string, string> };
 type RequestHandler = (input: Record<string, unknown>, request: Request) => void;
@@ -30,7 +28,7 @@ export interface ToolFromOpenApiOptions {
     /**
      * The OpenAPI definition.
      */
-    spec: AnyApiDefinitionFormat;
+    spec: OpenAPIV3.Document;
     /**
      * The base URL for the API.
      */
@@ -47,8 +45,8 @@ export interface ToolFromOpenApiOptions {
  * @param options - The options for the `toolsFromOpenApi` function.
  * @returns The tools.
  */
-export async function toolsFromOpenApi(options: ToolFromOpenApiOptions) {
-    const spec = await parseOpenApiDoc(options.spec);
+export function toolsFromOpenApi(options: ToolFromOpenApiOptions) {
+    const spec = options.spec;
     const tools: Record<string, ToolDefinition> = {};
     const baseUrl = options.baseUrl || spec.servers?.[0]?.url;
 
@@ -97,7 +95,7 @@ interface OpenApiToolDefinition {
 
 function getToolFromOperation(
     ctx: OpenApiToolContext,
-    method: string,
+    method: HttpMethod,
     path: string,
     operation: OpenAPIV3.OperationObject,
 ) {
@@ -108,11 +106,11 @@ function getToolFromOperation(
         response: undefined,
     };
 
-    if (!addOperationParameters(ctx, operation, definition)) {
+    if (!addOperationParameters(ctx, method, operation, definition)) {
         return;
     }
 
-    if (!addOperationBody(ctx, operation, definition)) {
+    if (!addOperationBody(ctx, method, operation, definition)) {
         return;
     }
 
@@ -137,7 +135,17 @@ function getToolFromOperation(
             }
 
             const url = withQuery(joinURL(ctx.baseUrl, request.path), request.query);
-            const response = await fetch(url, request);
+            const response = await fetch(url, {
+                method: method.toUpperCase(),
+                body: request.body,
+                headers: request.headers,
+            });
+
+            if (!response.ok) {
+                const text = await response.text();
+                throw new Error(`HTTP ${response.status} ${response.statusText}: ${text}`);
+            }
+
             const result = await definition.response?.(response);
             return result;
         },
@@ -146,6 +154,7 @@ function getToolFromOperation(
 
 function addOperationParameters(
     ctx: OpenApiToolContext,
+    method: HttpMethod,
     operation: OpenAPIV3.OperationObject,
     definition: OpenApiToolDefinition,
 ): boolean {
@@ -168,10 +177,13 @@ function addOperationParameters(
         definition.input[paramName] = paramSchema;
         definition.request.push((input, request) => {
             switch (param.in) {
-                case 'query':
-                    request.query[paramName] = String(input[paramName]);
+                case 'query': {
+                    const value = input[paramName];
+                    if (value != null) {
+                        request.query[paramName] = value;
+                    }
                     break;
-
+                }
                 case 'path':
                     request.path = request.path.replace(
                         `{${param.name}}`,
@@ -187,6 +199,7 @@ function addOperationParameters(
 
 function addOperationBody(
     ctx: OpenApiToolContext,
+    method: HttpMethod,
     operation: OpenAPIV3.OperationObject,
     definition: OpenApiToolDefinition,
 ): boolean {
@@ -220,7 +233,9 @@ function addOperationBody(
 
     definition.input[key] = schema;
     definition.request.push((input, request) => {
-        request.body = JSON.stringify(input[key]);
+        const body = input[key];
+
+        request.body = s.toJson(body);
         request.headers['Content-Type'] = 'application/json';
     });
 
@@ -264,9 +279,17 @@ function addOperationResponse(
 
     const output = getSchema(ctx, content.schema);
     definition.output = output;
+    definition.request.push((_input, request) => {
+        request.headers['Accept'] = 'application/json';
+    });
     definition.response = async response => {
+        if (response.status === 204) {
+            return;
+        }
+
         const json = await response.json();
-        return s.coerce(output, json);
+        const result = s.coerce(output, json);
+        return result;
     };
 }
 
@@ -333,7 +356,13 @@ function createSchema(ctx: OpenApiToolContext, schema: OpenAPIV3.SchemaObject, n
                 });
             }
 
-            const props = schema.properties ?? {};
+            if (!schema.properties) {
+                return s.unknown({
+                    ...getSchemaProps(schema, name),
+                });
+            }
+
+            const props = schema.properties;
 
             return s.object({
                 props: mapObject(props, (prop, key) => {
