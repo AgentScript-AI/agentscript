@@ -82,7 +82,7 @@ test('template literal with function call', () => {
                         func: {
                             type: 'member',
                             obj: { type: 'ident', name: 'name' },
-                            prop: { type: 'ident', name: 'toUpperCase' },
+                            prop: 'toUpperCase',
                         },
                         args: undefined,
                     },

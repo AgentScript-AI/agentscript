@@ -130,7 +130,7 @@ test('call member function', () => {
                 func: {
                     type: 'member',
                     obj: { type: 'ident', name: 'foo' },
-                    prop: { type: 'ident', name: 'bar' },
+                    prop: 'bar',
                 },
                 args: undefined,
             },
@@ -293,7 +293,7 @@ test('array map inline', () => {
                     func: {
                         type: 'member',
                         obj: { type: 'ident', name: 'a' },
-                        prop: { type: 'ident', name: 'map' },
+                        prop: 'map',
                     },
                     args: [
                         {
@@ -346,7 +346,7 @@ test('array map with function', () => {
                     func: {
                         type: 'member',
                         obj: { type: 'ident', name: 'a' },
-                        prop: { type: 'ident', name: 'map' },
+                        prop: 'map',
                     },
                     args: [
                         {
