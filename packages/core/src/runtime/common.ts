@@ -16,6 +16,8 @@ export const allowedNativeFunctions = new Set<NativeFunction | string>([
     String,
     Boolean,
     Console.prototype.log,
+    Array.from,
+    Array.isArray,
     Array.prototype.push,
     Array.prototype.pop,
     Array.prototype.shift,

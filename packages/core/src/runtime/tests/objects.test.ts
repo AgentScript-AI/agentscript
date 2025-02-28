@@ -222,3 +222,135 @@ test('object spread nested', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('assign object property', async () => {
+    const script = parseScript([
+        //
+        'const a = { b: 1, c: 2 };',
+        'a.b = 3;',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: {
+            a: { b: 3, c: 2 },
+        },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'assign',
+                value: 3,
+                children: [
+                    // value
+                    null,
+                    // obj
+                    completedFrame({
+                        node: 'ident',
+                        value: { b: 3, c: 2 },
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('assign object property nested', async () => {
+    const script = parseScript([
+        //
+        'const a = { b: { c: 1 } };',
+        'a.b.c = 2;',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: { b: { c: 2 } } },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'assign',
+                value: 2,
+                children: [
+                    // value
+                    null,
+                    // obj
+                    completedFrame({
+                        node: 'member',
+                        value: { c: 2 },
+                        children: [
+                            completedFrame({
+                                node: 'ident',
+                                value: { b: { c: 2 } },
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('assign object property dynamic', async () => {
+    const script = parseScript([
+        //
+        'const a = { b: 1, c: 2 };',
+        'const d = "b";',
+        'a[d] = a.c;',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: { b: 2, c: 2 }, d: 'b' },
+        children: [
+            completedFrame({ node: 'var' }),
+            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'assign',
+                value: 2,
+                children: [
+                    // value
+                    completedFrame({
+                        node: 'member',
+                        value: 2,
+                        children: [
+                            completedFrame({
+                                node: 'ident',
+                                value: { b: 2, c: 2 },
+                            }),
+                        ],
+                    }),
+                    // obj
+                    completedFrame({
+                        node: 'ident',
+                        value: { b: 2, c: 2 },
+                    }),
+                    // key
+                    completedFrame({
+                        node: 'ident',
+                        value: 'b',
+                    }),
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});

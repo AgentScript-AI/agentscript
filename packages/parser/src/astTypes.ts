@@ -183,7 +183,7 @@ export interface MemberExpression extends AstNodeBase {
     /**
      * Property to access.
      */
-    prop: Expression;
+    prop: string | Expression;
     /**
      * Object to access the property on.
      */

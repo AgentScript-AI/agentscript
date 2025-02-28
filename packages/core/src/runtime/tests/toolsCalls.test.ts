@@ -509,9 +509,7 @@ test('agent output', async () => {
                 node: 'assign',
                 value: 3,
                 children: [
-                    // left side
-                    null,
-                    // right side
+                    // value
                     completedFrame({
                         node: 'call',
                         value: 3,

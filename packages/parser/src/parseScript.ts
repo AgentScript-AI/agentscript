@@ -9,6 +9,7 @@ import type {
     BinaryExpression,
     Expression,
     Literal,
+    MemberExpression,
     ObjectExpression,
     ObjectProperty,
     ObjectSpread,
@@ -23,23 +24,29 @@ import type {
  * @returns AST.
  */
 export function parseScript(code: string | string[]): Script {
-    if (Array.isArray(code)) {
-        code = code.join('\n');
+    try {
+        if (Array.isArray(code)) {
+            code = code.join('\n');
+        }
+
+        const ast = parse(code, {
+            allowReturnOutsideFunction: true,
+        });
+        const parsed: AstNode[] = [];
+
+        for (const node of ast.program.body) {
+            parsed.push(parseStatement(node));
+        }
+
+        return {
+            code,
+            ast: parsed,
+        };
+    } catch (error) {
+        throw new ParseError('Failed to parse script', {
+            cause: error,
+        });
     }
-
-    const ast = parse(code, {
-        allowReturnOutsideFunction: true,
-    });
-    const parsed: AstNode[] = [];
-
-    for (const node of ast.program.body) {
-        parsed.push(parseStatement(node));
-    }
-
-    return {
-        code,
-        ast: parsed,
-    };
 }
 
 function parseStatement(statement: babel.Statement): AstNode {
@@ -172,11 +179,7 @@ function parseExpression(expression: babel.Expression): Expression {
             };
 
         case 'MemberExpression':
-            return {
-                type: 'member',
-                prop: parseExpression(expression.property as babel.Expression),
-                obj: parseExpression(expression.object),
-            };
+            return parseMemberExpression(expression);
 
         case 'CallExpression': {
             return {
@@ -257,6 +260,19 @@ function parseExpression(expression: babel.Expression): Expression {
     throw new ParseError(`Unknown expression type: ${expression.type}`, {
         cause: expression,
     });
+}
+
+function parseMemberExpression(expression: babel.MemberExpression): MemberExpression {
+    const prop =
+        !expression.computed && expression.property.type === 'Identifier'
+            ? expression.property.name
+            : parseExpression(expression.property as babel.Expression);
+
+    return {
+        type: 'member',
+        prop,
+        obj: parseExpression(expression.object),
+    };
 }
 
 function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpression | Literal {
