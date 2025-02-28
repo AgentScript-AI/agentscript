@@ -483,8 +483,8 @@ async function runMemberExpression(
 
     let property: string;
     let unsafe = objectResult.unsafe;
-    if (expression.prop.type === 'ident') {
-        property = expression.prop.name;
+    if (typeof expression.prop === 'string') {
+        property = expression.prop;
     } else {
         const propertyResult = await runExpression(
             agent,
@@ -609,6 +609,10 @@ async function runArrayExpression(
     expression: ArrayExpression,
 ) {
     const frame = getFrame(parent, index, expression);
+    if (isDone(frame)) {
+        return frame;
+    }
+
     const result = await runExpressionArray(agent, controller, closure, frame, 0, expression.items);
 
     if (Array.isArray(result)) {
@@ -632,18 +636,49 @@ async function runAssignExpression(
         return frame;
     }
 
-    if (expr.left.type !== 'ident') {
-        throw new Error('Assignment left must be a variable');
-    }
-
-    const right = await runExpression(agent, controller, closure, frame, 1, expr.right);
+    const right = await runExpression(agent, controller, closure, frame, 0, expr.right);
     if (right.status !== 'done') {
         return updateFrame(frame, right.status);
     }
 
-    setVariable(parent, expr.left.name, right.value);
-    frame.value = right.value;
-    return updateFrame(frame, 'done');
+    switch (expr.left.type) {
+        case 'ident':
+            setVariable(parent, expr.left.name, right.value);
+            frame.value = right.value;
+            return updateFrame(frame, 'done');
+        case 'member': {
+            const obj = await runExpression(agent, controller, closure, frame, 1, expr.left.obj);
+            if (obj.status !== 'done') {
+                return updateFrame(frame, obj.status);
+            }
+
+            if (typeof expr.left.prop === 'string') {
+                // property is a simple identifier
+                (obj.value as Record<string, unknown>)[expr.left.prop] = right.value;
+            } else {
+                // property is an expression
+                const key = await runExpression(
+                    agent,
+                    controller,
+                    closure,
+                    frame,
+                    2,
+                    expr.left.prop,
+                );
+
+                if (key.status !== 'done') {
+                    return updateFrame(frame, key.status);
+                }
+
+                (obj.value as Record<string, unknown>)[key.value as string] = right.value;
+            }
+
+            frame.value = right.value;
+            return updateFrame(frame, 'done');
+        }
+        default:
+            throw new RuntimeError(`Unsupported assignment left: ${expr.left.type}`);
+    }
 }
 
 async function runFunctionCall(
@@ -663,7 +698,7 @@ async function runFunctionCall(
     let obj: Record<string, unknown> | undefined;
 
     if (expr.func.type === 'member') {
-        if (expr.func.prop.type !== 'ident') {
+        if (typeof expr.func.prop !== 'string') {
             throw new RuntimeError('Dynamic method calls are not supported');
         }
 
@@ -673,7 +708,7 @@ async function runFunctionCall(
         }
 
         obj = objResult.value as Record<string, unknown>;
-        func = obj[expr.func.prop.name];
+        func = obj[expr.func.prop];
     } else {
         const funcResult = await runExpression(agent, controller, closure, frame, 0, expr.func);
         if (funcResult.status !== 'done') {

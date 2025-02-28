@@ -71,5 +71,5 @@ export function renderTool(options: RenderToolOptions) {
         ctx.addCode(comment);
     }
 
-    ctx.addLine(`export function ${name}(${args}): ${returnType};`);
+    ctx.addLine(`function ${name}(${args}): ${returnType};`);
 }

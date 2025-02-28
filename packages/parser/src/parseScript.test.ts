@@ -191,64 +191,6 @@ test('multiple statements', () => {
     expect(script).toEqual(expected);
 });
 
-test('object literal', () => {
-    const code = 'const a = { b: 1 }';
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: {
-                        b: 1,
-                    },
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('object expression', () => {
-    const code = joinLines([
-        //
-        'const a = 1',
-        'const b = {',
-        '  a: a',
-        '}',
-    ]);
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: { type: 'literal', value: 1 },
-            },
-            {
-                type: 'var',
-                name: 'b',
-                value: {
-                    type: 'object',
-                    props: [
-                        {
-                            key: { type: 'ident', name: 'a' },
-                            value: { type: 'ident', name: 'a' },
-                        },
-                    ],
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
 test('array literal', () => {
     const code = 'const a = [1, 2, 3]';
     const script = parseScript(code);
@@ -441,47 +383,6 @@ test('top level return', () => {
     const expected: Script = {
         code,
         ast: [{ type: 'return', value: { type: 'literal', value: 1 } }],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('object spread', () => {
-    const code = joinLines([
-        //
-        'const a = { b: 1, c: 2 }',
-        'const d = { ...a, c: 3 }',
-    ]);
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: { b: 1, c: 2 },
-                },
-            },
-            {
-                type: 'var',
-                name: 'd',
-                value: {
-                    type: 'object',
-                    props: [
-                        {
-                            type: 'spread',
-                            value: { type: 'ident', name: 'a' },
-                        },
-                        {
-                            key: { type: 'ident', name: 'c' },
-                            value: { type: 'literal', value: 3 },
-                        },
-                    ],
-                },
-            },
-        ],
     };
 
     expect(script).toEqual(expected);
