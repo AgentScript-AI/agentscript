@@ -43,7 +43,7 @@ test('simple module', () => {
     expect(ctx.code).toEqual(
         joinLines([
             //
-            'export type User = {',
+            'type User = {',
             '  name: string;',
             '  email: string;',
             '}',
@@ -52,10 +52,10 @@ test('simple module', () => {
             ' * Get a user',
             ' * @returns The user',
             ' */',
-            'export function getUser(id: string): User;',
+            'function getUser(id: string): User;',
             '',
             '/** Noop */',
-            'export function noop(): void;',
+            'function noop(): void;',
         ]),
     );
 });
@@ -73,12 +73,12 @@ test('nested module', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'declare namespace nested {',
+            'namespace nested {',
             '',
             '  /** Noop */',
-            '  export function noop(): void;',
+            '  function noop(): void;',
             '',
-            '  export type User = {',
+            '  type User = {',
             '    name: string;',
             '    email: string;',
             '  }',
@@ -87,7 +87,7 @@ test('nested module', () => {
             '   * Get a user',
             '   * @returns The user',
             '   */',
-            '  export function getUser(id: string): User;',
+            '  function getUser(id: string): User;',
             '}',
         ]),
     );
@@ -111,9 +111,9 @@ test('double nested module', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'declare namespace nested {',
+            'namespace nested {',
             '',
-            '  export type User = {',
+            '  type User = {',
             '    name: string;',
             '    email: string;',
             '  }',
@@ -122,21 +122,21 @@ test('double nested module', () => {
             '   * Get a user',
             '   * @returns The user',
             '   */',
-            '  export function getUser(id: string): User;',
+            '  function getUser(id: string): User;',
             '',
             '  /** Noop */',
-            '  export function noop(): void;',
+            '  function noop(): void;',
             '',
-            '  declare namespace nested {',
+            '  namespace nested {',
             '',
             '    /** Noop */',
-            '    export function noop(): void;',
+            '    function noop(): void;',
             '',
             '    /**',
             '     * Get a user',
             '     * @returns The user',
             '     */',
-            '    export function getUser(id: string): User;',
+            '    function getUser(id: string): User;',
             '  }',
             '}',
         ]),

@@ -117,7 +117,7 @@ test('custom named object', () => {
     expect(ctx.code).toBe(
         joinLines([
             //
-            'export type User = {',
+            'type User = {',
             '  name: string;',
             '}',
             '',

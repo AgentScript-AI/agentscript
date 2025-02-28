@@ -22,7 +22,7 @@ export function renderModule(module: RuntimeModule, ctx: RenderContext) {
             renderTool({ name, tool: value, ctx });
         } else if (typeof value === 'object' && value !== null) {
             ctx.addLine();
-            ctx.addLine(`declare namespace ${name} {`);
+            ctx.addLine(`namespace ${name} {`);
             renderModule(value, ctx.createChild(name));
             ctx.addLine('}');
         } else {

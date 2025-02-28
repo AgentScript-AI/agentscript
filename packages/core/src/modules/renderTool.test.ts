@@ -32,7 +32,7 @@ test('noop tool', () => {
         joinLines([
             //
             '/** Noop */',
-            'export function noop(): void;',
+            'function noop(): void;',
         ]),
     );
 });
@@ -62,7 +62,7 @@ test('tool with single input', () => {
             ' * A tool',
             ' * @param a - The A param',
             ' */',
-            'export function foo(a: string): void;',
+            'function foo(a: string): void;',
         ]),
     );
 });
@@ -96,7 +96,7 @@ test('tool with two inputs', () => {
             ' * @param a - The A param',
             ' * @param b - The B param',
             ' */',
-            'export function foo(a: string, b: string): void;',
+            'function foo(a: string, b: string): void;',
         ]),
     );
 });
@@ -127,7 +127,7 @@ test('tool with three inputs', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'export type FooParams = {',
+            'type FooParams = {',
             '  /** The A param */',
             '  a: string;',
             '  /** The B param */',
@@ -137,7 +137,7 @@ test('tool with three inputs', () => {
             '}',
             '',
             '/** A tool */',
-            'export function foo(params: FooParams): void;',
+            'function foo(params: FooParams): void;',
         ]),
     );
 });
@@ -160,7 +160,7 @@ test('tool with output', () => {
         joinLines([
             //
             '/** A tool */',
-            'export function foo(): string;',
+            'function foo(): string;',
         ]),
     );
 });
@@ -186,7 +186,7 @@ test('tool with output and input', () => {
         joinLines([
             //
             '/** A tool */',
-            'export function foo(a: string): string;',
+            'function foo(a: string): string;',
         ]),
     );
 });
@@ -214,7 +214,7 @@ test('tool with output with description', () => {
             ' * A tool',
             ' * @returns The output',
             ' */',
-            'export function foo(): string;',
+            'function foo(): string;',
         ]),
     );
 });
@@ -240,7 +240,7 @@ test('tool with object input', () => {
     expect(ctx.code).toEqual(
         joinLines([
             //
-            'export type User = {',
+            'type User = {',
             '  name: string;',
             '  email: string;',
             '}',
@@ -249,7 +249,7 @@ test('tool with object input', () => {
             ' * A tool',
             ' * @param user - The user',
             ' */',
-            'export function foo(user: User): void;',
+            'function foo(user: User): void;',
         ]),
     );
 });
@@ -278,7 +278,7 @@ test('tool with object output', () => {
     expect(ctx.code).toEqual(
         joinLines([
             //
-            'export type User = {',
+            'type User = {',
             '  name: string;',
             '  email: string;',
             '}',
@@ -288,7 +288,7 @@ test('tool with object output', () => {
             ' * @param id - The id of the user',
             ' * @returns The user',
             ' */',
-            'export function foo(id: string): User;',
+            'function foo(id: string): User;',
         ]),
     );
 });
@@ -317,7 +317,7 @@ test('tool with object input and output', () => {
     expect(ctx.code).toEqual(
         joinLines([
             //
-            'export type User = {',
+            'type User = {',
             '  name: string;',
             '  email: string;',
             '}',
@@ -327,7 +327,7 @@ test('tool with object input and output', () => {
             ' * @param user - The user',
             ' * @returns The output',
             ' */',
-            'export function foo(user: User): User;',
+            'function foo(user: User): User;',
         ]),
     );
 });
@@ -359,7 +359,7 @@ test('explicit input object schema', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'export type FooParams = {',
+            'type FooParams = {',
             '  /** The first number */',
             '  a: number;',
             '  /** The second number */',
@@ -369,7 +369,7 @@ test('explicit input object schema', () => {
             '}',
             '',
             '/** Get a foobar */',
-            'export function foo(params: FooParams): number;',
+            'function foo(params: FooParams): number;',
         ]),
     );
 });
@@ -403,7 +403,7 @@ test('explicit input object schema', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'export type FooParams = {',
+            'type FooParams = {',
             '  /** The first number */',
             '  a: number;',
             '  /** The second number */',
@@ -416,7 +416,7 @@ test('explicit input object schema', () => {
             ' * Get a foobar',
             ' * @param params - The input',
             ' */',
-            'export function foo(params: FooParams): number;',
+            'function foo(params: FooParams): number;',
         ]),
     );
 });
@@ -449,7 +449,7 @@ test('explicit input schema with name', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'export type Params = {',
+            'type Params = {',
             '  /** The first number */',
             '  a: number;',
             '  /** The second number */',
@@ -459,7 +459,7 @@ test('explicit input schema with name', () => {
             '}',
             '',
             '/** Get a foobar */',
-            'export function foo(params: Params): number;',
+            'function foo(params: Params): number;',
         ]),
     );
 });
@@ -494,7 +494,7 @@ test('explicit input schema with name and description', () => {
 
     expect(ctx.code).toEqual(
         joinLines([
-            'export type Params = {',
+            'type Params = {',
             '  /** The first number */',
             '  a: number;',
             '  /** The second number */',
@@ -507,7 +507,7 @@ test('explicit input schema with name and description', () => {
             ' * Get a foobar',
             ' * @param params - The input',
             ' */',
-            'export function foo(params: Params): number;',
+            'function foo(params: Params): number;',
         ]),
     );
 });

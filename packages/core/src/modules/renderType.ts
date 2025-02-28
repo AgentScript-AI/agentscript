@@ -85,7 +85,7 @@ function renderTypeInternal(
                 const code = renderObject(schema as s.ObjectSchema, ctx.ambient);
 
                 ctx.ambient.addLine();
-                ctx.ambient.addLine(`export type ${name} = ${code}`);
+                ctx.ambient.addLine(`type ${name} = ${code}`);
 
                 return wrapType(schema, name, skipUndefined);
             }
@@ -104,6 +104,8 @@ function renderTypeInternal(
     }
 }
 
+const validPropertyKeyRegex = /^[\w_]+$/;
+
 function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
     const props = schema.props;
     const propsCtx = ctx.createChild();
@@ -111,6 +113,10 @@ function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
     let code = `{\n`;
     // eslint-disable-next-line prefer-const
     for (let [key, value] of Object.entries(props)) {
+        if (!validPropertyKeyRegex.test(key)) {
+            key = `"${key}"`;
+        }
+
         const optional = value.optional;
         if (optional) {
             key += '?';
