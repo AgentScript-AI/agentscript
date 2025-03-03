@@ -426,7 +426,7 @@ function getRefValue(ctx: OpenApiToolContext, ref: OpenAPIV3.ReferenceObject) {
 
     return {
         schema: current,
-        name: path[path.length - 1],
+        name: path[path.length - 1]!,
     };
 }
 

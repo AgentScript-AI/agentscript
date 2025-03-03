@@ -141,3 +141,21 @@ test('object prop assignment dynamic', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('optional property access', () => {
+    const code = 'a?.b';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'member',
+                prop: 'b',
+                obj: { type: 'ident', name: 'a' },
+                optional: true,
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});

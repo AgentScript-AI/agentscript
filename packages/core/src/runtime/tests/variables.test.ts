@@ -223,3 +223,19 @@ test('array.length', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('assign unsafe value to variable', async () => {
+    const script = parseScript(['let a = 1', 'a = Date;']);
+    const agent = createAgent({ script });
+
+    await expect(executeAgent({ agent })).rejects.toThrow('Assigning unsafe value is not allowed');
+});
+
+test('assign unsafe value to variable', async () => {
+    const script = parseScript(['let a = Date;']);
+    const agent = createAgent({ script });
+
+    await expect(executeAgent({ agent })).rejects.toThrow(
+        'Assigning unsafe value to variable is not allowed',
+    );
+});

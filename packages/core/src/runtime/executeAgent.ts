@@ -172,7 +172,8 @@ async function runBlockStatement(
             return block;
         }
 
-        if (index >= nodes.length) {
+        const node = nodes[index];
+        if (!node) {
             // went through all statements in block
             return updateFrame(block, 'done');
         }
@@ -187,7 +188,7 @@ async function runBlockStatement(
             continue;
         }
 
-        const frameResult = await runNode(ctx, closure, block, index, nodes[index]);
+        const frameResult = await runNode(ctx, closure, block, index, node);
         if (frameResult.status !== 'done') {
             return updateFrame(block, frameResult.status);
         }
@@ -259,6 +260,10 @@ async function runVarStatement(
     const valueResult = await runExpression(ctx, closure, frame, 0, node.value);
     if (valueResult.status !== 'done') {
         return updateFrame(frame, valueResult.status);
+    }
+
+    if (valueResult.unsafe) {
+        throw new RuntimeError('Assigning unsafe value to variable is not allowed');
     }
 
     parent.variables[name] = valueResult.value;
@@ -517,7 +522,12 @@ async function runMemberExpression(
         unsafe = unsafe || propertyResult.unsafe;
     }
 
-    const value = (objectResult.value as Record<string, unknown>)[property];
+    let value: unknown;
+    if (expr.optional && objectResult.value == null) {
+        value = undefined;
+    } else {
+        value = (objectResult.value as Record<string, unknown>)[property];
+    }
 
     unsafe = unsafe || !isSafeValue(value);
 
@@ -541,15 +551,15 @@ async function runObjectExpression(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: ObjectExpression,
+    expr: ObjectExpression,
 ): Promise<StackFrameResult> {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
     const result: Record<string, unknown> = {};
 
     let propIndex = 0;
 
     // todo: run in parallel
-    for (const prop of expression.props) {
+    for (const prop of expr.props) {
         // handle spread
         if (prop.type === 'spread') {
             const spreadResult = await runExpression(ctx, closure, frame, propIndex, prop.value);
@@ -597,14 +607,14 @@ async function runArrayExpression(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: ArrayExpression,
+    expr: ArrayExpression,
 ) {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
     if (isDone(frame)) {
         return frame;
     }
 
-    const result = await runExpressionArray(ctx, closure, frame, 0, expression.items);
+    const result = await runExpressionArray(ctx, closure, frame, 0, expr.items);
 
     if (Array.isArray(result)) {
         frame.value = result;
@@ -631,6 +641,10 @@ async function runAssignExpression(
         return updateFrame(frame, right.status);
     }
 
+    if (right.unsafe) {
+        throw new RuntimeError('Assigning unsafe value is not allowed');
+    }
+
     switch (expr.left.type) {
         case 'ident':
             setVariable(parent, expr.left.name, right.value);
@@ -640,6 +654,10 @@ async function runAssignExpression(
             const obj = await runExpression(ctx, closure, frame, 1, expr.left.obj);
             if (obj.status !== 'done') {
                 return updateFrame(frame, obj.status);
+            }
+
+            if (obj.unsafe) {
+                throw new RuntimeError('Assigning to unsafe value is not allowed');
             }
 
             if (typeof expr.left.prop === 'string') {
@@ -895,7 +913,7 @@ async function runToolCall(
 
                 for (let i = 0; i < argProps.length; i++) {
                     const arg = args[i];
-                    const argName = argProps[i][0];
+                    const argName = argProps[i]![0];
 
                     input[argName] = arg;
                 }
@@ -1190,17 +1208,17 @@ async function runTernaryExpression(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: TernaryExpression,
+    expr: TernaryExpression,
 ) {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
 
-    const conditionResult = await runExpression(ctx, closure, frame, 0, expression.if);
+    const conditionResult = await runExpression(ctx, closure, frame, 0, expr.if);
 
     if (conditionResult.status !== 'done') {
         return updateFrame(frame, conditionResult.status);
     }
 
-    const thenExpression = conditionResult.value ? expression.then : expression.else;
+    const thenExpression = conditionResult.value ? expr.then : expr.else;
     const thenResult = await runExpression(ctx, closure, frame, 1, thenExpression);
 
     if (thenResult.status !== 'done') {
@@ -1216,11 +1234,11 @@ async function runNewExpression(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: NewExpression,
+    expr: NewExpression,
 ) {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
 
-    const constructor = resolveExpression(ctx.agent, frame, expression.func) as Constructor;
+    const constructor = resolveExpression(ctx.agent, frame, expr.func) as Constructor;
     if (typeof constructor !== 'function') {
         throw new RuntimeError(`Expression is not a function`);
     }
@@ -1229,7 +1247,7 @@ async function runNewExpression(
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 
-    const args = await runExpressionArray(ctx, closure, frame, 0, expression.args ?? []);
+    const args = await runExpressionArray(ctx, closure, frame, 0, expr.args ?? []);
 
     if (Array.isArray(args)) {
         frame.value = new constructor(...args);
@@ -1244,14 +1262,14 @@ async function runTemplateLiteral(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: TemplateLiteral,
+    expr: TemplateLiteral,
 ) {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
 
     let result = '';
     let frameIndex = 0;
 
-    for (const part of expression.parts) {
+    for (const part of expr.parts) {
         if (typeof part === 'string') {
             result += part;
         } else {
@@ -1269,13 +1287,13 @@ async function runTemplateLiteral(
     return updateFrame(frame, 'done');
 }
 
-function runRegexExpression(parent: StackFrame, index: number, expression: RegexExpression) {
-    const frame = getFrame(parent, index, expression);
+function runRegexExpression(parent: StackFrame, index: number, expr: RegexExpression) {
+    const frame = getFrame(parent, index, expr);
     if (isDone(frame)) {
         return frame;
     }
 
-    const regex = new RegExp(expression.value, expression.flags);
+    const regex = new RegExp(expr.value, expr.flags);
     frame.value = regex;
     return updateFrame(frame, 'done');
 }

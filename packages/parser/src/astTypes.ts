@@ -188,6 +188,10 @@ export interface MemberExpression extends AstNodeBase {
      * Object to access the property on.
      */
     obj: Expression;
+    /**
+     * Whether the property access is optional.
+     */
+    optional?: boolean;
 }
 
 /**

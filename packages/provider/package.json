@@ -42,19 +42,19 @@
     "dependencies": {
         "@agentscript-ai/utils": "^0.7.0",
         "@ai-sdk/provider": "^1.0.9",
-        "@langchain/core": "^0.3.40",
+        "@langchain/core": "^0.3.42",
         "@nzyme/ioc": "^0.7.0",
         "@nzyme/utils": "^0.7.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.7.0",
         "@agentscript-ai/tsconfig": "^0.7.0",
-        "@ai-sdk/anthropic": "^1.1.10",
-        "@ai-sdk/openai": "^1.1.14",
-        "@langchain/anthropic": "^0.3.14",
+        "@ai-sdk/anthropic": "^1.1.13",
+        "@ai-sdk/openai": "^1.1.15",
+        "@langchain/anthropic": "^0.3.15",
         "@langchain/openai": "^0.4.4",
         "@types/node": "^22.13.5",
-        "typescript": "^5.7.3",
+        "typescript": "^5.8.2",
         "vitest": "^3.0.7"
     }
 }

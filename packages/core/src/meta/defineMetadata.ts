@@ -67,5 +67,5 @@ export function defineMetadata<T>(options: MetadataOptions): MetadataDefinition<
         },
     };
 
-    return wrapper[options.name];
+    return wrapper[options.name]!;
 }

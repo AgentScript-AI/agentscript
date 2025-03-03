@@ -62,6 +62,6 @@
         "@types/add": "^2.0.3",
         "@types/debug": "^4.1.12",
         "@types/node": "^22.13.5",
-        "typescript": "^5.7.3"
+        "typescript": "^5.8.2"
     }
 }

@@ -80,5 +80,5 @@ function getModelName(model: LangChainModel): string {
         return String(model.model);
     }
 
-    return model.lc_id[model.lc_id.length - 1];
+    return model.lc_id[model.lc_id.length - 1] || 'unknown';
 }

@@ -44,6 +44,10 @@ export function parseScript(code: string | string[]): Script {
             ast: parsed,
         };
     } catch (error) {
+        if (error instanceof ParseError) {
+            throw error;
+        }
+
         throw new ParseError('Failed to parse script', {
             cause: error,
         });
@@ -56,7 +60,7 @@ function parseStatement(statement: babel.Statement): AstNode {
     switch (statement.type) {
         case 'VariableDeclaration': {
             const declaration = statement.declarations[0];
-            if (declaration.id.type !== 'Identifier') {
+            if (declaration?.id.type !== 'Identifier') {
                 throw new ParseError('Invalid variable declaration', {
                     cause: statement,
                 });
@@ -180,6 +184,7 @@ function parseExpression(expression: babel.Expression): Expression {
             };
 
         case 'MemberExpression':
+        case 'OptionalMemberExpression':
             return parseMemberExpression(expression);
 
         case 'CallExpression': {
@@ -266,17 +271,25 @@ function parseExpression(expression: babel.Expression): Expression {
     });
 }
 
-function parseMemberExpression(expression: babel.MemberExpression): MemberExpression {
+function parseMemberExpression(
+    expression: babel.MemberExpression | babel.OptionalMemberExpression,
+): MemberExpression {
     const prop =
         !expression.computed && expression.property.type === 'Identifier'
             ? expression.property.name
             : parseExpression(expression.property as babel.Expression);
 
-    return {
+    const expr: MemberExpression = {
         type: 'member',
         prop,
         obj: parseExpression(expression.object),
     };
+
+    if (expression.optional) {
+        expr.optional = true;
+    }
+
+    return expr;
 }
 
 function parseObjectExpression(
@@ -348,7 +361,7 @@ function parseTemplateLiteral(expression: babel.TemplateLiteral): TemplateLitera
 
     for (let i = 0; i < expression.quasis.length + expression.expressions.length; i++) {
         if (i % 2 === 0) {
-            const part = expression.quasis[i / 2].value.raw;
+            const part = expression.quasis[i / 2]?.value.raw;
             if (!part) {
                 continue;
             }
