@@ -1,20 +1,9 @@
-import type {
-    Expression,
-    FunctionCall,
-    IdentifierExpression,
-    Literal,
-} from '@agentscript-ai/parser';
+import type { Expression, IdentifierExpression, LiteralExpression } from '@agentscript-ai/parser';
 
 import type { Agent } from '../../agent/agentTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
+import { ALLOWED_GLOBALS } from '../common.js';
 import type { StackFrame } from '../runtimeTypes.js';
-
-/**
- * Set of allowed native identifiers.
- */
-export const ALLOWED_GLOBALS = Object.freeze(
-    new Set(['console', 'Date', 'Array', 'Object', 'String', 'Number', 'Boolean']),
-);
 
 /**
  * Resolve an expression.
@@ -39,7 +28,10 @@ export function resolveExpression(
 
         case 'member': {
             const object = resolveExpression(agent, frame, expression.obj);
-            const property = resolveName(agent, frame, expression.prop);
+            const property =
+                typeof expression.prop === 'string'
+                    ? expression.prop
+                    : resolveName(agent, frame, expression.prop);
 
             return (object as Record<string, unknown>)[property];
         }
@@ -112,7 +104,7 @@ export function resolveIdentifier(
  * @param expression - Literal to resolve.
  * @returns Resolved literal.
  */
-export function resolveLiteral(expression: Literal) {
+export function resolveLiteral(expression: LiteralExpression) {
     const value = expression.value;
     if (!value) {
         return value;
@@ -123,33 +115,4 @@ export function resolveLiteral(expression: Literal) {
     }
 
     return value;
-}
-
-/**
- * Resolve a function call expression.
- * @param agent - Agent to resolve the function call for.
- * @param frame - Frame to resolve the function call in.
- * @param expression - Function call expression to resolve.
- * @returns Resolved function call.
- */
-export function resolveFunctionCall(agent: Agent, frame: StackFrame, expression: FunctionCall) {
-    if (expression.func.type === 'member') {
-        const obj = resolveExpression(agent, frame, expression.func.obj);
-        const prop = resolveName(agent, frame, expression.func.prop);
-        const func = (obj as Record<string, unknown>)[prop];
-
-        return {
-            func,
-            obj,
-            prop,
-        };
-    }
-
-    const func = resolveExpression(agent, frame, expression.func);
-
-    return {
-        func,
-        obj: undefined,
-        prop: undefined,
-    };
 }

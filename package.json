@@ -9,16 +9,16 @@
     "scripts": {
         "setup": "yarn && nzyme monorepo",
         "monorepo": "nzyme monorepo",
-        "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/.*.tsbuildinfo\" \"**/.tsbuildinfo\" \"!**/node_modules/**\"",
+        "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/.nzyme\" \"**/.tsbuildinfo\" \"**/*.tsbuildinfo\" \"!**/node_modules/**\"",
         "dev": "yarn setup && turbo run watch",
-        "build:esm": "tsc --build tsconfig.esm.dev.json",
-        "build:cjs": "tsc --build tsconfig.cjs.dev.json && yarn nzyme rename-cjs",
+        "build:esm": "tsc --build ./.nzyme/tsconfig.esm.json",
+        "build:cjs": "tsc --build ./.nzyme/tsconfig.cjs.json && yarn nzyme rename-cjs",
         "build": "yarn build:esm && yarn build:cjs",
         "build:turbo": "turbo run build:esm build:cjs",
         "codegen": "turbo run codegen",
         "watch": "yarn monorepo && yarn build:esm --watch",
-        "upgrade": "yarn upgrade:nzyme && yarn upgrade-interactive",
-        "upgrade:nzyme": "yarn up \"@nzyme/*\"",
+        "upgrade": "yarn upgrade:auto && yarn upgrade-interactive",
+        "upgrade:auto": "yarn up \"@nzyme/*\"",
         "test": "vitest run",
         "coverage": "vitest run --coverage",
         "smoke": "turbo run smoke:cjs smoke:mjs",
@@ -27,23 +27,23 @@
     },
     "devDependencies": {
         "@nx/js": "^20.4.6",
-        "@nzyme/cli": "^0.6.1",
+        "@nzyme/cli": "^0.7.0",
         "@swc-node/register": "^1.10.9",
-        "@swc/core": "^1.10.18",
-        "@vitest/coverage-v8": "3.0.6",
+        "@swc/core": "^1.11.1",
+        "@vitest/coverage-v8": "3.0.7",
         "del-cli": "^6.0.0",
         "dotenv-cli": "^8.0.0",
         "nx": "20.4.6",
-        "prettier": "^3.5.1",
+        "prettier": "^3.5.2",
         "ts-node": "^10.9.2",
         "turbo": "^2.4.2",
         "typescript": "^5.7.3",
-        "vitest": "^3.0.6"
+        "vitest": "^3.0.7"
     },
     "workspaces": [
         "packages/*"
     ],
-    "packageManager": "yarn@4.6.0",
+    "packageManager": "yarn@4.7.0",
     "depcheck": {
         "ignoreDeps": [
             "*"

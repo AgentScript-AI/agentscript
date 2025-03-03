@@ -214,7 +214,7 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  name: string;',
                 '}',
             ]),
@@ -237,7 +237,7 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  name: string;',
                 '}',
             ]),
@@ -260,7 +260,7 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  name: string;',
                 '}',
             ]),
@@ -317,7 +317,7 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  /** The name of the child */',
                 '  name: string;',
                 '}',
@@ -402,19 +402,19 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Toy = {',
+                'type Toy = {',
                 '  /** The name of the toy */',
                 '  name: string;',
                 '}',
                 '',
-                'export type Child = {',
+                'type Child = {',
                 '  /** The name of the child */',
                 '  name: string;',
                 '  /** The toys of the child */',
                 '  toys: Toy[];',
                 '}',
                 '',
-                'export type Person = {',
+                'type Person = {',
                 '  /** The child of the person */',
                 '  child: Child;',
                 '}',
@@ -447,12 +447,12 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  /** The name of the child */',
                 '  name: string;',
                 '}',
                 '',
-                'export type Person = {',
+                'type Person = {',
                 '  /** The child of the person */',
                 '  child: Child;',
                 '  /** The child of the person */',
@@ -484,15 +484,15 @@ describe('object', () => {
 
         expect(ctx.code).toEqual(
             joinLines([
-                'export type Child = {',
+                'type Child = {',
                 '  name: string;',
                 '}',
                 '',
-                'export type Child2 = {',
+                'type Child2 = {',
                 '  age: number;',
                 '}',
                 '',
-                'export type Person = {',
+                'type Person = {',
                 '  child: Child;',
                 '  child2: Child2;',
                 '}',
@@ -522,7 +522,7 @@ describe('object', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type Child = {',
+                'type Child = {',
                 '  name: string;',
                 '}',
             ]),
@@ -536,6 +536,24 @@ describe('object', () => {
                 '}',
             ]),
         );
+    });
+
+    test('object with invalid property names', () => {
+        const schema = s.object({
+            props: {
+                'invalid-name': s.string(),
+                'invalid name': s.string(),
+                '': s.string(),
+            },
+        });
+
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(type).toEqual(
+            '{\n  "invalid-name": string;\n  "invalid name": string;\n  "": string;\n}',
+        );
+        expect(ctx.code).toEqual('');
     });
 });
 
@@ -646,7 +664,7 @@ describe('union', () => {
         expect(ctx.code).toEqual(
             joinLines([
                 //
-                'export type User = {',
+                'type User = {',
                 '  name: string;',
                 '}',
             ]),
@@ -677,5 +695,29 @@ describe('union', () => {
 
         expect(type).toEqual('(string | number)[]');
         expect(ctx.code).toEqual('');
+    });
+});
+
+describe('lazy', () => {
+    test('basic object', () => {
+        const inner = s.object({ props: { name: s.string() } });
+        const schema = s.lazy(() => inner);
+        const ctx = createRenderContext();
+        const type = renderType({ schema, ctx });
+
+        expect(type).toEqual('{\n  name: string;\n}');
+        expect(ctx.code).toEqual('');
+    });
+
+    test('nullable object', () => {
+        const inner = s.object({ props: { name: s.string() } });
+        const schema = s.lazy({
+            of: () => inner,
+            nullable: true,
+        });
+        const ctx = createRenderContext();
+        const type = renderType({ schema: s.nullable(schema), ctx });
+
+        expect(type).toEqual('{\n  name: string;\n} | null');
     });
 });

@@ -518,6 +518,8 @@ export type AuthenticationSessionResponse = {
   name: Scalars['String']['output'];
   /** Operating system used for the session */
   operatingSystem?: Maybe<Scalars['String']['output']>;
+  /** Service used for logging in. */
+  service?: Maybe<Scalars['String']['output']>;
   /** Type of application used to authenticate. */
   type: AuthenticationSessionType;
   /** Date when the session was last updated. */
@@ -1010,6 +1012,8 @@ export type CustomViewNotificationSubscription = Entity & Node & NotificationSub
   createdAt: Scalars['DateTime']['output'];
   /** The custom view subscribed to. */
   customView: CustomView;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -1364,6 +1368,75 @@ export type CustomerNeedFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** [Internal] A customer need related notification. */
+export type CustomerNeedNotification = Entity & Node & Notification & {
+  __typename?: 'CustomerNeedNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** Related comment ID. Null if the notification is not related to a comment. */
+  commentId?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** Related customer need. */
+  customerNeedId: Scalars['String']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** Related parent comment ID. Null if the notification is not related to a comment. */
+  parentCommentId?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** Name of the reaction emoji related to the notification. */
+  reactionEmoji?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
+};
+
 export type CustomerNeedPayload = {
   __typename?: 'CustomerNeedPayload';
   /** The identifier of the last sync operation. */
@@ -1393,6 +1466,48 @@ export type CustomerNeedUpdateInput = {
   priority?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] The project this need is referencing. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** A customer notification subscription. */
+export type CustomerNotificationSubscription = Entity & Node & NotificationSubscription & {
+  __typename?: 'CustomerNotificationSubscription';
+  /** Whether the subscription is active or not. */
+  active: Scalars['Boolean']['output'];
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The type of view to which the notification subscription context is associated with. */
+  contextViewType?: Maybe<ContextViewType>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The contextual custom view associated with the notification subscription. */
+  customView?: Maybe<CustomView>;
+  /** The customer subscribed to. */
+  customer: Customer;
+  /** The contextual cycle view associated with the notification subscription. */
+  cycle?: Maybe<Cycle>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The contextual initiative view associated with the notification subscription. */
+  initiative?: Maybe<Initiative>;
+  /** The contextual label view associated with the notification subscription. */
+  label?: Maybe<IssueLabel>;
+  /** The type of subscription. */
+  notificationSubscriptionTypes: Array<Scalars['String']['output']>;
+  /** The contextual project view associated with the notification subscription. */
+  project?: Maybe<Project>;
+  /** The user that subscribed to receive notifications. */
+  subscriber: User;
+  /** The team associated with the notification subscription. */
+  team?: Maybe<Team>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The user view associated with the notification subscription. */
+  user?: Maybe<User>;
+  /** The type of user view to which the notification subscription context is associated with. */
+  userContextViewType?: Maybe<UserContextViewType>;
 };
 
 export type CustomerPayload = {
@@ -1664,8 +1779,10 @@ export type CustomerUpsertInput = {
   slackChannelId?: InputMaybe<Scalars['String']['input']>;
   /** The status of the customer. */
   statusId?: InputMaybe<Scalars['String']['input']>;
-  /** The tier of the customer customer. */
+  /** The tier of the customer. */
   tierId?: InputMaybe<Scalars['String']['input']>;
+  /** The name tier of the customer. Will be created if doesn't exist */
+  tierName?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** A set of issues to be resolved in a specified amount of time. */
@@ -1841,6 +1958,8 @@ export type CycleNotificationSubscription = Entity & Node & NotificationSubscrip
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The cycle subscribed to. */
   cycle: Cycle;
   /** The unique identifier of the entity. */
@@ -1950,7 +2069,7 @@ export type DateComparator = {
   nin?: InputMaybe<Array<Scalars['DateTimeOrDuration']['input']>>;
 };
 
-/** [INTERNAL] By which resolution is a date defined. */
+/** By which resolution is a date defined. */
 export const DateResolutionType = {
   HalfYear: 'halfYear',
   Month: 'month',
@@ -2928,6 +3047,82 @@ export type FavoriteUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
+/** [Internal] Feed subscription to a project, team, or initiative. */
+export type FeedSubscription = Node & {
+  __typename?: 'FeedSubscription';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The initiative being subscribed to. */
+  initiative?: Maybe<Initiative>;
+  /** Whether the user is subscribed (true) or unsubscribed (false) to the entity. */
+  isSubscribed: Scalars['Boolean']['output'];
+  /** Whether the user is subscribed to projects under the entity. */
+  isSubscribedToSubProjects?: Maybe<Scalars['Boolean']['output']>;
+  /** The project being subscribed to. */
+  project?: Maybe<Project>;
+  /** The team being subscribed to. */
+  team?: Maybe<Team>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The user who is subscribing. */
+  user: User;
+};
+
+export type FeedSubscriptionConnection = {
+  __typename?: 'FeedSubscriptionConnection';
+  edges: Array<FeedSubscriptionEdge>;
+  nodes: Array<FeedSubscription>;
+  pageInfo: PageInfo;
+};
+
+export type FeedSubscriptionCreateInput = {
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the initiative to subscribe to. */
+  initiativeId?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the user is subscribed to the entity */
+  isSubscribed?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether the user is subscribed to all sub-projects for the entity */
+  isSubscribedToSubProjects?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The identifier of the project to subscribe to. */
+  projectId?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the team to subscribe to. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the user to subscribe to. */
+  userId: Scalars['String']['input'];
+};
+
+export type FeedSubscriptionEdge = {
+  __typename?: 'FeedSubscriptionEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: FeedSubscription;
+};
+
+export type FeedSubscriptionPayload = {
+  __typename?: 'FeedSubscriptionPayload';
+  /** The feed subscription that was created or updated. */
+  feedSubscription: FeedSubscription;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+export type FeedSubscriptionUpdateInput = {
+  /** Whether the user is subscribed to the entity */
+  isSubscribed?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether the user is subscribed to all sub-projects for the entity */
+  isSubscribedToSubProjects?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 /** Cadence to generate feed summary */
 export const FeedSummarySchedule = {
   Daily: 'daily',
@@ -3623,6 +3818,8 @@ export type InitiativeNotificationSubscription = Entity & Node & NotificationSub
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -3749,6 +3946,8 @@ export type InitiativeUpdate = Node & {
   body: Scalars['String']['output'];
   /** [Internal] The content of the update as a Prosemirror document. */
   bodyData: Scalars['String']['output'];
+  /** Comments associated with the initiative update. */
+  comments: CommentConnection;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The diff between the current update and the previous one. */
@@ -3782,6 +3981,18 @@ export type InitiativeUpdate = Node & {
   url: Scalars['String']['output'];
   /** The user who wrote the update. */
   user: User;
+};
+
+
+/** An initiative update. */
+export type InitiativeUpdateCommentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CommentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 /** A generic payload return from entity archive mutations. */
@@ -5937,6 +6148,8 @@ export type LabelNotificationSubscription = Entity & Node & NotificationSubscrip
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -6187,6 +6400,15 @@ export type Mutation = {
   favoriteDelete: DeletePayload;
   /** Updates a favorite. */
   favoriteUpdate: FavoritePayload;
+  /** Creates a new feed subscription for a initiative, project or team. */
+  feedSubscriptionCreate: FeedSubscriptionPayload;
+  /**
+   * Deletes a feed subscription reference.
+   * @deprecated Update `feedSubscription.active` to `false` instead.
+   */
+  feedSubscriptionDelete: DeletePayload;
+  /** Updates a feed subscription. */
+  feedSubscriptionUpdate: FeedSubscriptionPayload;
   /** XHR request payload to upload an images, video and other attachments directly to Linear's cloud storage. */
   fileUpload: UploadPayload;
   /** Creates a new automation state. */
@@ -7053,6 +7275,22 @@ export type MutationFavoriteDeleteArgs = {
 export type MutationFavoriteUpdateArgs = {
   id: Scalars['String']['input'];
   input: FavoriteUpdateInput;
+};
+
+
+export type MutationFeedSubscriptionCreateArgs = {
+  input: FeedSubscriptionCreateInput;
+};
+
+
+export type MutationFeedSubscriptionDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationFeedSubscriptionUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: FeedSubscriptionUpdateInput;
 };
 
 
@@ -8571,6 +8809,8 @@ export type NotificationSubscription = {
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -8610,6 +8850,8 @@ export type NotificationSubscriptionCreateInput = {
   contextViewType?: InputMaybe<ContextViewType>;
   /** The identifier of the custom view to subscribe to. */
   customViewId?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the customer to subscribe to. */
+  customerId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the cycle to subscribe to. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
@@ -8962,6 +9204,8 @@ export type NullableProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -10093,7 +10337,7 @@ export type Project = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the project. */
   creator?: Maybe<User>;
-  /** [Internal] The current progress of the project. */
+  /** [INTERNAL] The current progress of the project. */
   currentProgress: Scalars['JSONObject']['output'];
   /** The project's description. */
   description: Scalars['String']['output'];
@@ -10145,7 +10389,7 @@ export type Project = Node & {
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
   progress: Scalars['Float']['output'];
-  /** [Internal] The progress history of the project. */
+  /** [INTERNAL] The progress history of the project. */
   progressHistory: Scalars['JSONObject']['output'];
   /** Milestones associated with the project. */
   projectMilestones: ProjectMilestoneConnection;
@@ -10180,7 +10424,7 @@ export type Project = Node & {
   sortOrder: Scalars['Float']['output'];
   /** The estimated start date of the project. */
   startDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: Maybe<DateResolutionType>;
   /** The time at which the project was moved into started state. */
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -10193,7 +10437,7 @@ export type Project = Node & {
   status: ProjectStatus;
   /** The estimated completion date of the project. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: Maybe<DateResolutionType>;
   /** Teams associated with this project. */
   teams: TeamConnection;
@@ -10410,6 +10654,8 @@ export type ProjectCollectionFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Filters that needs to be matched by all projects. */
   every?: InputMaybe<ProjectFilter>;
   /** Comparator for filtering projects which are blocked. */
@@ -10512,13 +10758,13 @@ export type ProjectCreateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The planned start date of the project. */
   startDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: InputMaybe<DateResolutionType>;
   /** The ID of the project status. */
   statusId?: InputMaybe<Scalars['String']['input']>;
   /** The planned target date of the project. */
   targetDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: InputMaybe<DateResolutionType>;
   /** The identifiers of the teams this project is associated with. */
   teamIds: Array<Scalars['String']['input']>;
@@ -10547,6 +10793,8 @@ export type ProjectFilter = {
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the projects creator must satisfy. */
   creator?: InputMaybe<UserFilter>;
+  /** Count of customers */
+  customerCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -10967,6 +11215,8 @@ export type ProjectNotificationSubscription = Entity & Node & NotificationSubscr
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -11135,7 +11385,7 @@ export type ProjectSearchResult = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the project. */
   creator?: Maybe<User>;
-  /** [Internal] The current progress of the project. */
+  /** [INTERNAL] The current progress of the project. */
   currentProgress: Scalars['JSONObject']['output'];
   /** The project's description. */
   description: Scalars['String']['output'];
@@ -11189,7 +11439,7 @@ export type ProjectSearchResult = Node & {
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
   progress: Scalars['Float']['output'];
-  /** [Internal] The progress history of the project. */
+  /** [INTERNAL] The progress history of the project. */
   progressHistory: Scalars['JSONObject']['output'];
   /** Milestones associated with the project. */
   projectMilestones: ProjectMilestoneConnection;
@@ -11224,7 +11474,7 @@ export type ProjectSearchResult = Node & {
   sortOrder: Scalars['Float']['output'];
   /** The estimated start date of the project. */
   startDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: Maybe<DateResolutionType>;
   /** The time at which the project was moved into started state. */
   startedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -11237,7 +11487,7 @@ export type ProjectSearchResult = Node & {
   status: ProjectStatus;
   /** The estimated completion date of the project. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: Maybe<DateResolutionType>;
   /** Teams associated with this project. */
   teams: TeamConnection;
@@ -11718,13 +11968,13 @@ export type ProjectUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The planned start date of the project. */
   startDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's start date. */
+  /** The resolution of the project's start date. */
   startDateResolution?: InputMaybe<DateResolutionType>;
   /** The ID of the project status. */
   statusId?: InputMaybe<Scalars['String']['input']>;
   /** The planned target date of the project. */
   targetDate?: InputMaybe<Scalars['TimelessDate']['input']>;
-  /** [INTERNAL] The resolution of the project's estimated completion date. */
+  /** The resolution of the project's estimated completion date. */
   targetDateResolution?: InputMaybe<DateResolutionType>;
   /** The identifiers of the teams this project is associated with. */
   teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
@@ -11814,6 +12064,75 @@ export type ProjectUpdatesFilter = {
   or?: InputMaybe<Array<ProjectUpdatesFilter>>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
+};
+
+/** [Internal] A pull request related notification. */
+export type PullRequestNotification = Entity & Node & Notification & {
+  __typename?: 'PullRequestNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** Related comment ID. Null if the notification is not related to a comment. */
+  commentId?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** Related parent comment ID. Null if the notification is not related to a comment. */
+  parentCommentId?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** Related pull request. */
+  pullRequestId: Scalars['String']['output'];
+  /** Name of the reaction emoji related to the notification. */
+  reactionEmoji?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
 };
 
 export const PullRequestReviewTool = {
@@ -11973,6 +12292,10 @@ export type Query = {
   favorite: Favorite;
   /** The user's favorites. */
   favorites: FavoriteConnection;
+  /** One specific feed subscription. */
+  feedSubscription: FeedSubscription;
+  /** The user's feed subscriptions. */
+  feedSubscriptions: FeedSubscriptionConnection;
   /** One specific initiative. */
   initiative: Initiative;
   /** One specific initiativeToProject. */
@@ -12418,6 +12741,21 @@ export type QueryFavoriteArgs = {
 
 
 export type QueryFavoritesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryFeedSubscriptionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryFeedSubscriptionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -13775,7 +14113,7 @@ export type Team = Node & {
   autoClosePeriod?: Maybe<Scalars['Float']['output']>;
   /** The canceled workflow state which auto closed issues will be set to. Defaults to the first canceled state. */
   autoCloseStateId?: Maybe<Scalars['String']['output']>;
-  /** [Internal] The team's child teams. */
+  /** [Internal] The team's sub-teams. */
   children: Array<Team>;
   /** The team's color. */
   color?: Maybe<Scalars['String']['output']>;
@@ -14309,6 +14647,8 @@ export type TeamNotificationSubscription = Entity & Node & NotificationSubscript
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */
@@ -15125,6 +15465,8 @@ export type UserNotificationSubscription = Entity & Node & NotificationSubscript
   createdAt: Scalars['DateTime']['output'];
   /** The contextual custom view associated with the notification subscription. */
   customView?: Maybe<CustomView>;
+  /** The customer associated with the notification subscription. */
+  customer?: Maybe<Customer>;
   /** The contextual cycle view associated with the notification subscription. */
   cycle?: Maybe<Cycle>;
   /** The unique identifier of the entity. */

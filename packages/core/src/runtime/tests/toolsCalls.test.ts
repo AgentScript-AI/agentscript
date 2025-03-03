@@ -368,11 +368,7 @@ test('more than two arguments are turned into a single arg', async () => {
                         node: 'object',
                         value: { a: 1, b: 2, c: 3 },
                         children: [
-                            // a key
-                            null,
                             // a value
-                            null,
-                            // b key
                             null,
                             // b value
                             completedFrame({
@@ -419,7 +415,15 @@ test('explicit single arg literal', async () => {
             completedFrame({
                 node: 'call',
                 value: 3,
-                // arg is a literal
+                children: [
+                    // this arg
+                    null,
+                    // arg
+                    completedFrame({
+                        node: 'literal',
+                        value: { a: 1, b: 2 },
+                    }),
+                ],
             }),
         ],
     });
@@ -477,11 +481,7 @@ test('explicit single arg object', async () => {
                         node: 'object',
                         value: { a: 1, b: 2 },
                         children: [
-                            // a key
-                            null,
                             // a value
-                            null,
-                            // b key
                             null,
                             // b value
                             completedFrame({
@@ -517,9 +517,7 @@ test('agent output', async () => {
                 node: 'assign',
                 value: 3,
                 children: [
-                    // left side
-                    null,
-                    // right side
+                    // value
                     completedFrame({
                         node: 'call',
                         value: 3,

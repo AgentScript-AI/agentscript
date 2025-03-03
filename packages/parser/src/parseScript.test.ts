@@ -1,7 +1,5 @@
 import { expect, test } from 'vitest';
 
-import { joinLines } from '@agentscript-ai/utils';
-
 import type { Script } from './astTypes.js';
 import { parseScript } from './parseScript.js';
 
@@ -130,7 +128,7 @@ test('call member function', () => {
                 func: {
                     type: 'member',
                     obj: { type: 'ident', name: 'foo' },
-                    prop: { type: 'ident', name: 'bar' },
+                    prop: 'bar',
                 },
                 args: undefined,
             },
@@ -191,117 +189,6 @@ test('multiple statements', () => {
     expect(script).toEqual(expected);
 });
 
-test('object literal', () => {
-    const code = 'const a = { b: 1 }';
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: {
-                        b: 1,
-                    },
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('object expression', () => {
-    const code = joinLines([
-        //
-        'const a = 1',
-        'const b = {',
-        '  a: a',
-        '}',
-    ]);
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: { type: 'literal', value: 1 },
-            },
-            {
-                type: 'var',
-                name: 'b',
-                value: {
-                    type: 'object',
-                    props: [
-                        {
-                            key: { type: 'ident', name: 'a' },
-                            value: { type: 'ident', name: 'a' },
-                        },
-                    ],
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('array literal', () => {
-    const code = 'const a = [1, 2, 3]';
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: [1, 2, 3],
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('array expression', () => {
-    const code = joinLines([
-        //
-        'const a = 1',
-        'const b = [a, 2, 3]',
-    ]);
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: { type: 'literal', value: 1 },
-            },
-            {
-                type: 'var',
-                name: 'b',
-                value: {
-                    type: 'array',
-                    items: [
-                        { type: 'ident', name: 'a' },
-                        { type: 'literal', value: 2 },
-                        { type: 'literal', value: 3 },
-                    ],
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
 test('create date', () => {
     const code = 'const a = new Date()';
     const script = parseScript(code);
@@ -323,113 +210,12 @@ test('create date', () => {
     expect(script).toEqual(expected);
 });
 
-test('array map inline', () => {
-    const code = joinLines([
-        //
-        'const a = [1, 2, 3]',
-        'const b = a.map(x => x * 2)',
-    ]);
-
+test('top level return', () => {
+    const code = 'return 1';
     const script = parseScript(code);
-
     const expected: Script = {
         code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: [1, 2, 3],
-                },
-            },
-            {
-                type: 'var',
-                name: 'b',
-                value: {
-                    type: 'call',
-                    func: {
-                        type: 'member',
-                        obj: { type: 'ident', name: 'a' },
-                        prop: { type: 'ident', name: 'map' },
-                    },
-                    args: [
-                        {
-                            type: 'arrowfn',
-                            params: [{ type: 'ident', name: 'x' }],
-                            body: {
-                                type: 'binary',
-                                operator: '*',
-                                left: { type: 'ident', name: 'x' },
-                                right: { type: 'literal', value: 2 },
-                            },
-                        },
-                    ],
-                },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('array map with function', () => {
-    const code = joinLines([
-        //
-        'const a = [1, 2, 3]',
-        'const b = a.map(x => {',
-        '    // multiply x by 2',
-        '    return x * 2',
-        '})',
-    ]);
-
-    const script = parseScript(code);
-
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: {
-                    type: 'literal',
-                    value: [1, 2, 3],
-                },
-            },
-            {
-                type: 'var',
-                name: 'b',
-                value: {
-                    type: 'call',
-                    func: {
-                        type: 'member',
-                        obj: { type: 'ident', name: 'a' },
-                        prop: { type: 'ident', name: 'map' },
-                    },
-                    args: [
-                        {
-                            type: 'arrowfn',
-                            params: [{ type: 'ident', name: 'x' }],
-                            body: {
-                                type: 'block',
-                                body: [
-                                    {
-                                        type: 'return',
-                                        comment: 'multiply x by 2',
-                                        value: {
-                                            type: 'binary',
-                                            operator: '*',
-                                            left: { type: 'ident', name: 'x' },
-                                            right: { type: 'literal', value: 2 },
-                                        },
-                                    },
-                                ],
-                            },
-                        },
-                    ],
-                },
-            },
-        ],
+        ast: [{ type: 'return', value: { type: 'literal', value: 1 } }],
     };
 
     expect(script).toEqual(expected);

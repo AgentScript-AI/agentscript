@@ -6,12 +6,15 @@ import type {
     ArrayExpression,
     AssignmentExpression,
     AstNode,
+    BinaryExpression,
     Expression,
-    Literal,
+    LiteralExpression,
+    MemberExpression,
     ObjectExpression,
     ObjectProperty,
-    BinaryExpression,
+    RegexExpression,
     Script,
+    SpreadExpression,
     TemplateLiteral,
     UnaryExpression,
 } from './astTypes.js';
@@ -22,21 +25,29 @@ import type {
  * @returns AST.
  */
 export function parseScript(code: string | string[]): Script {
-    if (Array.isArray(code)) {
-        code = code.join('\n');
+    try {
+        if (Array.isArray(code)) {
+            code = code.join('\n');
+        }
+
+        const ast = parse(code, {
+            allowReturnOutsideFunction: true,
+        });
+        const parsed: AstNode[] = [];
+
+        for (const node of ast.program.body) {
+            parsed.push(parseStatement(node));
+        }
+
+        return {
+            code,
+            ast: parsed,
+        };
+    } catch (error) {
+        throw new ParseError('Failed to parse script', {
+            cause: error,
+        });
     }
-
-    const ast = parse(code);
-    const parsed: AstNode[] = [];
-
-    for (const node of ast.program.body) {
-        parsed.push(parseStatement(node));
-    }
-
-    return {
-        code,
-        ast: parsed,
-    };
 }
 
 function parseStatement(statement: babel.Statement): AstNode {
@@ -169,11 +180,7 @@ function parseExpression(expression: babel.Expression): Expression {
             };
 
         case 'MemberExpression':
-            return {
-                type: 'member',
-                prop: parseExpression(expression.property as babel.Expression),
-                obj: parseExpression(expression.object),
-            };
+            return parseMemberExpression(expression);
 
         case 'CallExpression': {
             return {
@@ -203,15 +210,25 @@ function parseExpression(expression: babel.Expression): Expression {
                 args: parseArguments(expression.arguments),
             };
 
+        case 'RegExpLiteral':
+            return parseRegexExpression(expression);
+
         case 'TemplateLiteral':
             return parseTemplateLiteral(expression);
 
         case 'BinaryExpression':
-        case 'LogicalExpression':
             return {
                 type: 'binary',
                 operator: expression.operator as BinaryExpression['operator'],
                 left: parseExpression(expression.left as babel.Expression),
+                right: parseExpression(expression.right),
+            };
+
+        case 'LogicalExpression':
+            return {
+                type: 'logical',
+                operator: expression.operator,
+                left: parseExpression(expression.left),
                 right: parseExpression(expression.right),
             };
 
@@ -249,24 +266,40 @@ function parseExpression(expression: babel.Expression): Expression {
     });
 }
 
-function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpression | Literal {
-    const props = expression.properties.map(prop =>
-        parseObjectProperty(prop as babel.ObjectProperty),
+function parseMemberExpression(expression: babel.MemberExpression): MemberExpression {
+    const prop =
+        !expression.computed && expression.property.type === 'Identifier'
+            ? expression.property.name
+            : parseExpression(expression.property as babel.Expression);
+
+    return {
+        type: 'member',
+        prop,
+        obj: parseExpression(expression.object),
+    };
+}
+
+function parseObjectExpression(
+    expression: babel.ObjectExpression,
+): ObjectExpression | LiteralExpression {
+    const props = expression.properties.map(prop => parseObjectProperty(prop));
+
+    const isLiteral = props.every(
+        prop =>
+            !prop.type &&
+            prop.value.type === 'literal' &&
+            (prop.key.type === 'ident' || prop.key.type === 'literal'),
     );
 
-    if (
-        props.every(
-            prop =>
-                prop.value.type === 'literal' &&
-                (prop.key.type === 'ident' || prop.key.type === 'literal'),
-        )
-    ) {
+    if (isLiteral) {
         const value: Record<string, unknown> = {};
-        for (const prop of props) {
+        for (const prop of props as ObjectProperty[]) {
             if (prop.key.type === 'ident') {
-                value[prop.key.name] = (prop.value as Literal).value;
+                value[prop.key.name] = (prop.value as LiteralExpression).value;
             } else {
-                value[(prop.key as Literal).value as string] = (prop.value as Literal).value;
+                value[(prop.key as LiteralExpression).value as string] = (
+                    prop.value as LiteralExpression
+                ).value;
             }
         }
 
@@ -282,13 +315,19 @@ function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpres
     };
 }
 
-function parseArrayExpression(expression: babel.ArrayExpression): ArrayExpression | Literal {
-    const items = expression.elements.map<Expression>(e => {
+function parseArrayExpression(
+    expression: babel.ArrayExpression,
+): ArrayExpression | LiteralExpression {
+    const items = expression.elements.map<Expression | SpreadExpression>(e => {
         if (e === null) {
             return { type: 'literal', value: null };
         }
 
-        return parseArgument(e);
+        if (e.type === 'SpreadElement') {
+            return { type: 'spread', value: parseExpression(e.argument) };
+        }
+
+        return parseExpression(e);
     });
 
     if (items.every(item => item.type === 'literal')) {
@@ -349,11 +388,24 @@ function parseComment(comments: babel.Comment[] | undefined | null): string | un
     return comments.map(c => c.value.trim()).join('\n');
 }
 
-function parseObjectProperty(property: babel.ObjectProperty): ObjectProperty {
-    return {
-        key: parseExpression(property.key as babel.Expression),
-        value: parseExpression(property.value as babel.Expression),
-    };
+function parseObjectProperty(
+    property: babel.ObjectProperty | babel.SpreadElement | babel.ObjectMethod,
+): ObjectProperty | SpreadExpression {
+    switch (property.type) {
+        case 'ObjectProperty':
+            return {
+                key: parseExpression(property.key as babel.Expression),
+                value: parseExpression(property.value as babel.Expression),
+            };
+
+        case 'SpreadElement':
+            return {
+                type: 'spread',
+                value: parseExpression(property.argument),
+            };
+    }
+
+    throw new ParseError(`Unknown object property type: ${property.type}`, { cause: property });
 }
 
 type Argument = babel.Expression | babel.SpreadElement | babel.ArgumentPlaceholder;
@@ -386,4 +438,17 @@ function parseArgument(
     }
 
     return parseExpression(arg);
+}
+
+function parseRegexExpression(expression: babel.RegExpLiteral): RegexExpression {
+    const expr: RegexExpression = {
+        type: 'regex',
+        value: expression.pattern,
+    };
+
+    if (expression.flags) {
+        expr.flags = expression.flags;
+    }
+
+    return expr;
 }

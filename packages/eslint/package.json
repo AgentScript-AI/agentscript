@@ -20,8 +20,8 @@
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
-        "@nzyme/eslint": "^0.6.1",
-        "eslint": "^9.20.1",
+        "@nzyme/eslint": "^0.7.0",
+        "eslint": "^9.21.0",
         "eslint-plugin-import": "^2.31.0"
     },
     "devDependencies": {

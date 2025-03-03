@@ -1,3 +1,6 @@
+import type { ResolveDependencies, ServiceDependencies } from '@nzyme/ioc';
+import type { SomeObject } from '@nzyme/types';
+
 import * as s from '@agentscript-ai/schema';
 
 import type { ToolResult, ToolResultHelper } from './toolResult.js';
@@ -32,6 +35,7 @@ export type ToolOptions<
     TOutput extends s.Schema,
     TState extends ObjectOptions,
     TEvent extends s.Schema | undefined,
+    TDeps extends ServiceDependencies,
 > = {
     /**
      * Description of the tool.
@@ -57,13 +61,19 @@ export type ToolOptions<
      */
     event?: TEvent;
     /**
+     * Injectable dependencies for the tool.
+     * Allows to use tool with IOC container.
+     */
+    deps?: TDeps;
+    /**
      * Handler for the tool.
      */
     handler: ToolHandler<
         ValueFromOptions<TInput>,
         s.Infer<TOutput>,
         ValueFromOptions<TState>,
-        ValueFromSchema<TEvent>
+        ValueFromSchema<TEvent>,
+        TDeps
     >;
 };
 
@@ -75,6 +85,7 @@ export type ToolDefinition<
     TOutput extends s.Schema = s.SchemaAny,
     TState extends ObjectSchema = ObjectSchema,
     TEvent extends s.Schema | undefined = s.Schema | undefined,
+    TDeps extends ServiceDependencies = ServiceDependencies,
 > = {
     /**
      * Description of the tool.
@@ -103,13 +114,19 @@ export type ToolDefinition<
      */
     event: TEvent;
     /**
+     * Injectable dependencies for the tool.
+     * Allows to use tool with IOC container.
+     */
+    deps?: TDeps;
+    /**
      * Handler for the tool.
      */
     handler: ToolHandler<
         ValueFromSchema<TInput>,
         s.Infer<TOutput>,
         ValueFromSchema<TState>,
-        ValueFromSchema<TEvent>
+        ValueFromSchema<TEvent>,
+        TDeps
     >;
     /**
      * Symbol to indicate that the value is a tool.
@@ -158,7 +175,7 @@ export type ToolEventSerialized = {
 /**
  * Parameters for the tool handler.
  */
-export type ToolContext<TInput, TOutput, TState, TEvent> = {
+export type ToolContext<TInput, TOutput, TState, TEvent, TDeps extends ServiceDependencies> = {
     /**
      * Resolved arguments for the tool.
      * First you need to define the input schema in {@link defineTool} options.
@@ -187,13 +204,17 @@ export type ToolContext<TInput, TOutput, TState, TEvent> = {
      * Helper for the tool result.
      */
     result: ToolResultHelper<TOutput>;
+    /**
+     * Injectable dependencies for the tool.
+     */
+    deps: ResolveDependencies<TDeps>;
 };
 
 /**
  * Handler for the tool.
  */
-export type ToolHandler<TInput, TOutput, TState, TEvent> = (
-    ctx: ToolContext<TInput, TOutput, TState, TEvent>,
+export type ToolHandler<TInput, TOutput, TState, TEvent, TDeps extends ServiceDependencies> = (
+    ctx: ToolContext<TInput, TOutput, TState, TEvent, TDeps>,
 ) => ToolResult<TOutput> | Promise<ToolResult<TOutput>>;
 
 /**
@@ -206,7 +227,8 @@ export function defineTool<
     TOutput extends s.Schema = s.VoidSchema,
     TState extends ObjectOptions = undefined,
     TEvent extends s.Schema | undefined = undefined,
->(options: ToolOptions<TInput, TOutput, TState, TEvent>) {
+    TDeps extends ServiceDependencies = SomeObject,
+>(options: ToolOptions<TInput, TOutput, TState, TEvent, TDeps>) {
     type Tool = ToolDefinition<
         SchemaFromOptions<TInput>,
         TOutput,
@@ -253,6 +275,7 @@ export function defineTool<
         output: options.output ?? (s.void() as Tool['output']),
         state,
         event: options.event as Tool['event'],
+        deps: options.deps,
         handler: options.handler as Tool['handler'],
         [TOOL_SYMBOL]: true,
     };

@@ -50,6 +50,8 @@ function renderTypeInternal(
     skipUndefined?: boolean,
     nameHint?: string,
 ): string {
+    s.lazyResolve(schema);
+
     switch (schema.type) {
         case s.string:
             return wrapType(schema, 'string', skipUndefined);
@@ -83,7 +85,7 @@ function renderTypeInternal(
                 const code = renderObject(schema as s.ObjectSchema, ctx.ambient);
 
                 ctx.ambient.addLine();
-                ctx.ambient.addLine(`export type ${name} = ${code}`);
+                ctx.ambient.addLine(`type ${name} = ${code}`);
 
                 return wrapType(schema, name, skipUndefined);
             }
@@ -93,13 +95,16 @@ function renderTypeInternal(
         }
         case s.array:
             return renderArray(schema as s.ArraySchema, ctx, skipUndefined);
-
         case s.union:
             return renderUnion(schema as s.UnionSchema, ctx, skipUndefined);
+        case s.record:
+            return renderRecord(schema as s.RecordSchema, ctx, skipUndefined);
         default:
             throw new Error(`Unsupported schema ${schema.type.name}`);
     }
 }
+
+const validPropertyKeyRegex = /^[\w_]+$/;
 
 function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
     const props = schema.props;
@@ -108,6 +113,10 @@ function renderObject(schema: s.ObjectSchema, ctx: RenderContext) {
     let code = `{\n`;
     // eslint-disable-next-line prefer-const
     for (let [key, value] of Object.entries(props)) {
+        if (!validPropertyKeyRegex.test(key)) {
+            key = `"${key}"`;
+        }
+
         const optional = value.optional;
         if (optional) {
             key += '?';
@@ -149,6 +158,11 @@ function renderUnion(schema: s.UnionSchema, ctx: RenderContext, skipUndefined?: 
     const type = schema.of
         .map(option => renderTypeInternal(option, ctx, skipUndefined))
         .join(' | ');
+    return wrapType(schema, type, skipUndefined);
+}
+
+function renderRecord(schema: s.RecordSchema, ctx: RenderContext, skipUndefined?: boolean) {
+    const type = `Record<string, ${renderTypeInternal(schema.of, ctx)}>`;
     return wrapType(schema, type, skipUndefined);
 }
 

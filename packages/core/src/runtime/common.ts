@@ -8,14 +8,69 @@ import { Console } from 'console';
 export type NativeFunction = Function;
 
 /**
+ * Set of allowed native identifiers.
+ */
+export const ALLOWED_GLOBALS = Object.freeze(
+    new Set([
+        'console',
+        'Date',
+        'Array',
+        'Object',
+        'String',
+        'Number',
+        'Boolean',
+        'Math',
+        'RegExp',
+    ]),
+);
+
+/**
  * Set of allowed native functions.
  */
-export const allowedNativeFunctions = new Set<NativeFunction | string>([
+export const ALLOWED_FUNCTIONS = new Set<NativeFunction | string>([
     'toString',
     Number,
     String,
     Boolean,
     Console.prototype.log,
+    Math.abs,
+    Math.acos,
+    Math.asin,
+    Math.atan,
+    Math.atan2,
+    Math.ceil,
+    Math.cos,
+    Math.exp,
+    Math.floor,
+    Math.log,
+    Math.max,
+    Math.min,
+    Math.pow,
+    Math.random,
+    Math.round,
+    Math.sin,
+    Math.sqrt,
+    Math.tan,
+    Math.trunc,
+    Math.sign,
+    Math.imul,
+    Math.fround,
+    Math.hypot,
+    Math.expm1,
+    Math.log1p,
+    Math.log10,
+    Math.log2,
+    Math.cbrt,
+    Math.clz32,
+    Math.cosh,
+    Math.sinh,
+    Math.tanh,
+    Math.acosh,
+    Math.asinh,
+    Math.atanh,
+    Math.atan2,
+    Array.from,
+    Array.isArray,
     Array.prototype.push,
     Array.prototype.pop,
     Array.prototype.shift,
@@ -26,6 +81,8 @@ export const allowedNativeFunctions = new Set<NativeFunction | string>([
     Array.prototype.indexOf,
     Array.prototype.lastIndexOf,
     Array.prototype.concat,
+    Array.prototype.flat,
+    Array.prototype.filter,
     Date.prototype.constructor,
     Date.prototype.getTime,
     Date.prototype.getDate,
@@ -60,4 +117,7 @@ export const allowedNativeFunctions = new Set<NativeFunction | string>([
     String.prototype.trimEnd,
     String.prototype.trimStart,
     String.prototype.valueOf,
+    RegExp.prototype.constructor,
+    RegExp.prototype.test,
+    RegExp.prototype.exec,
 ]);

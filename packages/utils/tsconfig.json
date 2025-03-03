@@ -1,3 +1,3 @@
 {
-    "extends": "./tsconfig.esm.dev.json"
+    "extends": "./.nzyme/tsconfig.esm.json"
 }

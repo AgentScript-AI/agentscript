@@ -147,7 +147,7 @@ export interface NewExpression extends AstNodeBase {
 /**
  * Literal expression.
  */
-export interface Literal extends AstNodeBase {
+export interface LiteralExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -183,7 +183,7 @@ export interface MemberExpression extends AstNodeBase {
     /**
      * Property to access.
      */
-    prop: Expression;
+    prop: string | Expression;
     /**
      * Object to access the property on.
      */
@@ -219,23 +219,29 @@ export interface BinaryExpression extends AstNodeBase {
     /**
      * Operator.
      */
-    operator:
-        | '+'
-        | '-'
-        | '*'
-        | '/'
-        | '%'
-        | '=='
-        | '==='
-        | '!='
-        | '!=='
-        | '>'
-        | '<'
-        | '>='
-        | '<='
-        | '&&'
-        | '||'
-        | '??';
+    operator: '+' | '-' | '*' | '/' | '%' | '==' | '===' | '!=' | '!==' | '>' | '<' | '>=' | '<=';
+    /**
+     * Left side of the operator.
+     */
+    left: Expression;
+    /**
+     * Right side of the operator.
+     */
+    right: Expression;
+}
+
+/**
+ * Logical expression.
+ */
+export interface LogicalExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'logical';
+    /**
+     * Operator.
+     */
+    operator: '&&' | '||' | '??';
     /**
      * Left side of the operator.
      */
@@ -297,7 +303,7 @@ export interface ObjectExpression extends AstNodeBase {
     /**
      * Properties of the object.
      */
-    props: ObjectProperty[];
+    props: (ObjectProperty | SpreadExpression)[];
 }
 
 /**
@@ -305,11 +311,29 @@ export interface ObjectExpression extends AstNodeBase {
  */
 export interface ObjectProperty {
     /**
+     * Type of the property.
+     */
+    type?: undefined;
+    /**
      * Key of the property.
      */
     key: Expression;
     /**
      * Value of the property.
+     */
+    value: Expression;
+}
+
+/**
+ * Spread expression.
+ */
+export interface SpreadExpression {
+    /**
+     * Type of the expression.
+     */
+    type: 'spread';
+    /**
+     * Object to spread.
      */
     value: Expression;
 }
@@ -325,7 +349,25 @@ export interface ArrayExpression extends AstNodeBase {
     /**
      * Items in the array.
      */
-    items: Expression[];
+    items: (Expression | SpreadExpression)[];
+}
+
+/**
+ * Regex expression.
+ */
+export interface RegexExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'regex';
+    /**
+     * Pattern of the regex.
+     */
+    value: string;
+    /**
+     * Flags of the regex.
+     */
+    flags?: string;
 }
 
 /**
@@ -387,14 +429,16 @@ export interface TernaryExpression extends AstNodeBase {
  */
 export type Expression =
     | FunctionCall
-    | Literal
+    | LiteralExpression
     | IdentifierExpression
     | MemberExpression
     | AssignmentExpression
     | ObjectExpression
     | ArrayExpression
+    | RegexExpression
     | NewExpression
     | BinaryExpression
+    | LogicalExpression
     | UnaryExpression
     | ArrowFunctionExpression
     | TemplateLiteral

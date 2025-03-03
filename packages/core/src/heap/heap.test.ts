@@ -19,6 +19,7 @@ test('heap serializer and deserializer', () => {
             j: true,
             k: null,
             l: undefined,
+            m: /test/i,
         },
     };
 

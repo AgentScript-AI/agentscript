@@ -1,7 +1,7 @@
-import { isTool } from '../tools/defineTool.js';
+import type { RenderContext } from './renderContext.js';
 import { renderTool } from './renderTool.js';
 import type { RuntimeModule } from '../agent/defineAgent.js';
-import type { RenderContext } from './renderContext.js';
+import { isTool } from '../tools/defineTool.js';
 
 const VALID_NAME_REGEX = /^[a-zA-Z_][a-zA-Z_0-9]*$/;
 
@@ -22,7 +22,7 @@ export function renderModule(module: RuntimeModule, ctx: RenderContext) {
             renderTool({ name, tool: value, ctx });
         } else if (typeof value === 'object' && value !== null) {
             ctx.addLine();
-            ctx.addLine(`declare namespace ${name} {`);
+            ctx.addLine(`namespace ${name} {`);
             renderModule(value, ctx.createChild(name));
             ctx.addLine('}');
         } else {

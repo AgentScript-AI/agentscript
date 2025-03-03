@@ -253,3 +253,68 @@ test('if statement, else if', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('early return in if statement', async () => {
+    const code = joinLines([
+        //
+        'let a = 2',
+        'if (a > 1) {',
+        '    a = 3',
+        '    return',
+        '}',
+        'let b = 3',
+    ]);
+
+    const script = parseScript(code);
+    const agent = createAgent({ script });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // if statement
+            completedFrame({
+                node: 'if',
+                children: [
+                    // condition
+                    completedFrame({
+                        node: 'binary',
+                        value: true,
+                        children: [
+                            // left operand
+                            completedFrame({
+                                node: 'ident',
+                                value: 2,
+                            }),
+                        ],
+                    }),
+                    // body
+                    completedFrame({
+                        node: 'block',
+                        children: [
+                            // assignment
+                            completedFrame({
+                                node: 'assign',
+                                value: 3,
+                            }),
+                            // return
+                            completedFrame({
+                                node: 'return',
+                            }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        value: undefined,
+        variables: {
+            a: 3,
+        },
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
