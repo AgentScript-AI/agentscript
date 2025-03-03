@@ -424,3 +424,15 @@ test('assign object property dynamic', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('assign value to unsafe object', async () => {
+    const script = parseScript([
+        //
+        'Date.foo = 1;',
+    ]);
+    const agent = createAgent({ script });
+
+    await expect(executeAgent({ agent })).rejects.toThrow(
+        'Assigning to unsafe value is not allowed',
+    );
+});
