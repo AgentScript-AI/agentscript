@@ -41,7 +41,7 @@
     "dependencies": {
         "@agentscript-ai/provider": "^0.6.0",
         "@agentscript-ai/utils": "^0.6.0",
-        "@anthropic-ai/sdk": "^0.37.0",
+        "@anthropic-ai/sdk": "^0.39.0",
         "@nzyme/ioc": "^0.7.0",
         "@nzyme/utils": "^0.7.0"
     },
