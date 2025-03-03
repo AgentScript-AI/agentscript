@@ -42,7 +42,7 @@
         "@agentscript-ai/provider": "^0.6.0",
         "@agentscript-ai/utils": "^0.6.0",
         "@llamaindex/core": "^0.5.2",
-        "@nzyme/utils": "^0.6.2"
+        "@nzyme/utils": "^0.7.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.6.0",
