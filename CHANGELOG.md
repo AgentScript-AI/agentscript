@@ -1,3 +1,14 @@
+## 0.7.1 (2025-03-03)
+
+### 🩹 Fixes
+
+- fix unsafe value assignment ([11da89b](https://github.com/AgentScript-AI/agentscript/commit/11da89b))
+- optional property access support ([9930060](https://github.com/AgentScript-AI/agentscript/commit/9930060))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.7.0 (2025-03-03)
 
 ### 🚀 Features
