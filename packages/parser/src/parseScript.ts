@@ -44,6 +44,10 @@ export function parseScript(code: string | string[]): Script {
             ast: parsed,
         };
     } catch (error) {
+        if (error instanceof ParseError) {
+            throw error;
+        }
+
         throw new ParseError('Failed to parse script', {
             cause: error,
         });
@@ -180,6 +184,7 @@ function parseExpression(expression: babel.Expression): Expression {
             };
 
         case 'MemberExpression':
+        case 'OptionalMemberExpression':
             return parseMemberExpression(expression);
 
         case 'CallExpression': {
@@ -266,17 +271,25 @@ function parseExpression(expression: babel.Expression): Expression {
     });
 }
 
-function parseMemberExpression(expression: babel.MemberExpression): MemberExpression {
+function parseMemberExpression(
+    expression: babel.MemberExpression | babel.OptionalMemberExpression,
+): MemberExpression {
     const prop =
         !expression.computed && expression.property.type === 'Identifier'
             ? expression.property.name
             : parseExpression(expression.property as babel.Expression);
 
-    return {
+    const expr: MemberExpression = {
         type: 'member',
         prop,
         obj: parseExpression(expression.object),
     };
+
+    if (expression.optional) {
+        expr.optional = true;
+    }
+
+    return expr;
 }
 
 function parseObjectExpression(

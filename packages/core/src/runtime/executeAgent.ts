@@ -522,7 +522,12 @@ async function runMemberExpression(
         unsafe = unsafe || propertyResult.unsafe;
     }
 
-    const value = (objectResult.value as Record<string, unknown>)[property];
+    let value: unknown;
+    if (expr.optional && objectResult.value == null) {
+        value = undefined;
+    } else {
+        value = (objectResult.value as Record<string, unknown>)[property];
+    }
 
     unsafe = unsafe || !isSafeValue(value);
 

@@ -436,3 +436,64 @@ test('assign value to unsafe object', async () => {
         'Assigning to unsafe value is not allowed',
     );
 });
+
+test('optional property access with value', async () => {
+    const script = parseScript([
+        //
+        'const a = { b: 1 };',
+        'a?.b;',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: { b: 1 } },
+        children: [
+            completedFrame({
+                node: 'var',
+                children: [completedFrame({ node: 'literal', value: { b: 1 } })],
+            }),
+            completedFrame({
+                node: 'member',
+                value: 1,
+                children: [completedFrame({ node: 'ident', value: { b: 1 } })],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('optional property access without value', async () => {
+    const script = parseScript([
+        //
+        'const a = null;',
+        'a?.b;',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: null },
+        children: [
+            completedFrame({
+                node: 'var',
+            }),
+            completedFrame({
+                node: 'member',
+                value: undefined,
+                children: [completedFrame({ node: 'ident', value: null })],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
