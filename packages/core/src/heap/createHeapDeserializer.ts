@@ -74,6 +74,10 @@ export function createHeapDeserializer(heap: Heap) {
             case 'sm': {
                 return Symbol(serialized[1]);
             }
+
+            case 'r': {
+                return new RegExp(serialized[1], serialized[2]);
+            }
         }
     }
 }

@@ -353,6 +353,24 @@ export interface ArrayExpression extends AstNodeBase {
 }
 
 /**
+ * Regex expression.
+ */
+export interface RegexExpression extends AstNodeBase {
+    /**
+     * Type of the expression.
+     */
+    type: 'regex';
+    /**
+     * Pattern of the regex.
+     */
+    value: string;
+    /**
+     * Flags of the regex.
+     */
+    flags?: string;
+}
+
+/**
  * Arrow function expression.
  */
 export interface ArrowFunctionExpression extends AstNodeBase {
@@ -417,6 +435,7 @@ export type Expression =
     | AssignmentExpression
     | ObjectExpression
     | ArrayExpression
+    | RegexExpression
     | NewExpression
     | BinaryExpression
     | LogicalExpression

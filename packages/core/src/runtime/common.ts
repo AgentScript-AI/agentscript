@@ -11,7 +11,17 @@ export type NativeFunction = Function;
  * Set of allowed native identifiers.
  */
 export const ALLOWED_GLOBALS = Object.freeze(
-    new Set(['console', 'Date', 'Array', 'Object', 'String', 'Number', 'Boolean', 'Math']),
+    new Set([
+        'console',
+        'Date',
+        'Array',
+        'Object',
+        'String',
+        'Number',
+        'Boolean',
+        'Math',
+        'RegExp',
+    ]),
 );
 
 /**
@@ -107,4 +117,7 @@ export const ALLOWED_FUNCTIONS = new Set<NativeFunction | string>([
     String.prototype.trimEnd,
     String.prototype.trimStart,
     String.prototype.valueOf,
+    RegExp.prototype.constructor,
+    RegExp.prototype.test,
+    RegExp.prototype.exec,
 ]);

@@ -70,6 +70,8 @@ export function createHeapSerializer() {
                     }
                 } else if (value instanceof Date) {
                     heap.push(['d', value.toISOString()]);
+                } else if (value instanceof RegExp) {
+                    heap.push(['r', value.source, value.flags]);
                 } else {
                     const obj: HeapObject = ['o'];
                     // push the object to the heap first for potential recursion

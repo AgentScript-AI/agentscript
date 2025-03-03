@@ -16,6 +16,7 @@ import type {
     MemberExpression,
     NewExpression,
     ObjectExpression,
+    RegexExpression,
     ReturnStatement,
     SpreadExpression,
     TemplateLiteral,
@@ -407,6 +408,9 @@ async function runExpression(
 
         case 'template':
             return await runTemplateLiteral(ctx, closure, parent, index, expr);
+
+        case 'regex':
+            return runRegexExpression(ctx, closure, parent, index, expr);
 
         default:
             throw new RuntimeError(`Unsupported expression type: ${(expr as Expression).type}`);
@@ -1235,6 +1239,23 @@ async function runTemplateLiteral(
     }
 
     frame.value = result;
+    return updateFrame(frame, 'done');
+}
+
+function runRegexExpression(
+    ctx: ExecuteAgentContext,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expression: RegexExpression,
+) {
+    const frame = getFrame(parent, index, expression);
+    if (isDone(frame)) {
+        return frame;
+    }
+
+    const regex = new RegExp(expression.value, expression.flags);
+    frame.value = regex;
     return updateFrame(frame, 'done');
 }
 

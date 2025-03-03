@@ -12,6 +12,7 @@ import type {
     MemberExpression,
     ObjectExpression,
     ObjectProperty,
+    RegexExpression,
     Script,
     SpreadExpression,
     TemplateLiteral,
@@ -208,6 +209,9 @@ function parseExpression(expression: babel.Expression): Expression {
                 func: parseExpression(expression.callee as babel.Expression),
                 args: parseArguments(expression.arguments),
             };
+
+        case 'RegExpLiteral':
+            return parseRegexExpression(expression);
 
         case 'TemplateLiteral':
             return parseTemplateLiteral(expression);
@@ -428,4 +432,17 @@ function parseArgument(
     }
 
     return parseExpression(arg);
+}
+
+function parseRegexExpression(expression: babel.RegExpLiteral): RegexExpression {
+    const expr: RegexExpression = {
+        type: 'regex',
+        value: expression.pattern,
+    };
+
+    if (expression.flags) {
+        expr.flags = expression.flags;
+    }
+
+    return expr;
 }

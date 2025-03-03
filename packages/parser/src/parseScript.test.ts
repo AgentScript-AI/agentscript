@@ -1,7 +1,5 @@
 import { expect, test } from 'vitest';
 
-import { joinLines } from '@agentscript-ai/utils';
-
 import type { Script } from './astTypes.js';
 import { parseScript } from './parseScript.js';
 
