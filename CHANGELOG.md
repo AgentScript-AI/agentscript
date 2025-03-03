@@ -1,3 +1,32 @@
+## 0.7.0 (2025-03-03)
+
+### 🚀 Features
+
+- support record schema type ([9e7dec8](https://github.com/AgentScript-AI/agentscript/commit/9e7dec8))
+- add support for lazy schema ([7451cac](https://github.com/AgentScript-AI/agentscript/commit/7451cac))
+- support early return from the script ([7906d78](https://github.com/AgentScript-AI/agentscript/commit/7906d78))
+- support object spread ([84d3b1f](https://github.com/AgentScript-AI/agentscript/commit/84d3b1f))
+- support assigning object property ([12d4b9e](https://github.com/AgentScript-AI/agentscript/commit/12d4b9e))
+- poc of @agentscript-ai/openapi library ([4fe08e5](https://github.com/AgentScript-AI/agentscript/commit/4fe08e5))
+- add array spread support ([da52177](https://github.com/AgentScript-AI/agentscript/commit/da52177))
+- add regex support ([6586836](https://github.com/AgentScript-AI/agentscript/commit/6586836))
+- **core:** allow tools to inject dependencies from ioc container ([c8faee6](https://github.com/AgentScript-AI/agentscript/commit/c8faee6))
+
+### 🩹 Fixes
+
+- improvent to cjs support ([17ea9a0](https://github.com/AgentScript-AI/agentscript/commit/17ea9a0))
+- fix support for logical operators ([fea98d5](https://github.com/AgentScript-AI/agentscript/commit/fea98d5))
+- agent prompt fix for longer context windows ([a3abfe6](https://github.com/AgentScript-AI/agentscript/commit/a3abfe6))
+- fixed lazy schemas ([5ee77a8](https://github.com/AgentScript-AI/agentscript/commit/5ee77a8))
+- removing unnecessary exports from runtime code ([0010b3a](https://github.com/AgentScript-AI/agentscript/commit/0010b3a))
+- compilation fixes ([e04cb75](https://github.com/AgentScript-AI/agentscript/commit/e04cb75))
+- fix stack frame for object and array literals ([c64a0dc](https://github.com/AgentScript-AI/agentscript/commit/c64a0dc))
+- fix literal expression type ([cbe6ba9](https://github.com/AgentScript-AI/agentscript/commit/cbe6ba9))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.6.0 (2025-02-24)
 
 ### 🚀 Features
