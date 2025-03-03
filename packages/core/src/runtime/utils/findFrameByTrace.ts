@@ -21,7 +21,7 @@ export function findFrameByTrace(agent: Agent, trace: string) {
         throw new RuntimeError(`Invalid trace: ${trace}`);
     }
 
-    let index = path[1];
+    let index = path[1]!;
     let node: AstNode | undefined = agent.script.ast[index];
     let frame: StackFrame | undefined | null = agent.root.children?.[index];
 
@@ -30,7 +30,7 @@ export function findFrameByTrace(agent: Agent, trace: string) {
             throw new RuntimeError(`Node not found at index for trace ${trace}`);
         }
 
-        index = path[i];
+        index = path[i]!;
         node = getChild(node, index);
         frame = frame?.children?.[index];
     }

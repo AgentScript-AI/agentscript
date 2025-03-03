@@ -12,16 +12,16 @@ export function parseCodeResponse(response: string) {
     let match = response.match(RESPONSE_WRAPPED_REGEX);
     if (match) {
         return {
-            plan: match[1].trim(),
-            code: match[3].trim(),
+            plan: match[1]!.trim(),
+            code: match[3]!.trim(),
         };
     }
 
     match = response.match(RESPONSE_UNWRAPPED_REGEX);
     if (match) {
         return {
-            plan: match[1].trim(),
-            code: match[2].trim(),
+            plan: match[1]!.trim(),
+            code: match[2]!.trim(),
         };
     }
 

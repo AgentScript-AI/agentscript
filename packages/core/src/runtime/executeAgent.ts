@@ -172,7 +172,8 @@ async function runBlockStatement(
             return block;
         }
 
-        if (index >= nodes.length) {
+        const node = nodes[index];
+        if (!node) {
             // went through all statements in block
             return updateFrame(block, 'done');
         }
@@ -187,7 +188,7 @@ async function runBlockStatement(
             continue;
         }
 
-        const frameResult = await runNode(ctx, closure, block, index, nodes[index]);
+        const frameResult = await runNode(ctx, closure, block, index, node);
         if (frameResult.status !== 'done') {
             return updateFrame(block, frameResult.status);
         }
@@ -907,7 +908,7 @@ async function runToolCall(
 
                 for (let i = 0; i < argProps.length; i++) {
                     const arg = args[i];
-                    const argName = argProps[i][0];
+                    const argName = argProps[i]![0];
 
                     input[argName] = arg;
                 }

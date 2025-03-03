@@ -56,7 +56,7 @@ function parseStatement(statement: babel.Statement): AstNode {
     switch (statement.type) {
         case 'VariableDeclaration': {
             const declaration = statement.declarations[0];
-            if (declaration.id.type !== 'Identifier') {
+            if (declaration?.id.type !== 'Identifier') {
                 throw new ParseError('Invalid variable declaration', {
                     cause: statement,
                 });
@@ -348,7 +348,7 @@ function parseTemplateLiteral(expression: babel.TemplateLiteral): TemplateLitera
 
     for (let i = 0; i < expression.quasis.length + expression.expressions.length; i++) {
         if (i % 2 === 0) {
-            const part = expression.quasis[i / 2].value.raw;
+            const part = expression.quasis[i / 2]?.value.raw;
             if (!part) {
                 continue;
             }

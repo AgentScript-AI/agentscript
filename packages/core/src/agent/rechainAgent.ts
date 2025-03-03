@@ -9,9 +9,9 @@ export function rechainAgent(agent: Agent) {
 
     if (chain && chain.length > 0) {
         for (let i = 1; i < chain.length; i++) {
-            chain[i].root.parent = chain[i - 1].root;
+            chain[i]!.root.parent = chain[i - 1]!.root;
         }
 
-        agent.root.parent = chain[chain.length - 1].root;
+        agent.root.parent = chain[chain.length - 1]!.root;
     }
 }
