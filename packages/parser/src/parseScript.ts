@@ -8,7 +8,7 @@ import type {
     AstNode,
     BinaryExpression,
     Expression,
-    Literal,
+    LiteralExpression,
     MemberExpression,
     ObjectExpression,
     ObjectProperty,
@@ -279,7 +279,9 @@ function parseMemberExpression(expression: babel.MemberExpression): MemberExpres
     };
 }
 
-function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpression | Literal {
+function parseObjectExpression(
+    expression: babel.ObjectExpression,
+): ObjectExpression | LiteralExpression {
     const props = expression.properties.map(prop => parseObjectProperty(prop));
 
     const isLiteral = props.every(
@@ -293,9 +295,11 @@ function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpres
         const value: Record<string, unknown> = {};
         for (const prop of props as ObjectProperty[]) {
             if (prop.key.type === 'ident') {
-                value[prop.key.name] = (prop.value as Literal).value;
+                value[prop.key.name] = (prop.value as LiteralExpression).value;
             } else {
-                value[(prop.key as Literal).value as string] = (prop.value as Literal).value;
+                value[(prop.key as LiteralExpression).value as string] = (
+                    prop.value as LiteralExpression
+                ).value;
             }
         }
 
@@ -311,7 +315,9 @@ function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpres
     };
 }
 
-function parseArrayExpression(expression: babel.ArrayExpression): ArrayExpression | Literal {
+function parseArrayExpression(
+    expression: babel.ArrayExpression,
+): ArrayExpression | LiteralExpression {
     const items = expression.elements.map<Expression | SpreadExpression>(e => {
         if (e === null) {
             return { type: 'literal', value: null };

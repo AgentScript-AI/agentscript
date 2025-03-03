@@ -147,7 +147,7 @@ export interface NewExpression extends AstNodeBase {
 /**
  * Literal expression.
  */
-export interface Literal extends AstNodeBase {
+export interface LiteralExpression extends AstNodeBase {
     /**
      * Type of the expression.
      */
@@ -429,7 +429,7 @@ export interface TernaryExpression extends AstNodeBase {
  */
 export type Expression =
     | FunctionCall
-    | Literal
+    | LiteralExpression
     | IdentifierExpression
     | MemberExpression
     | AssignmentExpression
