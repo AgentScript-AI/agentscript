@@ -38,6 +38,8 @@ jobs:
           node-version: latest
 
       - run: yarn install
+        env:
+          YARN_ENABLE_IMMUTABLE_INSTALLS: false
       - run: yarn monorepo
       - run: yarn build
       - run: yarn test
