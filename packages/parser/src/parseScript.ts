@@ -12,8 +12,8 @@ import type {
     MemberExpression,
     ObjectExpression,
     ObjectProperty,
-    ObjectSpread,
     Script,
+    SpreadExpression,
     TemplateLiteral,
     UnaryExpression,
 } from './astTypes.js';
@@ -308,12 +308,16 @@ function parseObjectExpression(expression: babel.ObjectExpression): ObjectExpres
 }
 
 function parseArrayExpression(expression: babel.ArrayExpression): ArrayExpression | Literal {
-    const items = expression.elements.map<Expression>(e => {
+    const items = expression.elements.map<Expression | SpreadExpression>(e => {
         if (e === null) {
             return { type: 'literal', value: null };
         }
 
-        return parseArgument(e);
+        if (e.type === 'SpreadElement') {
+            return { type: 'spread', value: parseExpression(e.argument) };
+        }
+
+        return parseExpression(e);
     });
 
     if (items.every(item => item.type === 'literal')) {
@@ -376,7 +380,7 @@ function parseComment(comments: babel.Comment[] | undefined | null): string | un
 
 function parseObjectProperty(
     property: babel.ObjectProperty | babel.SpreadElement | babel.ObjectMethod,
-): ObjectProperty | ObjectSpread {
+): ObjectProperty | SpreadExpression {
     switch (property.type) {
         case 'ObjectProperty':
             return {

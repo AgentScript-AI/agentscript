@@ -22,7 +22,9 @@ export function getChild(node: AstNode, index: number): AstNode | undefined {
             }
 
         case 'array':
-            return node.items[index];
+            return node.items[index]?.type === 'spread'
+                ? node.items[index].value
+                : node.items[index];
 
         case 'object':
             return node.props[index]?.value;

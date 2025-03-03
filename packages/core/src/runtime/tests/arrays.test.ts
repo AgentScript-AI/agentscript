@@ -9,6 +9,154 @@ import { executeAgent } from '../executeAgent.js';
 import { completedFrame, rootFrame } from './testUtils.js';
 import { defineTool } from '../../tools/defineTool.js';
 
+test('array spread before', async () => {
+    const code = joinLines([
+        //
+        'const a = [1, 2, 3]',
+        'const b = [...a, 4, 5, 6]',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
+            completedFrame({
+                node: 'var',
+                children: [
+                    // array expression
+                    completedFrame({
+                        node: 'array',
+                        value: [1, 2, 3, 4, 5, 6],
+                        children: [
+                            // array spread
+                            completedFrame({ node: 'ident', value: [1, 2, 3] }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        variables: {
+            a: [1, 2, 3],
+            b: [1, 2, 3, 4, 5, 6],
+        },
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('array spread after', async () => {
+    const code = joinLines([
+        //
+        'const a = [1, 2, 3]',
+        'const b = [4, 5, 6, ...a]',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
+            completedFrame({
+                node: 'var',
+                children: [
+                    // array expression
+                    completedFrame({
+                        node: 'array',
+                        value: [4, 5, 6, 1, 2, 3],
+                        children: [
+                            // array items
+                            null,
+                            null,
+                            null,
+                            // array spread
+                            completedFrame({ node: 'ident', value: [1, 2, 3] }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        variables: {
+            a: [1, 2, 3],
+            b: [4, 5, 6, 1, 2, 3],
+        },
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('array spread middle', async () => {
+    const code = joinLines([
+        //
+        'const a = [1, 2, 3]',
+        'const b = [4, 5, ...a, 6]',
+    ]);
+
+    const script = parseScript(code);
+
+    const agent = createAgent({
+        tools: {},
+        script,
+    });
+
+    await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // var a declaration
+            completedFrame({ node: 'var' }),
+            // var b declaration
+            completedFrame({
+                node: 'var',
+                children: [
+                    // array expression
+                    completedFrame({
+                        node: 'array',
+                        value: [4, 5, 1, 2, 3, 6],
+                        children: [
+                            // array items
+                            null,
+                            null,
+                            // array spread
+                            completedFrame({ node: 'ident', value: [1, 2, 3] }),
+                        ],
+                    }),
+                ],
+            }),
+        ],
+        variables: {
+            a: [1, 2, 3],
+            b: [4, 5, 1, 2, 3, 6],
+        },
+    });
+
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
 test('array variable map with inline arrow function', async () => {
     const code = joinLines([
         //

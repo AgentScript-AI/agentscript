@@ -17,6 +17,7 @@ import type {
     NewExpression,
     ObjectExpression,
     ReturnStatement,
+    SpreadExpression,
     TemplateLiteral,
     TernaryExpression,
     UnaryExpression,
@@ -1242,19 +1243,27 @@ async function runExpressionArray(
     closure: StackFrame,
     frame: StackFrame,
     index: number,
-    items: Expression[],
+    items: (Expression | SpreadExpression)[],
 ): Promise<unknown[] | StackFrameStatus> {
     const result: unknown[] = [];
 
     // todo: run in parallel
     for (const item of items) {
-        const itemResult = await runExpression(ctx, closure, frame, index++, item);
+        if (item.type === 'spread') {
+            const spreadResult = await runExpression(ctx, closure, frame, index++, item.value);
+            if (!isDone(spreadResult)) {
+                return spreadResult.status;
+            }
 
-        if (itemResult.status !== 'done') {
-            return itemResult.status;
+            result.push(...(spreadResult.value as unknown[]));
+        } else {
+            const itemResult = await runExpression(ctx, closure, frame, index++, item);
+            if (!isDone(itemResult)) {
+                return itemResult.status;
+            }
+
+            result.push(itemResult.value);
         }
-
-        result.push(itemResult.value);
 
         if (!ctx.controller.continue()) {
             return 'running';
