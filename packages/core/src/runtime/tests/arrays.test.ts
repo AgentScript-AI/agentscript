@@ -6,8 +6,97 @@ import { joinLines } from '@agentscript-ai/utils';
 
 import { createAgent } from '../../agent/createAgent.js';
 import { executeAgent } from '../executeAgent.js';
-import { completedFrame, rootFrame } from './testUtils.js';
+import { agentResult, completedFrame, rootFrame } from './testUtils.js';
 import { defineTool } from '../../tools/defineTool.js';
+
+test('array.push()', async () => {
+    const script = parseScript([
+        //
+        'const a = [1, 2, 3];',
+        'a.push(4);',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // variable init
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3, 4],
+                    }),
+                ],
+            }),
+            // push()
+            completedFrame({
+                node: 'call',
+                value: 4,
+                children: [
+                    // this
+                    completedFrame({
+                        node: 'ident',
+                        value: [1, 2, 3, 4],
+                    }),
+                    // arg is literal
+                ],
+            }),
+        ],
+        variables: { a: [1, 2, 3, 4] },
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('array.filter(Boolean)', async () => {
+    const script = parseScript([
+        //
+        'const a = [0, 1, 2, 3];',
+        'a.filter(Boolean)',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        children: [
+            // variable init
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [0, 1, 2, 3],
+                    }),
+                ],
+            }),
+            // filter()
+            completedFrame({
+                node: 'call',
+                value: [1, 2, 3],
+                children: [
+                    // this
+                    completedFrame({
+                        node: 'ident',
+                        value: [0, 1, 2, 3],
+                    }),
+                ],
+            }),
+        ],
+        variables: { a: [0, 1, 2, 3] },
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
 
 test('array spread before', async () => {
     const code = joinLines([
@@ -29,7 +118,15 @@ test('array spread before', async () => {
         status: 'done',
         children: [
             // var a declaration
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
+            }),
             // var b declaration
             completedFrame({
                 node: 'var',
@@ -76,7 +173,15 @@ test('array spread after', async () => {
         status: 'done',
         children: [
             // var a declaration
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
+            }),
             // var b declaration
             completedFrame({
                 node: 'var',
@@ -127,7 +232,15 @@ test('array spread middle', async () => {
         status: 'done',
         children: [
             // var a declaration
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
+            }),
             // var b declaration
             completedFrame({
                 node: 'var',
@@ -177,7 +290,15 @@ test('array variable map with inline arrow function', async () => {
         status: 'done',
         children: [
             // var a declaration
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
+            }),
             // var b declaration
             completedFrame({
                 node: 'var',
@@ -275,8 +396,11 @@ test('array literal map with inline arrow function', async () => {
                 node: 'call',
                 value: [2, 4],
                 children: [
-                    // this arg is literal
-                    null,
+                    // this arg
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2],
+                    }),
                     // array map item / operator call
                     completedFrame({
                         node: 'binary',
@@ -339,7 +463,15 @@ test('array member map with inline arrow function', async () => {
         },
         children: [
             // var a declaration
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: [1, 2] },
+                    }),
+                ],
+            }),
             // array map call
             completedFrame({
                 node: 'call',
@@ -421,6 +553,12 @@ test('array variable map with block arrow function', async () => {
             // var a declaration
             completedFrame({
                 node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
             }),
             // var b declaration
             completedFrame({
@@ -604,6 +742,12 @@ test('array variable map with block arrow function and nested return', async () 
             // var a declaration
             completedFrame({
                 node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2],
+                    }),
+                ],
             }),
             // var b declaration
             completedFrame({
@@ -743,6 +887,12 @@ test('array variable map with async tool inline', async () => {
             // var a declaration
             completedFrame({
                 node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
             }),
             // var b declaration
             completedFrame({
@@ -861,6 +1011,12 @@ test('array variable map with async tool in block', async () => {
             // var a declaration
             completedFrame({
                 node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
             }),
             // var b declaration
             completedFrame({

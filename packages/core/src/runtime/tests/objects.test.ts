@@ -23,7 +23,15 @@ test('object spread simple', async () => {
             d: { b: 1, c: 2 },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1, c: 2 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -46,6 +54,7 @@ test('object spread simple', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
 test('object spread with properties before', async () => {
     const script = parseScript([
         //
@@ -63,7 +72,15 @@ test('object spread with properties before', async () => {
             d: { b: 1, d: 4, c: 2 },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1, c: 2 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -106,7 +123,15 @@ test('object spread with properties after', async () => {
             d: { b: 1, c: 3, e: 4 },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1, c: 2 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -147,7 +172,15 @@ test('object spread with properties before and after', async () => {
             e: { b: 1, c: 2, d: 5, f: 6 },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1, c: 2, d: 3 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -189,7 +222,15 @@ test('object spread nested', async () => {
             d: { b: 1, c: 2, e: { b: 1, c: 2 } },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1, c: 2 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -239,7 +280,15 @@ test('assign object property', async () => {
             a: { b: 3, c: 2 },
         },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 3, c: 2 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'assign',
                 value: 3,
@@ -275,7 +324,15 @@ test('assign object property nested', async () => {
         status: 'done',
         variables: { a: { b: { c: 2 } } },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: { c: 2 } },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'assign',
                 value: 2,
@@ -318,8 +375,21 @@ test('assign object property dynamic', async () => {
         status: 'done',
         variables: { a: { b: 2, c: 2 }, d: 'b' },
         children: [
-            completedFrame({ node: 'var' }),
-            completedFrame({ node: 'var' }),
+            // a var
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 2, c: 2 },
+                    }),
+                ],
+            }),
+            // d var
+            completedFrame({
+                node: 'var',
+            }),
+            // assign
             completedFrame({
                 node: 'assign',
                 value: 2,

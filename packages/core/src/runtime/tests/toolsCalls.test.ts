@@ -415,7 +415,15 @@ test('explicit single arg literal', async () => {
             completedFrame({
                 node: 'call',
                 value: 3,
-                // arg is a literal
+                children: [
+                    // this arg
+                    null,
+                    // arg
+                    completedFrame({
+                        node: 'literal',
+                        value: { a: 1, b: 2 },
+                    }),
+                ],
             }),
         ],
     });

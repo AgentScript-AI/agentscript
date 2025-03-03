@@ -1,4 +1,4 @@
-import type { Expression, IdentifierExpression, Literal } from '@agentscript-ai/parser';
+import type { Expression, IdentifierExpression, LiteralExpression } from '@agentscript-ai/parser';
 
 import type { Agent } from '../../agent/agentTypes.js';
 import { RuntimeError } from '../RuntimeError.js';
@@ -104,7 +104,7 @@ export function resolveIdentifier(
  * @param expression - Literal to resolve.
  * @returns Resolved literal.
  */
-export function resolveLiteral(expression: Literal) {
+export function resolveLiteral(expression: LiteralExpression) {
     const value = expression.value;
     if (!value) {
         return value;

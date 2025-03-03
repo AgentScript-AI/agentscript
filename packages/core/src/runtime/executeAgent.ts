@@ -12,6 +12,7 @@ import type {
     FunctionCall,
     IdentifierExpression,
     IfStatement,
+    LiteralExpression,
     LogicalExpression,
     MemberExpression,
     NewExpression,
@@ -371,7 +372,7 @@ async function runExpression(
             return runIdentifierExpression(ctx, parent, index, expr);
 
         case 'literal':
-            return { value: resolveLiteral(expr), status: 'done' };
+            return runLiteralExpression(parent, index, expr);
 
         case 'member':
             return await runMemberExpression(ctx, closure, parent, index, expr);
@@ -410,7 +411,7 @@ async function runExpression(
             return await runTemplateLiteral(ctx, closure, parent, index, expr);
 
         case 'regex':
-            return runRegexExpression(ctx, closure, parent, index, expr);
+            return runRegexExpression(parent, index, expr);
 
         default:
             throw new RuntimeError(`Unsupported expression type: ${(expr as Expression).type}`);
@@ -421,15 +422,15 @@ function runIdentifierExpression(
     ctx: ExecuteAgentContext,
     parent: StackFrame,
     index: number,
-    expression: IdentifierExpression,
+    expr: IdentifierExpression,
 ): StackFrameResult {
-    const name = expression.name;
+    const name = expr.name;
 
     let variableFrame: StackFrame | undefined = parent;
     while (variableFrame) {
         const variables = variableFrame.variables;
         if (variables && name in variables) {
-            const frame = getFrame(parent, index, expression);
+            const frame = getFrame(parent, index, expr);
 
             frame.value = variables[name];
             return updateFrame(frame, 'done');
@@ -455,7 +456,33 @@ function runIdentifierExpression(
         };
     }
 
-    throw new RuntimeError(`Variable ${expression.name} not found`);
+    throw new RuntimeError(`Variable ${expr.name} not found`);
+}
+
+function runLiteralExpression(
+    parent: StackFrame,
+    index: number,
+    expr: LiteralExpression,
+): StackFrameResult {
+    let frame = parent.children?.[index];
+    if (frame?.status === 'done') {
+        return frame;
+    }
+
+    const value = resolveLiteral(expr);
+
+    // if literal is a reference type, we need to create stack frame to preserve references correctly
+    if (value !== null && typeof value === 'object') {
+        frame = getFrame(parent, index, expr);
+        frame.value = value;
+
+        return updateFrame(frame, 'done');
+    }
+
+    return {
+        value,
+        status: 'done',
+    };
 }
 
 async function runMemberExpression(
@@ -463,24 +490,24 @@ async function runMemberExpression(
     closure: StackFrame,
     parent: StackFrame,
     index: number,
-    expression: MemberExpression,
+    expr: MemberExpression,
 ): Promise<StackFrameResult> {
-    const frame = getFrame(parent, index, expression);
+    const frame = getFrame(parent, index, expr);
     if (frame.status === 'done' && frame.value !== undefined) {
         return frame;
     }
 
-    const objectResult = await runExpression(ctx, closure, frame, 0, expression.obj);
+    const objectResult = await runExpression(ctx, closure, frame, 0, expr.obj);
     if (objectResult.status !== 'done') {
         return updateFrame(frame, objectResult.status);
     }
 
     let property: string;
     let unsafe = objectResult.unsafe;
-    if (typeof expression.prop === 'string') {
-        property = expression.prop;
+    if (typeof expr.prop === 'string') {
+        property = expr.prop;
     } else {
-        const propertyResult = await runExpression(ctx, closure, frame, 1, expression.prop);
+        const propertyResult = await runExpression(ctx, closure, frame, 1, expr.prop);
 
         if (propertyResult.status !== 'done') {
             return updateFrame(frame, propertyResult.status);
@@ -1242,13 +1269,7 @@ async function runTemplateLiteral(
     return updateFrame(frame, 'done');
 }
 
-function runRegexExpression(
-    ctx: ExecuteAgentContext,
-    closure: StackFrame,
-    parent: StackFrame,
-    index: number,
-    expression: RegexExpression,
-) {
+function runRegexExpression(parent: StackFrame, index: number, expression: RegexExpression) {
     const frame = getFrame(parent, index, expression);
     if (isDone(frame)) {
         return frame;

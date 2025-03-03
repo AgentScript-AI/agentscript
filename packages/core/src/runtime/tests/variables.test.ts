@@ -143,7 +143,15 @@ test('member expression', async () => {
         status: 'done',
         variables: { a: { b: 1 }, c: 1 },
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: { b: 1 },
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
@@ -180,7 +188,15 @@ test('array.length', async () => {
     const expectedStack = rootFrame({
         status: 'done',
         children: [
-            completedFrame({ node: 'var' }),
+            completedFrame({
+                node: 'var',
+                children: [
+                    completedFrame({
+                        node: 'literal',
+                        value: [1, 2, 3],
+                    }),
+                ],
+            }),
             completedFrame({
                 node: 'var',
                 children: [
