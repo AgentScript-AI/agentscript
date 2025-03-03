@@ -89,6 +89,6 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.7.0",
         "@agentscript-ai/tsconfig": "^0.7.0",
-        "typescript": "^5.7.3"
+        "typescript": "^5.8.2"
     }
 }
