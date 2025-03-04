@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/openapi",
-    "version": "0.7.2",
+    "version": "0.8.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
@@ -39,10 +39,10 @@
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
-        "@agentscript-ai/core": "^0.7.2",
-        "@agentscript-ai/provider": "^0.7.2",
-        "@agentscript-ai/schema": "^0.7.2",
-        "@agentscript-ai/utils": "^0.7.2",
+        "@agentscript-ai/core": "^0.8.0",
+        "@agentscript-ai/provider": "^0.8.0",
+        "@agentscript-ai/schema": "^0.8.0",
+        "@agentscript-ai/utils": "^0.8.0",
         "@nzyme/utils": "^0.7.0",
         "@scalar/openapi-parser": "^0.10.9",
         "@scalar/openapi-types": "^0.1.9",
@@ -50,8 +50,8 @@
         "ufo": "^1.5.4"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.7.2",
-        "@agentscript-ai/tsconfig": "^0.7.2",
+        "@agentscript-ai/eslint": "^0.8.0",
+        "@agentscript-ai/tsconfig": "^0.8.0",
         "@types/node": "^22.13.5",
         "typescript": "^5.8.2",
         "vitest": "^3.0.7"
