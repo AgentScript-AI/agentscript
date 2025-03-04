@@ -11,7 +11,7 @@ test('add operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '+',
@@ -33,7 +33,7 @@ test('multiply operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '*',
@@ -55,7 +55,7 @@ test('subtract operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '-',
@@ -77,7 +77,7 @@ test('divide operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '/',
@@ -99,7 +99,7 @@ test('modulo operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '%',
@@ -121,7 +121,7 @@ test('equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '==',
@@ -143,7 +143,7 @@ test('strict equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '===',
@@ -165,7 +165,7 @@ test('not equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '!=',
@@ -187,7 +187,7 @@ test('strict not equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '!==',
@@ -209,7 +209,7 @@ test('greater than operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '>',
@@ -231,7 +231,7 @@ test('less than operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '<',
@@ -253,7 +253,7 @@ test('greater than or equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '>=',
@@ -275,7 +275,7 @@ test('less than or equal operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'binary',
                     operator: '<=',
@@ -297,7 +297,7 @@ test('logical AND operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'logical',
                     operator: '&&',
@@ -319,7 +319,7 @@ test('logical OR operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'logical',
                     operator: '||',
@@ -341,7 +341,7 @@ test('nullish coalescing operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'logical',
                     operator: '??',
@@ -435,7 +435,7 @@ test('negate operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'unary',
                     operator: '-',
@@ -456,7 +456,7 @@ test('plus operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'unary',
                     operator: '+',
@@ -477,7 +477,7 @@ test('typeof operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'unary',
                     operator: 'typeof',
@@ -498,7 +498,7 @@ test('not operator', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'unary',
                     operator: '!',

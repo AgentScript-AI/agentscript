@@ -13,7 +13,7 @@ test('object literal', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'literal',
                     value: {
@@ -41,12 +41,42 @@ test('object expression', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: 1 },
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
+                value: {
+                    type: 'object',
+                    props: [
+                        {
+                            key: { type: 'ident', name: 'a' },
+                            value: { type: 'ident', name: 'a' },
+                        },
+                    ],
+                },
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
+
+test('object expression with shorthand property', () => {
+    const code = joinLines(['const a = 1', 'const b = { a }']);
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'var',
+                id: 'a',
+                value: { type: 'literal', value: 1 },
+            },
+            {
+                type: 'var',
+                id: 'b',
                 value: {
                     type: 'object',
                     props: [
@@ -75,7 +105,7 @@ test('object spread', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'literal',
                     value: { b: 1, c: 2 },
@@ -83,7 +113,7 @@ test('object spread', () => {
             },
             {
                 type: 'var',
-                name: 'd',
+                id: 'd',
                 value: {
                     type: 'object',
                     props: [

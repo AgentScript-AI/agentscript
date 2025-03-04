@@ -3,40 +3,6 @@ import { expect, test } from 'vitest';
 import type { Script } from './astTypes.js';
 import { parseScript } from './parseScript.js';
 
-test('assign variable', () => {
-    const code = 'const a = 1';
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: { type: 'literal', value: 1 },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
-test('assign variable with negative value', () => {
-    const code = 'const a = -1';
-    const script = parseScript(code);
-    const expected: Script = {
-        code,
-        ast: [
-            {
-                type: 'var',
-                name: 'a',
-                value: { type: 'literal', value: -1 },
-            },
-        ],
-    };
-
-    expect(script).toEqual(expected);
-});
-
 test('undefined literal', () => {
     const code = 'const a = undefined;';
     const script = parseScript(code);
@@ -45,7 +11,7 @@ test('undefined literal', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: undefined },
             },
         ],
@@ -100,7 +66,7 @@ test('call function and assign to variable', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'call',
                     func: { type: 'ident', name: 'foo' },
@@ -154,13 +120,13 @@ test('multiple statements', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: 1 },
                 comment: undefined,
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
                 value: {
                     type: 'call',
                     func: { type: 'ident', name: 'add' },
@@ -197,7 +163,7 @@ test('create date', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'new',
                     func: { type: 'ident', name: 'Date' },

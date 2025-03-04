@@ -20,7 +20,7 @@ test('increment variable in while loop', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: 1 },
             },
             {
@@ -66,7 +66,7 @@ test('while loop, increment variable, with break', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: 1 },
             },
             {

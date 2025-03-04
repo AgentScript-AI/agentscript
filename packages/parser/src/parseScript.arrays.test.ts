@@ -13,7 +13,7 @@ test('array literal', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'literal',
                     value: [1, 2, 3],
@@ -37,12 +37,12 @@ test('array expression', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: 1 },
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
                 value: {
                     type: 'array',
                     items: [
@@ -72,7 +72,7 @@ test('array map inline', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'literal',
                     value: [1, 2, 3],
@@ -80,7 +80,7 @@ test('array map inline', () => {
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
                 value: {
                     type: 'call',
                     func: {
@@ -125,7 +125,7 @@ test('array map with function', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'literal',
                     value: [1, 2, 3],
@@ -133,7 +133,7 @@ test('array map with function', () => {
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
                 value: {
                     type: 'call',
                     func: {
@@ -178,12 +178,12 @@ test('array spread', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'literal', value: [1, 2, 3] },
             },
             {
                 type: 'var',
-                name: 'b',
+                id: 'b',
                 value: {
                     type: 'array',
                     items: [

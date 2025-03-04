@@ -12,7 +12,7 @@ test('regex expression', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: { type: 'regex', value: 'test' },
             },
         ],
@@ -30,7 +30,7 @@ test('regex expression with flags', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'regex',
                     value: 'test',
@@ -52,7 +52,7 @@ test('new regex expression', () => {
         ast: [
             {
                 type: 'var',
-                name: 'a',
+                id: 'a',
                 value: {
                     type: 'new',
                     func: { type: 'ident', name: 'RegExp' },

@@ -242,7 +242,7 @@ async function runVarStatement(
         return frame;
     }
 
-    const name = node.name;
+    const name = node.id;
 
     if (!parent.variables) {
         parent.variables = {};

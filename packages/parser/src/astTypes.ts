@@ -15,21 +15,77 @@ export interface AstNodeBase {
 /**
  * Variable declaration statement.
  */
-export interface VariableDeclaration extends AstNodeBase {
+export type VariableDeclaration = VariableDeclarationSimple | VariableDeclarationDestructured;
+
+/**
+ * Base interface for variable declarations.
+ */
+export interface VariableDeclarationBase extends AstNodeBase {
     /**
      * Type of the statement.
      */
     type: 'var';
-    /**
-     * Name of the variable.
-     */
-    name: string;
+
     /**
      * Value of the variable.
      */
     value?: Expression | undefined;
+
+    /**
+     * Name of the variable.
+     */
+    id: unknown;
 }
 
+/**
+ * Simple variable declaration.
+ */
+export interface VariableDeclarationSimple extends VariableDeclarationBase {
+    /**
+     * Name of the variable.
+     */
+    id: string;
+}
+
+/**
+ * Variable declaration destructured.
+ */
+export interface VariableDeclarationDestructured extends VariableDeclarationBase {
+    /**
+     * Type of the destructuring.
+     */
+    kind: 'object' | 'array';
+
+    /**
+     * Variables to destructure.
+     */
+    id: Record<string, VariableDestructuredItem>;
+}
+
+/**
+ * Variable array destructuring.
+ */
+export interface VariableDestructuredItem {
+    /**
+     * Value of the item.
+     * If it's a string, it's a simple remapping from initial value.
+     * If it's an expression, it's a dynamic value.
+     * If it's undefined, it's the same property name.
+     */
+    value?: string | Expression;
+
+    /**
+     * Whether the item is a rest item.
+     */
+    rest?: boolean;
+
+    /**
+     * Default value of the item.
+     */
+    default?: Expression;
+}
+
+/**
 /**
  * Block statement.
  */

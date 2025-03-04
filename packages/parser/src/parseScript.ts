@@ -17,6 +17,8 @@ import type {
     SpreadExpression,
     TemplateLiteral,
     UnaryExpression,
+    VariableDeclaration,
+    VariableDeclarationDestructured,
 } from './astTypes.js';
 
 /**
@@ -59,19 +61,13 @@ function parseStatement(statement: babel.Statement): AstNode {
 
     switch (statement.type) {
         case 'VariableDeclaration': {
-            const declaration = statement.declarations[0];
-            if (declaration?.id.type !== 'Identifier') {
-                throw new ParseError('Invalid variable declaration', {
+            if (statement.declarations.length !== 1) {
+                throw new ParseError('Multiple variable declarations not supported', {
                     cause: statement,
                 });
             }
 
-            node = {
-                type: 'var',
-                name: declaration.id.name,
-                value: declaration.init ? parseExpression(declaration.init) : undefined,
-            };
-
+            node = parseVariableDeclaration(statement.declarations[0]!);
             break;
         }
 
@@ -268,6 +264,38 @@ function parseExpression(expression: babel.Expression): Expression {
 
     throw new ParseError(`Unknown expression type: ${expression.type}`, {
         cause: expression,
+    });
+}
+
+function parseVariableDeclaration(declaration: babel.VariableDeclarator): VariableDeclaration {
+    const value = declaration.init ? parseExpression(declaration.init) : undefined;
+
+    if (declaration.id.type === 'Identifier') {
+        return {
+            type: 'var',
+            id: declaration.id.name,
+            value,
+        };
+    }
+
+    if (declaration.id.type === 'ObjectPattern') {
+        const vars: VariableDeclarationDestructured['id'] = {};
+
+        for (const prop of declaration.id.properties) {
+            if (prop.type === 'ObjectProperty') {
+            }
+        }
+
+        return {
+            type: 'var',
+            kind: 'object',
+            id: vars,
+            value,
+        };
+    }
+
+    throw new ParseError(`Unknown variable declaration type: ${declaration.id.type}`, {
+        cause: declaration,
     });
 }
 
