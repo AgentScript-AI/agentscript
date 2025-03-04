@@ -47,7 +47,6 @@ import type {
 import { isTool } from '../tools/defineTool.js';
 import type { ToolDefinition } from '../tools/defineTool.js';
 import { TOOL_AWAIT_RESULT, toolResultHelper } from '../tools/toolResult.js';
-import { resolveExpression, resolveLiteral } from './utils/resolveExpression.js';
 
 type ExecuteAgentInputOptions<TInput extends AgentInputBase> = TInput extends EmptyObject
     ? {
@@ -759,6 +758,38 @@ async function runFunctionCall(
     throw new RuntimeError(`Expression is not a function`);
 }
 
+async function runNewExpression(
+    ctx: ExecuteAgentContext,
+    closure: StackFrame,
+    parent: StackFrame,
+    index: number,
+    expr: NewExpression,
+) {
+    const frame = getFrame(parent, index, expr);
+
+    if (expr.func.type !== 'ident') {
+        throw new RuntimeError('Dynamic constructor calls are not supported');
+    }
+
+    const constructor = (globalThis as Record<string, unknown>)[expr.func.name] as Constructor;
+    if (typeof constructor !== 'function') {
+        throw new RuntimeError(`Expression is not a function`);
+    }
+
+    if (!ctx.allowedNatives.has(constructor)) {
+        throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
+    }
+
+    const args = await runExpressionArray(ctx, closure, frame, 0, expr.args ?? []);
+
+    if (Array.isArray(args)) {
+        frame.value = new constructor(...args);
+        return updateFrame(frame, 'done');
+    }
+
+    return updateFrame(frame, args);
+}
+
 async function runArrayMap(
     ctx: ExecuteAgentContext,
     frame: StackFrame,
@@ -1242,34 +1273,6 @@ async function runTernaryExpression(
     return updateFrame(frame, 'done');
 }
 
-async function runNewExpression(
-    ctx: ExecuteAgentContext,
-    closure: StackFrame,
-    parent: StackFrame,
-    index: number,
-    expr: NewExpression,
-) {
-    const frame = getFrame(parent, index, expr);
-
-    const constructor = resolveExpression(ctx.agent, frame, expr.func) as Constructor;
-    if (typeof constructor !== 'function') {
-        throw new RuntimeError(`Expression is not a function`);
-    }
-
-    if (!ctx.allowedNatives.has(constructor)) {
-        throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
-    }
-
-    const args = await runExpressionArray(ctx, closure, frame, 0, expr.args ?? []);
-
-    if (Array.isArray(args)) {
-        frame.value = new constructor(...args);
-        return updateFrame(frame, 'done');
-    }
-
-    return updateFrame(frame, args);
-}
-
 async function runTemplateLiteral(
     ctx: ExecuteAgentContext,
     closure: StackFrame,
@@ -1441,4 +1444,17 @@ function isSafeValue(value: unknown) {
 
 function isDone(frame: StackFrame | StackFrameResult) {
     return frame.status === 'done';
+}
+
+function resolveLiteral(expression: LiteralExpression) {
+    const value = expression.value;
+    if (!value) {
+        return value;
+    }
+
+    if (typeof value === 'object') {
+        return JSON.parse(JSON.stringify(value)) as unknown;
+    }
+
+    return value;
 }
