@@ -6,6 +6,9 @@ import { joinURL, withQuery } from 'ufo';
 import { type ToolDefinition, defineTool } from '@agentscript-ai/core';
 import * as s from '@agentscript-ai/schema';
 
+import { isReferenceObject } from './utils/isReferenceObject.js';
+import { resolveReferenceObject } from './utils/resolveReferenceObject.js';
+
 const methods = ['get', 'post', 'put', 'delete', 'patch', 'options', 'head'] as const;
 
 type HttpMethod = (typeof methods)[number];
@@ -120,6 +123,7 @@ function getToolFromOperation(
         description: operation.summary || operation.description,
         input: definition.input,
         output: definition.output,
+        transformInput: transformInput,
         handler: async ({ input }) => {
             const request: Request = {
                 method,
@@ -163,7 +167,7 @@ function addOperationParameters(
     }
 
     for (const param of operation.parameters) {
-        if (isRef(param)) {
+        if (isReferenceObject(param)) {
             console.warn('Reference parameters are not supported', operation);
             return false;
         }
@@ -208,7 +212,7 @@ function addOperationBody(
     }
 
     const requestBody = operation.requestBody;
-    if (isRef(requestBody)) {
+    if (isReferenceObject(requestBody)) {
         console.warn('Reference request bodies are not supported', operation);
         return false;
     }
@@ -256,7 +260,7 @@ function addOperationResponse(
         return;
     }
 
-    if (isRef(successResponse)) {
+    if (isReferenceObject(successResponse)) {
         console.warn('Reference responses are not supported', operation);
         return;
     }
@@ -298,8 +302,8 @@ function getSchema(ctx: OpenApiToolContext, schema: SchemaParam | null | undefin
         return s.unknown();
     }
 
-    if (isRef(schema)) {
-        const ref = getRefValue(ctx, schema);
+    if (isReferenceObject(schema)) {
+        const ref = resolveReferenceObject(ctx.spec, schema);
         if (!ref) {
             return s.unknown({ openapi: schema });
         }
@@ -404,36 +408,6 @@ function getSchemaProps(schema: OpenAPIV3.SchemaObject, name?: string) {
     return props;
 }
 
-function getRefValue(ctx: OpenApiToolContext, ref: OpenAPIV3.ReferenceObject) {
-    const path = ref.$ref?.split('/');
-    if (!path) {
-        return null;
-    }
-
-    let current = ctx.spec as unknown as Record<string, unknown> | undefined;
-
-    for (const part of path) {
-        if (part === '#') {
-            continue;
-        }
-
-        current = current?.[part] as Record<string, unknown>;
-    }
-
-    if (!current) {
-        return null;
-    }
-
-    return {
-        schema: current,
-        name: path[path.length - 1]!,
-    };
-}
-
-function isRef<T>(schema: T | OpenAPIV3.ReferenceObject): schema is OpenAPIV3.ReferenceObject {
-    return '$ref' in (schema as object);
-}
-
 function findUniqueKey(obj: Record<string, unknown>, keys: string[]) {
     for (const key of keys) {
         if (key in obj) {
@@ -444,4 +418,8 @@ function findUniqueKey(obj: Record<string, unknown>, keys: string[]) {
     }
 
     throw new Error('No unique key found in object');
+}
+
+function transformInput(input: Record<string, unknown>) {
+    return input;
 }
