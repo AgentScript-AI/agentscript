@@ -60,7 +60,6 @@ export const ALLOWED_NATIVES = Object.freeze(
         Map.prototype.has,
         Map.prototype.keys,
         Map.prototype.set,
-        Map.prototype.size,
         Map.prototype.values,
         Math,
         Math.abs,
