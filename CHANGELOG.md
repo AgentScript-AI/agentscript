@@ -1,3 +1,13 @@
+## 0.8.0 (2025-03-04)
+
+### 🚀 Features
+
+- refining tools, openapi doc filtering and tool improvements ([d398557](https://github.com/AgentScript-AI/agentscript/commit/d398557))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.7.2 (2025-03-04)
 
 ### 🩹 Fixes
