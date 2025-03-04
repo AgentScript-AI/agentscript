@@ -1,3 +1,18 @@
+## 0.7.2 (2025-03-04)
+
+### 🩹 Fixes
+
+- support optional calls ([13451b6](https://github.com/AgentScript-AI/agentscript/commit/13451b6))
+- improve system prompt ([1184567](https://github.com/AgentScript-AI/agentscript/commit/1184567))
+- improved allowed natives in runtime ([c608342](https://github.com/AgentScript-AI/agentscript/commit/c608342))
+- added Number.prototype methods to allowed natives ([04c3ddd](https://github.com/AgentScript-AI/agentscript/commit/04c3ddd))
+- compilation fix ([fe7c7bd](https://github.com/AgentScript-AI/agentscript/commit/fe7c7bd))
+- removed Map.prototype.size from allowed natives ([4c4f4a7](https://github.com/AgentScript-AI/agentscript/commit/4c4f4a7))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.7.1 (2025-03-03)
 
 ### 🩹 Fixes

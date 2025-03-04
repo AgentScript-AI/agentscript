@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/schema",
-    "version": "0.7.1",
+    "version": "0.7.2",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
@@ -43,8 +43,8 @@
         "@nzyme/zchema": "^0.7.0"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.7.1",
-        "@agentscript-ai/tsconfig": "^0.7.1",
+        "@agentscript-ai/eslint": "^0.7.2",
+        "@agentscript-ai/tsconfig": "^0.7.2",
         "@types/node": "^22.13.5",
         "typescript": "^5.8.2",
         "vitest": "^3.0.7"
