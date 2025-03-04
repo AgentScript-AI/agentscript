@@ -1,3 +1,3 @@
-export * from './filterOperations.js';
+export * from './filterOpenApiDoc.js';
 export * from './parseOpenApiDoc.js';
 export * from './toolsFromOpenApi.js';

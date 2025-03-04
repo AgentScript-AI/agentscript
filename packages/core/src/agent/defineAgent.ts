@@ -56,7 +56,7 @@ export type AgentDefinition<
  * AgentScript runtime module.
  */
 export type RuntimeModule = {
-    readonly [name: string]: ToolDefinition | RuntimeModule;
+    [name: string]: ToolDefinition | RuntimeModule;
 };
 
 /**

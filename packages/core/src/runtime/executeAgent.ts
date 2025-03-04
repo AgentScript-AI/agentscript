@@ -964,7 +964,11 @@ async function runToolCall(
             }
         }
 
-        validateOrThrow(tool.input, input);
+        if (tool.transformInput) {
+            input = tool.transformInput(input);
+        } else {
+            validateOrThrow(tool.input, input);
+        }
     }
 
     // Prepare state for the tool execution
@@ -1001,6 +1005,10 @@ async function runToolCall(
 
     if (result === TOOL_AWAIT_RESULT) {
         return updateFrame(frame, 'awaiting');
+    }
+
+    if (tool.transformOutput) {
+        result = tool.transformOutput(result);
     }
 
     frame.value = result;

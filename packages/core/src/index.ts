@@ -18,4 +18,7 @@ export * from './meta/defineMetadata.js';
 export * from './meta/defaultMetadata.js';
 
 export * from './tools/defineTool.js';
+export * from './tools/defineToolModule.js';
+export * from './tools/filterTools.js';
+export * from './tools/refineTools.js';
 export type * from './tools/toolResult.js';

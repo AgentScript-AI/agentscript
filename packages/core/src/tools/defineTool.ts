@@ -66,6 +66,16 @@ export type ToolOptions<
      */
     deps?: TDeps;
     /**
+     * Transform the input of the tool.
+     * By default, the input is validated against the schema.
+     */
+    transformInput?: (input: Record<string, unknown>) => Record<string, unknown>;
+    /**
+     * Transform the output of the tool.
+     * By default, the output is NOT validated against the schema.
+     */
+    transformOutput?: (output: unknown) => unknown;
+    /**
      * Handler for the tool.
      */
     handler: ToolHandler<
@@ -118,6 +128,16 @@ export type ToolDefinition<
      * Allows to use tool with IOC container.
      */
     deps?: TDeps;
+    /**
+     * Transform the input of the tool.
+     * By default, the input is validated against the schema.
+     */
+    transformInput?: (input: Record<string, unknown>) => Record<string, unknown>;
+    /**
+     * Transform the output of the tool.
+     * By default, the output is NOT validated against the schema.
+     */
+    transformOutput?: (output: unknown) => unknown;
     /**
      * Handler for the tool.
      */
@@ -276,6 +296,8 @@ export function defineTool<
         state,
         event: options.event as Tool['event'],
         deps: options.deps,
+        transformInput: options.transformInput,
+        transformOutput: options.transformOutput,
         handler: options.handler as Tool['handler'],
         [TOOL_SYMBOL]: true,
     };
