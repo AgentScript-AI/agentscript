@@ -187,13 +187,13 @@ function parseExpression(expression: babel.Expression): Expression {
         case 'OptionalMemberExpression':
             return parseMemberExpression(expression);
 
-        case 'CallExpression': {
+        case 'CallExpression':
+        case 'OptionalCallExpression':
             return {
                 type: 'call',
                 func: parseExpression(expression.callee as babel.Expression),
                 args: parseArguments(expression.arguments),
             };
-        }
 
         case 'AssignmentExpression':
             return {

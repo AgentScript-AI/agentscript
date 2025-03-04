@@ -707,6 +707,11 @@ async function runFunctionCall(
             return updateFrame(frame, objResult.status);
         }
 
+        // handle optional call
+        if (objResult.value == null && expr.func.optional) {
+            return updateFrame(frame, 'done');
+        }
+
         obj = objResult.value as Record<string, unknown>;
         func = obj[expr.func.prop];
     } else {

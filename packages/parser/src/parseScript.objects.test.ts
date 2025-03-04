@@ -159,3 +159,25 @@ test('optional property access', () => {
 
     expect(script).toEqual(expected);
 });
+
+test('optional call', () => {
+    const code = 'a?.b(1);';
+    const script = parseScript(code);
+    const expected: Script = {
+        code,
+        ast: [
+            {
+                type: 'call',
+                func: {
+                    type: 'member',
+                    prop: 'b',
+                    obj: { type: 'ident', name: 'a' },
+                    optional: true,
+                },
+                args: [{ type: 'literal', value: 1 }],
+            },
+        ],
+    };
+
+    expect(script).toEqual(expected);
+});
