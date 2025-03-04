@@ -32,7 +32,7 @@ import { validateOrThrow } from '@agentscript-ai/schema';
 
 import { RuntimeError } from './RuntimeError.js';
 import type { NativeFunction } from './common.js';
-import { ALLOWED_FUNCTIONS, ALLOWED_GLOBALS } from './common.js';
+import { ALLOWED_NATIVES } from './common.js';
 import type { RuntimeController, RuntimeControllerOptions } from './runtimeController.js';
 import { createRuntimeControler } from './runtimeController.js';
 import type { StackFrame, StackFrameStatus } from './runtimeTypes.js';
@@ -77,6 +77,12 @@ export type ExecuteAgentOptions<
      * Will be used to resolve tools dependencies.
      */
     container?: Container;
+
+    /**
+     * Set of native functions and globals that are allowed to be used in the agent.
+     * If not provided, will use the default allowed natives from {@link ALLOWED_NATIVES}.
+     */
+    allowedNatives?: Set<unknown>;
 } & ExecuteAgentInputOptions<TInput> &
     RuntimeControllerOptions;
 
@@ -95,6 +101,7 @@ interface ExecuteAgentContext {
     agent: Agent;
     controller: RuntimeController;
     container?: Container;
+    allowedNatives: Set<unknown>;
 }
 
 interface StackFrameResult {
@@ -138,6 +145,7 @@ export async function executeAgent<
         agent,
         controller,
         container: options.container,
+        allowedNatives: options.allowedNatives ?? ALLOWED_NATIVES,
     };
 
     const result = await runBlockStatement(ctx, root, root, script);
@@ -453,9 +461,10 @@ function runIdentifierExpression(
         };
     }
 
-    if (ALLOWED_GLOBALS.has(name)) {
+    const global = (globalThis as Record<string, unknown>)[name];
+    if (ctx.allowedNatives.has(global)) {
         return {
-            value: (globalThis as Record<string, unknown>)[name],
+            value: global,
             unsafe: true,
             status: 'done',
         };
@@ -513,7 +522,6 @@ async function runMemberExpression(
         property = expr.prop;
     } else {
         const propertyResult = await runExpression(ctx, closure, frame, 1, expr.prop);
-
         if (propertyResult.status !== 'done') {
             return updateFrame(frame, propertyResult.status);
         }
@@ -977,7 +985,7 @@ async function runFunctionNative(
     func: NativeFunction,
     thisArg: unknown,
 ) {
-    const allowed = ALLOWED_FUNCTIONS.has(func) || ALLOWED_FUNCTIONS.has(func.name);
+    const allowed = ctx.allowedNatives.has(func) || func.name === 'toString';
     if (!allowed) {
         throw new RuntimeError(`Function ${func.name} is not allowed`);
     }
@@ -1248,7 +1256,7 @@ async function runNewExpression(
         throw new RuntimeError(`Expression is not a function`);
     }
 
-    if (!ALLOWED_FUNCTIONS.has(constructor)) {
+    if (!ctx.allowedNatives.has(constructor)) {
         throw new RuntimeError(`Constructor ${constructor.name} is not allowed`);
     }
 
