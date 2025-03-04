@@ -13887,6 +13887,8 @@ export type SlackPostSettingsInput = {
   channelId: Scalars['String']['input'];
   channelType?: InputMaybe<SlackChannelType>;
   configurationUrl: Scalars['String']['input'];
+  /** Slack workspace id */
+  teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type SlackSettingsInput = {

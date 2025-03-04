@@ -497,3 +497,71 @@ test('optional property access without value', async () => {
     expect(agent.root).toEqual(expectedStack);
     expect(agent.status).toBe('done');
 });
+
+test('optional call on non null', async () => {
+    const script = parseScript([
+        //
+        'const a = [];',
+        'a?.push(1);',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: [1] },
+        children: [
+            completedFrame({
+                node: 'var',
+                children: [completedFrame({ node: 'literal', value: [1] })],
+            }),
+            completedFrame({
+                node: 'call',
+                value: 1,
+                children: [
+                    // this
+                    completedFrame({ node: 'ident', value: [1] }),
+                    // arg is literal
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});
+
+test('optional call on null', async () => {
+    const script = parseScript([
+        //
+        'const a = null;',
+        'a?.push(1);',
+    ]);
+
+    const agent = createAgent({ script });
+    const result = await executeAgent({ agent });
+
+    const expectedStack = rootFrame({
+        status: 'done',
+        variables: { a: null },
+        children: [
+            completedFrame({
+                node: 'var',
+            }),
+            completedFrame({
+                node: 'call',
+                children: [
+                    // this
+                    completedFrame({ node: 'ident', value: null }),
+                    // arg is literal
+                ],
+            }),
+        ],
+    });
+
+    expect(result).toEqual(agentResult({ ticks: 0 }));
+    expect(agent.root).toEqual(expectedStack);
+    expect(agent.status).toBe('done');
+});

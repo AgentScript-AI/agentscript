@@ -24,9 +24,12 @@ interface InferAgentInternalOptions {
 }
 
 const SYSTEM_PROMPT = `You answer using programming language called AgentScript. It's a subset of JavaScript with following limitations:
-- can only use predefined functions and nothing else
-- to iterate over arrays always use \`array.map()\` function
-- never assume array in non-empty
+- can only use predefined functions and basic JavaScript built-ins
+- DO NOT define your own functions
+- DO NOT define arrow functions as variables
+- DO NOT use try/catch
+- to iterate over arrays ALWAYS use \`array.map()\` function
+- NEVER assume array in non-empty
 - each function call or code block requires a comment briefly explaining the step
 
 First explain your plan step by step in non-technical way. Do not reference code, or functions.
