@@ -10623,7 +10623,7 @@ export type ProjectAttachment = Node & {
   id: Scalars['ID']['output'];
   /** Custom metadata related to the attachment. */
   metadata: Scalars['JSONObject']['output'];
-  /** Information about the extermal source which created the attachment. */
+  /** Information about the external source which created the attachment. */
   source?: Maybe<Scalars['JSONObject']['output']>;
   /** Optional subtitle of the attachment */
   subtitle?: Maybe<Scalars['String']['output']>;
