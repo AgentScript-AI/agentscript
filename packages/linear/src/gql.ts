@@ -4516,6 +4516,8 @@ export type Issue = Node & {
   description?: Maybe<Scalars['String']['output']>;
   /** [Internal] The issue's description content as YJS state. */
   descriptionState?: Maybe<Scalars['String']['output']>;
+  /** [ALPHA] The document content representing this issue description. */
+  documentContent?: Maybe<DocumentContent>;
   /** The date at which the issue is due. */
   dueDate?: Maybe<Scalars['TimelessDate']['output']>;
   /** The estimate of the complexity of the issue.. */
@@ -5744,6 +5746,8 @@ export type IssueSearchResult = Node & {
   description?: Maybe<Scalars['String']['output']>;
   /** [Internal] The issue's description content as YJS state. */
   descriptionState?: Maybe<Scalars['String']['output']>;
+  /** [ALPHA] The document content representing this issue description. */
+  documentContent?: Maybe<DocumentContent>;
   /** The date at which the issue is due. */
   dueDate?: Maybe<Scalars['TimelessDate']['output']>;
   /** The estimate of the complexity of the issue.. */
