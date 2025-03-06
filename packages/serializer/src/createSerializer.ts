@@ -3,13 +3,13 @@ import type { Heap, HeapArray, HeapObject, HeapSet } from './heapTypes.js';
 /**
  * Heap serializer.
  */
-export type HeapSerializer = ReturnType<typeof createHeapSerializer>;
+export type Serializer = ReturnType<typeof createSerializer>;
 
 /**
  * Create a heap serializer.
  * @returns Heap serializer.
  */
-export function createHeapSerializer() {
+export function createSerializer() {
     const heap: Heap = [];
     const heapMap = new Map<unknown, number>();
 

@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
 
-import { createHeapDeserializer } from './createHeapDeserializer.js';
-import { createHeapSerializer } from './createHeapSerializer.js';
+import { createDeserializer } from './createDeserializer.js';
+import { createSerializer } from './createSerializer.js';
 
-test('heap serializer and deserializer', () => {
-    const serializer = createHeapSerializer();
+test('serializer and deserializer', () => {
+    const serializer = createSerializer();
 
     const value = {
         a: 1,
@@ -25,14 +25,14 @@ test('heap serializer and deserializer', () => {
 
     const index = serializer.push(value);
 
-    const deserializer = createHeapDeserializer(serializer.heap);
+    const deserializer = createDeserializer(serializer.heap);
     const deserialized = deserializer.get(index);
 
     expect(deserialized).toEqual(value);
 });
 
 test('recursive object', () => {
-    const serializer = createHeapSerializer();
+    const serializer = createSerializer();
 
     const value = {
         a: 1,
@@ -43,14 +43,14 @@ test('recursive object', () => {
 
     const index = serializer.push(value);
 
-    const deserializer = createHeapDeserializer(serializer.heap);
+    const deserializer = createDeserializer(serializer.heap);
     const deserialized = deserializer.get(index);
 
     expect(deserialized).toEqual(value);
 });
 
 test('symbol', () => {
-    const serializer = createHeapSerializer();
+    const serializer = createSerializer();
 
     const value = {
         a: Symbol('foo'),
@@ -59,7 +59,7 @@ test('symbol', () => {
 
     const index = serializer.push(value);
 
-    const deserializer = createHeapDeserializer(serializer.heap);
+    const deserializer = createDeserializer(serializer.heap);
     const deserialized = deserializer.get(index) as typeof value;
 
     expect(deserialized.a.description).toEqual('foo');
@@ -67,7 +67,7 @@ test('symbol', () => {
 });
 
 test('multiple values', () => {
-    const serializer = createHeapSerializer();
+    const serializer = createSerializer();
 
     const arr = [1, 2, 3, 4, 5n, true, 'foo', new Date('2021-01-01')];
     const arrIndex = serializer.push(arr);
@@ -79,7 +79,7 @@ test('multiple values', () => {
 
     const objIndex = serializer.push(obj);
 
-    const deserializer = createHeapDeserializer(serializer.heap);
+    const deserializer = createDeserializer(serializer.heap);
 
     const arrDeserialized = deserializer.get(arrIndex) as typeof arr;
     const objDeserialized = deserializer.get(objIndex) as typeof obj;

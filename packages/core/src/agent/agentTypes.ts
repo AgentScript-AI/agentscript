@@ -1,6 +1,7 @@
 import type { LiteralExclude, LiteralPick } from '@nzyme/types';
 
 import type { Script } from '@agentscript-ai/parser';
+import type { Heap } from '@agentscript-ai/serializer';
 
 import type {
     AgentDefinition,
@@ -9,7 +10,6 @@ import type {
     AgentOutputBase,
     AgentTools,
 } from './defineAgent.js';
-import type { Heap } from '../heap/heapTypes.js';
 import type { Metadata } from '../meta/defineMetadata.js';
 import type {
     StackFrame,

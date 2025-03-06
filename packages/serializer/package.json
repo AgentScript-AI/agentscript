@@ -1,5 +1,5 @@
 {
-    "name": "@agentscript-ai/core",
+    "name": "@agentscript-ai/serializer",
     "version": "0.8.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
@@ -38,18 +38,7 @@
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
-        "@agentscript-ai/parser": "^0.8.0",
-        "@agentscript-ai/provider": "^0.8.0",
-        "@agentscript-ai/schema": "^0.8.0",
-        "@agentscript-ai/serializer": "^0.8.0",
-        "@agentscript-ai/utils": "^0.8.0",
-        "@nzyme/crypto-utils": "^0.7.0",
-        "@nzyme/ioc": "^0.7.0",
-        "@nzyme/markdown": "^0.7.0",
-        "@nzyme/types": "^0.7.0",
-        "@nzyme/utils": "^0.7.0",
-        "debug": "^4.4.0",
-        "uuid": "^11.1.0"
+        "@agentscript-ai/utils": "^0.8.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",

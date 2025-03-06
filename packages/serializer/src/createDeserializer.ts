@@ -3,14 +3,14 @@ import type { Heap } from './heapTypes.js';
 /**
  * Heap deserializer.
  */
-export type HeapDeserializer = ReturnType<typeof createHeapDeserializer>;
+export type Deserializer = ReturnType<typeof createDeserializer>;
 
 /**
  * Create a heap deserializer.
  * @param heap - Heap to deserialize.
  * @returns Heap deserializer.
  */
-export function createHeapDeserializer(heap: Heap) {
+export function createDeserializer(heap: Heap) {
     const heapMap = new Map<number, unknown>();
 
     return { get };
