@@ -3655,8 +3655,6 @@ export type InitiativeCreateInput = {
   name: Scalars['String']['input'];
   /** The owner of the initiative. */
   ownerId?: InputMaybe<Scalars['String']['input']>;
-  /** [ALPHA] The parent of the initiative. */
-  parentId?: InputMaybe<Scalars['String']['input']>;
   /** The sort order of the initiative within the organization. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The initiative's status. */
@@ -4079,8 +4077,6 @@ export type InitiativeUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The owner of the initiative. */
   ownerId?: InputMaybe<Scalars['String']['input']>;
-  /** [ALPHA] The parent of the initiative. */
-  parentId?: InputMaybe<Scalars['String']['input']>;
   /** The sort order of the initiative within the organization. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The initiative's status. */
@@ -15287,6 +15283,8 @@ export type UserAdminPayload = {
 /** Public information of the OAuth application, plus whether the application has been authorized for the given scopes. */
 export type UserAuthorizedApplication = {
   __typename?: 'UserAuthorizedApplication';
+  /** Whether the application supports app users. */
+  appUserEnabled: Scalars['Boolean']['output'];
   /** Error associated with the application needing to be requested for approval in the workspace. */
   approvalErrorCode?: Maybe<Scalars['String']['output']>;
   /** OAuth application's client ID. */
