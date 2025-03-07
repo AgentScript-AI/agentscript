@@ -27,6 +27,10 @@
             "require": {
                 "types": "./dist/cjs/index.d.ts",
                 "default": "./dist/cjs/index.cjs"
+            },
+            "default": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
             }
         }
     },
@@ -41,7 +45,7 @@
     },
     "dependencies": {
         "@agentscript-ai/utils": "^0.8.0",
-        "@ai-sdk/provider": "^1.0.9",
+        "@ai-sdk/provider": "^1.0.10",
         "@langchain/core": "^0.3.42",
         "@nzyme/ioc": "^0.7.0",
         "@nzyme/utils": "^0.7.0"
@@ -49,12 +53,12 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
-        "@ai-sdk/anthropic": "^1.1.13",
-        "@ai-sdk/openai": "^1.1.15",
+        "@ai-sdk/anthropic": "^1.1.15",
+        "@ai-sdk/openai": "^1.2.1",
         "@langchain/anthropic": "^0.3.15",
         "@langchain/openai": "^0.4.4",
-        "@types/node": "^22.13.5",
+        "@types/node": "^22.13.9",
         "typescript": "^5.8.2",
-        "vitest": "^3.0.7"
+        "vitest": "^3.0.8"
     }
 }

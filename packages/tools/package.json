@@ -27,6 +27,10 @@
             "require": {
                 "types": "./dist/cjs/index.d.ts",
                 "default": "./dist/cjs/index.cjs"
+            },
+            "default": {
+                "types": "./dist/esm/index.d.ts",
+                "default": "./dist/esm/index.js"
             }
         }
     },
@@ -50,8 +54,8 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
-        "@types/node": "^22.13.5",
+        "@types/node": "^22.13.9",
         "typescript": "^5.8.2",
-        "vitest": "^3.0.7"
+        "vitest": "^3.0.8"
     }
 }
