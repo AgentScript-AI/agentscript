@@ -5671,7 +5671,8 @@ export type IssueRelationPayload = {
 export const IssueRelationType = {
   Blocks: 'blocks',
   Duplicate: 'duplicate',
-  Related: 'related'
+  Related: 'related',
+  Similar: 'similar'
 } as const;
 
 export type IssueRelationType = typeof IssueRelationType[keyof typeof IssueRelationType];
@@ -6693,6 +6694,12 @@ export type Mutation = {
    * @deprecated Deprecated in favor of projectDelete.
    */
   projectArchive: ProjectArchivePayload;
+  /** Creates a new project attachment */
+  projectAttachmentCreate: ProjectAttachmentPayload;
+  /** Deletes a project attachment. */
+  projectAttachmentDelete: DeletePayload;
+  /** Updates an existing project attachment. */
+  projectAttachmentUpdate: ProjectAttachmentPayload;
   /** Creates a new project. */
   projectCreate: ProjectPayload;
   /** Deletes (trashes) a project. */
@@ -8030,6 +8037,22 @@ export type MutationPasskeyLoginStartArgs = {
 export type MutationProjectArchiveArgs = {
   id: Scalars['String']['input'];
   trash?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
+export type MutationProjectAttachmentCreateArgs = {
+  input: ProjectAttachmentCreateInput;
+};
+
+
+export type MutationProjectAttachmentDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationProjectAttachmentUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: ProjectAttachmentUpdateInput;
 };
 
 
@@ -10220,6 +10243,8 @@ export type Post = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** The user that the post is associated with. */
   user?: Maybe<User>;
+  /** [Internal] The written update data used to compose the written post. */
+  writtenSummaryData?: Maybe<Scalars['JSONObject']['output']>;
 };
 
 /** [Internal] A post related notification. */
@@ -10385,6 +10410,8 @@ export type Project = Node & {
   name: Scalars['String']['output'];
   /** The priority of the project. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority: Scalars['Int']['output'];
+  /** The priority of the project as a label. */
+  priorityLabel: Scalars['String']['output'];
   /** The sort order for the project within the organization, when ordered by priority. */
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
@@ -10623,6 +10650,8 @@ export type ProjectAttachment = Node & {
   id: Scalars['ID']['output'];
   /** Custom metadata related to the attachment. */
   metadata: Scalars['JSONObject']['output'];
+  /** The project this attachment belongs to. */
+  project: Project;
   /** Information about the external source which created the attachment. */
   source?: Maybe<Scalars['JSONObject']['output']>;
   /** Optional subtitle of the attachment */
@@ -10636,6 +10665,80 @@ export type ProjectAttachment = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** URL of the attachment. */
   url: Scalars['String']['output'];
+};
+
+export type ProjectAttachmentConnection = {
+  __typename?: 'ProjectAttachmentConnection';
+  edges: Array<ProjectAttachmentEdge>;
+  nodes: Array<ProjectAttachment>;
+  pageInfo: PageInfo;
+};
+
+export type ProjectAttachmentCreateInput = {
+  /** Create attachment as a user with the provided name. This option is only available to OAuth applications creating attachments in `actor=application` mode. */
+  createAsUser?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** Attachment metadata object with string and number values. */
+  metadata?: InputMaybe<Scalars['JSONObject']['input']>;
+  /** Note to be persisted alongside the attachent, in a CustomerNeed */
+  noteBody?: InputMaybe<Scalars['String']['input']>;
+  /** The project to associate the attachment with. */
+  projectId: Scalars['String']['input'];
+  /** The attachment subtitle. */
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  /** The attachment title. */
+  title: Scalars['String']['input'];
+  /** Attachment location which is also used as an unique identifier for the attachment. */
+  url: Scalars['String']['input'];
+};
+
+export type ProjectAttachmentEdge = {
+  __typename?: 'ProjectAttachmentEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: ProjectAttachment;
+};
+
+/** ProjectAttachment filtering options. */
+export type ProjectAttachmentFilter = {
+  /** Compound filters, all of which need to be matched by the project attachment. */
+  and?: InputMaybe<Array<ProjectAttachmentFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Filters that the attachments creator must satisfy. */
+  creator?: InputMaybe<NullableUserFilter>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Compound filters, one of which need to be matched by the project attachment. */
+  or?: InputMaybe<Array<ProjectAttachmentFilter>>;
+  /** Comparator for the subtitle. */
+  subtitle?: InputMaybe<NullableStringComparator>;
+  /** Comparator for the title. */
+  title?: InputMaybe<StringComparator>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
+  /** Comparator for the url. */
+  url?: InputMaybe<StringComparator>;
+};
+
+export type ProjectAttachmentPayload = {
+  __typename?: 'ProjectAttachmentPayload';
+  /** The project attachment that was created. */
+  attachment: ProjectAttachment;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+export type ProjectAttachmentUpdateInput = {
+  /** Attachment metadata object with string and number values. */
+  metadata?: InputMaybe<Scalars['JSONObject']['input']>;
+  /** The attachment subtitle. */
+  subtitle?: InputMaybe<Scalars['String']['input']>;
+  /** The attachment title. */
+  title: Scalars['String']['input'];
 };
 
 /** Project filtering options. */
@@ -11435,6 +11538,8 @@ export type ProjectSearchResult = Node & {
   name: Scalars['String']['output'];
   /** The priority of the project. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority: Scalars['Int']['output'];
+  /** The priority of the project as a label. */
+  priorityLabel: Scalars['String']['output'];
   /** The sort order for the project within the organization, when ordered by priority. */
   prioritySortOrder: Scalars['Float']['output'];
   /** The overall progress of the project. This is the (completed estimate points + 0.25 * in progress estimate points) / total estimate points. */
@@ -12376,6 +12481,10 @@ export type Query = {
   organizationMeta?: Maybe<OrganizationMeta>;
   /** One specific project. */
   project: Project;
+  /** One specific project attachment. */
+  projectAttachment: ProjectAttachment;
+  /** All project attachments. */
+  projectAttachments: ProjectAttachmentConnection;
   /** Suggests filters for a project view based on a text prompt. */
   projectFilterSuggestion: ProjectFilterSuggestionPayload;
   /** One specific project milestone. */
@@ -13028,6 +13137,22 @@ export type QueryOrganizationMetaArgs = {
 
 export type QueryProjectArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryProjectAttachmentArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryProjectAttachmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectAttachmentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -15769,6 +15894,7 @@ export const ViewType = {
   Roadmaps: 'roadmaps',
   Search: 'search',
   SplitSearch: 'splitSearch',
+  SubIssues: 'subIssues',
   Teams: 'teams',
   Triage: 'triage',
   UserProfile: 'userProfile',
