@@ -9492,6 +9492,8 @@ export type OauthClientApproval = Node & {
   id: Scalars['ID']['output'];
   /** The uuid of the OAuth client being requested for installation. */
   oauthClientId: Scalars['String']['output'];
+  /** Whether the approval is for an app user allowed access to public teams only. */
+  publicTeamsOnly?: Maybe<Scalars['Boolean']['output']>;
   /** The reason the person wants to install this OAuth client. */
   requestReason?: Maybe<Scalars['String']['output']>;
   /** The person who requested installing the OAuth client. */
