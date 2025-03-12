@@ -21,7 +21,7 @@
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
-        "@nzyme/tsconfig": "^0.7.0",
+        "@nzyme/tsconfig": "^0.8.0",
         "@types/node": "^22.13.10"
     },
     "devDependencies": {
