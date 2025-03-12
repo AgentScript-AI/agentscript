@@ -54,7 +54,7 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
-        "@types/node": "^22.13.9",
+        "@types/node": "^22.13.10",
         "typescript": "^5.8.2",
         "vitest": "^3.0.8"
     }

@@ -43,15 +43,15 @@
     },
     "dependencies": {
         "@agentscript-ai/utils": "^0.8.0",
-        "@babel/parser": "^7.26.9",
-        "@babel/types": "^7.26.9"
+        "@babel/parser": "^7.26.10",
+        "@babel/types": "^7.26.10"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
         "@nzyme/vitest": "^0.7.0",
         "@types/debug": "^4.1.12",
-        "@types/node": "^22.13.9",
+        "@types/node": "^22.13.10",
         "typescript": "^5.8.2",
         "vitest": "^3.0.8"
     }

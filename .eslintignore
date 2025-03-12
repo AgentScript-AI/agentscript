@@ -1,8 +1,0 @@
-node_modules
-dist
-.eslintrc.cjs
-vitest.workspace.ts
-
-# smoke tests mostly
-*.cjs
-*.mjs
