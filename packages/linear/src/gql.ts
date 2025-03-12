@@ -3362,6 +3362,8 @@ export type GitHubPersonalSettingsInput = {
 };
 
 export type GitHubRepoInput = {
+  /** Whether the repository is archived. */
+  archived?: InputMaybe<Scalars['Boolean']['input']>;
   /** The full name of the repository. */
   fullName: Scalars['String']['input'];
   /** The GitHub repo id. */
@@ -3968,6 +3970,8 @@ export type InitiativeUpdate = Node & {
   isStale: Scalars['Boolean']['output'];
   /** Emoji reaction summary, grouped by emoji type. */
   reactionData: Scalars['JSONObject']['output'];
+  /** Reactions associated with the initiative update. */
+  reactions: Array<Reaction>;
   /** The update's unique URL slug. */
   slugId: Scalars['String']['output'];
   /**
