@@ -55,6 +55,8 @@ export type ApiKey = Node & {
   id: Scalars['ID']['output'];
   /** The label of the API key. */
   label: Scalars['String']['output'];
+  /** The sync groups that this API key requests access to. If null, the API key has access to all sync groups the user has access to. The final set of sync groups is computed as the intersection of these requested groups with the user's base sync groups. */
+  requestedSyncGroups?: Maybe<Array<Scalars['String']['output']>>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -76,6 +78,8 @@ export type ApiKeyCreateInput = {
   key: Scalars['String']['input'];
   /** The label for the API key. */
   label: Scalars['String']['input'];
+  /** Optional list of team IDs to scope this API key to. If not provided, the API key will have access to all teams the user has access to. */
+  teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type ApiKeyEdge = {
@@ -93,6 +97,13 @@ export type ApiKeyPayload = {
   lastSyncId: Scalars['Float']['output'];
   /** Whether the operation was successful. */
   success: Scalars['Boolean']['output'];
+};
+
+export type ApiKeyUpdateInput = {
+  /** The new label for the API key. */
+  label?: InputMaybe<Scalars['String']['input']>;
+  /** Optional list of team IDs to scope this API key to. If not provided, the API key's existing team scoping will not be changed. */
+  teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 /** Public information of the OAuth application. */
@@ -6273,6 +6284,8 @@ export type Mutation = {
   apiKeyCreate: ApiKeyPayload;
   /** [INTERNAL] Deletes an API key. */
   apiKeyDelete: DeletePayload;
+  /** [INTERNAL] Updates an API key's allowed teams. */
+  apiKeyUpdate: ApiKeyPayload;
   /** Creates a new attachment, or updates existing if the same `url` and `issueId` is used. */
   attachmentCreate: AttachmentPayload;
   /** Deletes an issue attachment. */
@@ -6874,6 +6887,12 @@ export type MutationApiKeyCreateArgs = {
 
 export type MutationApiKeyDeleteArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationApiKeyUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: ApiKeyUpdateInput;
 };
 
 
