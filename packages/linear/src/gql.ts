@@ -1228,6 +1228,14 @@ export type CustomerFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** [ALPHA] Issue customer important count sorting options. */
+export type CustomerImportantCountSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** A customer need, expressed through a reference to an issue, project, or comment. */
 export type CustomerNeed = Node & {
   __typename?: 'CustomerNeed';
@@ -5973,6 +5981,8 @@ export type IssueSortInput = {
   customer?: InputMaybe<CustomerSort>;
   /** Sort by number of customers associated with the issue */
   customerCount?: InputMaybe<CustomerCountSort>;
+  /** Sort by number of important customers associated with the issue */
+  customerImportantCount?: InputMaybe<CustomerImportantCountSort>;
   /** Sort by customer revenue */
   customerRevenue?: InputMaybe<CustomerRevenueSort>;
   /** Sort by Cycle start date */
@@ -12328,6 +12338,8 @@ export type Query = {
   externalUser: ExternalUser;
   /** All external users for the organization. */
   externalUsers: ExternalUserConnection;
+  /** [INTERNAL] Webhook failure events for webhooks that belong to an OAuth application. (last 50) */
+  failuresForOauthWebhooks: Array<WebhookFailureEvent>;
   /** One specific favorite. */
   favorite: Favorite;
   /** The user's favorites. */
@@ -12772,6 +12784,11 @@ export type QueryExternalUsersArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryFailuresForOauthWebhooksArgs = {
+  oauthClientId: Scalars['String']['input'];
 };
 
 
