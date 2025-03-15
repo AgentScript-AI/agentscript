@@ -10241,6 +10241,8 @@ export type Post = Node & {
   editedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The log id of the ai response. */
   evalLogId?: Maybe<Scalars['String']['output']>;
+  /** Schedule used to create a post summary. */
+  feedSummaryScheduleAtCreate?: Maybe<FeedSummarySchedule>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The project that the post is associated with. */
