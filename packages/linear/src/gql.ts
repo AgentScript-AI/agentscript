@@ -2160,6 +2160,8 @@ export type Document = Node & {
   slugId: Scalars['String']['output'];
   /** The order of the item in the resources list. */
   sortOrder: Scalars['Float']['output'];
+  /** [Internal] The team that the document is associated with. */
+  team?: Maybe<Team>;
   /** The document title. */
   title: Scalars['String']['output'];
   /** A flag that indicates whether the document is in the trash bin. */
@@ -2280,6 +2282,8 @@ export type DocumentCreateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] The identifiers of the users subscribing to this document. */
   subscriberIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** [Internal] Related team for the document. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
   /** The title of the document. */
   title: Scalars['String']['input'];
 };
@@ -2441,6 +2445,8 @@ export type DocumentSearchResult = Node & {
   slugId: Scalars['String']['output'];
   /** The order of the item in the resources list. */
   sortOrder: Scalars['Float']['output'];
+  /** [Internal] The team that the document is associated with. */
+  team?: Maybe<Team>;
   /** The document title. */
   title: Scalars['String']['output'];
   /** A flag that indicates whether the document is in the trash bin. */
@@ -2493,6 +2499,8 @@ export type DocumentUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] The identifiers of the users subscribing to this document. */
   subscriberIds?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** [Internal] Related team for the document. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
   /** The title of the document. */
   title?: InputMaybe<Scalars['String']['input']>;
   /** Whether the document has been trashed. */
@@ -2761,14 +2769,16 @@ export type EntityExternalLinkConnection = {
 export type EntityExternalLinkCreateInput = {
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
-  /** Related initiative link. */
+  /** The initiative associated with the link. */
   initiativeId?: InputMaybe<Scalars['String']['input']>;
   /** The label for the link. */
   label: Scalars['String']['input'];
-  /** Related project link. */
+  /** The project associated with the link. */
   projectId?: InputMaybe<Scalars['String']['input']>;
   /** The order of the item in the entities resources list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
+  /** The team associated with the link. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
   /** The URL of the link. */
   url: Scalars['String']['input'];
 };
@@ -3875,6 +3885,71 @@ export type InitiativePayload = {
   lastSyncId: Scalars['Float']['output'];
   /** Whether the operation was successful. */
   success: Scalars['Boolean']['output'];
+};
+
+/** A relation representing the dependency between two initiatives. */
+export type InitiativeRelation = Node & {
+  __typename?: 'InitiativeRelation';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The parent initiative. */
+  initiative: Initiative;
+  /** The child initiative. */
+  relatedInitiative: Initiative;
+  /** The sort order of the relation within the initiative. */
+  sortOrder: Scalars['Float']['output'];
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The last user who created or modified the relation. */
+  user?: Maybe<User>;
+};
+
+export type InitiativeRelationConnection = {
+  __typename?: 'InitiativeRelationConnection';
+  edges: Array<InitiativeRelationEdge>;
+  nodes: Array<InitiativeRelation>;
+  pageInfo: PageInfo;
+};
+
+export type InitiativeRelationCreateInput = {
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the parent initiative. */
+  initiativeId: Scalars['String']['input'];
+  /** The identifier of the child initiative. */
+  relatedInitiativeId: Scalars['String']['input'];
+  /** The sort order of the initiative relation. */
+  sortOrder?: InputMaybe<Scalars['Float']['input']>;
+};
+
+export type InitiativeRelationEdge = {
+  __typename?: 'InitiativeRelationEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: InitiativeRelation;
+};
+
+export type InitiativeRelationPayload = {
+  __typename?: 'InitiativeRelationPayload';
+  /** The initiative relation that was created or updated. */
+  initiativeRelation: InitiativeRelation;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+/** The properties of the initiativeRelation to update. */
+export type InitiativeRelationUpdateInput = {
+  /** The sort order of the initiative relation. */
+  sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export const InitiativeStatus = {
@@ -6463,6 +6538,12 @@ export type Mutation = {
   initiativeCreate: InitiativePayload;
   /** Deletes (trashes) an initiative. */
   initiativeDelete: DeletePayload;
+  /** Creates a new initiative relation. */
+  initiativeRelationCreate: InitiativeRelationPayload;
+  /** Deletes an initiative relation. */
+  initiativeRelationDelete: DeletePayload;
+  /** Updates an initiative relation. */
+  initiativeRelationUpdate: DeletePayload;
   /** Creates a new initiativeToProject join. */
   initiativeToProjectCreate: InitiativeToProjectPayload;
   /** Deletes a initiativeToProject. */
@@ -7399,6 +7480,22 @@ export type MutationInitiativeCreateArgs = {
 
 export type MutationInitiativeDeleteArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationInitiativeRelationCreateArgs = {
+  input: InitiativeRelationCreateInput;
+};
+
+
+export type MutationInitiativeRelationDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationInitiativeRelationUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: InitiativeRelationUpdateInput;
 };
 
 
@@ -12352,6 +12449,10 @@ export type Query = {
   feedSubscriptions: FeedSubscriptionConnection;
   /** One specific initiative. */
   initiative: Initiative;
+  /** One specific initiative relation. */
+  initiativeRelation: ProjectRelation;
+  /** All initiative relationships. */
+  initiativeRelations: InitiativeRelationConnection;
   /** One specific initiativeToProject. */
   initiativeToProject: InitiativeToProject;
   /** returns a list of initiative to project entities. */
@@ -12826,6 +12927,21 @@ export type QueryFeedSubscriptionsArgs = {
 
 export type QueryInitiativeArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type QueryInitiativeRelationArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryInitiativeRelationsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -15199,6 +15315,8 @@ export type User = Node & {
   active: Scalars['Boolean']['output'];
   /** Whether the user is an organization administrator. */
   admin: Scalars['Boolean']['output'];
+  /** Whether the user is an app. */
+  app: Scalars['Boolean']['output'];
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** Issues assigned to the user. */
