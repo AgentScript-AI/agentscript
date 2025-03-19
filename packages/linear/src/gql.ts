@@ -57,6 +57,8 @@ export type ApiKey = Node & {
   label: Scalars['String']['output'];
   /** The sync groups that this API key requests access to. If null, the API key has access to all sync groups the user has access to. The final set of sync groups is computed as the intersection of these requested groups with the user's base sync groups. */
   requestedSyncGroups?: Maybe<Array<Scalars['String']['output']>>;
+  /** Scopes associated with the API key. */
+  scope?: Maybe<Array<Scalars['String']['output']>>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -78,7 +80,9 @@ export type ApiKeyCreateInput = {
   key: Scalars['String']['input'];
   /** The label for the API key. */
   label: Scalars['String']['input'];
-  /** Optional list of team IDs to scope this API key to. If not provided, the API key will have access to all teams the user has access to. */
+  /** Scopes the API key has access to. Default is all scopes. */
+  scope?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** List of team IDs to restrict this API key to. Default is all teams the user has access to. */
   teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
@@ -102,8 +106,21 @@ export type ApiKeyPayload = {
 export type ApiKeyUpdateInput = {
   /** The new label for the API key. */
   label?: InputMaybe<Scalars['String']['input']>;
-  /** Optional list of team IDs to scope this API key to. If not provided, the API key's existing team scoping will not be changed. */
+  /** Scopes the API key has access to. Default is all scopes. */
+  scope?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** List of team IDs to restrict this API key to. Default is all teams the user has access to. */
   teamIds?: InputMaybe<Array<Scalars['String']['input']>>;
+};
+
+/** [INTERNAL] Details of the app user's existing token. */
+export type AppUserAuthentication = {
+  __typename?: 'AppUserAuthentication';
+  /** The timestamp at which the token was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** Whether the application has requested custom sync groups. */
+  requestedSyncGroups: Scalars['Boolean']['output'];
+  /** The scopes that the token has. */
+  scope: Array<Scalars['String']['output']>;
 };
 
 /** Public information of the OAuth application. */
@@ -15460,10 +15477,14 @@ export type UserAdminPayload = {
 /** Public information of the OAuth application, plus whether the application has been authorized for the given scopes. */
 export type UserAuthorizedApplication = {
   __typename?: 'UserAuthorizedApplication';
+  /** Details of the app user's existing token, if any. */
+  appUserAuthentication?: Maybe<AppUserAuthentication>;
   /** Whether the application supports app users. */
   appUserEnabled: Scalars['Boolean']['output'];
   /** Error associated with the application needing to be requested for approval in the workspace. */
   approvalErrorCode?: Maybe<Scalars['String']['output']>;
+  /** Whether the application can only be added to public teams. */
+  canBeAddedToPublicTeamsOnly?: Maybe<Scalars['Boolean']['output']>;
   /** OAuth application's client ID. */
   clientId: Scalars['String']['output'];
   /** Whether the application was created by Linear. */
