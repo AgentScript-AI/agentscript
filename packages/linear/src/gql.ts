@@ -2295,6 +2295,8 @@ export type DocumentCreateInput = {
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
   /** Related project for the document. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The resource folder containing the document. */
+  resourceFolderId?: InputMaybe<Scalars['String']['input']>;
   /** The order of the item in the resources list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] The identifiers of the users subscribing to this document. */
@@ -2512,6 +2514,8 @@ export type DocumentUpdateInput = {
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
   /** Related project for the document. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The resource folder containing the document. */
+  resourceFolderId?: InputMaybe<Scalars['String']['input']>;
   /** The order of the item in the resources list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] The identifiers of the users subscribing to this document. */
@@ -2792,9 +2796,11 @@ export type EntityExternalLinkCreateInput = {
   label: Scalars['String']['input'];
   /** The project associated with the link. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The resource folder containing the link. */
+  resourceFolderId?: InputMaybe<Scalars['String']['input']>;
   /** The order of the item in the entities resources list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
-  /** The team associated with the link. */
+  /** [Internal] The team associated with the link. */
   teamId?: InputMaybe<Scalars['String']['input']>;
   /** The URL of the link. */
   url: Scalars['String']['input'];
@@ -2820,6 +2826,8 @@ export type EntityExternalLinkPayload = {
 export type EntityExternalLinkUpdateInput = {
   /** The label for the link. */
   label?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The resource folder containing the link. */
+  resourceFolderId?: InputMaybe<Scalars['String']['input']>;
   /** The order of the item in the entities resources list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The URL of the link. */
@@ -4582,6 +4590,8 @@ export type IntercomSettingsInput = {
 /** An issue. */
 export type Issue = Node & {
   __typename?: 'Issue';
+  /** [Internal] The activity summary information for this issue. */
+  activitySummary?: Maybe<Scalars['JSONObject']['output']>;
   /** The time at which the issue was added to a cycle. */
   addedToCycleAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the issue was added to a project. */
@@ -5813,6 +5823,8 @@ export type IssueSearchPayload = {
 
 export type IssueSearchResult = Node & {
   __typename?: 'IssueSearchResult';
+  /** [Internal] The activity summary information for this issue. */
+  activitySummary?: Maybe<Scalars['JSONObject']['output']>;
   /** The time at which the issue was added to a cycle. */
   addedToCycleAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the issue was added to a project. */
@@ -6938,6 +6950,8 @@ export type Mutation = {
   triageResponsibilityUpdate: TriageResponsibilityPayload;
   /** [Internal] Updates existing Slack integration scopes. */
   updateIntegrationSlackScopes: IntegrationPayload;
+  /** Updates the summary of an issue. */
+  updateIssueSummary: IssuePayload;
   /** Makes user a regular user. Can only be called by an admin. */
   userDemoteAdmin: UserAdminPayload;
   /** Makes user a guest. Can only be called by an admin. */
@@ -8492,6 +8506,11 @@ export type MutationUpdateIntegrationSlackScopesArgs = {
 };
 
 
+export type MutationUpdateIssueSummaryArgs = {
+  id: Scalars['String']['input'];
+};
+
+
 export type MutationUserDemoteAdminArgs = {
   id: Scalars['String']['input'];
 };
@@ -9132,7 +9151,7 @@ export type NullableCustomerFilter = {
 
 /** Cycle filtering options. */
 export type NullableCycleFilter = {
-  /** Compound filters, one of which need to be matched by the cycle. */
+  /** Compound filters, all of which need to be matched by the cycle. */
   and?: InputMaybe<Array<NullableCycleFilter>>;
   /** Comparator for the cycle completed at date. */
   completedAt?: InputMaybe<DateComparator>;
@@ -12232,6 +12251,34 @@ export type ProjectUpdatesFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** [Internal] A pull request in a version control system. */
+export type PullRequest = Node & {
+  __typename?: 'PullRequest';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The number of the pull request in the version control system. */
+  number: Scalars['Float']['output'];
+  /** The source branch of the pull request. */
+  sourceBranch: Scalars['String']['output'];
+  /** The status of the pull request. */
+  status: PullRequestStatus;
+  /** The target branch of the pull request. */
+  targetBranch: Scalars['String']['output'];
+  /** The title of the pull request. */
+  title: Scalars['String']['output'];
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The URL of the pull request in the version control system. */
+  url: Scalars['String']['output'];
+};
+
 /** [Internal] A pull request related notification. */
 export type PullRequestNotification = Entity & Node & Notification & {
   __typename?: 'PullRequestNotification';
@@ -12274,6 +12321,8 @@ export type PullRequestNotification = Entity & Node & Notification & {
   parentCommentId?: Maybe<Scalars['String']['output']>;
   /** [Internal] Project update health for new updates. */
   projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** The pull request related to the notification. */
+  pullRequest: PullRequest;
   /** Related pull request. */
   pullRequestId: Scalars['String']['output'];
   /** Name of the reaction emoji related to the notification. */
@@ -12307,6 +12356,17 @@ export const PullRequestReviewTool = {
 } as const;
 
 export type PullRequestReviewTool = typeof PullRequestReviewTool[keyof typeof PullRequestReviewTool];
+/** The status of a pull request. */
+export const PullRequestStatus = {
+  Approved: 'approved',
+  Closed: 'closed',
+  Draft: 'draft',
+  InReview: 'inReview',
+  Merged: 'merged',
+  Open: 'open'
+} as const;
+
+export type PullRequestStatus = typeof PullRequestStatus[keyof typeof PullRequestStatus];
 /** A user's web or mobile push notification subscription. */
 export type PushSubscription = Node & {
   __typename?: 'PushSubscription';
@@ -15941,6 +16001,7 @@ export const ViewType = {
   Inbox: 'inbox',
   Initiative: 'initiative',
   InitiativeOverview: 'initiativeOverview',
+  InitiativeOverviewSubInitiatives: 'initiativeOverviewSubInitiatives',
   Initiatives: 'initiatives',
   InitiativesCompleted: 'initiativesCompleted',
   InitiativesPlanned: 'initiativesPlanned',
