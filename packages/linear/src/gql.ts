@@ -115,6 +115,8 @@ export type ApiKeyUpdateInput = {
 /** [INTERNAL] Details of the app user's existing token. */
 export type AppUserAuthentication = {
   __typename?: 'AppUserAuthentication';
+  /** The user that authorized the application, if known. */
+  authorizingUser?: Maybe<AuthorizingUser>;
   /** The timestamp at which the token was created. */
   createdAt: Scalars['DateTime']['output'];
   /** Whether the application has requested custom sync groups. */
@@ -579,6 +581,15 @@ export type AuthorizedApplication = {
   scope: Array<Scalars['String']['output']>;
   /** Whether or not webhooks are enabled for the application. */
   webhooksEnabled: Scalars['Boolean']['output'];
+};
+
+/** Details of the app user's authorizing user. */
+export type AuthorizingUser = {
+  __typename?: 'AuthorizingUser';
+  /** The user's display name. */
+  displayName: Scalars['String']['output'];
+  /** The user's full name. */
+  name: Scalars['String']['output'];
 };
 
 /** Comparator for booleans. */
@@ -6950,7 +6961,7 @@ export type Mutation = {
   triageResponsibilityUpdate: TriageResponsibilityPayload;
   /** [Internal] Updates existing Slack integration scopes. */
   updateIntegrationSlackScopes: IntegrationPayload;
-  /** Updates the summary of an issue. */
+  /** [INTERNAL] Updates the summary of an issue. */
   updateIssueSummary: IssuePayload;
   /** Makes user a regular user. Can only be called by an admin. */
   userDemoteAdmin: UserAdminPayload;
