@@ -429,9 +429,11 @@ export type AuditEntryType = {
 /** [INTERNAL] An OAuth userId/createdDate tuple */
 export type AuthMembership = {
   __typename?: 'AuthMembership';
+  /** The user ID associated with the authorization */
+  authorizingUserId?: Maybe<Scalars['String']['output']>;
   /** The date of the authorization */
   createdAt: Scalars['DateTime']['output'];
-  /** The authorizing userId */
+  /** The user ID the authorization was done for */
   userId: Scalars['String']['output'];
 };
 
