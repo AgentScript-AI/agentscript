@@ -3114,82 +3114,6 @@ export type FavoriteUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
-/** [Internal] Feed subscription to a project, team, or initiative. */
-export type FeedSubscription = Node & {
-  __typename?: 'FeedSubscription';
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /** The initiative being subscribed to. */
-  initiative?: Maybe<Initiative>;
-  /** Whether the user is subscribed (true) or unsubscribed (false) to the entity. */
-  isSubscribed: Scalars['Boolean']['output'];
-  /** Whether the user is subscribed to projects under the entity. */
-  isSubscribedToSubProjects?: Maybe<Scalars['Boolean']['output']>;
-  /** The project being subscribed to. */
-  project?: Maybe<Project>;
-  /** The team being subscribed to. */
-  team?: Maybe<Team>;
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-  /** The user who is subscribing. */
-  user: User;
-};
-
-export type FeedSubscriptionConnection = {
-  __typename?: 'FeedSubscriptionConnection';
-  edges: Array<FeedSubscriptionEdge>;
-  nodes: Array<FeedSubscription>;
-  pageInfo: PageInfo;
-};
-
-export type FeedSubscriptionCreateInput = {
-  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
-  id?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the initiative to subscribe to. */
-  initiativeId?: InputMaybe<Scalars['String']['input']>;
-  /** Whether the user is subscribed to the entity */
-  isSubscribed?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Whether the user is subscribed to all sub-projects for the entity */
-  isSubscribedToSubProjects?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The identifier of the project to subscribe to. */
-  projectId?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the team to subscribe to. */
-  teamId?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the user to subscribe to. */
-  userId: Scalars['String']['input'];
-};
-
-export type FeedSubscriptionEdge = {
-  __typename?: 'FeedSubscriptionEdge';
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String']['output'];
-  node: FeedSubscription;
-};
-
-export type FeedSubscriptionPayload = {
-  __typename?: 'FeedSubscriptionPayload';
-  /** The feed subscription that was created or updated. */
-  feedSubscription: FeedSubscription;
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
-};
-
-export type FeedSubscriptionUpdateInput = {
-  /** Whether the user is subscribed to the entity */
-  isSubscribed?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Whether the user is subscribed to all sub-projects for the entity */
-  isSubscribedToSubProjects?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
 /** Cadence to generate feed summary */
 export const FeedSummarySchedule = {
   Daily: 'daily',
@@ -6545,15 +6469,6 @@ export type Mutation = {
   favoriteDelete: DeletePayload;
   /** Updates a favorite. */
   favoriteUpdate: FavoritePayload;
-  /** Creates a new feed subscription for a initiative, project or team. */
-  feedSubscriptionCreate: FeedSubscriptionPayload;
-  /**
-   * Deletes a feed subscription reference.
-   * @deprecated Update `feedSubscription.active` to `false` instead.
-   */
-  feedSubscriptionDelete: DeletePayload;
-  /** Updates a feed subscription. */
-  feedSubscriptionUpdate: FeedSubscriptionPayload;
   /** XHR request payload to upload an images, video and other attachments directly to Linear's cloud storage. */
   fileUpload: UploadPayload;
   /** Creates a new automation state. */
@@ -7434,22 +7349,6 @@ export type MutationFavoriteDeleteArgs = {
 export type MutationFavoriteUpdateArgs = {
   id: Scalars['String']['input'];
   input: FavoriteUpdateInput;
-};
-
-
-export type MutationFeedSubscriptionCreateArgs = {
-  input: FeedSubscriptionCreateInput;
-};
-
-
-export type MutationFeedSubscriptionDeleteArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type MutationFeedSubscriptionUpdateArgs = {
-  id: Scalars['String']['input'];
-  input: FeedSubscriptionUpdateInput;
 };
 
 
@@ -10320,6 +10219,8 @@ export type PaidSubscription = Node & {
   __typename?: 'PaidSubscription';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The date the subscription is scheduled to be canceled, if any. */
+  cancelAt?: Maybe<Scalars['DateTime']['output']>;
   /** The date the subscription was canceled, if any. */
   canceledAt?: Maybe<Scalars['DateTime']['output']>;
   /** The collection method for this subscription, either automatically charged or invoiced. */
@@ -12533,10 +12434,6 @@ export type Query = {
   favorite: Favorite;
   /** The user's favorites. */
   favorites: FavoriteConnection;
-  /** One specific feed subscription. */
-  feedSubscription: FeedSubscription;
-  /** The user's feed subscriptions. */
-  feedSubscriptions: FeedSubscriptionConnection;
   /** One specific initiative. */
   initiative: Initiative;
   /** One specific initiative relation. */
@@ -12991,21 +12888,6 @@ export type QueryFavoriteArgs = {
 
 
 export type QueryFavoritesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
-};
-
-
-export type QueryFeedSubscriptionArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type QueryFeedSubscriptionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
