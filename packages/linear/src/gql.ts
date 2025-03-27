@@ -1432,8 +1432,6 @@ export type CustomerNeedNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
-  /** Related comment ID. Null if the notification is not related to a comment. */
-  commentId?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** Related customer need. */
@@ -1457,14 +1455,14 @@ export type CustomerNeedNotification = Entity & Node & Notification & {
   isLinearActor: Scalars['Boolean']['output'];
   /** [Internal] Issue's status type for issue notifications. */
   issueStatusType?: Maybe<Scalars['String']['output']>;
-  /** Related parent comment ID. Null if the notification is not related to a comment. */
-  parentCommentId?: Maybe<Scalars['String']['output']>;
   /** [Internal] Project update health for new updates. */
   projectUpdateHealth?: Maybe<Scalars['String']['output']>;
-  /** Name of the reaction emoji related to the notification. */
-  reactionEmoji?: Maybe<Scalars['String']['output']>;
   /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
   readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The issue related to the notification. */
+  relatedIssue?: Maybe<Issue>;
+  /** The project related to the notification. */
+  relatedProject?: Maybe<Project>;
   /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
   snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
   /** [Internal] Notification subtitle. */
@@ -9570,8 +9568,6 @@ export type OauthClientApproval = Node & {
   id: Scalars['ID']['output'];
   /** The uuid of the OAuth client being requested for installation. */
   oauthClientId: Scalars['String']['output'];
-  /** Whether the approval is for an app user allowed access to public teams only. */
-  publicTeamsOnly?: Maybe<Scalars['Boolean']['output']>;
   /** The reason the person wants to install this OAuth client. */
   requestReason?: Maybe<Scalars['String']['output']>;
   /** The person who requested installing the OAuth client. */
@@ -12558,6 +12554,8 @@ export type Query = {
   searchIssues: IssueSearchPayload;
   /** Search projects. */
   searchProjects: ProjectSearchPayload;
+  /** [ALPHA] Search for various resources using natural language. */
+  semanticSearch: SemanticSearchPayload;
   /** Fetch SSO login URL for the email provided. */
   ssoUrlFromEmail: SsoUrlFromEmailResponse;
   /** [Internal] AI summary of the latest project updates for the given projects */
@@ -13340,6 +13338,14 @@ export type QuerySearchProjectsArgs = {
 };
 
 
+export type QuerySemanticSearchArgs = {
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  maxResults?: InputMaybe<Scalars['Int']['input']>;
+  query: Scalars['String']['input'];
+  types?: InputMaybe<Array<SemanticSearchResultType>>;
+};
+
+
 export type QuerySsoUrlFromEmailArgs = {
   email: Scalars['String']['input'];
   isDesktop?: InputMaybe<Scalars['Boolean']['input']>;
@@ -13849,6 +13855,39 @@ export const SlaDayCountType = {
 } as const;
 
 export type SlaDayCountType = typeof SlaDayCountType[keyof typeof SlaDayCountType];
+/** [ALPHA] Payload returned by semantic search. */
+export type SemanticSearchPayload = {
+  __typename?: 'SemanticSearchPayload';
+  enabled: Scalars['Boolean']['output'];
+  results: Array<SemanticSearchResult>;
+};
+
+/** [ALPHA] A semantic search result reference. */
+export type SemanticSearchResult = Node & {
+  __typename?: 'SemanticSearchResult';
+  /** The document related to the semantic search result. */
+  document?: Maybe<Document>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The initiative related to the semantic search result. */
+  initiative?: Maybe<Initiative>;
+  /** The issue related to the semantic search result. */
+  issue?: Maybe<Issue>;
+  /** The project related to the semantic search result. */
+  project?: Maybe<Project>;
+  /** The type of the semantic search result. */
+  type: SemanticSearchResultType;
+};
+
+/** [ALPHA] The type of the semantic search result. */
+export const SemanticSearchResultType = {
+  Document: 'document',
+  Initiative: 'initiative',
+  Issue: 'issue',
+  Project: 'project'
+} as const;
+
+export type SemanticSearchResultType = typeof SemanticSearchResultType[keyof typeof SemanticSearchResultType];
 export const SendStrategy = {
   Desktop: 'desktop',
   DesktopAndPush: 'desktopAndPush',
@@ -14588,21 +14627,21 @@ export type TeamArchivePayload = ArchivePayload & {
   success: Scalars['Boolean']['output'];
 };
 
-/** Roadmap collection filtering options. */
+/** Team collection filtering options. */
 export type TeamCollectionFilter = {
-  /** Compound filters, all of which need to be matched by the roadmap. */
+  /** Compound filters, all of which need to be matched by the team. */
   and?: InputMaybe<Array<TeamCollectionFilter>>;
   /** Comparator for the created at date. */
   createdAt?: InputMaybe<DateComparator>;
-  /** Filters that needs to be matched by all roadmaps. */
+  /** Filters that needs to be matched by all teams. */
   every?: InputMaybe<TeamFilter>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
   /** Comparator for the collection length. */
   length?: InputMaybe<NumberComparator>;
-  /** Compound filters, one of which need to be matched by the roadmap. */
+  /** Compound filters, one of which need to be matched by the team. */
   or?: InputMaybe<Array<TeamCollectionFilter>>;
-  /** Filters that needs to be matched by some roadmaps. */
+  /** Filters that needs to be matched by some teams. */
   some?: InputMaybe<TeamFilter>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
@@ -15438,8 +15477,6 @@ export type UserAuthorizedApplication = {
   appUserEnabled: Scalars['Boolean']['output'];
   /** Error associated with the application needing to be requested for approval in the workspace. */
   approvalErrorCode?: Maybe<Scalars['String']['output']>;
-  /** Whether the application can only be added to public teams. */
-  canBeAddedToPublicTeamsOnly?: Maybe<Scalars['Boolean']['output']>;
   /** OAuth application's client ID. */
   clientId: Scalars['String']['output'];
   /** Whether the application was created by Linear. */
@@ -15955,8 +15992,10 @@ export type Webhook = Node & {
   resourceTypes: Array<Scalars['String']['output']>;
   /** Secret token for verifying the origin on the recipient side. */
   secret?: Maybe<Scalars['String']['output']>;
-  /** The team that the webhook is associated with. If null, the webhook is associated with all public teams of the organization. */
+  /** The team that the webhook is associated with. If null, the webhook is associated with all public teams of the organization or multiple teams. */
   team?: Maybe<Team>;
+  /** [INTERNAL] The teams that the webhook is associated with. Used to represent a webhook that targets multiple teams, potentially in addition to all public teams of the organization. */
+  teamIds?: Maybe<Array<Scalars['String']['output']>>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
