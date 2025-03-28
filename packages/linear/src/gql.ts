@@ -5506,6 +5506,8 @@ export type IssueLabelCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the label is a group. */
+  isGroup?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name of the label. */
   name: Scalars['String']['input'];
   /** The identifier of the parent label. */
