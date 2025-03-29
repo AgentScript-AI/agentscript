@@ -14370,6 +14370,8 @@ export type Team = Node & {
   id: Scalars['ID']['output'];
   /** Whether the team should inherit its estimation settings from its parent. Only applies to sub-teams. */
   inheritIssueEstimation: Scalars['Boolean']['output'];
+  /** Whether the team should inherit its workflow statuses from its parent. Only applies to sub-teams. */
+  inheritWorkflowStatuses: Scalars['Boolean']['output'];
   /** Settings for all integrations associated with that team. */
   integrationsSettings?: Maybe<IntegrationsSettings>;
   /** Unique hash for the team to be used in invite URLs. */
@@ -14424,6 +14426,8 @@ export type Team = Node & {
   organization: Organization;
   /** [Internal] The team's parent team. */
   parent?: Maybe<Team>;
+  /** [Internal] Posts associated with the team. */
+  posts: Array<Post>;
   /** Whether the team is private or not. */
   private: Scalars['Boolean']['output'];
   /** [Internal] The progress history of the team. */
