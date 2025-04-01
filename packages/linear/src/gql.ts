@@ -10466,6 +10466,8 @@ export type Project = Node & {
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the project. */
   issues: IssueConnection;
+  /** Id of the labels associated with this project. */
+  labelIds: Array<Scalars['String']['output']>;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
   /** The last project update posted for this project. */
@@ -11516,6 +11518,8 @@ export type ProjectSearchResult = Node & {
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the project. */
   issues: IssueConnection;
+  /** Id of the labels associated with this project. */
+  labelIds: Array<Scalars['String']['output']>;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
   /** The last project update posted for this project. */
