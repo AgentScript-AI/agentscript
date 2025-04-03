@@ -2096,6 +2096,50 @@ export type CycleUpdateInput = {
   startsAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
+/** [Internal] A dashboard, usually a collection of widgets to display several insights at once. */
+export type Dashboard = Node & {
+  __typename?: 'Dashboard';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The color of the icon of the dashboard. */
+  color?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The user who created the dashboard. */
+  creator?: Maybe<User>;
+  /** The description of the dashboard. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** The icon of the dashboard. */
+  icon?: Maybe<Scalars['String']['output']>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The filter applied to all dashboard widgets showing issues data. */
+  issueFilter?: Maybe<Scalars['JSONObject']['output']>;
+  /** The layout of the widgets on the dashboard. */
+  layout: Scalars['JSONObject']['output'];
+  /** The name of the dashboard. */
+  name: Scalars['String']['output'];
+  /** The organization of the dashboard. */
+  organization: Organization;
+  /** The owner of the dashboard. */
+  owner?: Maybe<User>;
+  /** The filter applied to all dashboard widgets showing projects data. */
+  projectFilter?: Maybe<Scalars['JSONObject']['output']>;
+  /** Whether the dashboard is shared with everyone in the organization. */
+  shared: Scalars['Boolean']['output'];
+  /** The dashboard's unique URL slug. */
+  slugId: Scalars['String']['output'];
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The user who last updated the dashboard. */
+  updatedBy?: Maybe<User>;
+  /** The widgets on the dashboard. */
+  widgets: Scalars['JSONObject']['output'];
+};
+
 /** Comparator for dates. */
 export type DateComparator = {
   /** Equals constraint. */
@@ -2974,6 +3018,8 @@ export type Favorite = Node & {
   customer?: Maybe<Customer>;
   /** The favorited cycle. */
   cycle?: Maybe<Cycle>;
+  /** The favorited dashboard. */
+  dashboard?: Maybe<Dashboard>;
   /** [Internal] Detail text for favorite's `title` (e.g. team's name for a project). */
   detail?: Maybe<Scalars['String']['output']>;
   /** The favorited document. */
@@ -3052,6 +3098,8 @@ export type FavoriteCreateInput = {
   customerId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the cycle to favorite. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the dashboard to favorite. */
+  dashboardId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the document to favorite. */
   documentId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the facet to favorite. */
