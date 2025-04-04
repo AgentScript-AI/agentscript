@@ -45,7 +45,7 @@
     "dependencies": {
         "@agentscript-ai/provider": "^0.8.0",
         "@agentscript-ai/utils": "^0.8.0",
-        "@llamaindex/core": "^0.5.8",
+        "@llamaindex/core": "^0.6.2",
         "@nzyme/utils": "^0.10.0"
     },
     "devDependencies": {
