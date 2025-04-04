@@ -14987,6 +14987,8 @@ export type TeamUpdateInput = {
   icon?: InputMaybe<Scalars['String']['input']>;
   /** Whether the team should inherit estimation settings from its parent. Only applies to sub-teams. */
   inheritIssueEstimation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] Whether the team should inherit workflow statuses from its parent. */
+  inheritWorkflowStatuses?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether to allow zeros in issues estimates. */
   issueEstimationAllowZero?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether to add additional points to the estimate scale. */
