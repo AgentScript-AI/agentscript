@@ -47,8 +47,8 @@
         "@agentscript-ai/provider": "^0.8.0",
         "@agentscript-ai/schema": "^0.8.0",
         "@agentscript-ai/utils": "^0.8.0",
-        "@nzyme/ioc": "^0.9.0",
-        "@nzyme/utils": "^0.9.0",
+        "@nzyme/ioc": "^0.10.0",
+        "@nzyme/utils": "^0.10.0",
         "date-fns": "^4.1.0"
     },
     "devDependencies": {
