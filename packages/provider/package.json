@@ -47,8 +47,8 @@
         "@agentscript-ai/utils": "^0.8.0",
         "@ai-sdk/provider": "^1.0.10",
         "@langchain/core": "^0.3.42",
-        "@nzyme/ioc": "^0.10.0",
-        "@nzyme/utils": "^0.10.0"
+        "@nzyme/ioc": "^0.12.0",
+        "@nzyme/utils": "^0.12.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
