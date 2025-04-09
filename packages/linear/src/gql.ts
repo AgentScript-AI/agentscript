@@ -15683,6 +15683,7 @@ export const UserFlagType = {
   ProjectBoardOnboardingIsSeenAndDismissed: 'projectBoardOnboardingIsSeenAndDismissed',
   ProjectUpdatesWelcomeDismissed: 'projectUpdatesWelcomeDismissed',
   ProjectWelcomeDismissed: 'projectWelcomeDismissed',
+  PulseWelcomeDismissed: 'pulseWelcomeDismissed',
   RewindBannerDismissed: 'rewindBannerDismissed',
   SlackCommentReactionTipShown: 'slackCommentReactionTipShown',
   TeamsPageIntroductionDismissed: 'teamsPageIntroductionDismissed',
