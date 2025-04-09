@@ -1,3 +1,23 @@
 {
-    "extends": "./.nzyme/tsconfig.esm.json"
+    "compilerOptions": {
+        "tsBuildInfoFile": "./tsconfig.esm.tsbuildinfo"
+    },
+    "extends": "./tsconfig.esm.json",
+    "references": [
+        {
+            "path": "../parser/tsconfig.json"
+        },
+        {
+            "path": "../provider/tsconfig.json"
+        },
+        {
+            "path": "../schema/tsconfig.json"
+        },
+        {
+            "path": "../serializer/tsconfig.json"
+        },
+        {
+            "path": "../utils/tsconfig.json"
+        }
+    ]
 }

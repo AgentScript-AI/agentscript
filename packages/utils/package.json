@@ -43,8 +43,8 @@
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."
     },
     "dependencies": {
-        "@nzyme/utils": "^0.12.0",
-        "@nzyme/zchema": "^0.12.0"
+        "@nzyme/utils": "^0.12.1",
+        "@nzyme/zchema": "^0.12.1"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
