@@ -1,17 +1,44 @@
+/**
+ *
+ */
 export interface RuntimeController {
+    /**
+     *
+     */
     tick(count?: number): void;
+    /**
+     *
+     */
     continue(): boolean;
+    /**
+     *
+     */
     ticks: number;
 }
 
+/**
+ *
+ */
 export interface RuntimeControllerOptions {
+    /**
+     *
+     */
     ticks?: number;
+    /**
+     *
+     */
     timeout?: number | Date;
+    /**
+     *
+     */
     until?: () => boolean;
 }
 
 const TICK_MULTIPLIER = 1000;
 
+/**
+ *
+ */
 export function createRuntimeControler(options: RuntimeControllerOptions): RuntimeController {
     const { timeout, until = () => false } = options;
 

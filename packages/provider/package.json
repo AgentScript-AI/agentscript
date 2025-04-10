@@ -25,7 +25,7 @@
             }
         }
     },
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "files": [
         "dist",
@@ -35,7 +35,7 @@
     "scripts": {
         "build:cjs": "tsc --build ./tsconfig.cjs.json",
         "build:esm": "tsc --build ./tsconfig.esm.json",
-        "eslint": "eslint . --fix --cache",
+        "lint": "eslint . --fix --cache",
         "prepack": "cp ../../README.md . && cp ../../LICENSE .",
         "smoke:cjs": "node tests/smoke.test.cjs",
         "smoke:mjs": "node tests/smoke.test.mjs"
@@ -55,6 +55,7 @@
         "@langchain/anthropic": "^0.3.17",
         "@langchain/openai": "^0.5.5",
         "@types/node": "^22.14.0",
+        "eslint": "^9.24.0",
         "typescript": "^5.8.3",
         "vitest": "^3.1.1"
     },

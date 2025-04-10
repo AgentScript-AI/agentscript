@@ -25,7 +25,7 @@
             }
         }
     },
-    "main": "./dist/index.js",
+    "main": "./dist/index.cjs",
     "types": "./dist/index.d.ts",
     "files": [
         "dist",
@@ -34,7 +34,7 @@
     ],
     "scripts": {
         "build:esm": "tsc --build ./tsconfig.esm.json",
-        "eslint": "eslint . --fix --cache",
+        "lint": "eslint . --fix --cache",
         "prepack": "cp ../../README.md . && cp ../../LICENSE .",
         "smoke:cjs": "node tests/smoke.test.cjs",
         "smoke:mjs": "node tests/smoke.test.mjs"
@@ -54,6 +54,7 @@
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
         "@types/node": "^22.14.0",
+        "eslint": "^9.24.0",
         "typescript": "^5.8.3",
         "vitest": "^3.1.1"
     },

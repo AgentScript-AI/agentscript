@@ -9,6 +9,7 @@
         "watch": "yarn --cwd ../.. watch"
     },
     "devDependencies": {
+        "eslint": "^9.24.0",
         "typescript": "^5.8.3"
     }
 }

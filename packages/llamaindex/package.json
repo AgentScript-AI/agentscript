@@ -1,23 +1,14 @@
 {
     "name": "@agentscript-ai/llamaindex",
     "version": "0.8.0",
-    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
     },
+    "license": "Elastic License 2.0 (ELv2)",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
-    "publishConfig": {
-        "access": "public"
-    },
-    "files": [
-        "dist",
-        "LICENSE",
-        "README.md"
-    ],
+    "sideEffects": false,
     "type": "module",
-    "main": "./dist/index.js",
-    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "import": {
@@ -34,14 +25,20 @@
             }
         }
     },
-    "sideEffects": false,
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.ts",
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md"
+    ],
     "scripts": {
-        "eslint": "eslint . --fix --cache",
-        "build:esm": "tsc --build ./tsconfig.esm.json",
-        "smoke:mjs": "node tests/smoke.test.mjs",
-        "smoke:cjs": "node tests/smoke.test.cjs",
-        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
-    },
+    "build:esm": "tsc --build ./tsconfig.esm.json",
+    "lint": "eslint . --fix --cache",
+    "prepack": "cp ../../README.md . && cp ../../LICENSE .",
+    "smoke:cjs": "node tests/smoke.test.cjs",
+    "smoke:mjs": "node tests/smoke.test.mjs"
+  },
     "dependencies": {
         "@agentscript-ai/provider": "^0.8.0",
         "@agentscript-ai/utils": "^0.8.0",
@@ -53,8 +50,12 @@
         "@agentscript-ai/tsconfig": "^0.8.0",
         "@llamaindex/openai": "^0.3.0",
         "@types/node": "^22.14.0",
+        "eslint": "^9.24.0",
         "typescript": "^5.8.3",
         "vitest": "^3.1.1"
+    },
+    "publishConfig": {
+        "access": "public"
     },
     "nzyme": {
         "cjs": true

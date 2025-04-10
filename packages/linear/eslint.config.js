@@ -1,9 +1,11 @@
-import { common, jsdoc, typescript, packageJson } from '@agentscript-ai/eslint';
+import { common, jsdoc, packageJson, typescript } from '@agentscript-ai/eslint';
 
 export default [
     //
     ...common(),
     ...typescript(),
-    ...jsdoc(),
+    ...jsdoc({
+        ignores: ['src/gql.ts'],
+    }),
     ...packageJson(),
 ];
