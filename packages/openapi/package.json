@@ -44,7 +44,7 @@
         "@agentscript-ai/provider": "^0.9.0",
         "@agentscript-ai/schema": "^0.9.0",
         "@agentscript-ai/utils": "^0.9.0",
-        "@nzyme/utils": "^0.13.0",
+        "@nzyme/utils": "^0.14.0",
         "@scalar/openapi-parser": "^0.10.14",
         "@scalar/openapi-types": "^0.2.0",
         "openapi-types": "^12.1.3",
