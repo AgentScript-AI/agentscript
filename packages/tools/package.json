@@ -33,12 +33,12 @@
         "README.md"
     ],
     "scripts": {
-    "build:esm": "tsc --build ./tsconfig.esm.json",
-    "lint": "eslint . --fix --cache",
-    "prepack": "cp ../../README.md . && cp ../../LICENSE .",
-    "smoke:cjs": "node tests/smoke.test.cjs",
-    "smoke:mjs": "node tests/smoke.test.mjs"
-  },
+        "build:esm": "tsc --build ./tsconfig.esm.json",
+        "lint": "eslint . --fix --cache",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE .",
+        "smoke:cjs": "node tests/smoke.test.cjs",
+        "smoke:mjs": "node tests/smoke.test.mjs"
+    },
     "dependencies": {
         "@agentscript-ai/core": "^0.8.0",
         "@agentscript-ai/provider": "^0.8.0",
