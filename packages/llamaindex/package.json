@@ -16,28 +16,28 @@
         "README.md"
     ],
     "type": "module",
-    "main": "./dist/cjs/index.js",
-    "types": "./dist/cjs/index.d.ts",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "exports": {
         ".": {
             "import": {
-                "types": "./dist/esm/index.d.ts",
-                "default": "./dist/esm/index.js"
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
             },
             "require": {
-                "types": "./dist/cjs/index.d.ts",
-                "default": "./dist/cjs/index.cjs"
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.cjs"
             },
             "default": {
-                "types": "./dist/esm/index.d.ts",
-                "default": "./dist/esm/index.js"
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
             }
         }
     },
     "sideEffects": false,
     "scripts": {
         "eslint": "eslint . --fix --cache",
-        "build": "tsc --build",
+        "build:esm": "tsc --build ./tsconfig.esm.json",
         "smoke:mjs": "node tests/smoke.test.mjs",
         "smoke:cjs": "node tests/smoke.test.cjs",
         "prepack": "cp ../../README.md . && cp ../../LICENSE ."

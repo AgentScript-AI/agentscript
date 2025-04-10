@@ -1,5 +1,4 @@
 {
-    "name": "@agentscript-ai/lib",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -11,9 +10,9 @@
         "monorepo": "nzyme monorepo",
         "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/.nzyme\" \"**/.tsbuildinfo\" \"**/*.tsbuildinfo\" \"!**/node_modules/**\"",
         "dev": "yarn setup && turbo run watch",
-        "build:esm": "tsc --build ./.nzyme/tsconfig.esm.json",
-        "build:cjs": "tsc --build ./.nzyme/tsconfig.cjs.json && yarn nzyme rename-cjs",
         "build": "yarn build:esm && yarn build:cjs",
+        "build:cjs": "nzyme build cjs",
+        "build:esm": "tsc --build",
         "build:turbo": "turbo run build:esm build:cjs",
         "codegen": "turbo run codegen",
         "watch": "yarn monorepo && yarn build:esm --watch",
