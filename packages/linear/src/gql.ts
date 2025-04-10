@@ -575,6 +575,12 @@ export type AuthorizedApplication = {
   appId: Scalars['String']['output'];
   /** OAuth application's client ID. */
   clientId: Scalars['String']['output'];
+  /** Description of the application. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Developer of the application. */
+  developer?: Maybe<Scalars['String']['output']>;
+  /** Developer URL of the application. */
+  developerUrl?: Maybe<Scalars['String']['output']>;
   /** Image of the application. */
   imageUrl?: Maybe<Scalars['String']['output']>;
   /** Application name. */
@@ -12654,6 +12660,8 @@ export type Query = {
   workflowState: WorkflowState;
   /** All issue workflow states. */
   workflowStates: WorkflowStateConnection;
+  /** [INTERNAL] Get a specific non-internal authorized application (with limited fields) for a workspace */
+  workspaceAuthorizedApplication: WorkspaceAuthorizedApplicationWithMemberships;
   /** [INTERNAL] Get non-internal authorized applications (with limited fields) for a workspace */
   workspaceAuthorizedApplications: Array<WorkspaceAuthorizedApplication>;
 };
@@ -13527,6 +13535,11 @@ export type QueryWorkflowStatesArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryWorkspaceAuthorizedApplicationArgs = {
+  clientId: Scalars['String']['input'];
 };
 
 export type RateLimitPayload = {
@@ -15865,16 +15878,10 @@ export type UserSettingsUpdateInput = {
 };
 
 export type UserUpdateInput = {
-  /** Whether the user account is active. */
-  active?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Whether the user account has admin privileges. */
-  admin?: InputMaybe<Scalars['Boolean']['input']>;
   /** The avatar image URL of the user. */
   avatarUrl?: InputMaybe<Scalars['String']['input']>;
   /** The user description or a short bio. */
   description?: InputMaybe<Scalars['String']['input']>;
-  /** Reason for deactivation. */
-  disableReason?: InputMaybe<Scalars['String']['input']>;
   /** The display name of the user. */
   displayName?: InputMaybe<Scalars['String']['input']>;
   /** The name of the user. */
@@ -16289,6 +16296,12 @@ export type WorkspaceAuthorizedApplication = {
   appId: Scalars['String']['output'];
   /** OAuth application's client ID. */
   clientId: Scalars['String']['output'];
+  /** Description of the application. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Developer of the application. */
+  developer?: Maybe<Scalars['String']['output']>;
+  /** Developer URL of the application. */
+  developerUrl?: Maybe<Scalars['String']['output']>;
   /** Image of the application. */
   imageUrl?: Maybe<Scalars['String']['output']>;
   /** UserIds and membership dates of everyone who has authorized the application with the set of scopes. */
@@ -16301,6 +16314,15 @@ export type WorkspaceAuthorizedApplication = {
   totalMembers: Scalars['Float']['output'];
   /** Whether or not webhooks are enabled for the application. */
   webhooksEnabled: Scalars['Boolean']['output'];
+};
+
+/** [INTERNAL] Public information of the OAuth application with its memberships */
+export type WorkspaceAuthorizedApplicationWithMemberships = {
+  __typename?: 'WorkspaceAuthorizedApplicationWithMemberships';
+  /** Details of the OAuth application */
+  client: AuthorizedApplication;
+  /** UserIds and membership dates of everyone who has authorized the application */
+  memberships: Array<AuthMembership>;
 };
 
 export type ZendeskSettingsInput = {
