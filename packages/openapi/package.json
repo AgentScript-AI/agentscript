@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/openapi",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -40,10 +40,10 @@
         "smoke:mjs": "node tests/smoke.test.mjs"
     },
     "dependencies": {
-        "@agentscript-ai/core": "^0.8.0",
-        "@agentscript-ai/provider": "^0.8.0",
-        "@agentscript-ai/schema": "^0.8.0",
-        "@agentscript-ai/utils": "^0.8.0",
+        "@agentscript-ai/core": "^0.9.0",
+        "@agentscript-ai/provider": "^0.9.0",
+        "@agentscript-ai/schema": "^0.9.0",
+        "@agentscript-ai/utils": "^0.9.0",
         "@nzyme/utils": "^0.13.0",
         "@scalar/openapi-parser": "^0.10.14",
         "@scalar/openapi-types": "^0.2.0",
@@ -51,8 +51,8 @@
         "ufo": "^1.6.1"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.8.0",
-        "@agentscript-ai/tsconfig": "^0.8.0",
+        "@agentscript-ai/eslint": "^0.9.0",
+        "@agentscript-ai/tsconfig": "^0.9.0",
         "@types/node": "^22.14.0",
         "eslint": "^9.24.0",
         "typescript": "^5.8.3",

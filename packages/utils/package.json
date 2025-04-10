@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/utils",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -44,8 +44,8 @@
         "@nzyme/zchema": "^0.13.0"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.8.0",
-        "@agentscript-ai/tsconfig": "^0.8.0",
+        "@agentscript-ai/eslint": "^0.9.0",
+        "@agentscript-ai/tsconfig": "^0.9.0",
         "@types/node": "^22.14.0",
         "eslint": "^9.24.0",
         "typescript": "^5.8.3",

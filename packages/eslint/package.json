@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/eslint",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
@@ -31,7 +31,7 @@
         "tslib": "^2.8.1"
     },
     "devDependencies": {
-        "@agentscript-ai/tsconfig": "^0.8.0",
+        "@agentscript-ai/tsconfig": "^0.9.0",
         "eslint": "^9.24.0",
         "typescript": "^5.8.3"
     }

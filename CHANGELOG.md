@@ -1,3 +1,20 @@
+## 0.9.0 (2025-04-10)
+
+### 🚀 Features
+
+- extracted serializer to a separate package ([c60ac35](https://github.com/AgentScript-AI/agentscript/commit/c60ac35))
+- build improvements ([3d5cd2d](https://github.com/AgentScript-AI/agentscript/commit/3d5cd2d))
+- add common eslint config ([8454174](https://github.com/AgentScript-AI/agentscript/commit/8454174))
+
+### 🩹 Fixes
+
+- update dependencies ([31a8e75](https://github.com/AgentScript-AI/agentscript/commit/31a8e75))
+- migrate to eslint flat config ([77c678a](https://github.com/AgentScript-AI/agentscript/commit/77c678a))
+
+### ❤️ Thank You
+
+- Michał Kędrzyński
+
 ## 0.8.0 (2025-03-04)
 
 ### 🚀 Features

@@ -1,6 +1,6 @@
 {
     "name": "@agentscript-ai/linear",
-    "version": "0.8.0",
+    "version": "0.9.0",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -42,9 +42,9 @@
         "watch": "yarn codegen --watch"
     },
     "dependencies": {
-        "@agentscript-ai/core": "^0.8.0",
-        "@agentscript-ai/provider": "^0.8.0",
-        "@agentscript-ai/schema": "^0.8.0",
+        "@agentscript-ai/core": "^0.9.0",
+        "@agentscript-ai/provider": "^0.9.0",
+        "@agentscript-ai/schema": "^0.9.0",
         "@nzyme/ioc": "^0.13.0",
         "@nzyme/utils": "^0.13.0",
         "add": "^2.0.6",
@@ -54,8 +54,8 @@
         "graphql-request": "^7.1.2"
     },
     "devDependencies": {
-        "@agentscript-ai/eslint": "^0.8.0",
-        "@agentscript-ai/tsconfig": "^0.8.0",
+        "@agentscript-ai/eslint": "^0.9.0",
+        "@agentscript-ai/tsconfig": "^0.9.0",
         "@graphql-codegen/cli": "5.0.5",
         "@graphql-codegen/client-preset": "4.8.0",
         "@graphql-codegen/typescript-graphql-request": "^6.2.0",
