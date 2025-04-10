@@ -22,9 +22,9 @@
     },
     "dependencies": {
         "@nzyme/tsconfig": "^0.12.1",
-        "@types/node": "^22.13.10"
+        "@types/node": "^22.14.0"
     },
     "devDependencies": {
-        "typescript": "^5.8.2"
+        "typescript": "^5.8.3"
     }
 }

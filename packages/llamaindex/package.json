@@ -45,16 +45,16 @@
     "dependencies": {
         "@agentscript-ai/provider": "^0.8.0",
         "@agentscript-ai/utils": "^0.8.0",
-        "@llamaindex/core": "^0.5.8",
+        "@llamaindex/core": "^0.6.2",
         "@nzyme/utils": "^0.12.1"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
-        "@llamaindex/openai": "^0.1.61",
-        "@types/node": "^22.13.10",
-        "typescript": "^5.8.2",
-        "vitest": "^3.0.8"
+        "@llamaindex/openai": "^0.3.0",
+        "@types/node": "^22.14.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.1.1"
     },
     "nzyme": {
         "cjs": true
