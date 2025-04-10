@@ -1,2 +1,2 @@
 export * from './common.js';
-export * from '@nzyme/eslint';
+export { imports, jsdoc, packageJson, react, typescript, vue } from '@nzyme/eslint';
