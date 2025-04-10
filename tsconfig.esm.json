@@ -1,0 +1,5 @@
+{
+    "extends": "@agentscript-ai/tsconfig/esm.json",
+    "include": ["vitest.workspace.ts"],
+    "references": []
+}

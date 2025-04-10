@@ -1,8 +1,9 @@
-import { common, jsdoc, typescript } from '@agentscript-ai/eslint';
+import { common, jsdoc, typescript, packageJson } from '@agentscript-ai/eslint';
 
 export default [
     //
     ...common(),
     ...typescript(),
     ...jsdoc(),
+    ...packageJson(),
 ];

@@ -1,4 +1,4 @@
-import { type AnyApiDefinitionFormat, load, upgrade } from '@scalar/openapi-parser';
+import { type AnyApiDefinitionFormat, load, update } from '@scalar/openapi-parser';
 import type { OpenAPIV3 } from 'openapi-types';
 /**
  * Parses an OpenAPI definition.
@@ -9,7 +9,7 @@ export async function parseOpenApiDoc(
     openApi: AnyApiDefinitionFormat,
 ): Promise<OpenAPIV3.Document> {
     const openApiObject = await load(openApi);
-    const upgradedOpenApi = upgrade(openApiObject.specification);
+    const upgradedOpenApi = update(openApiObject.specification);
 
     return upgradedOpenApi.specification as OpenAPIV3.Document;
 }

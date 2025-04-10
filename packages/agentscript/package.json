@@ -94,5 +94,8 @@
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
         "typescript": "^5.8.2"
+    },
+    "nzyme": {
+        "cjs": true
     }
 }
