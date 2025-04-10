@@ -41,8 +41,8 @@
         "smoke:mjs": "node tests/smoke.test.mjs"
     },
     "dependencies": {
-        "@nzyme/utils": "^0.12.1",
-        "@nzyme/zchema": "^0.12.1"
+        "@nzyme/utils": "^0.13.0",
+        "@nzyme/zchema": "^0.13.0"
     },
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
