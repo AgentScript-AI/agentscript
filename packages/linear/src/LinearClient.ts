@@ -1,6 +1,6 @@
+import { defineService, envVariable } from '@nzyme/ioc';
 import { GraphQLClient } from 'graphql-request';
 
-import { defineService, envVariable } from '@nzyme/ioc';
 
 /**
  * Linear client.

@@ -1,10 +1,10 @@
 import { expect, test } from 'vitest';
 
 import * as s from '@agentscript-ai/schema';
+import { joinLines } from '@agentscript-ai/utils';
 
 import { createRenderContext } from './renderContext.js';
 import { renderVariable } from './renderVariable.js';
-import { joinLines } from '@agentscript-ai/utils';
 
 test('simple const', () => {
     const ctx = createRenderContext();

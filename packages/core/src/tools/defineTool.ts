@@ -298,7 +298,7 @@ export function defineTool<
         deps: options.deps,
         transformInput: options.transformInput,
         transformOutput: options.transformOutput,
-        handler: options.handler as Tool['handler'],
+        handler: options.handler as unknown as Tool['handler'],
         [TOOL_SYMBOL]: true,
     };
 

@@ -1,6 +1,10 @@
-import { LanguageModel, LanguageModelInvokeParams } from '@agentscript-ai/provider';
-import { LLM, MessageContent } from '@llamaindex/core/llms';
+import type { LLM, MessageContent } from '@llamaindex/core/llms';
 
+import type { LanguageModel, LanguageModelInvokeParams } from '@agentscript-ai/provider';
+
+/**
+ *
+ */
 export function fromLlamaIndexModel(model: LLM): LanguageModel {
     return {
         name: model.metadata.model,

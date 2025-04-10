@@ -1,82 +1,83 @@
 {
     "name": "agentscript-ai",
     "version": "0.8.0",
-    "license": "Elastic License 2.0 (ELv2)",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
     },
+    "license": "Elastic License 2.0 (ELv2)",
     "author": "Michał Kędrzyński <m.kedrzynski@gmail.com>",
-    "publishConfig": {
-        "access": "public"
+    "sideEffects": false,
+    "type": "module",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            },
+            "require": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.cjs"
+            },
+            "default": {
+                "types": "./dist/index.d.ts",
+                "default": "./dist/index.js"
+            }
+        },
+        "./anthropic": {
+            "import": {
+                "types": "./dist/anthropic.d.ts",
+                "default": "./dist/anthropic.js"
+            },
+            "require": {
+                "types": "./dist/anthropic.d.ts",
+                "default": "./dist/anthropic.cjs"
+            }
+        },
+        "./provider": {
+            "import": {
+                "types": "./dist/provider.d.ts",
+                "default": "./dist/provider.js"
+            },
+            "require": {
+                "types": "./dist/provider.d.ts",
+                "default": "./dist/provider.cjs"
+            }
+        },
+        "./schema": {
+            "import": {
+                "types": "./dist/schema.d.ts",
+                "default": "./dist/schema.js"
+            },
+            "require": {
+                "types": "./dist/schema.d.ts",
+                "default": "./dist/schema.cjs"
+            }
+        },
+        "./tools": {
+            "import": {
+                "types": "./dist/tools.d.ts",
+                "default": "./dist/tools.js"
+            },
+            "require": {
+                "types": "./dist/tools.d.ts",
+                "default": "./dist/tools.cjs"
+            }
+        }
     },
+    "main": "./dist/index.cjs",
+    "types": "./dist/index.d.ts",
     "files": [
         "dist",
         "LICENSE",
         "README.md"
     ],
-    "type": "module",
-    "main": "./dist/cjs/index.js",
-    "types": "./dist/cjs/index.d.ts",
-    "exports": {
-        ".": {
-            "import": {
-                "types": "./dist/esm/index.d.ts",
-                "default": "./dist/esm/index.js"
-            },
-            "require": {
-                "types": "./dist/cjs/index.d.ts",
-                "default": "./dist/cjs/index.cjs"
-            }
-        },
-        "./anthropic": {
-            "import": {
-                "types": "./dist/esm/anthropic.d.ts",
-                "default": "./dist/esm/anthropic.js"
-            },
-            "require": {
-                "types": "./dist/cjs/anthropic.d.ts",
-                "default": "./dist/cjs/anthropic.cjs"
-            }
-        },
-        "./schema": {
-            "import": {
-                "types": "./dist/esm/schema.d.ts",
-                "default": "./dist/esm/schema.js"
-            },
-            "require": {
-                "types": "./dist/cjs/schema.d.ts",
-                "default": "./dist/cjs/schema.cjs"
-            }
-        },
-        "./tools": {
-            "import": {
-                "types": "./dist/esm/tools.d.ts",
-                "default": "./dist/esm/tools.js"
-            },
-            "require": {
-                "types": "./dist/cjs/tools.d.ts",
-                "default": "./dist/cjs/tools.cjs"
-            }
-        },
-        "./provider": {
-            "import": {
-                "types": "./dist/esm/provider.d.ts",
-                "default": "./dist/esm/provider.js"
-            },
-            "require": {
-                "types": "./dist/cjs/provider.d.ts",
-                "default": "./dist/cjs/provider.cjs"
-            }
-        }
-    },
-    "sideEffects": false,
     "scripts": {
-        "eslint": "eslint . --fix --cache",
-        "build": "tsc --build",
-        "smoke:mjs": "node tests/smoke.test.mjs",
+        "build:esm": "tsc --build ./tsconfig.esm.json",
+        "lint": "eslint . --fix --cache",
+        "prepack": "cp ../../README.md . && cp ../../LICENSE .",
         "smoke:cjs": "node tests/smoke.test.cjs",
-        "prepack": "cp ../../README.md . && cp ../../LICENSE ."
+        "smoke:mjs": "node tests/smoke.test.mjs"
     },
     "dependencies": {
         "@agentscript-ai/anthropic": "^0.8.0",
@@ -89,6 +90,13 @@
     "devDependencies": {
         "@agentscript-ai/eslint": "^0.8.0",
         "@agentscript-ai/tsconfig": "^0.8.0",
-        "typescript": "^5.8.2"
+        "eslint": "^9.24.0",
+        "typescript": "^5.8.3"
+    },
+    "publishConfig": {
+        "access": "public"
+    },
+    "nzyme": {
+        "cjs": true
     }
 }

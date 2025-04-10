@@ -1,5 +1,4 @@
 {
-    "name": "@agentscript-ai/lib",
     "repository": {
         "type": "git",
         "url": "https://github.com/AgentScript-AI/agentscript.git"
@@ -11,14 +10,15 @@
         "monorepo": "nzyme monorepo",
         "clean": "del \"**/tsconfig.*.dev.json\" \"**/dist\" \"**/.turbo\" \"**/.nzyme\" \"**/.tsbuildinfo\" \"**/*.tsbuildinfo\" \"!**/node_modules/**\"",
         "dev": "yarn setup && turbo run watch",
-        "build:esm": "tsc --build ./.nzyme/tsconfig.esm.json",
-        "build:cjs": "tsc --build ./.nzyme/tsconfig.cjs.json && yarn nzyme rename-cjs",
         "build": "yarn build:esm && yarn build:cjs",
+        "build:cjs": "nzyme build cjs",
+        "build:esm": "tsc --build",
         "build:turbo": "turbo run build:esm build:cjs",
         "codegen": "turbo run codegen",
         "watch": "yarn monorepo && yarn build:esm --watch",
-        "upgrade": "yarn upgrade:auto && yarn upgrade-interactive",
-        "upgrade:auto": "yarn up \"@nzyme/*\"",
+        "update": "yarn upgrade-interactive",
+        "update:deps": "yarn up \"@nzyme/*\"",
+        "update:self": "yarn set version berry",
         "test": "vitest run",
         "coverage": "vitest run --coverage",
         "smoke": "turbo run smoke:cjs smoke:mjs",
@@ -26,19 +26,21 @@
         "groundup": "yarn && yarn clean && nzyme monorepo && yarn build"
     },
     "devDependencies": {
-        "@nx/js": "^20.4.6",
-        "@nzyme/cli": "^0.7.0",
-        "@swc-node/register": "^1.10.9",
-        "@swc/core": "^1.11.5",
-        "@vitest/coverage-v8": "3.0.7",
+        "@nx/js": "^20.7.2",
+        "@nzyme/cli": "^0.13.0",
+        "@nzyme/eslint": "^0.13.0",
+        "@swc-node/register": "^1.10.10",
+        "@swc/core": "^1.11.18",
+        "@vitest/coverage-v8": "3.1.1",
         "del-cli": "^6.0.0",
         "dotenv-cli": "^8.0.0",
-        "nx": "20.4.6",
+        "eslint": "^9.24.0",
+        "nx": "20.7.2",
         "prettier": "^3.5.3",
         "ts-node": "^10.9.2",
-        "turbo": "^2.4.4",
-        "typescript": "^5.8.2",
-        "vitest": "^3.0.7"
+        "turbo": "^2.5.0",
+        "typescript": "^5.8.3",
+        "vitest": "^3.1.1"
     },
     "workspaces": [
         "packages/*"
