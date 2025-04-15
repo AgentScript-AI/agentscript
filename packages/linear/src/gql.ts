@@ -3667,6 +3667,8 @@ export type InitiativeCollectionFilter = {
   name?: InputMaybe<StringComparator>;
   /** Compound filters, one of which need to be matched by the initiative. */
   or?: InputMaybe<Array<InitiativeCollectionFilter>>;
+  /** Filters that the initiative owner must satisfy. */
+  owner?: InputMaybe<UserFilter>;
   /** Comparator for the initiative slug ID. */
   slugId?: InputMaybe<StringComparator>;
   /** Filters that needs to be matched by some initiatives. */
@@ -3735,6 +3737,8 @@ export type InitiativeFilter = {
   name?: InputMaybe<StringComparator>;
   /** Compound filters, one of which need to be matched by the initiative. */
   or?: InputMaybe<Array<InitiativeFilter>>;
+  /** Filters that the initiative owner must satisfy. */
+  owner?: InputMaybe<UserFilter>;
   /** Comparator for the initiative slug ID. */
   slugId?: InputMaybe<StringComparator>;
   /** Comparator for the initiative status: Planned, Active, Completed */
