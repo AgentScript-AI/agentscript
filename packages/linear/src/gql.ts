@@ -200,6 +200,8 @@ export type Attachment = Node & {
   __typename?: 'Attachment';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The body data of the attachment, if any. */
+  bodyData?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The creator of the attachment. */
@@ -655,8 +657,8 @@ export type Comment = Node & {
   resolvingComment?: Maybe<Comment>;
   /** The user that resolved the thread. */
   resolvingUser?: Maybe<User>;
-  /** [Internal] Summary for comment thread. */
-  summaryText?: Maybe<Scalars['String']['output']>;
+  /** [Internal] A generated summary of the comment thread. */
+  threadSummary?: Maybe<Scalars['JSONObject']['output']>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
