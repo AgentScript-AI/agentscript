@@ -10811,6 +10811,8 @@ export type ProjectAttachment = Node & {
   metadata: Scalars['JSONObject']['output'];
   /** Information about the external source which created the attachment. */
   source?: Maybe<Scalars['JSONObject']['output']>;
+  /** An accessor helper to source.type, defines the source type of the attachment. */
+  sourceType?: Maybe<Scalars['String']['output']>;
   /** Optional subtitle of the attachment */
   subtitle?: Maybe<Scalars['String']['output']>;
   /** Title of the attachment. */
@@ -12039,6 +12041,7 @@ export type ProjectStatusUpdateInput = {
 
 /** Different tabs available inside a project. */
 export const ProjectTab = {
+  Customers: 'customers',
   Documents: 'documents',
   Issues: 'issues'
 } as const;
@@ -12898,7 +12901,8 @@ export type QueryCustomerArgs = {
 
 
 export type QueryCustomerNeedArgs = {
-  id: Scalars['String']['input'];
+  hash?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
 };
 
 
