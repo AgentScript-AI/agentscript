@@ -1154,6 +1154,8 @@ export type Customer = Node & {
   integration?: Maybe<Integration>;
   /** The customer's logo URL. */
   logoUrl?: Maybe<Scalars['String']['output']>;
+  /** The ID of the main source, when a customer has multiple sources. Must be one of externalIds. */
+  mainSourceId?: Maybe<Scalars['String']['output']>;
   /** The customer's name. */
   name: Scalars['String']['output'];
   /** The user who owns the customer. */
