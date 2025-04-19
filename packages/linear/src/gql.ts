@@ -1799,6 +1799,8 @@ export type CustomerUpdateInput = {
   externalIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The URL of the customer's logo. */
   logoUrl?: InputMaybe<Scalars['String']['input']>;
+  /** The main source of the customer, for customers with multiple sources. Must be one of externalIds. */
+  mainSourceId?: InputMaybe<Scalars['String']['input']>;
   /** The name of the customer. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** The user who owns the customer. */
@@ -5017,6 +5019,8 @@ export type IssueCreateInput = {
   referenceCommentId?: InputMaybe<Scalars['String']['input']>;
   /** [Internal] The timestamp at which an issue will be considered in breach of SLA. */
   slaBreachesAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** [Internal] The timestamp at which the issue's SLA was started. */
+  slaStartedAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The SLA day count type for the issue. Whether SLA should be business days only or calendar days (default). */
   slaType?: InputMaybe<SlaDayCountType>;
   /** The position of the issue related to other issues. */
@@ -6163,6 +6167,8 @@ export type IssueUpdateInput = {
   removedLabelIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** [Internal] The timestamp at which an issue will be considered in breach of SLA. */
   slaBreachesAt?: InputMaybe<Scalars['DateTime']['input']>;
+  /** [Internal] The timestamp at which the issue's SLA was started. */
+  slaStartedAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The SLA day count type for the issue. Whether SLA should be business days only or calendar days (default). */
   slaType?: InputMaybe<SlaDayCountType>;
   /** The identifier of the user who snoozed the issue. */
