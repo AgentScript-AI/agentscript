@@ -4716,6 +4716,8 @@ export type Issue = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
+  /** [Internal] The time at which the most recent suggestions for this issue were generated. */
+  suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The team that the issue is associated with. */
   team: Team;
   /** The issue's title. */
@@ -5955,6 +5957,8 @@ export type IssueSearchResult = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
+  /** [Internal] The time at which the most recent suggestions for this issue were generated. */
+  suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The team that the issue is associated with. */
   team: Team;
   /** The issue's title. */
@@ -10564,6 +10568,8 @@ export type Project = Node & {
   members: UserConnection;
   /** The project's name. */
   name: Scalars['String']['output'];
+  /** Customer needs associated with the project. */
+  needs: CustomerNeedConnection;
   /** The priority of the project. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority: Scalars['Int']['output'];
   /** The priority of the project as a label. */
@@ -10743,6 +10749,18 @@ export type ProjectMembersArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** A project. */
+export type ProjectNeedsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CustomerNeedFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
@@ -11676,6 +11694,8 @@ export type ProjectSearchResult = Node & {
   metadata: Scalars['JSONObject']['output'];
   /** The project's name. */
   name: Scalars['String']['output'];
+  /** Customer needs associated with the project. */
+  needs: CustomerNeedConnection;
   /** The priority of the project. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority: Scalars['Int']['output'];
   /** The priority of the project as a label. */
@@ -11846,6 +11866,17 @@ export type ProjectSearchResultMembersArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type ProjectSearchResultNeedsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CustomerNeedFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
