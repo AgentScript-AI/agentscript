@@ -1203,6 +1203,8 @@ export type CustomerCreateInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   /** The URL of the customer's logo. */
   logoUrl?: InputMaybe<Scalars['String']['input']>;
+  /** The main source of the customer, for customers with multiple sources. Must be one of externalIds. */
+  mainSourceId?: InputMaybe<Scalars['String']['input']>;
   /** The name of the customer. */
   name: Scalars['String']['input'];
   /** The user who owns the customer. */
@@ -2676,6 +2678,8 @@ export type EmailIntakeAddress = Node & {
   id: Scalars['ID']['output'];
   /** The organization that the email address is associated with. */
   organization: Organization;
+  /** Whether email replies are enabled. */
+  repliesEnabled: Scalars['Boolean']['output'];
   /** The team that the email address is associated with. */
   team?: Maybe<Team>;
   /** The template that the email address is associated with. */
@@ -2708,7 +2712,9 @@ export type EmailIntakeAddressPayload = {
 
 export type EmailIntakeAddressUpdateInput = {
   /** Whether the email address is currently enabled. If set to false, the email address will be disabled and no longer accept incoming emails. */
-  enabled: Scalars['Boolean']['input'];
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether email replies are enabled. */
+  repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EmailUnsubscribeInput = {
@@ -6114,6 +6120,8 @@ export type IssueSortInput = {
   priority?: InputMaybe<PrioritySort>;
   /** Sort by Project name */
   project?: InputMaybe<ProjectSort>;
+  /** Sort by the root issue */
+  rootIssue?: InputMaybe<RootIssueSort>;
   /** Sort by SLA status */
   slaStatus?: InputMaybe<SlaStatusSort>;
   /** Sort by Team name */
@@ -6894,11 +6902,20 @@ export type Mutation = {
   resendOrganizationInvite: DeletePayload;
   /** Re-send an organization invite tied to an email address. */
   resendOrganizationInviteByEmail: DeletePayload;
-  /** Archives a roadmap. */
+  /**
+   * Archives a roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmapArchive: RoadmapArchivePayload;
-  /** Creates a new roadmap. */
+  /**
+   * Creates a new roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmapCreate: RoadmapPayload;
-  /** Deletes a roadmap. */
+  /**
+   * Deletes a roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmapDelete: DeletePayload;
   /** Creates a new roadmapToProject join. */
   roadmapToProjectCreate: RoadmapToProjectPayload;
@@ -6906,9 +6923,15 @@ export type Mutation = {
   roadmapToProjectDelete: DeletePayload;
   /** Updates a roadmapToProject. */
   roadmapToProjectUpdate: RoadmapToProjectPayload;
-  /** Unarchives a roadmap. */
+  /**
+   * Unarchives a roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmapUnarchive: RoadmapArchivePayload;
-  /** Updates a roadmap. */
+  /**
+   * Updates a roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmapUpdate: RoadmapPayload;
   /** Authenticates a user account via email and authentication token for SAML. */
   samlTokenUserAccountAuth: AuthResolverResponse;
@@ -12732,13 +12755,19 @@ export type Query = {
   pushSubscriptionTest: PushSubscriptionTestPayload;
   /** The status of the rate limiter. */
   rateLimitStatus: RateLimitPayload;
-  /** One specific roadmap. */
+  /**
+   * One specific roadmap.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmap: Roadmap;
   /** One specific roadmapToProject. */
   roadmapToProject: RoadmapToProject;
   /** Custom views for the user. */
   roadmapToProjects: RoadmapToProjectConnection;
-  /** All roadmaps in the workspace. */
+  /**
+   * All roadmaps in the workspace.
+   * @deprecated Roadmaps are deprecated, use initiatives instead.
+   */
   roadmaps: RoadmapConnection;
   /** Search documents. */
   searchDocuments: DocumentSearchPayload;
@@ -13498,7 +13527,6 @@ export type QuerySearchDocumentsArgs = {
   includeComments?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
-  snippetSize?: InputMaybe<Scalars['Float']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
   term: Scalars['String']['input'];
 };
@@ -13513,7 +13541,6 @@ export type QuerySearchIssuesArgs = {
   includeComments?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
-  snippetSize?: InputMaybe<Scalars['Float']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
   term: Scalars['String']['input'];
 };
@@ -13527,7 +13554,6 @@ export type QuerySearchProjectsArgs = {
   includeComments?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
-  snippetSize?: InputMaybe<Scalars['Float']['input']>;
   teamId?: InputMaybe<Scalars['String']['input']>;
   term: Scalars['String']['input'];
 };
@@ -14047,6 +14073,16 @@ export type RoadmapUpdateInput = {
   ownerId?: InputMaybe<Scalars['String']['input']>;
   /** The sort order of the roadmap within the organization. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
+};
+
+/** Issue root-issue sorting options. */
+export type RootIssueSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+  /** The sort to apply to the root issues */
+  sort: IssueSortInput;
 };
 
 export const SlaDayCountType = {
