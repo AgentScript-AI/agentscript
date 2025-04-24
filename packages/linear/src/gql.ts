@@ -930,6 +930,8 @@ export type CustomView = Node & {
   creator: User;
   /** The description of the custom view. */
   description?: Maybe<Scalars['String']['output']>;
+  /** The filter applied to feed items in the custom view. */
+  feedItemFilterData?: Maybe<Scalars['JSONObject']['output']>;
   /** The filter applied to issues in the custom view. */
   filterData: Scalars['JSONObject']['output'];
   /**
@@ -2994,6 +2996,8 @@ export type Facet = Node & {
   id: Scalars['ID']['output'];
   /** The sort order of the facet. */
   sortOrder: Scalars['Float']['output'];
+  /** The owning feed user. */
+  sourceFeedUser?: Maybe<User>;
   /** The owning initiative. */
   sourceInitiative?: Maybe<Initiative>;
   /** The owning organization. */
