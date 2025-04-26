@@ -168,7 +168,7 @@ export type ArchiveResponse = {
   /** The version of the remote database. Incremented by 1 for each migration run on the database. */
   databaseVersion: Scalars['Float']['output'];
   /** Whether the dependencies for the model objects are included in the archive. */
-  includesDependencies: Scalars['Boolean']['output'];
+  includesDependencies: Array<Scalars['String']['output']>;
   /** The total number of entities in the archive. */
   totalCount: Scalars['Float']['output'];
 };
@@ -1015,6 +1015,8 @@ export type CustomViewCreateInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   /** The description of the custom view. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** The feed item filter applied to issues in the custom view. */
+  feedItemFilterData?: InputMaybe<FeedItemFilter>;
   /** The filter applied to issues in the custom view. */
   filterData?: InputMaybe<IssueFilter>;
   /** The icon of the custom view. */
@@ -1117,6 +1119,8 @@ export type CustomViewUpdateInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   /** The description of the custom view. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** The feed item filter applied to issues in the custom view. */
+  feedItemFilterData?: InputMaybe<FeedItemFilter>;
   /** The filter applied to issues in the custom view. */
   filterData?: InputMaybe<IssueFilter>;
   /** The icon of the custom view. */
@@ -3018,6 +3022,7 @@ export type Facet = Node & {
 };
 
 export const FacetPageSource = {
+  Feed: 'feed',
   Projects: 'projects',
   TeamIssues: 'teamIssues'
 } as const;
@@ -3180,6 +3185,32 @@ export type FavoriteUpdateInput = {
   parentId?: InputMaybe<Scalars['String']['input']>;
   /** The position of the item in the favorites list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
+};
+
+/** Feed item filtering options */
+export type FeedItemFilter = {
+  /** Compound filters, all of which need to be matched by the feed item. */
+  and?: InputMaybe<Array<FeedItemFilter>>;
+  /** Filters that the feed item author must satisfy. */
+  author?: InputMaybe<UserFilter>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Compound filters, one of which need to be matched by the feed item. */
+  or?: InputMaybe<Array<FeedItemFilter>>;
+  /** Filters that the feed item's project update must satisfy. */
+  projectUpdate?: InputMaybe<ProjectUpdateFilter>;
+  /** Filters that the related feed item initiatives must satisfy. */
+  relatedInitiatives?: InputMaybe<InitiativeCollectionFilter>;
+  /** Filters that the related feed item team must satisfy. */
+  relatedTeams?: InputMaybe<TeamCollectionFilter>;
+  /** Comparator for the project or initiative update health: onTrack, atRisk, offTrack */
+  updateHealth?: InputMaybe<StringComparator>;
+  /** Comparator for the update type: initiative, project */
+  updateType?: InputMaybe<StringComparator>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
 };
 
 /** Cadence to generate feed summary */
@@ -3493,10 +3524,31 @@ export const GithubOrgType = {
 } as const;
 
 export type GithubOrgType = typeof GithubOrgType[keyof typeof GithubOrgType];
+export type GoogleSheetsExportSettings = {
+  /** Whether the export is enabled. */
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The ID of the target sheet (tab) within the Google Sheet. */
+  sheetId?: InputMaybe<Scalars['Float']['input']>;
+  /** The ID of the exported Google Sheet. */
+  spreadsheetId?: InputMaybe<Scalars['String']['input']>;
+  /** The URL of the exported Google Sheet. */
+  spreadsheetUrl?: InputMaybe<Scalars['String']['input']>;
+  /** The date of the most recent export. */
+  updatedAt?: InputMaybe<Scalars['DateTime']['input']>;
+};
+
 export type GoogleSheetsSettingsInput = {
-  sheetId: Scalars['Float']['input'];
-  spreadsheetId: Scalars['String']['input'];
-  spreadsheetUrl: Scalars['String']['input'];
+  /** The export settings for issues. */
+  issue?: InputMaybe<GoogleSheetsExportSettings>;
+  /** The export settings for projects. */
+  project?: InputMaybe<GoogleSheetsExportSettings>;
+  /** [Deprecated] The ID of the target sheet (tab) within the Google Sheet. */
+  sheetId?: InputMaybe<Scalars['Float']['input']>;
+  /** [Deprecated] The ID of the exported Google Sheet. */
+  spreadsheetId?: InputMaybe<Scalars['String']['input']>;
+  /** [Deprecated] The URL of the exported Google Sheet. */
+  spreadsheetUrl?: InputMaybe<Scalars['String']['input']>;
+  /** [Deprecated] The date of the most recent export. */
   updatedIssuesAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
@@ -8357,6 +8409,7 @@ export type MutationReactionDeleteArgs = {
 
 export type MutationRefreshGoogleSheetsDataArgs = {
   id: Scalars['String']['input'];
+  type?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -10225,6 +10278,8 @@ export type OrganizationStartTrialPayload = {
 };
 
 export type OrganizationUpdateInput = {
+  /** [INTERNAL] Whether the organization has enabled the AI add-on. */
+  aiAddonEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether member users are allowed to send invites. */
   allowMembersToInvite?: InputMaybe<Scalars['Boolean']['input']>;
   /** List of services that are allowed to be used for login. */
