@@ -1513,6 +1513,8 @@ export type CustomerNeedPayload = {
 };
 
 export type CustomerNeedUpdateInput = {
+  /** Whether to also update the priority of needs from the same customer on the same issue/project. */
+  applyPriorityToRelatedNeeds?: InputMaybe<Scalars['Boolean']['input']>;
   /** Optional URL for the attachment associated with the customer need. */
   attachmentUrl?: InputMaybe<Scalars['String']['input']>;
   /** The content of the need in markdown format. */
