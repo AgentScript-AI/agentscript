@@ -3717,6 +3717,8 @@ export type InitiativeArchivePayload = ArchivePayload & {
 
 /** Initiative collection filtering options. */
 export type InitiativeCollectionFilter = {
+  /** Filters that the initiative must be an ancestor of. */
+  ancestors?: InputMaybe<InitiativeCollectionFilter>;
   /** Compound filters, all of which need to be matched by the initiative. */
   and?: InputMaybe<Array<InitiativeCollectionFilter>>;
   /** Comparator for the created at date. */
@@ -3791,6 +3793,8 @@ export type InitiativeEdge = {
 
 /** Initiative filtering options. */
 export type InitiativeFilter = {
+  /** Filters that the initiative must be an ancestor of. */
+  ancestors?: InputMaybe<InitiativeCollectionFilter>;
   /** Compound filters, all of which need to be matched by the initiative. */
   and?: InputMaybe<Array<InitiativeFilter>>;
   /** Comparator for the created at date. */
@@ -10573,6 +10577,15 @@ export type PrioritySort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
+/** [Internal] The scope of product intelligence suggestion data for a team. */
+export const ProductIntelligenceScope = {
+  None: 'none',
+  Team: 'team',
+  TeamHierarchy: 'teamHierarchy',
+  Workspace: 'workspace'
+} as const;
+
+export type ProductIntelligenceScope = typeof ProductIntelligenceScope[keyof typeof ProductIntelligenceScope];
 /** A project. */
 export type Project = Node & {
   __typename?: 'Project';
@@ -12315,6 +12328,8 @@ export type ProjectUpdateInput = {
   frequencyResolution?: InputMaybe<FrequencyResolutionType>;
   /** The icon of the project. */
   icon?: InputMaybe<Scalars['String']['input']>;
+  /** The identifiers of the project labels associated with this project. */
+  labelIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The ID of the last template applied to the project. */
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the project lead. */
@@ -15014,6 +15029,8 @@ export type TeamCreateInput = {
   parentId?: InputMaybe<Scalars['String']['input']>;
   /** Internal. Whether the team is private or not. */
   private?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] The scope of product intelligence suggestion data for the team. */
+  productIntelligenceScope?: InputMaybe<ProductIntelligenceScope>;
   /** Whether an issue needs to have a priority set before leaving triage. */
   requirePriorityToLeaveTriage?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether to move issues to bottom of the column when changing state. */
@@ -15252,6 +15269,8 @@ export type TeamUpdateInput = {
   parentId?: InputMaybe<Scalars['String']['input']>;
   /** Whether the team is private or not. */
   private?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] The scope of product intelligence suggestion data for the team. */
+  productIntelligenceScope?: InputMaybe<ProductIntelligenceScope>;
   /** Whether an issue needs to have a priority set before leaving triage. */
   requirePriorityToLeaveTriage?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the team is managed by SCIM integration. Mutation restricted to workspace admins and only unsetting is allowed! */
