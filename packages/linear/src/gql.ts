@@ -6174,6 +6174,8 @@ export type IssueSortInput = {
   label?: InputMaybe<LabelSort>;
   /** Sort by label group */
   labelGroup?: InputMaybe<LabelGroupSort>;
+  /** [ALPHA] Sort by number of links associated with the issue */
+  linkCount?: InputMaybe<LinkCountSort>;
   /** Sort by manual order */
   manual?: InputMaybe<ManualSort>;
   /** Sort by Project Milestone target date */
@@ -6399,6 +6401,14 @@ export type LaunchDarklySettingsInput = {
   environment: Scalars['String']['input'];
   /** The project key of the LaunchDarkly integration. */
   projectKey: Scalars['String']['input'];
+};
+
+/** [ALPHA] Issue link count sorting options. */
+export type LinkCountSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 export type LogoutResponse = {
@@ -16523,6 +16533,8 @@ export type WorkflowStatePayload = {
 
 /** Issue workflow state sorting options. */
 export type WorkflowStateSort = {
+  /** Whether to sort closed issues by recency */
+  closedIssuesOrderedByRecency?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether nulls should be sorted first or last */
   nulls?: InputMaybe<PaginationNulls>;
   /** The order for the individual sort */
