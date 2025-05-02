@@ -14611,6 +14611,8 @@ export type Team = Node & {
   __typename?: 'Team';
   /** Team's currently active cycle. */
   activeCycle?: Maybe<Cycle>;
+  /** Whether to enable resolved thread AI summaries. */
+  aiThreadSummariesEnabled: Scalars['Boolean']['output'];
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** Period after which automatically closed and completed issues are automatically archived in months. */
@@ -15213,6 +15215,8 @@ export type TeamSort = {
 };
 
 export type TeamUpdateInput = {
+  /** Whether to enable resolved thread AI summaries. */
+  aiThreadSummariesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Period after which closed and completed issues are automatically archived, in months. */
   autoArchivePeriod?: InputMaybe<Scalars['Float']['input']>;
   /** [INTERNAL] Whether to automatically close all sub-issues when a parent issue in this team is closed. */
