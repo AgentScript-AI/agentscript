@@ -15811,8 +15811,6 @@ export type UserAuthorizedApplication = {
   __typename?: 'UserAuthorizedApplication';
   /** Details of the app user's existing token, if any. */
   appUserAuthentication?: Maybe<AppUserAuthentication>;
-  /** Whether the application supports app users. */
-  appUserEnabled: Scalars['Boolean']['output'];
   /** Error associated with the application needing to be requested for approval in the workspace. */
   approvalErrorCode?: Maybe<Scalars['String']['output']>;
   /** OAuth application's client ID. */
