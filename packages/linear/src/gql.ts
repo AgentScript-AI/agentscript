@@ -2680,6 +2680,8 @@ export type EmailIntakeAddress = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The user who created the email intake address. */
   creator?: Maybe<User>;
+  /** Whether issues created from that email address will be turned into customer requests. */
+  customerRequestsEnabled: Scalars['Boolean']['output'];
   /** Whether the email address is enabled. */
   enabled: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
@@ -2719,6 +2721,8 @@ export type EmailIntakeAddressPayload = {
 };
 
 export type EmailIntakeAddressUpdateInput = {
+  /** Whether customer requests are enabled. */
+  customerRequestsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the email address is currently enabled. If set to false, the email address will be disabled and no longer accept incoming emails. */
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether email replies are enabled. */
@@ -5612,6 +5616,8 @@ export type IssueLabelCollectionFilter = {
   every?: InputMaybe<IssueLabelFilter>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
+  /** Comparator for whether the label is a group label. */
+  isGroup?: InputMaybe<BooleanComparator>;
   /** Comparator for the collection length. */
   length?: InputMaybe<NumberComparator>;
   /** Comparator for the name. */
@@ -5669,6 +5675,8 @@ export type IssueLabelFilter = {
   creator?: InputMaybe<NullableUserFilter>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
+  /** Comparator for whether the label is a group label. */
+  isGroup?: InputMaybe<BooleanComparator>;
   /** Comparator for the name. */
   name?: InputMaybe<StringComparator>;
   /** Compound filters, one of which need to be matched by the label. */
@@ -9901,6 +9909,8 @@ export type Organization = Node & {
   periodUploadVolume: Scalars['Float']['output'];
   /** Previously used URL keys for the organization (last 3 are kept and redirected). */
   previousUrlKeys: Array<Scalars['String']['output']>;
+  /** [Internal] Project labels associated with the organization. */
+  projectLabels: ProjectLabelConnection;
   /** The organization's project statuses. */
   projectStatuses: Array<ProjectStatus>;
   /** The n-weekly frequency at which to prompt for project updates. When not set, reminders are off. */
@@ -9975,6 +9985,18 @@ export type OrganizationLabelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<IssueLabelFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An organization. Organizations are root-level objects that contain user accounts and teams. */
+export type OrganizationProjectLabelsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectLabelFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -10841,6 +10863,7 @@ export type ProjectIssuesArgs = {
 export type ProjectLabelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectLabelFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -11259,6 +11282,28 @@ export type ProjectLabelEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: ProjectLabel;
+};
+
+/** [Internal] Project label filtering options. */
+export type ProjectLabelFilter = {
+  /** Compound filters, all of which need to be matched by the label. */
+  and?: InputMaybe<Array<ProjectLabelFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Filters that the project labels creator must satisfy. */
+  creator?: InputMaybe<NullableUserFilter>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Comparator for whether the label is a group label. */
+  isGroup?: InputMaybe<BooleanComparator>;
+  /** Comparator for the name. */
+  name?: InputMaybe<StringComparator>;
+  /** Compound filters, one of which need to be matched by the label. */
+  or?: InputMaybe<Array<ProjectLabelFilter>>;
+  /** Filters that the project label's parent label must satisfy. */
+  parent?: InputMaybe<ProjectLabelFilter>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
 };
 
 /** A milestone for a project. */
@@ -11959,6 +12004,7 @@ export type ProjectSearchResultIssuesArgs = {
 export type ProjectSearchResultLabelsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectLabelFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
