@@ -16,6 +16,7 @@ export type Scalars = {
   Float: { input: number; output: number; }
   DateTime: { input: any; output: any; }
   DateTimeOrDuration: { input: any; output: any; }
+  Duration: { input: any; output: any; }
   JSON: { input: any; output: any; }
   JSONObject: { input: any; output: any; }
   TimelessDate: { input: any; output: any; }
@@ -4945,6 +4946,8 @@ export type IssueCollectionFilter = {
   addedToCycleAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the period when issue was added to a cycle. */
   addedToCyclePeriod?: InputMaybe<CyclePeriodComparator>;
+  /** [Internal] Age (created -> now) comparator, defined if the issue is still open. */
+  ageTime?: InputMaybe<NullableDurationComparator>;
   /** Compound filters, all of which need to be matched by the issue. */
   and?: InputMaybe<Array<IssueCollectionFilter>>;
   /** Comparator for the issues archived at date. */
@@ -4973,6 +4976,8 @@ export type IssueCollectionFilter = {
   customerCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
+  /** [Internal] Cycle time (started -> completed) comparator. */
+  cycleTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -4995,6 +5000,8 @@ export type IssueCollectionFilter = {
   labels?: InputMaybe<IssueLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
+  /** [Internal] Lead time (created -> completed) comparator. */
+  leadTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the collection length. */
   length?: InputMaybe<NumberComparator>;
   /** Filters that the issue's customer needs must satisfy. */
@@ -5037,6 +5044,8 @@ export type IssueCollectionFilter = {
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
   title?: InputMaybe<StringComparator>;
+  /** [Internal] Triage time (entered triaged -> triaged) comparator. */
+  triageTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues triaged at date. */
   triagedAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the updated at date. */
@@ -5208,6 +5217,8 @@ export type IssueFilter = {
   addedToCycleAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the period when issue was added to a cycle. */
   addedToCyclePeriod?: InputMaybe<CyclePeriodComparator>;
+  /** [Internal] Age (created -> now) comparator, defined if the issue is still open. */
+  ageTime?: InputMaybe<NullableDurationComparator>;
   /** Compound filters, all of which need to be matched by the issue. */
   and?: InputMaybe<Array<IssueFilter>>;
   /** Comparator for the issues archived at date. */
@@ -5236,6 +5247,8 @@ export type IssueFilter = {
   customerCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
+  /** [Internal] Cycle time (started -> completed) comparator. */
+  cycleTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -5256,6 +5269,8 @@ export type IssueFilter = {
   labels?: InputMaybe<IssueLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
+  /** [Internal] Lead time (created -> completed) comparator. */
+  leadTime?: InputMaybe<NullableDurationComparator>;
   /** Filters that the issue's customer needs must satisfy. */
   needs?: InputMaybe<CustomerNeedCollectionFilter>;
   /** Comparator for the issues number. */
@@ -5294,6 +5309,8 @@ export type IssueFilter = {
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
   title?: InputMaybe<StringComparator>;
+  /** [Internal] Triage time (entered triaged -> triaged) comparator. */
+  triageTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues triaged at date. */
   triagedAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the updated at date. */
@@ -9337,12 +9354,36 @@ export type NullableDocumentContentFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** Nullable comparator for optional durations. */
+export type NullableDurationComparator = {
+  /** Equals constraint. */
+  eq?: InputMaybe<Scalars['Duration']['input']>;
+  /** Greater-than constraint. Matches any values that are greater than the given value. */
+  gt?: InputMaybe<Scalars['Duration']['input']>;
+  /** Greater-than-or-equal constraint. Matches any values that are greater than or equal to the given value. */
+  gte?: InputMaybe<Scalars['Duration']['input']>;
+  /** In-array constraint. */
+  in?: InputMaybe<Array<Scalars['Duration']['input']>>;
+  /** Less-than constraint. Matches any values that are less than the given value. */
+  lt?: InputMaybe<Scalars['Duration']['input']>;
+  /** Less-than-or-equal constraint. Matches any values that are less than or equal to the given value. */
+  lte?: InputMaybe<Scalars['Duration']['input']>;
+  /** Not-equals constraint. */
+  neq?: InputMaybe<Scalars['Duration']['input']>;
+  /** Not-in-array constraint. */
+  nin?: InputMaybe<Array<Scalars['Duration']['input']>>;
+  /** Null constraint. Matches any non-null values if the given value is false, otherwise it matches null values. */
+  null?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
 /** Issue filtering options. */
 export type NullableIssueFilter = {
   /** Comparator for the issues added to cycle at date. */
   addedToCycleAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the period when issue was added to a cycle. */
   addedToCyclePeriod?: InputMaybe<CyclePeriodComparator>;
+  /** [Internal] Age (created -> now) comparator, defined if the issue is still open. */
+  ageTime?: InputMaybe<NullableDurationComparator>;
   /** Compound filters, all of which need to be matched by the issue. */
   and?: InputMaybe<Array<NullableIssueFilter>>;
   /** Comparator for the issues archived at date. */
@@ -9371,6 +9412,8 @@ export type NullableIssueFilter = {
   customerCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
+  /** [Internal] Cycle time (started -> completed) comparator. */
+  cycleTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -9391,6 +9434,8 @@ export type NullableIssueFilter = {
   labels?: InputMaybe<IssueLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
+  /** [Internal] Lead time (created -> completed) comparator. */
+  leadTime?: InputMaybe<NullableDurationComparator>;
   /** Filters that the issue's customer needs must satisfy. */
   needs?: InputMaybe<CustomerNeedCollectionFilter>;
   /** Filter based on the existence of the relation. */
@@ -9431,6 +9476,8 @@ export type NullableIssueFilter = {
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
   title?: InputMaybe<StringComparator>;
+  /** [Internal] Triage time (entered triaged -> triaged) comparator. */
+  triageTime?: InputMaybe<NullableDurationComparator>;
   /** Comparator for the issues triaged at date. */
   triagedAt?: InputMaybe<NullableDateComparator>;
   /** Comparator for the updated at date. */
@@ -9499,6 +9546,8 @@ export type NullableProjectFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
+  /** [Internal] Filters that project labels must satisfy. */
+  labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
   /** Filters that the projects lead must satisfy. */
@@ -11024,6 +11073,8 @@ export type ProjectCollectionFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
+  /** [Internal] Filters that project labels must satisfy. */
+  labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
   /** Filters that the projects lead must satisfy. */
@@ -11161,6 +11212,8 @@ export type ProjectFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
+  /** [Internal] Filters that project labels must satisfy. */
+  labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
   /** Filters that the projects lead must satisfy. */
@@ -11268,6 +11321,34 @@ export type ProjectLabel = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
+};
+
+/** Project label filtering options. */
+export type ProjectLabelCollectionFilter = {
+  /** Compound filters, all of which need to be matched by the label. */
+  and?: InputMaybe<Array<ProjectLabelCollectionFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Filters that the project labels creator must satisfy. */
+  creator?: InputMaybe<NullableUserFilter>;
+  /** Filters that needs to be matched by all project labels. */
+  every?: InputMaybe<ProjectLabelFilter>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Comparator for whether the label is a group label. */
+  isGroup?: InputMaybe<BooleanComparator>;
+  /** Comparator for the collection length. */
+  length?: InputMaybe<NumberComparator>;
+  /** Comparator for the name. */
+  name?: InputMaybe<StringComparator>;
+  /** Compound filters, one of which need to be matched by the label. */
+  or?: InputMaybe<Array<ProjectLabelCollectionFilter>>;
+  /** Filters that the project label's parent label must satisfy. */
+  parent?: InputMaybe<ProjectLabelFilter>;
+  /** Filters that needs to be matched by some project labels. */
+  some?: InputMaybe<ProjectLabelCollectionFilter>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
 };
 
 export type ProjectLabelConnection = {
@@ -15976,6 +16057,7 @@ export const UserFlagType = {
   AnalyticsWelcomeDismissed: 'analyticsWelcomeDismissed',
   CanPlaySnake: 'canPlaySnake',
   CanPlayTetris: 'canPlayTetris',
+  CommandMenuClearShortcutTip: 'commandMenuClearShortcutTip',
   CompletedOnboarding: 'completedOnboarding',
   CycleWelcomeDismissed: 'cycleWelcomeDismissed',
   DesktopDownloadToastDismissed: 'desktopDownloadToastDismissed',
