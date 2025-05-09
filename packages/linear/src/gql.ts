@@ -6331,6 +6331,8 @@ export type JiraProjectDataInput = {
 export type JiraSettingsInput = {
   /** Whether this integration is for Jira Server or not. */
   isJiraServer?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The label of the Jira instance, for visual identification purposes only */
+  label?: InputMaybe<Scalars['String']['input']>;
   /** Whether this integration is using a manual setup flow. */
   manualSetup?: InputMaybe<Scalars['Boolean']['input']>;
   /** The mapping of Jira project id => Linear team id. */
@@ -6342,8 +6344,12 @@ export type JiraSettingsInput = {
 };
 
 export type JiraUpdateInput = {
+  /** The Jira personal access token. */
+  accessToken?: InputMaybe<Scalars['String']['input']>;
   /** Whether to delete the current manual webhook configuration. */
   deleteWebhook?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The Jira user email address associated with the personal access token. */
+  email?: InputMaybe<Scalars['String']['input']>;
   /** The id of the integration to update. */
   id: Scalars['String']['input'];
   /** Whether to refresh Jira metadata for the integration. */
@@ -10547,8 +10553,6 @@ export type Post = Node & {
   feedSummaryScheduleAtCreate?: Maybe<FeedSummarySchedule>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** The project that the post is associated with. */
-  project?: Maybe<Project>;
   /** Emoji reaction summary, grouped by emoji type. */
   reactionData: Scalars['JSONObject']['output'];
   /** The post's unique URL slug. */
