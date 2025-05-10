@@ -11141,6 +11141,8 @@ export type ProjectCreateInput = {
   icon?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal]The identifiers of the project labels associated with this project. */
+  labelIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The ID of the last template applied to the project. */
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the project lead. */
@@ -12469,7 +12471,7 @@ export type ProjectUpdateInput = {
   frequencyResolution?: InputMaybe<FrequencyResolutionType>;
   /** The icon of the project. */
   icon?: InputMaybe<Scalars['String']['input']>;
-  /** The identifiers of the project labels associated with this project. */
+  /** [Internal] The identifiers of the project labels associated with this project. */
   labelIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The ID of the last template applied to the project. */
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
@@ -16328,6 +16330,8 @@ export type ViewPreferencesCreateInput = {
   preferences: Scalars['JSONObject']['input'];
   /** The project these view preferences are associated with. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The project label these view preferences are associated with. */
+  projectLabelId?: InputMaybe<Scalars['String']['input']>;
   /** The roadmap these view preferences are associated with. */
   roadmapId?: InputMaybe<Scalars['String']['input']>;
   /** The team these view preferences are associated with. */
@@ -16410,6 +16414,7 @@ export const ViewType = {
   Project: 'project',
   ProjectCustomerNeeds: 'projectCustomerNeeds',
   ProjectDocuments: 'projectDocuments',
+  ProjectLabel: 'projectLabel',
   Projects: 'projects',
   ProjectsAll: 'projectsAll',
   ProjectsBacklog: 'projectsBacklog',
