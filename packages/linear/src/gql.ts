@@ -11300,7 +11300,7 @@ export type ProjectHistoryEdge = {
   node: ProjectHistory;
 };
 
-/** Labels that can be associated with projects. */
+/** [Internal] Labels that can be associated with projects. */
 export type ProjectLabel = Node & {
   __typename?: 'ProjectLabel';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
