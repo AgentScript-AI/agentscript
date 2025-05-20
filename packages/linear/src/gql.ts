@@ -217,6 +217,8 @@ export type Attachment = Node & {
   issue: Issue;
   /** Custom metadata related to the attachment. */
   metadata: Scalars['JSONObject']['output'];
+  /** The issue this attachment was originally created on. Will be undefined if the attachment hasn't been moved. */
+  originalIssue?: Maybe<Issue>;
   /** Information about the source which created the attachment. */
   source?: Maybe<Scalars['JSONObject']['output']>;
   /** An accessor helper to source.type, defines the source type of the attachment. */
@@ -1308,6 +1310,8 @@ export type CustomerNeed = Node & {
   id: Scalars['ID']['output'];
   /** The issue this need is referencing. */
   issue?: Maybe<Issue>;
+  /** The issue this customer need was originally created on. Will be undefined if the customer need hasn't been moved. */
+  originalIssue?: Maybe<Issue>;
   /** Whether the customer need is important or not. 0 = Not important, 1 = Important. */
   priority: Scalars['Float']['output'];
   /** The project this need is referencing. */
@@ -2954,6 +2958,48 @@ export type EstimateSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
+/** Information about an external entity. */
+export type ExternalEntityInfo = {
+  __typename?: 'ExternalEntityInfo';
+  /** The id of the external entity. */
+  id: Scalars['String']['output'];
+  /** Metadata about the external entity. */
+  metadata?: Maybe<ExternalEntityInfoMetadata>;
+  /** The name of the service this entity is synced with. */
+  service: ExternalSyncService;
+};
+
+/** Metadata about the external GitHub entity. */
+export type ExternalEntityInfoGithubMetadata = {
+  __typename?: 'ExternalEntityInfoGithubMetadata';
+  /** The number of the issue. */
+  number?: Maybe<Scalars['Float']['output']>;
+  /** The owner of the repository. */
+  owner?: Maybe<Scalars['String']['output']>;
+  /** The repository name. */
+  repo?: Maybe<Scalars['String']['output']>;
+};
+
+/** Metadata about the external Jira entity. */
+export type ExternalEntityInfoJiraMetadata = {
+  __typename?: 'ExternalEntityInfoJiraMetadata';
+  /** The key of the Jira issue. */
+  issueKey?: Maybe<Scalars['String']['output']>;
+  /** The id of the Jira issue type. */
+  issueTypeId?: Maybe<Scalars['String']['output']>;
+  /** The id of the Jira project. */
+  projectId?: Maybe<Scalars['String']['output']>;
+};
+
+export type ExternalEntityInfoMetadata = ExternalEntityInfoGithubMetadata | ExternalEntityInfoJiraMetadata;
+
+/** The service that syncs an external entity to Linear. */
+export const ExternalSyncService = {
+  Github: 'github',
+  Jira: 'jira'
+} as const;
+
+export type ExternalSyncService = typeof ExternalSyncService[keyof typeof ExternalSyncService];
 /** An external authenticated (e.g., through Slack) user which doesn't have a Linear account, but can create and update entities in Linear from the external system that authenticated them. */
 export type ExternalUser = Node & {
   __typename?: 'ExternalUser';
@@ -4445,6 +4491,7 @@ export type IntegrationSettingsInput = {
   notion?: InputMaybe<NotionSettingsInput>;
   opsgenie?: InputMaybe<OpsgenieInput>;
   pagerDuty?: InputMaybe<PagerDutyInput>;
+  salesforce?: InputMaybe<SalesforceSettingsInput>;
   sentry?: InputMaybe<SentrySettingsInput>;
   slack?: InputMaybe<SlackSettingsInput>;
   slackAsks?: InputMaybe<SlackAsksSettingsInput>;
@@ -4719,6 +4766,10 @@ export type Issue = Node & {
   externalUserCreator?: Maybe<ExternalUser>;
   /** The users favorite associated with this issue. */
   favorite?: Maybe<Favorite>;
+  /** Attachments previously associated with the issue before being moved to another issue. */
+  formerAttachments: AttachmentConnection;
+  /** Customer needs previously associated with the issue before being moved to another issue. */
+  formerNeeds: CustomerNeedConnection;
   /** History entries associated with the issue. */
   history: IssueHistoryConnection;
   /** The unique identifier of the entity. */
@@ -4791,6 +4842,8 @@ export type Issue = Node & {
   subscribers: UserConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external services the issue is synced with. */
+  syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** The team that the issue is associated with. */
   team: Team;
   /** The issue's title. */
@@ -4838,6 +4891,30 @@ export type IssueCommentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<CommentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An issue. */
+export type IssueFormerAttachmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AttachmentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An issue. */
+export type IssueFormerNeedsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CustomerNeedFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -5978,6 +6055,10 @@ export type IssueSearchResult = Node & {
   externalUserCreator?: Maybe<ExternalUser>;
   /** The users favorite associated with this issue. */
   favorite?: Maybe<Favorite>;
+  /** Attachments previously associated with the issue before being moved to another issue. */
+  formerAttachments: AttachmentConnection;
+  /** Customer needs previously associated with the issue before being moved to another issue. */
+  formerNeeds: CustomerNeedConnection;
   /** History entries associated with the issue. */
   history: IssueHistoryConnection;
   /** The unique identifier of the entity. */
@@ -6052,6 +6133,8 @@ export type IssueSearchResult = Node & {
   subscribers: UserConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external services the issue is synced with. */
+  syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** The team that the issue is associated with. */
   team: Team;
   /** The issue's title. */
@@ -6096,6 +6179,28 @@ export type IssueSearchResultCommentsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<CommentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type IssueSearchResultFormerAttachmentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AttachmentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type IssueSearchResultFormerNeedsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CustomerNeedFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -6764,6 +6869,8 @@ export type Mutation = {
   integrationPagerDutyRefreshScheduleMappings: IntegrationPayload;
   /** Requests a currently unavailable integration. */
   integrationRequest: IntegrationRequestPayload;
+  /** Integrates the organization with Salesforce. */
+  integrationSalesforce: IntegrationPayload;
   /** Integrates the organization with Sentry. */
   integrationSentryConnect: IntegrationPayload;
   /**
@@ -7818,6 +7925,13 @@ export type MutationIntegrationPagerDutyConnectArgs = {
 
 export type MutationIntegrationRequestArgs = {
   input: IntegrationRequestInput;
+};
+
+
+export type MutationIntegrationSalesforceArgs = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
+  subdomain: Scalars['String']['input'];
 };
 
 
@@ -14310,6 +14424,23 @@ export const SlaDayCountType = {
 } as const;
 
 export type SlaDayCountType = typeof SlaDayCountType[keyof typeof SlaDayCountType];
+export type SalesforceSettingsInput = {
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
+  automateTicketReopeningOnCancellation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when a comment is posted on its linked Linear issue */
+  automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
+  automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether an internal message should be added when someone comments on an issue. */
+  sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
+  sendNoteOnStatusChange?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The Salesforce subdomain. */
+  subdomain?: InputMaybe<Scalars['String']['input']>;
+  /** The Salesforce instance URL. */
+  url?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** [ALPHA] Payload returned by semantic search. */
 export type SemanticSearchPayload = {
   __typename?: 'SemanticSearchPayload';
@@ -15156,6 +15287,8 @@ export type TeamCreateInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   /** Whether the team should inherit estimation settings from its parent. Only applies to sub-teams. */
   inheritIssueEstimation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] Whether the team should inherit its product intelligence scope from its parent. Only applies to sub-teams. */
+  inheritProductIntelligenceScope?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Internal] Whether the team should inherit workflow statuses from its parent. */
   inheritWorkflowStatuses?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether to allow zeros in issues estimates. */
@@ -15396,6 +15529,8 @@ export type TeamUpdateInput = {
   icon?: InputMaybe<Scalars['String']['input']>;
   /** Whether the team should inherit estimation settings from its parent. Only applies to sub-teams. */
   inheritIssueEstimation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [Internal] Whether the team should inherit its product intelligence scope from its parent. Only applies to sub-teams. */
+  inheritProductIntelligenceScope?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Internal] Whether the team should inherit workflow statuses from its parent. */
   inheritWorkflowStatuses?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether to allow zeros in issues estimates. */
