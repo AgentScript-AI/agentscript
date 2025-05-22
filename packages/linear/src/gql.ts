@@ -56,6 +56,8 @@ export type ApiKey = Node & {
   id: Scalars['ID']['output'];
   /** The label of the API key. */
   label: Scalars['String']['output'];
+  /** Organization the API key belongs to. */
+  organization: Organization;
   /** The sync groups that this API key requests access to. If null, the API key has access to all sync groups the user has access to. The final set of sync groups is computed as the intersection of these requested groups with the user's base sync groups. */
   requestedSyncGroups?: Maybe<Array<Scalars['String']['output']>>;
   /** Scopes associated with the API key. */
@@ -3130,6 +3132,8 @@ export type Favorite = Node & {
   predefinedViewType?: Maybe<Scalars['String']['output']>;
   /** The favorited project. */
   project?: Maybe<Project>;
+  /** [Internal] The favorited project label. */
+  projectLabel?: Maybe<ProjectLabel>;
   /** The targeted tab of the project. */
   projectTab?: Maybe<ProjectTab>;
   /** [DEPRECATED] The favorited team of the project. */
@@ -3204,6 +3208,8 @@ export type FavoriteCreateInput = {
   predefinedViewType?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the project to favorite. */
   projectId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The identifier of the label to favorite. */
+  projectLabelId?: InputMaybe<Scalars['String']['input']>;
   /** The tab of the project to favorite. */
   projectTab?: InputMaybe<ProjectTab>;
   /** The identifier of the roadmap to favorite. */
@@ -3664,6 +3670,8 @@ export type Initiative = Node & {
   creator?: Maybe<User>;
   /** The description of the initiative. */
   description?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Facets associated with the initiative. */
+  facets: Array<Facet>;
   /** The resolution of the reminder frequency. */
   frequencyResolution: FrequencyResolutionType;
   /** The health of the initiative. */
@@ -10046,6 +10054,8 @@ export type Organization = Node & {
   defaultFeedSummarySchedule?: Maybe<FeedSummarySchedule>;
   /** The time at which deletion of the organization was requested. */
   deletionRequestedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Facets associated with the organization. */
+  facets: Array<Facet>;
   /** Whether the organization has enabled the feed feature. */
   feedEnabled: Scalars['Boolean']['output'];
   /** The month at which the fiscal year starts. Defaults to January (0). */
@@ -10521,6 +10531,8 @@ export type OrganizationUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** Whether the organization has opted for having to approve all OAuth applications for install. */
   oauthAppReview?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [INTERNAL] Whether the organization has enabled the member API keys. */
+  personalApiKeysEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The n-weekly frequency at which to prompt for project updates. */
   projectUpdateReminderFrequencyInWeeks?: InputMaybe<Scalars['Float']['input']>;
   /** The day at which project updates are sent. */
@@ -10824,6 +10836,8 @@ export type Project = Node & {
   documents: DocumentConnection;
   /** External links associated with the project. */
   externalLinks: EntityExternalLinkConnection;
+  /** [Internal] Facets associated with the project. */
+  facets: Array<Facet>;
   /** The user's favorite associated with this project. */
   favorite?: Maybe<Favorite>;
   /** The resolution of the reminder frequency. */
@@ -12005,6 +12019,8 @@ export type ProjectSearchResult = Node & {
   documents: DocumentConnection;
   /** External links associated with the project. */
   externalLinks: EntityExternalLinkConnection;
+  /** [Internal] Facets associated with the project. */
+  facets: Array<Facet>;
   /** The user's favorite associated with this project. */
   favorite?: Maybe<Favorite>;
   /** The resolution of the reminder frequency. */
