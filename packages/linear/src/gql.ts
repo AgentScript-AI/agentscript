@@ -1542,6 +1542,18 @@ export type CustomerNeedUpdateInput = {
   projectId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type CustomerNeedUpdatePayload = {
+  __typename?: 'CustomerNeedUpdatePayload';
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** The customer need that was created or updated. */
+  need: CustomerNeed;
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+  /** The related customer needs that were updated. */
+  updatedRelatedNeeds: Array<CustomerNeed>;
+};
+
 /** A customer notification subscription. */
 export type CustomerNotificationSubscription = Entity & Node & NotificationSubscription & {
   __typename?: 'CustomerNotificationSubscription';
@@ -4784,6 +4796,8 @@ export type Issue = Node & {
   id: Scalars['ID']['output'];
   /** Issue's human readable identifier (e.g. ENG-123). */
   identifier: Scalars['String']['output'];
+  /** [Internal] Incoming product intelligence relation suggestions for the issue. */
+  incomingSuggestions: IssueSuggestionConnection;
   /** Integration type that created this issue, if applicable. */
   integrationSourceType?: Maybe<IntegrationService>;
   /** Inverse relations associated with this issue. */
@@ -4848,6 +4862,8 @@ export type Issue = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
+  /** [Internal] Product intelligence suggestions for the issue. */
+  suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The external services the issue is synced with. */
@@ -4942,6 +4958,17 @@ export type IssueHistoryArgs = {
 
 
 /** An issue. */
+export type IssueIncomingSuggestionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An issue. */
 export type IssueInverseRelationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -4995,6 +5022,17 @@ export type IssueSubscribersArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An issue. */
+export type IssueSuggestionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
@@ -6073,6 +6111,8 @@ export type IssueSearchResult = Node & {
   id: Scalars['ID']['output'];
   /** Issue's human readable identifier (e.g. ENG-123). */
   identifier: Scalars['String']['output'];
+  /** [Internal] Incoming product intelligence relation suggestions for the issue. */
+  incomingSuggestions: IssueSuggestionConnection;
   /** Integration type that created this issue, if applicable. */
   integrationSourceType?: Maybe<IntegrationService>;
   /** Inverse relations associated with this issue. */
@@ -6139,6 +6179,8 @@ export type IssueSearchResult = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
+  /** [Internal] Product intelligence suggestions for the issue. */
+  suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The external services the issue is synced with. */
@@ -6226,6 +6268,16 @@ export type IssueSearchResultHistoryArgs = {
 };
 
 
+export type IssueSearchResultIncomingSuggestionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
 export type IssueSearchResultInverseRelationsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -6275,6 +6327,16 @@ export type IssueSearchResultSubscribersArgs = {
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type IssueSearchResultSuggestionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
 };
@@ -6336,6 +6398,75 @@ export type IssueSortInput = {
   workflowState?: InputMaybe<WorkflowStateSort>;
 };
 
+export type IssueSuggestion = Node & {
+  __typename?: 'IssueSuggestion';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  issue: Issue;
+  issueId: Scalars['String']['output'];
+  metadata?: Maybe<IssueSuggestionMetadata>;
+  state: IssueSuggestionState;
+  stateChangedAt: Scalars['DateTime']['output'];
+  suggestedIssue?: Maybe<Issue>;
+  suggestedIssueId?: Maybe<Scalars['String']['output']>;
+  suggestedLabel?: Maybe<IssueLabel>;
+  suggestedLabelId?: Maybe<Scalars['String']['output']>;
+  suggestedProject?: Maybe<Project>;
+  suggestedTeam?: Maybe<Team>;
+  suggestedUser?: Maybe<User>;
+  suggestedUserId?: Maybe<Scalars['String']['output']>;
+  type: IssueSuggestionType;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+export type IssueSuggestionConnection = {
+  __typename?: 'IssueSuggestionConnection';
+  edges: Array<IssueSuggestionEdge>;
+  nodes: Array<IssueSuggestion>;
+  pageInfo: PageInfo;
+};
+
+export type IssueSuggestionEdge = {
+  __typename?: 'IssueSuggestionEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: IssueSuggestion;
+};
+
+export type IssueSuggestionMetadata = {
+  __typename?: 'IssueSuggestionMetadata';
+  classification?: Maybe<Scalars['String']['output']>;
+  evalLogId?: Maybe<Scalars['String']['output']>;
+  reasons?: Maybe<Array<Scalars['String']['output']>>;
+  score?: Maybe<Scalars['Float']['output']>;
+};
+
+export const IssueSuggestionState = {
+  Accepted: 'accepted',
+  Active: 'active',
+  Dismissed: 'dismissed',
+  Stale: 'stale'
+} as const;
+
+export type IssueSuggestionState = typeof IssueSuggestionState[keyof typeof IssueSuggestionState];
+export const IssueSuggestionType = {
+  Assignee: 'assignee',
+  Label: 'label',
+  Project: 'project',
+  RelatedIssue: 'relatedIssue',
+  SimilarIssue: 'similarIssue',
+  Team: 'team'
+} as const;
+
+export type IssueSuggestionType = typeof IssueSuggestionType[keyof typeof IssueSuggestionType];
 export type IssueTitleSuggestionFromCustomerRequestPayload = {
   __typename?: 'IssueTitleSuggestionFromCustomerRequestPayload';
   /** The identifier of the last sync operation. */
@@ -6706,7 +6837,7 @@ export type Mutation = {
   /** Unarchives a customer need. */
   customerNeedUnarchive: CustomerNeedArchivePayload;
   /** Updates a customer need */
-  customerNeedUpdate: CustomerNeedPayload;
+  customerNeedUpdate: CustomerNeedUpdatePayload;
   /** Creates a new customer tier. */
   customerTierCreate: CustomerTierPayload;
   /** Deletes a customer tier. */
