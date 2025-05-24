@@ -3718,6 +3718,8 @@ export type Initiative = Node & {
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The status of the initiative. One of Planned, Active, Completed */
   status: InitiativeStatus;
+  /** [ALPHA] Sub-initiatives associated with the initiative. */
+  subInitiatives: InitiativeConnection;
   /** The estimated completion date of the initiative. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
   /** The resolution of the initiative's estimated completion date. */
@@ -3769,6 +3771,19 @@ export type InitiativeProjectsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   filter?: InputMaybe<ProjectFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubInitiatives?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** An initiative to group projects. */
+export type InitiativeSubInitiativesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<InitiativeFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -10236,6 +10251,8 @@ export type Organization = Node & {
   projectUpdatesReminderFrequency: ProjectUpdateReminderFrequency;
   /** The feature release channel the organization belongs to. */
   releaseChannel: ReleaseChannel;
+  /** Whether label creation, update, and deletion is restricted to admins. */
+  restrictLabelManagementToAdmins?: Maybe<Scalars['Boolean']['output']>;
   /** Whether team creation is restricted to admins. */
   restrictTeamCreationToAdmins?: Maybe<Scalars['Boolean']['output']>;
   /** Whether the organization is using a roadmap. */
@@ -16113,7 +16130,10 @@ export type User = Node & {
   id: Scalars['ID']['output'];
   /** The initials of the user. */
   initials: Scalars['String']['output'];
-  /** Unique hash for the user to be used in invite URLs. */
+  /**
+   * [DEPRECATED] Unique hash for the user to be used in invite URLs.
+   * @deprecated This hash is not in use anymore, this value will always be empty.
+   */
   inviteHash: Scalars['String']['output'];
   /** Whether the user is the currently authenticated user. */
   isMe: Scalars['Boolean']['output'];
