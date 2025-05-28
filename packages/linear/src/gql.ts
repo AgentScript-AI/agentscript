@@ -662,6 +662,8 @@ export type Comment = Node & {
   resolvingComment?: Maybe<Comment>;
   /** The user that resolved the thread. */
   resolvingUser?: Maybe<User>;
+  /** The external services the issue is synced with. */
+  syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** [Internal] A generated summary of the comment thread. */
   threadSummary?: Maybe<Scalars['JSONObject']['output']>;
   /**
@@ -1659,7 +1661,10 @@ export type CustomerStatus = Node & {
   name: Scalars['String']['output'];
   /** The position of the status in the workspace's customers flow. */
   position: Scalars['Float']['output'];
-  /** The type of the customer status. */
+  /**
+   * The type of the customer status.
+   * @deprecated Customer statuses are no longer grouped by type.
+   */
   type: CustomerStatusType;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
@@ -1673,6 +1678,19 @@ export type CustomerStatusConnection = {
   edges: Array<CustomerStatusEdge>;
   nodes: Array<CustomerStatus>;
   pageInfo: PageInfo;
+};
+
+export type CustomerStatusCreateInput = {
+  /** The UI color of the status as a HEX string. */
+  color: Scalars['String']['input'];
+  /** Description of the status. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the status. */
+  name: Scalars['String']['input'];
+  /** The position of the status in the workspace's customer flow. */
+  position?: InputMaybe<Scalars['Float']['input']>;
 };
 
 export type CustomerStatusEdge = {
@@ -1706,6 +1724,16 @@ export type CustomerStatusFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+export type CustomerStatusPayload = {
+  __typename?: 'CustomerStatusPayload';
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** The customer status that was created or updated. */
+  status: CustomerStatus;
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 /** Customer status sorting options. */
 export type CustomerStatusSort = {
   /** Whether nulls should be sorted first or last */
@@ -1721,6 +1749,17 @@ export const CustomerStatusType = {
 } as const;
 
 export type CustomerStatusType = typeof CustomerStatusType[keyof typeof CustomerStatusType];
+export type CustomerStatusUpdateInput = {
+  /** The UI color of the status as a HEX string. */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** Description of the status. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the status. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** The position of the status in the workspace's customer flow. */
+  position?: InputMaybe<Scalars['Float']['input']>;
+};
+
 /** A customer tier. */
 export type CustomerTier = Node & {
   __typename?: 'CustomerTier';
@@ -2170,6 +2209,8 @@ export type Dashboard = Node & {
   shared: Scalars['Boolean']['output'];
   /** The dashboard's unique URL slug. */
   slugId: Scalars['String']['output'];
+  /** The sort order of the dashboard within the organization or its team. */
+  sortOrder: Scalars['Float']['output'];
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -3005,12 +3046,24 @@ export type ExternalEntityInfoJiraMetadata = {
   projectId?: Maybe<Scalars['String']['output']>;
 };
 
-export type ExternalEntityInfoMetadata = ExternalEntityInfoGithubMetadata | ExternalEntityInfoJiraMetadata;
+export type ExternalEntityInfoMetadata = ExternalEntityInfoGithubMetadata | ExternalEntityInfoJiraMetadata | ExternalEntitySlackMetadata;
+
+/** Metadata about the external Slack entity. */
+export type ExternalEntitySlackMetadata = {
+  __typename?: 'ExternalEntitySlackMetadata';
+  /** The id of the Slack channel. */
+  channelId?: Maybe<Scalars['String']['output']>;
+  /** The name of the Slack channel. */
+  channelName?: Maybe<Scalars['String']['output']>;
+  /** The URL of the Slack message. */
+  messageUrl?: Maybe<Scalars['String']['output']>;
+};
 
 /** The service that syncs an external entity to Linear. */
 export const ExternalSyncService = {
   Github: 'github',
-  Jira: 'jira'
+  Jira: 'jira',
+  Slack: 'slack'
 } as const;
 
 export type ExternalSyncService = typeof ExternalSyncService[keyof typeof ExternalSyncService];
@@ -6853,6 +6906,12 @@ export type Mutation = {
   customerNeedUnarchive: CustomerNeedArchivePayload;
   /** Updates a customer need */
   customerNeedUpdate: CustomerNeedUpdatePayload;
+  /** Creates a new customer status. */
+  customerStatusCreate: CustomerStatusPayload;
+  /** Deletes a customer status. */
+  customerStatusDelete: DeletePayload;
+  /** Updates a customer status. */
+  customerStatusUpdate: CustomerStatusPayload;
   /** Creates a new customer tier. */
   customerTierCreate: CustomerTierPayload;
   /** Deletes a customer tier. */
@@ -7660,6 +7719,22 @@ export type MutationCustomerNeedUnarchiveArgs = {
 export type MutationCustomerNeedUpdateArgs = {
   id: Scalars['String']['input'];
   input: CustomerNeedUpdateInput;
+};
+
+
+export type MutationCustomerStatusCreateArgs = {
+  input: CustomerStatusCreateInput;
+};
+
+
+export type MutationCustomerStatusDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationCustomerStatusUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: CustomerStatusUpdateInput;
 };
 
 
@@ -10251,7 +10326,7 @@ export type Organization = Node & {
   projectUpdatesReminderFrequency: ProjectUpdateReminderFrequency;
   /** The feature release channel the organization belongs to. */
   releaseChannel: ReleaseChannel;
-  /** Whether label creation, update, and deletion is restricted to admins. */
+  /** Whether workspace label creation, update, and deletion is restricted to admins. */
   restrictLabelManagementToAdmins?: Maybe<Scalars['Boolean']['output']>;
   /** Whether team creation is restricted to admins. */
   restrictTeamCreationToAdmins?: Maybe<Scalars['Boolean']['output']>;
@@ -10689,6 +10764,8 @@ export type OrganizationUpdateInput = {
   projectUpdateRemindersHour?: InputMaybe<Scalars['Float']['input']>;
   /** Whether the organization has opted for reduced customer support attachment information. */
   reducedPersonalInformation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether label creation is restricted to admins. */
+  restrictLabelManagementToAdmins?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether team creation is restricted to admins. */
   restrictTeamCreationToAdmins?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the organization is using roadmap. */
@@ -16694,6 +16771,7 @@ export const ViewType = {
   Customer: 'customer',
   Customers: 'customers',
   Cycle: 'cycle',
+  Dashboards: 'dashboards',
   EmbeddedCustomerNeeds: 'embeddedCustomerNeeds',
   FeedAll: 'feedAll',
   FeedCreated: 'feedCreated',
