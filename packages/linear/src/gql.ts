@@ -662,7 +662,7 @@ export type Comment = Node & {
   resolvingComment?: Maybe<Comment>;
   /** The user that resolved the thread. */
   resolvingUser?: Maybe<User>;
-  /** The external services the issue is synced with. */
+  /** The external services the comment is synced with. */
   syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** [Internal] A generated summary of the comment thread. */
   threadSummary?: Maybe<Scalars['JSONObject']['output']>;
@@ -737,13 +737,13 @@ export type CommentCreateInput = {
   body?: InputMaybe<Scalars['String']['input']>;
   /** [Internal] The comment content as a Prosemirror document. */
   bodyData?: InputMaybe<Scalars['JSON']['input']>;
-  /** Create comment as a user with the provided name. This option is only available to OAuth applications creating comments in `actor=application` mode. */
+  /** Create comment as a user with the provided name. This option is only available to OAuth applications creating comments in `actor=app` mode. */
   createAsUser?: InputMaybe<Scalars['String']['input']>;
   /** Flag to indicate this comment should be created on the issue's synced Slack comment thread. If no synced Slack comment thread exists, the mutation will fail. */
   createOnSyncedSlackThread?: InputMaybe<Scalars['Boolean']['input']>;
   /** The date when the comment was created (e.g. if importing from another system). Must be a date in the past. If none is provided, the backend will generate the time as now. */
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
-  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating comments in `actor=application` mode. */
+  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating comments in `actor=app` mode. */
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   /** Flag to prevent auto subscription to the issue the comment is created on. */
   doNotSubscribeToIssue?: InputMaybe<Scalars['Boolean']['input']>;
@@ -1395,13 +1395,13 @@ export type CustomerNeedCreateInput = {
   bodyData?: InputMaybe<Scalars['JSON']['input']>;
   /** The comment this need is referencing. */
   commentId?: InputMaybe<Scalars['String']['input']>;
-  /** Create need as a user with the provided name. This option is only available to OAuth applications creating needs in `actor=application` mode. */
+  /** Create need as a user with the provided name. This option is only available to OAuth applications creating needs in `actor=app` mode. */
   createAsUser?: InputMaybe<Scalars['String']['input']>;
   /** The external ID of the customer the need belongs to. */
   customerExternalId?: InputMaybe<Scalars['String']['input']>;
   /** The uuid of the customer the need belongs to. */
   customerId?: InputMaybe<Scalars['String']['input']>;
-  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating needs in `actor=application` mode. */
+  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating needs in `actor=app` mode. */
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
@@ -1665,7 +1665,7 @@ export type CustomerStatus = Node & {
    * The type of the customer status.
    * @deprecated Customer statuses are no longer grouped by type.
    */
-  type: CustomerStatusType;
+  type?: Maybe<CustomerStatusType>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -2195,8 +2195,6 @@ export type Dashboard = Node & {
   id: Scalars['ID']['output'];
   /** The filter applied to all dashboard widgets showing issues data. */
   issueFilter?: Maybe<Scalars['JSONObject']['output']>;
-  /** The layout of the widgets on the dashboard. */
-  layout: Scalars['JSONObject']['output'];
   /** The name of the dashboard. */
   name: Scalars['String']['output'];
   /** The organization of the dashboard. */
@@ -3055,6 +3053,8 @@ export type ExternalEntitySlackMetadata = {
   channelId?: Maybe<Scalars['String']['output']>;
   /** The name of the Slack channel. */
   channelName?: Maybe<Scalars['String']['output']>;
+  /** Whether the entity originated from Slack (not Linear). */
+  isFromSlack: Scalars['Boolean']['output'];
   /** The URL of the Slack message. */
   messageUrl?: Maybe<Scalars['String']['output']>;
 };
@@ -5255,7 +5255,7 @@ export type IssueCreateInput = {
   assigneeId?: InputMaybe<Scalars['String']['input']>;
   /** The date when the issue was completed (e.g. if importing from another system). Must be a date in the past and after createdAt date. Cannot be provided with an incompatible workflow state. */
   completedAt?: InputMaybe<Scalars['DateTime']['input']>;
-  /** Create issue as a user with the provided name. This option is only available to OAuth applications creating issues in `actor=application` mode. */
+  /** Create issue as a user with the provided name. This option is only available to OAuth applications creating issues in `actor=app` mode. */
   createAsUser?: InputMaybe<Scalars['String']['input']>;
   /** The date when the issue was created (e.g. if importing from another system). Must be a date in the past. If none is provided, the backend will generate the time as now. */
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -5265,7 +5265,7 @@ export type IssueCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   /** [Internal] The issue description as a Prosemirror document. */
   descriptionData?: InputMaybe<Scalars['JSON']['input']>;
-  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating comments in `actor=application` mode. */
+  /** Provide an external user avatar URL. Can only be used in conjunction with the `createAsUser` options. This option is only available to OAuth applications creating comments in `actor=app` mode. */
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
   /** The date at which the issue is due. */
   dueDate?: InputMaybe<Scalars['TimelessDate']['input']>;
@@ -17198,11 +17198,11 @@ const defaultWrapper: SdkFunctionWrapper = (action, _operationName, _operationTy
 
 export function getSdk(client: GraphQLClient, withWrapper: SdkFunctionWrapper = defaultWrapper) {
   return {
-    getIssues(variables: GetIssuesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetIssuesQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetIssuesQuery>(GetIssuesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getIssues', 'query', variables);
+    getIssues(variables: GetIssuesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetIssuesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetIssuesQuery>({ document: GetIssuesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'getIssues', 'query', variables);
     },
-    getWorkflowStates(variables?: GetWorkflowStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders): Promise<GetWorkflowStatesQuery> {
-      return withWrapper((wrappedRequestHeaders) => client.request<GetWorkflowStatesQuery>(GetWorkflowStatesDocument, variables, {...requestHeaders, ...wrappedRequestHeaders}), 'getWorkflowStates', 'query', variables);
+    getWorkflowStates(variables?: GetWorkflowStatesQueryVariables, requestHeaders?: GraphQLClientRequestHeaders, signal?: RequestInit['signal']): Promise<GetWorkflowStatesQuery> {
+      return withWrapper((wrappedRequestHeaders) => client.request<GetWorkflowStatesQuery>({ document: GetWorkflowStatesDocument, variables, requestHeaders: { ...requestHeaders, ...wrappedRequestHeaders }, signal }), 'getWorkflowStates', 'query', variables);
     }
   };
 }
