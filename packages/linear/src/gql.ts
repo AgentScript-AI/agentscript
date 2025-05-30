@@ -1742,7 +1742,7 @@ export type CustomerStatusSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
-/** A type of customer status. */
+/** [DEPRECATED] A type of customer status. */
 export const CustomerStatusType = {
   Active: 'active',
   Inactive: 'inactive'
@@ -5769,7 +5769,7 @@ export type IssueLabel = Node & {
   id: Scalars['ID']['output'];
   /** The original label inherited from. */
   inheritedFrom?: Maybe<IssueLabel>;
-  /** Whether this label is considered to be a group. */
+  /** Whether the label is a group. */
   isGroup: Scalars['Boolean']['output'];
   /** Issues associated with the label. */
   issues: IssueConnection;
@@ -7052,6 +7052,8 @@ export type Mutation = {
   integrationGoogleSheets: IntegrationPayload;
   /** Integrates the organization with Intercom. */
   integrationIntercom: IntegrationPayload;
+  /** [INTERNAL] Refreshes the customer data attributes from Intercom. */
+  integrationIntercomCustomerDataAttributesRefresh: IntegrationPayload;
   /** Disconnects the organization from Intercom. */
   integrationIntercomDelete: IntegrationPayload;
   /**
@@ -9859,6 +9861,8 @@ export type NullableNumberComparator = {
 export type NullableProjectFilter = {
   /** Filters that the project's team must satisfy. */
   accessibleTeams?: InputMaybe<TeamCollectionFilter>;
+  /** [ALPHA] Comparator for the project activity type: buzzin, active, some, none */
+  activityType?: InputMaybe<StringComparator>;
   /** Compound filters, all of which need to be matched by the project. */
   and?: InputMaybe<Array<NullableProjectFilter>>;
   /** Comparator for the project cancelation date. */
@@ -11392,6 +11396,8 @@ export type ProjectAttachment = Node & {
 export type ProjectCollectionFilter = {
   /** Filters that the project's team must satisfy. */
   accessibleTeams?: InputMaybe<TeamCollectionFilter>;
+  /** [ALPHA] Comparator for the project activity type: buzzin, active, some, none */
+  activityType?: InputMaybe<StringComparator>;
   /** Compound filters, all of which need to be matched by the project. */
   and?: InputMaybe<Array<ProjectCollectionFilter>>;
   /** Comparator for the project cancelation date. */
@@ -11535,6 +11541,8 @@ export type ProjectEdge = {
 export type ProjectFilter = {
   /** Filters that the project's team must satisfy. */
   accessibleTeams?: InputMaybe<TeamCollectionFilter>;
+  /** [ALPHA] Comparator for the project activity type: buzzin, active, some, none */
+  activityType?: InputMaybe<StringComparator>;
   /** Compound filters, all of which need to be matched by the project. */
   and?: InputMaybe<Array<ProjectFilter>>;
   /** Comparator for the project cancelation date. */
