@@ -16209,6 +16209,8 @@ export type User = Node & {
   drafts: DraftConnection;
   /** The user's email address. */
   email: Scalars['String']['output'];
+  /** The user's GitHub user ID. */
+  gitHubUserId?: Maybe<Scalars['String']['output']>;
   /** Whether the user is a guest in the workspace and limited to accessing a subset of teams. */
   guest: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
