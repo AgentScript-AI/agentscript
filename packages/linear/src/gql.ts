@@ -4486,6 +4486,11 @@ export type IntegrationConnection = {
   pageInfo: PageInfo;
 };
 
+export type IntegrationCustomerDataAttributesRefreshInput = {
+  /** The integration service to refresh customer data attributes from. */
+  service: Scalars['String']['input'];
+};
+
 export type IntegrationEdge = {
   __typename?: 'IntegrationEdge';
   /** Used in `before` and `after` args */
@@ -5185,6 +5190,16 @@ export type IssueCollectionFilter = {
   hasDuplicateRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering issues with relations. */
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested assignees. */
+  hasSuggestedAssignees?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested labels. */
+  hasSuggestedLabels?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested projects. */
+  hasSuggestedProjects?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested related issues. */
+  hasSuggestedRelatedIssues?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested similar issues. */
+  hasSuggestedSimilarIssues?: InputMaybe<RelationExistsComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
   /** Filters that issue labels must satisfy. */
@@ -5454,6 +5469,16 @@ export type IssueFilter = {
   hasDuplicateRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering issues with relations. */
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested assignees. */
+  hasSuggestedAssignees?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested labels. */
+  hasSuggestedLabels?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested projects. */
+  hasSuggestedProjects?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested related issues. */
+  hasSuggestedRelatedIssues?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested similar issues. */
+  hasSuggestedSimilarIssues?: InputMaybe<RelationExistsComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
   /** Filters that issue labels must satisfy. */
@@ -6850,6 +6875,8 @@ export type Mutation = {
   attachmentLinkIntercom: AttachmentPayload;
   /** Link an existing Jira issue to an issue. */
   attachmentLinkJiraIssue: AttachmentPayload;
+  /** Link an existing Salesforce case to an issue. */
+  attachmentLinkSalesforce: AttachmentPayload;
   /** Link an existing Slack message to an issue. */
   attachmentLinkSlack: AttachmentPayload;
   /** Link any url to an issue. */
@@ -7024,6 +7051,8 @@ export type Mutation = {
   integrationArchive: DeletePayload;
   /** Connect a Slack channel to Asks. */
   integrationAsksConnectChannel: AsksChannelConnectPayload;
+  /** [INTERNAL] Refreshes the customer data attributes from the specified integration service. */
+  integrationCustomerDataAttributesRefresh: IntegrationPayload;
   /** Deletes an integration. */
   integrationDelete: DeletePayload;
   /** Integrates the organization with Discord. */
@@ -7052,8 +7081,6 @@ export type Mutation = {
   integrationGoogleSheets: IntegrationPayload;
   /** Integrates the organization with Intercom. */
   integrationIntercom: IntegrationPayload;
-  /** [INTERNAL] Refreshes the customer data attributes from Intercom. */
-  integrationIntercomCustomerDataAttributesRefresh: IntegrationPayload;
   /** Disconnects the organization from Intercom. */
   integrationIntercomDelete: IntegrationPayload;
   /**
@@ -7557,6 +7584,16 @@ export type MutationAttachmentLinkJiraIssueArgs = {
 };
 
 
+export type MutationAttachmentLinkSalesforceArgs = {
+  createAsUser?: InputMaybe<Scalars['String']['input']>;
+  displayIconUrl?: InputMaybe<Scalars['String']['input']>;
+  id?: InputMaybe<Scalars['String']['input']>;
+  issueId: Scalars['String']['input'];
+  title?: InputMaybe<Scalars['String']['input']>;
+  url: Scalars['String']['input'];
+};
+
+
 export type MutationAttachmentLinkSlackArgs = {
   createAsUser?: InputMaybe<Scalars['String']['input']>;
   displayIconUrl?: InputMaybe<Scalars['String']['input']>;
@@ -8038,6 +8075,11 @@ export type MutationIntegrationArchiveArgs = {
 export type MutationIntegrationAsksConnectChannelArgs = {
   code: Scalars['String']['input'];
   redirectUri: Scalars['String']['input'];
+};
+
+
+export type MutationIntegrationCustomerDataAttributesRefreshArgs = {
+  input: IntegrationCustomerDataAttributesRefreshInput;
 };
 
 
@@ -9779,6 +9821,16 @@ export type NullableIssueFilter = {
   hasDuplicateRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering issues with relations. */
   hasRelatedRelations?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested assignees. */
+  hasSuggestedAssignees?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested labels. */
+  hasSuggestedLabels?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested projects. */
+  hasSuggestedProjects?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested related issues. */
+  hasSuggestedRelatedIssues?: InputMaybe<RelationExistsComparator>;
+  /** [Internal] Comparator for filtering issues which have suggested similar issues. */
+  hasSuggestedSimilarIssues?: InputMaybe<RelationExistsComparator>;
   /** Comparator for the identifier. */
   id?: InputMaybe<IdComparator>;
   /** Filters that issue labels must satisfy. */
@@ -10724,6 +10776,8 @@ export type OrganizationStartTrialPayload = {
 export type OrganizationUpdateInput = {
   /** [INTERNAL] Whether the organization has enabled the AI add-on. */
   aiAddonEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [INTERNAL] Whether the organization has opted in to AI telemetry. */
+  aiTelemetryEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether member users are allowed to send invites. */
   allowMembersToInvite?: InputMaybe<Scalars['Boolean']['input']>;
   /** List of services that are allowed to be used for login. */
