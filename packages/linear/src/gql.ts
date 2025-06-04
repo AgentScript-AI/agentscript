@@ -10311,6 +10311,8 @@ export type OpsgenieInput = {
 /** An organization. Organizations are root-level objects that contain user accounts and teams. */
 export type Organization = Node & {
   __typename?: 'Organization';
+  /** [INTERNAL] Whether the organization has enabled the AI add-on. */
+  aiAddonEnabled: Scalars['Boolean']['output'];
   /** Whether member users are allowed to send invites. */
   allowMembersToInvite?: Maybe<Scalars['Boolean']['output']>;
   /** Allowed authentication providers, empty array means all are allowed. */
