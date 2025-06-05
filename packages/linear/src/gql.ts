@@ -1655,6 +1655,8 @@ export type CustomerStatus = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** Description of the status. */
   description?: Maybe<Scalars['String']['output']>;
+  /** The display name of the status. */
+  displayName: Scalars['String']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The name of the status. */
@@ -1685,10 +1687,12 @@ export type CustomerStatusCreateInput = {
   color: Scalars['String']['input'];
   /** Description of the status. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** The display name of the status. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
   /** The name of the status. */
-  name: Scalars['String']['input'];
+  name?: InputMaybe<Scalars['String']['input']>;
   /** The position of the status in the workspace's customer flow. */
   position?: InputMaybe<Scalars['Float']['input']>;
 };
@@ -1754,6 +1758,8 @@ export type CustomerStatusUpdateInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   /** Description of the status. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** The display name of the status. */
+  displayName?: InputMaybe<Scalars['String']['input']>;
   /** The name of the status. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** The position of the status in the workspace's customer flow. */
@@ -5855,6 +5861,8 @@ export type IssueLabelCollectionFilter = {
   length?: InputMaybe<NumberComparator>;
   /** Comparator for the name. */
   name?: InputMaybe<StringComparator>;
+  /** Filter based on the existence of the relation. */
+  null?: InputMaybe<Scalars['Boolean']['input']>;
   /** Compound filters, one of which need to be matched by the label. */
   or?: InputMaybe<Array<IssueLabelCollectionFilter>>;
   /** Filters that the issue label's parent label must satisfy. */
@@ -11764,6 +11772,8 @@ export type ProjectLabelCollectionFilter = {
   length?: InputMaybe<NumberComparator>;
   /** Comparator for the name. */
   name?: InputMaybe<StringComparator>;
+  /** Filter based on the existence of the relation. */
+  null?: InputMaybe<Scalars['Boolean']['input']>;
   /** Compound filters, one of which need to be matched by the label. */
   or?: InputMaybe<Array<ProjectLabelCollectionFilter>>;
   /** Filters that the project label's parent label must satisfy. */
@@ -17171,6 +17181,8 @@ export type WorkspaceAuthorizedApplicationWithMemberships = {
   client: AuthorizedApplication;
   /** UserIds and membership dates of everyone who has authorized the application */
   memberships: Array<AuthMembership>;
+  /** Total number of members that authorized the application. */
+  totalMembers: Scalars['Float']['output'];
 };
 
 export type ZendeskSettingsInput = {
