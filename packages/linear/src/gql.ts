@@ -7121,6 +7121,8 @@ export type Mutation = {
   integrationRequest: IntegrationRequestPayload;
   /** Integrates the organization with Salesforce. */
   integrationSalesforce: IntegrationPayload;
+  /** [INTERNAL] Refreshes the Salesforce integration metadata. */
+  integrationSalesforceMetadataRefresh: IntegrationPayload;
   /** Integrates the organization with Sentry. */
   integrationSentryConnect: IntegrationPayload;
   /**
@@ -8213,6 +8215,11 @@ export type MutationIntegrationSalesforceArgs = {
   code: Scalars['String']['input'];
   redirectUri: Scalars['String']['input'];
   subdomain: Scalars['String']['input'];
+};
+
+
+export type MutationIntegrationSalesforceMetadataRefreshArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -14746,6 +14753,8 @@ export type SalesforceSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The Salesforce case status to use to reopen cases. */
+  reopenCaseStatus?: InputMaybe<Scalars['String']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
   sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
