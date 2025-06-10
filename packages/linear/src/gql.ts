@@ -14755,6 +14755,8 @@ export type SalesforceSettingsInput = {
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** The Salesforce case status to use to reopen cases. */
   reopenCaseStatus?: InputMaybe<Scalars['String']['input']>;
+  /** Whether to restrict visibility of the integration to issues that have been either created from Salesforce or linked to Salesforce. */
+  restrictVisibility?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
   sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
