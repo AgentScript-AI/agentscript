@@ -1008,6 +1008,7 @@ export type CustomViewProjectsArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<ProjectSortInput>>;
 };
 
 export type CustomViewConnection = {
@@ -3835,6 +3836,7 @@ export type InitiativeProjectsArgs = {
   includeSubInitiatives?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<ProjectSortInput>>;
 };
 
 
@@ -11827,6 +11829,14 @@ export type ProjectLabelFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** Project manual order sorting options. */
+export type ProjectManualSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** A milestone for a project. */
 export type ProjectMilestone = Node & {
   __typename?: 'ProjectMilestone';
@@ -12045,6 +12055,14 @@ export type ProjectMilestoneUpdateInput = {
   targetDate?: InputMaybe<Scalars['TimelessDate']['input']>;
 };
 
+/** Project name sorting options. */
+export type ProjectNameSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** A project related notification. */
 export type ProjectNotification = Entity & Node & Notification & {
   __typename?: 'ProjectNotification';
@@ -12182,6 +12200,16 @@ export type ProjectPayload = {
   project?: Maybe<Project>;
   /** Whether the operation was successful. */
   success: Scalars['Boolean']['output'];
+};
+
+/** Project priority sorting options. */
+export type ProjectPrioritySort = {
+  /** Whether to consider no priority as the highest or lowest priority */
+  noPriorityFirst?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** A relation between two projects. */
@@ -12614,6 +12642,22 @@ export type ProjectSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
+/** Project sorting options. */
+export type ProjectSortInput = {
+  /** Sort by manual order */
+  manual?: InputMaybe<ProjectManualSort>;
+  /** Sort by project name */
+  name?: InputMaybe<ProjectNameSort>;
+  /** Sort by project priority */
+  priority?: InputMaybe<ProjectPrioritySort>;
+  /** Sort by project start date */
+  startDate?: InputMaybe<StartDateSort>;
+  /** Sort by project status */
+  status?: InputMaybe<ProjectStatusSort>;
+  /** Sort by project target date */
+  targetDate?: InputMaybe<TargetDateSort>;
+};
+
 /** A project status. */
 export type ProjectStatus = Node & {
   __typename?: 'ProjectStatus';
@@ -12726,6 +12770,14 @@ export type ProjectStatusPayload = {
   status: ProjectStatus;
   /** Whether the operation was successful. */
   success: Scalars['Boolean']['output'];
+};
+
+/** Project status sorting options. */
+export type ProjectStatusSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** A type of project status. */
@@ -13480,6 +13532,8 @@ export type Query = {
   workspaceAuthorizedApplication: WorkspaceAuthorizedApplicationWithMemberships;
   /** [INTERNAL] Get non-internal authorized applications (with limited fields) for a workspace */
   workspaceAuthorizedApplications: Array<WorkspaceAuthorizedApplication>;
+  /** [INTERNAL] Get non-internal authorized applications for a workspace, including each application's app user. */
+  workspaceAuthorizedApplicationsWithAppUser: Array<WorkspaceAuthorizedApplicationWithAppUser>;
 };
 
 
@@ -14135,6 +14189,7 @@ export type QueryProjectsArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<ProjectSortInput>>;
 };
 
 
@@ -14354,6 +14409,11 @@ export type QueryWorkflowStatesArgs = {
 
 export type QueryWorkspaceAuthorizedApplicationArgs = {
   clientId: Scalars['String']['input'];
+};
+
+
+export type QueryWorkspaceAuthorizedApplicationsWithAppUserArgs = {
+  clientIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type RateLimitPayload = {
@@ -15064,6 +15124,14 @@ export type SsoUrlFromEmailResponse = {
   success: Scalars['Boolean']['output'];
 };
 
+/** Project start date sorting options. */
+export type StartDateSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** Comparator for strings. */
 export type StringArrayComparator = {
   /** Compound filters, all of which need to be matched. */
@@ -15194,6 +15262,14 @@ export type SyncedExternalThread = {
   type: Scalars['String']['output'];
   /** The external url of the thread. */
   url?: Maybe<Scalars['String']['output']>;
+};
+
+/** Project target date sorting options. */
+export type TargetDateSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** An organizational unit that contains issues. */
@@ -15497,6 +15573,7 @@ export type TeamProjectsArgs = {
   includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<ProjectSortInput>>;
 };
 
 
@@ -17180,6 +17257,33 @@ export type WorkspaceAuthorizedApplication = {
   /** Scopes that are authorized for this application for a given user. */
   scope: Array<Scalars['String']['output']>;
   /** Total number of members that authorized the application. */
+  totalMembers: Scalars['Float']['output'];
+  /** Whether or not webhooks are enabled for the application. */
+  webhooksEnabled: Scalars['Boolean']['output'];
+};
+
+/** [INTERNAL] Public information of the OAuth application, plus the app user and aggregate membership count. */
+export type WorkspaceAuthorizedApplicationWithAppUser = {
+  __typename?: 'WorkspaceAuthorizedApplicationWithAppUser';
+  /** OAuth application's ID. */
+  appId: Scalars['String']['output'];
+  /** The app user associated with this client, if one exists. */
+  appUser?: Maybe<AuthMembership>;
+  /** OAuth application's client ID. */
+  clientId: Scalars['String']['output'];
+  /** Description of the application. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** Developer of the application. */
+  developer?: Maybe<Scalars['String']['output']>;
+  /** Developer URL of the application. */
+  developerUrl?: Maybe<Scalars['String']['output']>;
+  /** Image of the application. */
+  imageUrl?: Maybe<Scalars['String']['output']>;
+  /** Application name. */
+  name: Scalars['String']['output'];
+  /** Scopes that are authorized for this application for a given user. */
+  scope: Array<Scalars['String']['output']>;
+  /** Total number of members (including the app user, if it exists) that authorized the application. */
   totalMembers: Scalars['Float']['output'];
   /** Whether or not webhooks are enabled for the application. */
   webhooksEnabled: Scalars['Boolean']['output'];
