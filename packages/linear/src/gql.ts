@@ -40,6 +40,225 @@ export type ActorBot = {
   userDisplayName?: Maybe<Scalars['String']['output']>;
 };
 
+/** An activity within an agent context. */
+export type AgentActivity = Node & {
+  __typename?: 'AgentActivity';
+  /** The agent context this activity belongs to. */
+  agentContext: AgentContext;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The content of the activity */
+  content: AgentActivityContent;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The type of the activity. */
+  type: AgentActivityType;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** Content for an action activity (tool call or action). */
+export type AgentActivityActionContent = {
+  __typename?: 'AgentActivityActionContent';
+  /** The action being performed. */
+  action: Scalars['String']['output'];
+  /** The parameters for the action, e.g. a file path, a keyword, etc. */
+  parameter: Scalars['String']['output'];
+  /** The result of the action in Markdown format. */
+  result?: Maybe<Scalars['String']['output']>;
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
+export type AgentActivityConnection = {
+  __typename?: 'AgentActivityConnection';
+  edges: Array<AgentActivityEdge>;
+  nodes: Array<AgentActivity>;
+  pageInfo: PageInfo;
+};
+
+/** Content for different types of agent activities. */
+export type AgentActivityContent = AgentActivityActionContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityResponseContent;
+
+export type AgentActivityCreateInput = {
+  /** The agent context this activity belongs to. */
+  agentContextId: Scalars['String']['input'];
+  /** The content payload of the agent activity. */
+  content: Scalars['JSONObject']['input'];
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** The type of the activity. */
+  type: AgentActivityType;
+};
+
+export type AgentActivityEdge = {
+  __typename?: 'AgentActivityEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: AgentActivity;
+};
+
+/** Content for an error activity. */
+export type AgentActivityErrorContent = {
+  __typename?: 'AgentActivityErrorContent';
+  /** The error message in Markdown format. */
+  body: Scalars['String']['output'];
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
+/** Content for an observation activity (chain of thought). */
+export type AgentActivityObservationContent = {
+  __typename?: 'AgentActivityObservationContent';
+  /** The observation content in Markdown format. */
+  body: Scalars['String']['output'];
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
+export type AgentActivityPayload = {
+  __typename?: 'AgentActivityPayload';
+  /** The agent activity that was created or updated. */
+  agentActivity: AgentActivity;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+/** Content for a response activity (markdown-like completion). */
+export type AgentActivityResponseContent = {
+  __typename?: 'AgentActivityResponseContent';
+  /** The response body in Markdown format. */
+  body: Scalars['String']['output'];
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
+/** The type of an agent activity. */
+export const AgentActivityType = {
+  Action: 'action',
+  Error: 'error',
+  Observation: 'observation',
+  Response: 'response'
+} as const;
+
+export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
+/** A context for agent activities and state management. */
+export type AgentContext = Node & {
+  __typename?: 'AgentContext';
+  /** Activities associated with this agent context. */
+  activities: Array<AgentActivity>;
+  /** The agent user that is associated with this agent context. */
+  appUser: User;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The comment this agent context is associated with. */
+  comment?: Maybe<Comment>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The user that created this agent context. */
+  creator?: Maybe<User>;
+  /** The time the agent context ended. */
+  endedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The issue this agent context is associated with. */
+  issue?: Maybe<Issue>;
+  /** External links associated with this agent context. */
+  links: Array<EntityExternalLink>;
+  /** Metadata about the external source that created this agent context. */
+  sourceMetadata?: Maybe<Scalars['JSON']['output']>;
+  /** The time the agent context started working. */
+  startedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The current status of the agent context. */
+  status: AgentContextStatus;
+  /** A summary of the activities in this context. */
+  summary?: Maybe<Scalars['String']['output']>;
+  /** The type of the agent context. */
+  type: AgentContextType;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A context for agent activities and state management. */
+export type AgentContextActivitiesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+export type AgentContextConnection = {
+  __typename?: 'AgentContextConnection';
+  edges: Array<AgentContextEdge>;
+  nodes: Array<AgentContext>;
+  pageInfo: PageInfo;
+};
+
+export type AgentContextCreateInput = {
+  /** The comment this agent context is associated with. */
+  commentId: Scalars['String']['input'];
+  /** The user who created this agent context. */
+  creatorId: Scalars['String']['input'];
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** URL to the external source where this agent context was created (e.g., Slack thread, GitHub comment). */
+  sourceUrl: Scalars['String']['input'];
+  /** The type of the agent context. */
+  type: AgentContextType;
+};
+
+export type AgentContextEdge = {
+  __typename?: 'AgentContextEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: AgentContext;
+};
+
+export type AgentContextPayload = {
+  __typename?: 'AgentContextPayload';
+  /** The agent context that was created or updated. */
+  agentContext: AgentContext;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+/** The status of an agent context. */
+export const AgentContextStatus = {
+  Active: 'active',
+  AwaitingInput: 'awaitingInput',
+  Complete: 'complete',
+  Pending: 'pending'
+} as const;
+
+export type AgentContextStatus = typeof AgentContextStatus[keyof typeof AgentContextStatus];
+/** The type of an agent context. */
+export const AgentContextType = {
+  CommentThread: 'commentThread'
+} as const;
+
+export type AgentContextType = typeof AgentContextType[keyof typeof AgentContextType];
+export type AgentContextUpdateInput = {
+  /** The current status of the agent context. */
+  status?: InputMaybe<AgentContextStatus>;
+  /** The summary of the agent context. */
+  summary?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AirbyteConfigurationInput = {
   /** Linear export API key. */
   apiKey: Scalars['String']['input'];
@@ -937,6 +1156,8 @@ export type CustomView = Node & {
   creator: User;
   /** The description of the custom view. */
   description?: Maybe<Scalars['String']['output']>;
+  /** [INTERNAL] The facet associated with the custom view. */
+  facet?: Maybe<Facet>;
   /** The filter applied to feed items in the custom view. */
   feedItemFilterData?: Maybe<Scalars['JSONObject']['output']>;
   /** The filter applied to issues in the custom view. */
@@ -1052,6 +1273,32 @@ export type CustomViewEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: CustomView;
+};
+
+/** Custom view filtering options. */
+export type CustomViewFilter = {
+  /** Compound filters, all of which need to be matched by the custom view. */
+  and?: InputMaybe<Array<CustomViewFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Filters that the custom view creator must satisfy. */
+  creator?: InputMaybe<UserFilter>;
+  /** [INTERNAL] Filter based on whether the custom view has a facet. */
+  hasFacet?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Comparator for the custom view model name. */
+  modelName?: InputMaybe<StringComparator>;
+  /** Comparator for the custom view name. */
+  name?: InputMaybe<StringComparator>;
+  /** Compound filters, one of which need to be matched by the custom view. */
+  or?: InputMaybe<Array<CustomViewFilter>>;
+  /** Comparator for whether the custom view is shared. */
+  shared?: InputMaybe<BooleanComparator>;
+  /** Filters that the custom view's team must satisfy. */
+  team?: InputMaybe<NullableTeamFilter>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
 };
 
 export type CustomViewHasSubscribersPayload = {
@@ -6859,6 +7106,12 @@ export type MilestoneSort = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Creates an agent activity. */
+  agentActivityCreate: AgentActivityPayload;
+  /** Creates an agent context. */
+  agentContextCreate: AgentContextPayload;
+  /** Updates an agent context. */
+  agentContextUpdate: AgentContextPayload;
   /** Creates an integration api key for Airbyte to connect with Linear. */
   airbyteIntegrationConnect: IntegrationPayload;
   /** [INTERNAL] Creates a new API key. */
@@ -7485,6 +7738,22 @@ export type Mutation = {
   workflowStateCreate: WorkflowStatePayload;
   /** Updates a state. */
   workflowStateUpdate: WorkflowStatePayload;
+};
+
+
+export type MutationAgentActivityCreateArgs = {
+  input: AgentActivityCreateInput;
+};
+
+
+export type MutationAgentContextCreateArgs = {
+  input: AgentContextCreateInput;
+};
+
+
+export type MutationAgentContextUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: AgentContextUpdateInput;
 };
 
 
@@ -10841,6 +11110,8 @@ export type OrganizationUpdateInput = {
   projectUpdateRemindersHour?: InputMaybe<Scalars['Float']['input']>;
   /** Whether the organization has opted for reduced customer support attachment information. */
   reducedPersonalInformation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether agent invocation is restricted to full workspace members. */
+  restrictAgentInvocationToMembers?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether label creation is restricted to admins. */
   restrictLabelManagementToAdmins?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether team creation is restricted to admins. */
@@ -13253,6 +13524,14 @@ export type Query = {
   __typename?: 'Query';
   /** All teams you the user can administrate. Administrable teams are teams whose settings the user can change, but to whose issues the user doesn't necessarily have access to. */
   administrableTeams: TeamConnection;
+  /** All agent activities. */
+  agentActivities: AgentActivityConnection;
+  /** A specific agent activity. */
+  agentActivity: AgentActivity;
+  /** A specific agent context. */
+  agentContext: AgentContext;
+  /** All agent contexts. */
+  agentContexts: AgentContextConnection;
   /** All API keys for the user. */
   apiKeys: ApiKeyConnection;
   /** Get basic information for an application. */
@@ -13548,6 +13827,36 @@ export type QueryAdministrableTeamsArgs = {
 };
 
 
+export type QueryAgentActivitiesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryAgentActivityArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryAgentContextArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryAgentContextsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
 export type QueryApiKeysArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -13665,6 +13974,7 @@ export type QueryCustomViewHasSubscribersArgs = {
 export type QueryCustomViewsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<CustomViewFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
