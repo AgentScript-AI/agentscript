@@ -1214,6 +1214,7 @@ export type CustomViewIssuesArgs = {
   filter?: InputMaybe<IssueFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
   sort?: InputMaybe<Array<IssueSortInput>>;
@@ -1227,6 +1228,7 @@ export type CustomViewProjectsArgs = {
   filter?: InputMaybe<ProjectFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
   sort?: InputMaybe<Array<ProjectSortInput>>;
@@ -1692,7 +1694,7 @@ export type CustomerNeedFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
-/** [Internal] A customer need related notification. */
+/** A customer need related notification. */
 export type CustomerNeedNotification = Entity & Node & Notification & {
   __typename?: 'CustomerNeedNotification';
   /** The user that caused the notification. */
@@ -1709,6 +1711,8 @@ export type CustomerNeedNotification = Entity & Node & Notification & {
   botActor?: Maybe<ActorBot>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
+  /** The customer need related to the notification. */
+  customerNeed: CustomerNeed;
   /** Related customer need. */
   customerNeedId: Scalars['String']['output'];
   /**
@@ -1802,6 +1806,71 @@ export type CustomerNeedUpdatePayload = {
   success: Scalars['Boolean']['output'];
   /** The related customer needs that were updated. */
   updatedRelatedNeeds: Array<CustomerNeed>;
+};
+
+/** A customer related notification. */
+export type CustomerNotification = Entity & Node & Notification & {
+  __typename?: 'CustomerNotification';
+  /** The user that caused the notification. */
+  actor?: Maybe<User>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorAvatarColor: Scalars['String']['output'];
+  /** [Internal] Notification avatar URL. */
+  actorAvatarUrl?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Notification actor initials if avatar is not available. */
+  actorInitials?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The bot that caused the notification. */
+  botActor?: Maybe<ActorBot>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The customer related to the notification. */
+  customer: Customer;
+  /** Related customer. */
+  customerId: Scalars['String']['output'];
+  /**
+   * The time at when an email reminder for this notification was sent to the user. Null, if no email
+   *     reminder has been sent.
+   */
+  emailedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user that caused the notification. */
+  externalUserActor?: Maybe<ExternalUser>;
+  /** [Internal] Notifications with the same grouping key will be grouped together in the UI. */
+  groupingKey: Scalars['String']['output'];
+  /** [Internal] Priority of the notification with the same grouping key. Higher number means higher priority. If priority is the same, notifications should be sorted by `createdAt`. */
+  groupingPriority: Scalars['Float']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** [Internal] Inbox URL for the notification. */
+  inboxUrl: Scalars['String']['output'];
+  /** [Internal] If notification actor was Linear. */
+  isLinearActor: Scalars['Boolean']['output'];
+  /** [Internal] Issue's status type for issue notifications. */
+  issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** [Internal] Project update health for new updates. */
+  projectUpdateHealth?: Maybe<Scalars['String']['output']>;
+  /** The time at when the user marked the notification as read. Null, if the the user hasn't read the notification */
+  readAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time until a notification will be snoozed. After that it will appear in the inbox again. */
+  snoozedUntilAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [Internal] Notification subtitle. */
+  subtitle: Scalars['String']['output'];
+  /** [Internal] Notification title. */
+  title: Scalars['String']['output'];
+  /** Notification type. */
+  type: Scalars['String']['output'];
+  /** The time at which a notification was unsnoozed.. */
+  unsnoozedAt?: Maybe<Scalars['DateTime']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** [Internal] URL to the target of the notification. */
+  url: Scalars['String']['output'];
+  /** The user that received the notification. */
+  user: User;
 };
 
 /** A customer notification subscription. */
@@ -4264,10 +4333,14 @@ export type InitiativeNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The comment related to the notification. */
+  comment?: Maybe<Comment>;
   /** Related comment ID. Null if the notification is not related to a comment. */
   commentId?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
+  /** The document related to the notification. */
+  document?: Maybe<Document>;
   /**
    * The time at when an email reminder for this notification was sent to the user. Null, if no email
    *     reminder has been sent.
@@ -4283,14 +4356,20 @@ export type InitiativeNotification = Entity & Node & Notification & {
   id: Scalars['ID']['output'];
   /** [Internal] Inbox URL for the notification. */
   inboxUrl: Scalars['String']['output'];
+  /** The initiative related to the notification. */
+  initiative?: Maybe<Initiative>;
   /** Related initiative ID. */
   initiativeId: Scalars['String']['output'];
+  /** The initiative update related to the notification. */
+  initiativeUpdate?: Maybe<InitiativeUpdate>;
   /** Related initiative update ID. */
   initiativeUpdateId?: Maybe<Scalars['String']['output']>;
   /** [Internal] If notification actor was Linear. */
   isLinearActor: Scalars['Boolean']['output'];
   /** [Internal] Issue's status type for issue notifications. */
   issueStatusType?: Maybe<Scalars['String']['output']>;
+  /** The parent comment related to the notification, if a notification is a reply comment notification. */
+  parentComment?: Maybe<Comment>;
   /** Related parent comment ID. Null if the notification is not related to a comment. */
   parentCommentId?: Maybe<Scalars['String']['output']>;
   /** [Internal] Project update health for new updates. */
@@ -11279,7 +11358,7 @@ export type Post = Node & {
   writtenSummaryData?: Maybe<Scalars['JSONObject']['output']>;
 };
 
-/** [Internal] A post related notification. */
+/** A post related notification. */
 export type PostNotification = Entity & Node & Notification & {
   __typename?: 'PostNotification';
   /** The user that caused the notification. */
@@ -12376,10 +12455,6 @@ export type ProjectNotification = Entity & Node & Notification & {
   id: Scalars['ID']['output'];
   /** [Internal] Inbox URL for the notification. */
   inboxUrl: Scalars['String']['output'];
-  /** The initiative related to the notification. */
-  initiative?: Maybe<Initiative>;
-  /** The initiative update related to the notification. */
-  initiativeUpdate?: Maybe<InitiativeUpdate>;
   /** [Internal] If notification actor was Linear. */
   isLinearActor: Scalars['Boolean']['output'];
   /** [Internal] Issue's status type for issue notifications. */
@@ -13386,7 +13461,7 @@ export type PullRequest = Node & {
   url: Scalars['String']['output'];
 };
 
-/** [Internal] A pull request related notification. */
+/** A pull request related notification. */
 export type PullRequestNotification = Entity & Node & Notification & {
   __typename?: 'PullRequestNotification';
   /** The user that caused the notification. */
