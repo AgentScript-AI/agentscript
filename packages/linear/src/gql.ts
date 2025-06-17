@@ -9606,6 +9606,7 @@ export const NotificationCategory = {
   CommentsAndReplies: 'commentsAndReplies',
   Customers: 'customers',
   DocumentChanges: 'documentChanges',
+  Feed: 'feed',
   Mentions: 'mentions',
   PostsAndUpdates: 'postsAndUpdates',
   Reactions: 'reactions',
@@ -9631,6 +9632,8 @@ export type NotificationCategoryPreferences = {
   customers: NotificationChannelPreferences;
   /** The preferences for notifications about document changes. */
   documentChanges: NotificationChannelPreferences;
+  /** The preferences for feed summary notifications. */
+  feed: NotificationChannelPreferences;
   /** The preferences for notifications about mentions. */
   mentions: NotificationChannelPreferences;
   /** The preferences for notifications about posts and updates. */
@@ -9662,6 +9665,8 @@ export type NotificationCategoryPreferencesInput = {
   customers?: InputMaybe<PartialNotificationChannelPreferencesInput>;
   /** The preferences for notifications about document changes. */
   documentChanges?: InputMaybe<PartialNotificationChannelPreferencesInput>;
+  /** The preferences for notifications about feed summaries. */
+  feed?: InputMaybe<PartialNotificationChannelPreferencesInput>;
   /** The preferences for notifications about mentions. */
   mentions?: InputMaybe<PartialNotificationChannelPreferencesInput>;
   /** The preferences for notifications about posts and updates. */
