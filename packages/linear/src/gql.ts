@@ -1270,6 +1270,14 @@ export type CustomViewCreateInput = {
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** Custom view creation date sorting options. */
+export type CustomViewCreatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 export type CustomViewEdge = {
   __typename?: 'CustomViewEdge';
   /** Used in `before` and `after` args */
@@ -1307,6 +1315,14 @@ export type CustomViewHasSubscribersPayload = {
   __typename?: 'CustomViewHasSubscribersPayload';
   /** Whether the custom view has subscribers. */
   hasSubscribers: Scalars['Boolean']['output'];
+};
+
+/** Custom view name sorting options. */
+export type CustomViewNameSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** A custom view notification subscription. */
@@ -1361,6 +1377,15 @@ export type CustomViewPayload = {
   success: Scalars['Boolean']['output'];
 };
 
+export type CustomViewSortInput = {
+  /** Sort by custom view creation date. */
+  createdAt?: InputMaybe<CustomViewCreatedAtSort>;
+  /** Sort by custom view name. */
+  name?: InputMaybe<CustomViewNameSort>;
+  /** Sort by custom view update date. */
+  updatedAt?: InputMaybe<CustomViewUpdatedAtSort>;
+};
+
 export type CustomViewSuggestionPayload = {
   __typename?: 'CustomViewSuggestionPayload';
   /** The suggested view description. */
@@ -1396,6 +1421,14 @@ export type CustomViewUpdateInput = {
   shared?: InputMaybe<Scalars['Boolean']['input']>;
   /** The id of the team associated with the custom view. */
   teamId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Custom view update date sorting options. */
+export type CustomViewUpdatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** A customer whose needs will be tied to issues or projects. */
@@ -3065,12 +3098,16 @@ export type EmailIntakeAddress = Node & {
   customerRequestsEnabled: Scalars['Boolean']['output'];
   /** Whether the email address is enabled. */
   enabled: Scalars['Boolean']['output'];
+  /** The email address used to forward emails to the intake address. */
+  forwardingEmailAddress?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The organization that the email address is associated with. */
   organization: Organization;
   /** Whether email replies are enabled. */
   repliesEnabled: Scalars['Boolean']['output'];
+  /** The name to be used for outgoing emails. */
+  senderName?: Maybe<Scalars['String']['output']>;
   /** The team that the email address is associated with. */
   team?: Maybe<Team>;
   /** The template that the email address is associated with. */
@@ -3083,8 +3120,14 @@ export type EmailIntakeAddress = Node & {
 };
 
 export type EmailIntakeAddressCreateInput = {
+  /** The email address used to forward emails to the intake address. */
+  forwardingEmailAddress?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** Whether email replies are enabled. */
+  repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The name to be used for outgoing emails. */
+  senderName?: InputMaybe<Scalars['String']['input']>;
   /** The identifier or key of the team this email address will intake issues for. */
   teamId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the template this email address will intake issues for. */
@@ -3106,8 +3149,12 @@ export type EmailIntakeAddressUpdateInput = {
   customerRequestsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether the email address is currently enabled. If set to false, the email address will be disabled and no longer accept incoming emails. */
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The email address used to forward emails to the intake address. */
+  forwardingEmailAddress?: InputMaybe<Scalars['String']['input']>;
   /** Whether email replies are enabled. */
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The name to be used for outgoing emails. */
+  senderName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EmailUnsubscribeInput = {
@@ -4084,6 +4131,8 @@ export type Initiative = Node & {
   organization: Organization;
   /** The user who owns the initiative. */
   owner?: Maybe<User>;
+  /** [ALPHA] Parent initiative associated with the initiative. */
+  parentInitiative?: Maybe<Initiative>;
   /** Projects associated with the initiative. */
   projects: ProjectConnection;
   /** The initiative's unique URL slug. */
@@ -14069,6 +14118,7 @@ export type QueryCustomViewsArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<CustomViewSortInput>>;
 };
 
 
