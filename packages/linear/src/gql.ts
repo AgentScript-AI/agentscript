@@ -3112,6 +3112,8 @@ export type EmailIntakeAddress = Node & {
   team?: Maybe<Team>;
   /** The template that the email address is associated with. */
   template?: Maybe<Template>;
+  /** The type of the email address. */
+  type?: Maybe<EmailIntakeAddressType>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -3132,6 +3134,8 @@ export type EmailIntakeAddressCreateInput = {
   teamId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the template this email address will intake issues for. */
   templateId?: InputMaybe<Scalars['String']['input']>;
+  /** The type of the email address. If not provided, the backend will default to team or template. */
+  type?: InputMaybe<EmailIntakeAddressType>;
 };
 
 export type EmailIntakeAddressPayload = {
@@ -3144,6 +3148,14 @@ export type EmailIntakeAddressPayload = {
   success: Scalars['Boolean']['output'];
 };
 
+/** The type of the email address. */
+export const EmailIntakeAddressType = {
+  Asks: 'asks',
+  Team: 'team',
+  Template: 'template'
+} as const;
+
+export type EmailIntakeAddressType = typeof EmailIntakeAddressType[keyof typeof EmailIntakeAddressType];
 export type EmailIntakeAddressUpdateInput = {
   /** Whether customer requests are enabled. */
   customerRequestsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -3155,6 +3167,10 @@ export type EmailIntakeAddressUpdateInput = {
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name to be used for outgoing emails. */
   senderName?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier or key of the team this email address will intake issues for. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the template this email address will intake issues for. */
+  templateId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type EmailUnsubscribeInput = {
