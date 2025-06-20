@@ -1200,6 +1200,8 @@ export type CustomView = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** The user who last updated the custom view. */
   updatedBy?: Maybe<User>;
+  /** Feed items associated with the custom view. */
+  updates: FeedItemConnection;
   /** The current users view preferences for this custom view. */
   userViewPreferences?: Maybe<ViewPreferences>;
   /** The calculated view preferences values for this custom view. */
@@ -1232,6 +1234,19 @@ export type CustomViewProjectsArgs = {
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
   sort?: InputMaybe<Array<ProjectSortInput>>;
+};
+
+
+/** A custom view that has been saved by a user. */
+export type CustomViewUpdatesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<FeedItemFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  includeSubTeams?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 export type CustomViewConnection = {
@@ -3697,6 +3712,48 @@ export type FavoriteUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
+/** [Internal] An item in a users feed. */
+export type FeedItem = Node & {
+  __typename?: 'FeedItem';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The initiative update that is in the feed. */
+  initiativeUpdate?: Maybe<InitiativeUpdate>;
+  /** The organization that will see this feed item. */
+  organization: Organization;
+  /** The post that is in the feed. */
+  post?: Maybe<Post>;
+  /** The project update that is in the feed. */
+  projectUpdate?: Maybe<ProjectUpdate>;
+  /** The team that will see this feed item. */
+  team?: Maybe<Team>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+  /** The user that will see this feed item. */
+  user?: Maybe<User>;
+};
+
+export type FeedItemConnection = {
+  __typename?: 'FeedItemConnection';
+  edges: Array<FeedItemEdge>;
+  nodes: Array<FeedItem>;
+  pageInfo: PageInfo;
+};
+
+export type FeedItemEdge = {
+  __typename?: 'FeedItemEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: FeedItem;
+};
+
 /** Feed item filtering options */
 export type FeedItemFilter = {
   /** Compound filters, all of which need to be matched by the feed item. */
@@ -3717,7 +3774,7 @@ export type FeedItemFilter = {
   relatedTeams?: InputMaybe<TeamCollectionFilter>;
   /** Comparator for the project or initiative update health: onTrack, atRisk, offTrack */
   updateHealth?: InputMaybe<StringComparator>;
-  /** Comparator for the update type: initiative, project */
+  /** Comparator for the update type: initiative, project, team */
   updateType?: InputMaybe<StringComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
