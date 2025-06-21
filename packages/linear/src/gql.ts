@@ -3123,6 +3123,8 @@ export type EmailIntakeAddress = Node & {
   repliesEnabled: Scalars['Boolean']['output'];
   /** The name to be used for outgoing emails. */
   senderName?: Maybe<Scalars['String']['output']>;
+  /** The SES domain identity that the email address is associated with. */
+  sesDomainIdentity?: Maybe<SesDomainIdentity>;
   /** The team that the email address is associated with. */
   team?: Maybe<Team>;
   /** The template that the email address is associated with. */
@@ -13824,6 +13826,8 @@ export type Query = {
   documentContentHistory: DocumentContentHistoryPayload;
   /** All documents in the workspace. */
   documents: DocumentConnection;
+  /** One specific email intake address. */
+  emailIntakeAddress: EmailIntakeAddress;
   /** A specific emoji. */
   emoji: Emoji;
   /** All custom emojis. */
@@ -14293,6 +14297,11 @@ export type QueryDocumentsArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryEmailIntakeAddressArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -15400,6 +15409,47 @@ export type SentrySettingsInput = {
   resolvingCompletesIssues: Scalars['Boolean']['input'];
   /** Whether Sentry issues unresolving reopens Linear issues. */
   unresolvingReopensIssues: Scalars['Boolean']['input'];
+};
+
+/** SES domain identity used for sending emails from a custom domain. */
+export type SesDomainIdentity = Node & {
+  __typename?: 'SesDomainIdentity';
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Whether the domain is fully verified and can be used for sending emails. */
+  canSendFromCustomDomain: Scalars['Boolean']['output'];
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The user who created the SES domain identity. */
+  creator?: Maybe<User>;
+  /** The DNS records for the SES domain identity. */
+  dnsRecords: Array<SesDomainIdentityDnsRecord>;
+  /** The domain of the SES domain identity. */
+  domain: Scalars['String']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The organization of the SES domain identity. */
+  organization: Organization;
+  /** The AWS region of the SES domain identity. */
+  region: Scalars['String']['output'];
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+/** A DNS record for a SES domain identity. */
+export type SesDomainIdentityDnsRecord = {
+  __typename?: 'SesDomainIdentityDnsRecord';
+  /** The content of the DNS record. */
+  content: Scalars['String']['output'];
+  /** Whether the DNS record is verified in the domain's DNS configuration. */
+  isVerified: Scalars['Boolean']['output'];
+  /** The name of the DNS record. */
+  name: Scalars['String']['output'];
+  /** The type of the DNS record. */
+  type: Scalars['String']['output'];
 };
 
 /** Customer size sorting options. */
