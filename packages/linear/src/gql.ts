@@ -3130,7 +3130,7 @@ export type EmailIntakeAddress = Node & {
   /** The template that the email address is associated with. */
   template?: Maybe<Template>;
   /** The type of the email address. */
-  type?: Maybe<EmailIntakeAddressType>;
+  type: EmailIntakeAddressType;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
