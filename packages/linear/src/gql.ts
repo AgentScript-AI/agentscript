@@ -54,7 +54,7 @@ export type AgentActivity = Node & {
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The type of the activity. */
-  type: AgentActivityType;
+  type?: Maybe<AgentActivityType>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -4117,6 +4117,8 @@ export type GoogleSheetsExportSettings = {
 };
 
 export type GoogleSheetsSettingsInput = {
+  /** The export settings for initiatives. */
+  initiative?: InputMaybe<GoogleSheetsExportSettings>;
   /** The export settings for issues. */
   issue?: InputMaybe<GoogleSheetsExportSettings>;
   /** The export settings for projects. */
@@ -5313,6 +5315,8 @@ export type Issue = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
+  /** [Internal] The agent that is delegated to complete this issue. */
+  delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
   /** [Internal] The issue's description content as YJS state. */
@@ -5407,7 +5411,7 @@ export type Issue = Node & {
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The user who has delegated this issue to be completed by an agent. */
+  /** [DEPRECATED] [Internal] The user who has delegated this issue to be completed by an agent. */
   supervisor?: Maybe<User>;
   /** The external services the issue is synced with. */
   syncedWith?: Maybe<Array<ExternalEntityInfo>>;
@@ -6652,6 +6656,8 @@ export type IssueSearchResult = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
+  /** [Internal] The agent that is delegated to complete this issue. */
+  delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
   /** [Internal] The issue's description content as YJS state. */
@@ -6748,7 +6754,7 @@ export type IssueSearchResult = Node & {
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The user who has delegated this issue to be completed by an agent. */
+  /** [DEPRECATED] [Internal] The user who has delegated this issue to be completed by an agent. */
   supervisor?: Maybe<User>;
   /** The external services the issue is synced with. */
   syncedWith?: Maybe<Array<ExternalEntityInfo>>;
@@ -7053,6 +7059,8 @@ export type IssueUpdateInput = {
   autoClosedByParentClosing?: InputMaybe<Scalars['Boolean']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The identifier of the agent user to delegate the issue to. */
+  delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
   /** [Internal] The issue description as a Prosemirror document. */
