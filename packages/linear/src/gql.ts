@@ -53,8 +53,8 @@ export type AgentActivity = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** The type of the activity. */
-  type?: Maybe<AgentActivityType>;
+  /** The comment that contains the content of this activity, if any. */
+  sourceComment?: Maybe<Comment>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -83,7 +83,7 @@ export type AgentActivityConnection = {
 };
 
 /** Content for different types of agent activities. */
-export type AgentActivityContent = AgentActivityActionContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityResponseContent;
+export type AgentActivityContent = AgentActivityActionContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityResponseContent | AgentActivityUserInputContent;
 
 export type AgentActivityCreateInput = {
   /** The agent context this activity belongs to. */
@@ -92,8 +92,6 @@ export type AgentActivityCreateInput = {
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
-  /** The type of the activity. */
-  type: AgentActivityType;
 };
 
 export type AgentActivityEdge = {
@@ -131,11 +129,11 @@ export type AgentActivityPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Content for a response activity (markdown-like completion). */
+/** Content for a response activity. */
 export type AgentActivityResponseContent = {
   __typename?: 'AgentActivityResponseContent';
-  /** The response body in Markdown format. */
-  body: Scalars['String']['output'];
+  /** The ID of the comment this response references. */
+  sourceCommentId: Scalars['String']['output'];
   /** The type of activity. */
   type: AgentActivityType;
 };
@@ -145,10 +143,22 @@ export const AgentActivityType = {
   Action: 'action',
   Error: 'error',
   Observation: 'observation',
-  Response: 'response'
+  Response: 'response',
+  UserInput: 'userInput'
 } as const;
 
 export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
+/** Content for a user input activity. */
+export type AgentActivityUserInputContent = {
+  __typename?: 'AgentActivityUserInputContent';
+  /** The user input body. */
+  body?: Maybe<Scalars['String']['output']>;
+  /** The ID of the comment this user input is sourced from. */
+  sourceCommentId?: Maybe<Scalars['String']['output']>;
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
 /** A context for agent activities and state management. */
 export type AgentContext = Node & {
   __typename?: 'AgentContext';
@@ -4218,7 +4228,7 @@ export type Initiative = Node & {
   organization: Organization;
   /** The user who owns the initiative. */
   owner?: Maybe<User>;
-  /** [ALPHA] Parent initiative associated with the initiative. */
+  /** Parent initiative associated with the initiative. */
   parentInitiative?: Maybe<Initiative>;
   /** Projects associated with the initiative. */
   projects: ProjectConnection;
@@ -4230,7 +4240,7 @@ export type Initiative = Node & {
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The status of the initiative. One of Planned, Active, Completed */
   status: InitiativeStatus;
-  /** [ALPHA] Sub-initiatives associated with the initiative. */
+  /** Sub-initiatives associated with the initiative. */
   subInitiatives: InitiativeConnection;
   /** The estimated completion date of the initiative. */
   targetDate?: Maybe<Scalars['TimelessDate']['output']>;
@@ -4301,6 +4311,7 @@ export type InitiativeSubInitiativesArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<InitiativeSortInput>>;
 };
 
 /** A generic payload return from entity archive mutations. */
@@ -4383,6 +4394,14 @@ export type InitiativeCreateInput = {
   targetDateResolution?: InputMaybe<DateResolutionType>;
 };
 
+/** Initiative creation date sorting options. */
+export type InitiativeCreatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 export type InitiativeEdge = {
   __typename?: 'InitiativeEdge';
   /** Used in `before` and `after` args */
@@ -4420,6 +4439,22 @@ export type InitiativeFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+/** Initiative health sorting options. */
+export type InitiativeHealthSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
+/** Initiative health update date sorting options. */
+export type InitiativeHealthUpdatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** A initiative history containing relevant change events. */
 export type InitiativeHistory = Node & {
   __typename?: 'InitiativeHistory';
@@ -4452,6 +4487,22 @@ export type InitiativeHistoryEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: InitiativeHistory;
+};
+
+/** Initiative manual sorting options. */
+export type InitiativeManualSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
+/** Initiative name sorting options. */
+export type InitiativeNameSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** An initiative related notification. */
@@ -4577,6 +4628,14 @@ export type InitiativeNotificationSubscription = Entity & Node & NotificationSub
   userContextViewType?: Maybe<UserContextViewType>;
 };
 
+/** Initiative owner sorting options. */
+export type InitiativeOwnerSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** The payload returned by the initiative mutations. */
 export type InitiativePayload = {
   __typename?: 'InitiativePayload';
@@ -4653,6 +4712,26 @@ export type InitiativeRelationUpdateInput = {
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
 };
 
+/** Initiative sorting options. */
+export type InitiativeSortInput = {
+  /** Sort by initiative creation date. */
+  createdAt?: InputMaybe<InitiativeCreatedAtSort>;
+  /** Sort by initiative health status. */
+  health?: InputMaybe<InitiativeHealthSort>;
+  /** Sort by initiative health update date. */
+  healthUpdatedAt?: InputMaybe<InitiativeHealthUpdatedAtSort>;
+  /** Sort by manual order. */
+  manual?: InputMaybe<InitiativeManualSort>;
+  /** Sort by initiative name. */
+  name?: InputMaybe<InitiativeNameSort>;
+  /** Sort by initiative owner name. */
+  owner?: InputMaybe<InitiativeOwnerSort>;
+  /** Sort by initiative target date. */
+  targetDate?: InputMaybe<InitiativeTargetDateSort>;
+  /** Sort by initiative update date. */
+  updatedAt?: InputMaybe<InitiativeUpdatedAtSort>;
+};
+
 export const InitiativeStatus = {
   Active: 'Active',
   Completed: 'Completed',
@@ -4667,6 +4746,14 @@ export const InitiativeTab = {
 } as const;
 
 export type InitiativeTab = typeof InitiativeTab[keyof typeof InitiativeTab];
+/** Initiative target date sorting options. */
+export type InitiativeTargetDateSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** Join table between projects and initiatives. */
 export type InitiativeToProject = Node & {
   __typename?: 'InitiativeToProject';
@@ -4923,6 +5010,14 @@ export type InitiativeUpdateUpdateInput = {
   health?: InputMaybe<InitiativeUpdateHealthType>;
   /** Whether the diff between the current update and the previous one should be hidden. */
   isDiffHidden?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Initiative update date sorting options. */
+export type InitiativeUpdatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** An integration with an external service. */
@@ -7275,7 +7370,7 @@ export type ManualSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
-/** A meeting that can be attached to different entities. */
+/** [Internal] A meeting that can be attached to different entities. */
 export type Meeting = Node & {
   __typename?: 'Meeting';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
@@ -12104,6 +12199,14 @@ export type ProjectCreateInput = {
   teamIds: Array<Scalars['String']['input']>;
 };
 
+/** Project creation date sorting options. */
+export type ProjectCreatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 export type ProjectEdge = {
   __typename?: 'ProjectEdge';
   /** Used in `before` and `after` args */
@@ -13141,6 +13244,8 @@ export type ProjectSort = {
 
 /** Project sorting options. */
 export type ProjectSortInput = {
+  /** Sort by project creation date */
+  createdAt?: InputMaybe<ProjectCreatedAtSort>;
   /** Sort by manual order */
   manual?: InputMaybe<ProjectManualSort>;
   /** Sort by project name */
@@ -13153,6 +13258,8 @@ export type ProjectSortInput = {
   status?: InputMaybe<ProjectStatusSort>;
   /** Sort by project target date */
   targetDate?: InputMaybe<TargetDateSort>;
+  /** Sort by project update date */
+  updatedAt?: InputMaybe<ProjectUpdatedAtSort>;
 };
 
 /** A project status. */
@@ -13540,6 +13647,14 @@ export type ProjectUpdateUpdateInput = {
   health?: InputMaybe<ProjectUpdateHealthType>;
   /** Whether the diff between the current update and the previous one should be hidden. */
   isDiffHidden?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+/** Project update date sorting options. */
+export type ProjectUpdatedAtSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** Collection filtering options for filtering projects by project updates. */
@@ -14437,6 +14552,7 @@ export type QueryInitiativesArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<InitiativeSortInput>>;
 };
 
 
