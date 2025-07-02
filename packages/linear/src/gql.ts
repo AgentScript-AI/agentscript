@@ -2652,6 +2652,14 @@ export const Day = {
 } as const;
 
 export type Day = typeof Day[keyof typeof Day];
+/** Issue delegate sorting options. */
+export type DelegateSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 export type DeleteOrganizationInput = {
   /** The deletion code to confirm operation. */
   deletionCode: Scalars['String']['input'];
@@ -3620,7 +3628,7 @@ export type Favorite = Node & {
   predefinedViewType?: Maybe<Scalars['String']['output']>;
   /** The favorited project. */
   project?: Maybe<Project>;
-  /** [Internal] The favorited project label. */
+  /** The favorited project label. */
   projectLabel?: Maybe<ProjectLabel>;
   /** The targeted tab of the project. */
   projectTab?: Maybe<ProjectTab>;
@@ -3696,7 +3704,7 @@ export type FavoriteCreateInput = {
   predefinedViewType?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the project to favorite. */
   projectId?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] The identifier of the label to favorite. */
+  /** The identifier of the label to favorite. */
   projectLabelId?: InputMaybe<Scalars['String']['input']>;
   /** The tab of the project to favorite. */
   projectTab?: InputMaybe<ProjectTab>;
@@ -5743,6 +5751,8 @@ export type IssueCollectionFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
+  /** [Internal] Filters that the issues delegate must satisfy. */
+  delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -6024,6 +6034,8 @@ export type IssueFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
+  /** [Internal] Filters that the issues delegate must satisfy. */
+  delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -6367,6 +6379,8 @@ export type IssueLabel = Node & {
   isGroup: Scalars['Boolean']['output'];
   /** Issues associated with the label. */
   issues: IssueConnection;
+  /** The date when the label was last applied to an issue or project. */
+  lastAppliedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The label's name. */
   name: Scalars['String']['output'];
   /** @deprecated Workspace labels are identified by their team being null. */
@@ -7034,6 +7048,8 @@ export type IssueSortInput = {
   customerRevenue?: InputMaybe<CustomerRevenueSort>;
   /** Sort by Cycle start date */
   cycle?: InputMaybe<CycleSort>;
+  /** Sort by delegate name */
+  delegate?: InputMaybe<DelegateSort>;
   /** Sort by issue due date */
   dueDate?: InputMaybe<DueDateSort>;
   /** Sort by estimate */
@@ -7871,7 +7887,7 @@ export type Mutation = {
   passkeyLoginFinish: AuthResolverResponse;
   /** [INTERNAL] Starts passkey login process. */
   passkeyLoginStart: PasskeyLoginStartResponse;
-  /** [Internal] Adds a label to a project. */
+  /** Adds a label to a project. */
   projectAddLabel: ProjectPayload;
   /**
    * Archives a project.
@@ -7882,6 +7898,12 @@ export type Mutation = {
   projectCreate: ProjectPayload;
   /** Deletes (trashes) a project. */
   projectDelete: ProjectArchivePayload;
+  /** Creates a new project label. */
+  projectLabelCreate: ProjectLabelPayload;
+  /** Deletes a project label. */
+  projectLabelDelete: DeletePayload;
+  /** Updates a project label. */
+  projectLabelUpdate: ProjectLabelPayload;
   /** Creates a new project milestone. */
   projectMilestoneCreate: ProjectMilestonePayload;
   /** Deletes a project milestone. */
@@ -7898,7 +7920,7 @@ export type Mutation = {
   projectRelationDelete: DeletePayload;
   /** Updates a project relation. */
   projectRelationUpdate: ProjectRelationPayload;
-  /** [Internal] Removes a label from a project. */
+  /** Removes a label from a project. */
   projectRemoveLabel: ProjectPayload;
   /** Archives a project status. */
   projectStatusArchive: ProjectStatusArchivePayload;
@@ -9319,6 +9341,22 @@ export type MutationProjectDeleteArgs = {
 };
 
 
+export type MutationProjectLabelCreateArgs = {
+  input: ProjectLabelCreateInput;
+};
+
+
+export type MutationProjectLabelDeleteArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationProjectLabelUpdateArgs = {
+  id: Scalars['String']['input'];
+  input: ProjectLabelUpdateInput;
+};
+
+
 export type MutationProjectMilestoneCreateArgs = {
   input: ProjectMilestoneCreateInput;
 };
@@ -10418,6 +10456,8 @@ export type NullableIssueFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
+  /** [Internal] Filters that the issues delegate must satisfy. */
+  delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
   /** Comparator for the issues due date. */
@@ -10562,7 +10602,7 @@ export type NullableProjectFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
-  /** [Internal] Filters that project labels must satisfy. */
+  /** Filters that project labels must satisfy. */
   labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
@@ -10978,7 +11018,7 @@ export type Organization = Node & {
   periodUploadVolume: Scalars['Float']['output'];
   /** Previously used URL keys for the organization (last 3 are kept and redirected). */
   previousUrlKeys: Array<Scalars['String']['output']>;
-  /** [Internal] Project labels associated with the organization. */
+  /** Project labels associated with the organization. */
   projectLabels: ProjectLabelConnection;
   /** The organization's project statuses. */
   projectStatuses: Array<ProjectStatus>;
@@ -11764,7 +11804,7 @@ export type Project = Node & {
   issues: IssueConnection;
   /** Id of the labels associated with this project. */
   labelIds: Array<Scalars['String']['output']>;
-  /** [Internal] Labels associated with this project. */
+  /** Labels associated with this project. */
   labels: ProjectLabelConnection;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
@@ -12105,7 +12145,7 @@ export type ProjectCollectionFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
-  /** [Internal] Filters that project labels must satisfy. */
+  /** Filters that project labels must satisfy. */
   labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
@@ -12256,7 +12296,7 @@ export type ProjectFilter = {
   initiatives?: InputMaybe<InitiativeCollectionFilter>;
   /** Filters that the projects issues must satisfy. */
   issues?: InputMaybe<IssueCollectionFilter>;
-  /** [Internal] Filters that project labels must satisfy. */
+  /** Filters that project labels must satisfy. */
   labels?: InputMaybe<ProjectLabelCollectionFilter>;
   /** Filters that the last applied template must satisfy. */
   lastAppliedTemplate?: InputMaybe<NullableTemplateFilter>;
@@ -12338,11 +12378,13 @@ export type ProjectHistoryEdge = {
   node: ProjectHistory;
 };
 
-/** [Internal] Labels that can be associated with projects. */
+/** Labels that can be associated with projects. */
 export type ProjectLabel = Node & {
   __typename?: 'ProjectLabel';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** Children of the label. */
+  children: ProjectLabelConnection;
   /** The label's color as a HEX string. */
   color: Scalars['String']['output'];
   /** The time at which the entity was created. */
@@ -12355,16 +12397,45 @@ export type ProjectLabel = Node & {
   id: Scalars['ID']['output'];
   /** Whether the label is a group. */
   isGroup: Scalars['Boolean']['output'];
+  /** The date when the label was last applied to an issue or project. */
+  lastAppliedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The label's name. */
   name: Scalars['String']['output'];
   organization: Organization;
   /** The parent label. */
   parent?: Maybe<ProjectLabel>;
+  /** Projects associated with the label. */
+  projects: ProjectConnection;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** Labels that can be associated with projects. */
+export type ProjectLabelChildrenArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectLabelFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** Labels that can be associated with projects. */
+export type ProjectLabelProjectsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<ProjectSortInput>>;
 };
 
 /** Project label filtering options. */
@@ -12404,6 +12475,21 @@ export type ProjectLabelConnection = {
   pageInfo: PageInfo;
 };
 
+export type ProjectLabelCreateInput = {
+  /** The color of the label. */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** The description of the label. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the label is a group. */
+  isGroup?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The name of the label. */
+  name: Scalars['String']['input'];
+  /** The identifier of the parent label. */
+  parentId?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type ProjectLabelEdge = {
   __typename?: 'ProjectLabelEdge';
   /** Used in `before` and `after` args */
@@ -12411,7 +12497,7 @@ export type ProjectLabelEdge = {
   node: ProjectLabel;
 };
 
-/** [Internal] Project label filtering options. */
+/** Project label filtering options. */
 export type ProjectLabelFilter = {
   /** Compound filters, all of which need to be matched by the label. */
   and?: InputMaybe<Array<ProjectLabelFilter>>;
@@ -12431,6 +12517,27 @@ export type ProjectLabelFilter = {
   parent?: InputMaybe<ProjectLabelFilter>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
+};
+
+export type ProjectLabelPayload = {
+  __typename?: 'ProjectLabelPayload';
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** The label that was created or updated. */
+  projectLabel: ProjectLabel;
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
+export type ProjectLabelUpdateInput = {
+  /** The color of the label. */
+  color?: InputMaybe<Scalars['String']['input']>;
+  /** The description of the label. */
+  description?: InputMaybe<Scalars['String']['input']>;
+  /** The name of the label. */
+  name?: InputMaybe<Scalars['String']['input']>;
+  /** The identifier of the parent label. */
+  parentId?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** Project manual order sorting options. */
@@ -12983,7 +13090,7 @@ export type ProjectSearchResult = Node & {
   issues: IssueConnection;
   /** Id of the labels associated with this project. */
   labelIds: Array<Scalars['String']['output']>;
-  /** [Internal] Labels associated with this project. */
+  /** Labels associated with this project. */
   labels: ProjectLabelConnection;
   /** The last template that was applied to this project. */
   lastAppliedTemplate?: Maybe<Template>;
@@ -13563,7 +13670,7 @@ export type ProjectUpdateInput = {
   frequencyResolution?: InputMaybe<FrequencyResolutionType>;
   /** The icon of the project. */
   icon?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] The identifiers of the project labels associated with this project. */
+  /** The identifiers of the project labels associated with this project. */
   labelIds?: InputMaybe<Array<Scalars['String']['input']>>;
   /** The ID of the last template applied to the project. */
   lastAppliedTemplateId?: InputMaybe<Scalars['String']['input']>;
@@ -14063,6 +14170,10 @@ export type Query = {
   project: Project;
   /** Suggests filters for a project view based on a text prompt. */
   projectFilterSuggestion: ProjectFilterSuggestionPayload;
+  /** One specific label. */
+  projectLabel: ProjectLabel;
+  /** All project labels. */
+  projectLabels: ProjectLabelConnection;
   /** One specific project milestone. */
   projectMilestone: ProjectMilestone;
   /** All milestones for the project. */
@@ -14777,6 +14888,22 @@ export type QueryProjectArgs = {
 
 export type QueryProjectFilterSuggestionArgs = {
   prompt: Scalars['String']['input'];
+};
+
+
+export type QueryProjectLabelArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryProjectLabelsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<ProjectLabelFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -17594,7 +17721,7 @@ export type ViewPreferencesCreateInput = {
   preferences: Scalars['JSONObject']['input'];
   /** The project these view preferences are associated with. */
   projectId?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] The project label these view preferences are associated with. */
+  /** The project label these view preferences are associated with. */
   projectLabelId?: InputMaybe<Scalars['String']['input']>;
   /** The roadmap these view preferences are associated with. */
   roadmapId?: InputMaybe<Scalars['String']['input']>;
