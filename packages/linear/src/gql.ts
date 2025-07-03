@@ -2330,6 +2330,16 @@ export type Cycle = Node & {
   inProgressScopeHistory: Array<Scalars['Float']['output']>;
   /** The cycle inherited from. */
   inheritedFrom?: Maybe<Cycle>;
+  /** Whether the cycle is currently active. */
+  isActive: Scalars['Boolean']['output'];
+  /** Whether the cycle is in the future. */
+  isFuture: Scalars['Boolean']['output'];
+  /** Whether the cycle is the next cycle for the team. */
+  isNext: Scalars['Boolean']['output'];
+  /** Whether the cycle is in the past. */
+  isPast: Scalars['Boolean']['output'];
+  /** Whether the cycle is the previous cycle for the team. */
+  isPrevious: Scalars['Boolean']['output'];
   /** The total number of issues in the cycle after each day. */
   issueCountHistory: Array<Scalars['Float']['output']>;
   /** Issues associated with the cycle. */
