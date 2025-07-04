@@ -83,7 +83,7 @@ export type AgentActivityConnection = {
 };
 
 /** Content for different types of agent activities. */
-export type AgentActivityContent = AgentActivityActionContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityResponseContent | AgentActivityUserInputContent;
+export type AgentActivityContent = AgentActivityActionContent | AgentActivityElicitationContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityPromptContent | AgentActivityResponseContent;
 
 export type AgentActivityCreateInput = {
   /** The agent context this activity belongs to. */
@@ -99,6 +99,15 @@ export type AgentActivityEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: AgentActivity;
+};
+
+/** Content for an elicitation activity. */
+export type AgentActivityElicitationContent = {
+  __typename?: 'AgentActivityElicitationContent';
+  /** The elicitation message in Markdown format. */
+  body: Scalars['String']['output'];
+  /** The type of activity. */
+  type: AgentActivityType;
 };
 
 /** Content for an error activity. */
@@ -129,6 +138,17 @@ export type AgentActivityPayload = {
   success: Scalars['Boolean']['output'];
 };
 
+/** Content for a prompt activity. */
+export type AgentActivityPromptContent = {
+  __typename?: 'AgentActivityPromptContent';
+  /** A message requesting additional information or action from user. */
+  body?: Maybe<Scalars['String']['output']>;
+  /** The ID of the comment this prompt is sourced from. */
+  sourceCommentId?: Maybe<Scalars['String']['output']>;
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
 /** Content for a response activity. */
 export type AgentActivityResponseContent = {
   __typename?: 'AgentActivityResponseContent';
@@ -141,24 +161,14 @@ export type AgentActivityResponseContent = {
 /** The type of an agent activity. */
 export const AgentActivityType = {
   Action: 'action',
+  Elicitation: 'elicitation',
   Error: 'error',
   Observation: 'observation',
-  Response: 'response',
-  UserInput: 'userInput'
+  Prompt: 'prompt',
+  Response: 'response'
 } as const;
 
 export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
-/** Content for a user input activity. */
-export type AgentActivityUserInputContent = {
-  __typename?: 'AgentActivityUserInputContent';
-  /** The user input body. */
-  body?: Maybe<Scalars['String']['output']>;
-  /** The ID of the comment this user input is sourced from. */
-  sourceCommentId?: Maybe<Scalars['String']['output']>;
-  /** The type of activity. */
-  type: AgentActivityType;
-};
-
 /** A context for agent activities and state management. */
 export type AgentContext = Node & {
   __typename?: 'AgentContext';
@@ -1517,7 +1527,7 @@ export type CustomerConnection = {
   pageInfo: PageInfo;
 };
 
-/** [ALPHA] Issue customer count sorting options. */
+/** Issue customer count sorting options. */
 export type CustomerCountSort = {
   /** Whether nulls should be sorted first or last */
   nulls?: InputMaybe<PaginationNulls>;
@@ -1601,7 +1611,7 @@ export type CustomerFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
-/** [ALPHA] Issue customer important count sorting options. */
+/** Issue customer important count sorting options. */
 export type CustomerImportantCountSort = {
   /** Whether nulls should be sorted first or last */
   nulls?: InputMaybe<PaginationNulls>;
@@ -1993,7 +2003,7 @@ export type CustomerPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** [ALPHA] Issue customer revenue sorting options. */
+/** Issue customer revenue sorting options. */
 export type CustomerRevenueSort = {
   /** Whether nulls should be sorted first or last */
   nulls?: InputMaybe<PaginationNulls>;
@@ -6285,7 +6295,7 @@ export type IssueImport = Node & {
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The id for the user that started the job. */
-  creatorId: Scalars['String']['output'];
+  creatorId?: Maybe<Scalars['String']['output']>;
   /** File URL for the uploaded CSV for the import, if there is one. */
   csvFileUrl?: Maybe<Scalars['String']['output']>;
   /** The display name of the import service. */
@@ -12354,6 +12364,14 @@ export type ProjectFilterSuggestionPayload = {
   logId?: Maybe<Scalars['String']['output']>;
 };
 
+/** Project health sorting options. */
+export type ProjectHealthSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** An history associated with a project. */
 export type ProjectHistory = Node & {
   __typename?: 'ProjectHistory';
@@ -12548,6 +12566,14 @@ export type ProjectLabelUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the parent label. */
   parentId?: InputMaybe<Scalars['String']['input']>;
+};
+
+/** Project lead sorting options. */
+export type ProjectLeadSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
 };
 
 /** Project manual order sorting options. */
@@ -13363,6 +13389,10 @@ export type ProjectSort = {
 export type ProjectSortInput = {
   /** Sort by project creation date */
   createdAt?: InputMaybe<ProjectCreatedAtSort>;
+  /** Sort by project health status. */
+  health?: InputMaybe<ProjectHealthSort>;
+  /** Sort by project lead name. */
+  lead?: InputMaybe<ProjectLeadSort>;
   /** Sort by manual order */
   manual?: InputMaybe<ProjectManualSort>;
   /** Sort by project name */
@@ -17667,6 +17697,8 @@ export type UserSettingsUpdateInput = {
   subscribedToChangelog?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether this user is subscribed to DPA emails or not. */
   subscribedToDPA?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether this user is subscribed to general marketing communications or not. */
+  subscribedToGeneralMarketingCommunications?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether this user is subscribed to invite accepted emails or not. */
   subscribedToInviteAccepted?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether this user is subscribed to privacy and legal update emails or not. */
