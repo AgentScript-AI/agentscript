@@ -14258,7 +14258,10 @@ export type Query = {
   searchIssues: IssueSearchPayload;
   /** Search projects. */
   searchProjects: ProjectSearchPayload;
-  /** [ALPHA] Search for various resources using natural language. */
+  /**
+   * [INTERNAL] Search for various resources using natural language.
+   * @deprecated Use specific search endpoints like searchIssues, searchProjects, searchDocuments instead.
+   */
   semanticSearch: SemanticSearchPayload;
   /** Fetch SSO login URL for the email provided. */
   ssoUrlFromEmail: SsoUrlFromEmailResponse;
@@ -15660,14 +15663,14 @@ export type SalesforceSettingsInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** [ALPHA] Payload returned by semantic search. */
+/** [INTERNAL] Payload returned by semantic search. */
 export type SemanticSearchPayload = {
   __typename?: 'SemanticSearchPayload';
   enabled: Scalars['Boolean']['output'];
   results: Array<SemanticSearchResult>;
 };
 
-/** [ALPHA] A semantic search result reference. */
+/** [INTERNAL] A semantic search result reference. */
 export type SemanticSearchResult = Node & {
   __typename?: 'SemanticSearchResult';
   /** The document related to the semantic search result. */
@@ -15684,7 +15687,7 @@ export type SemanticSearchResult = Node & {
   type: SemanticSearchResultType;
 };
 
-/** [ALPHA] The type of the semantic search result. */
+/** [INTERNAL] The type of the semantic search result. */
 export const SemanticSearchResultType = {
   Document: 'document',
   Initiative: 'initiative',
