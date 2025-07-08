@@ -53,8 +53,8 @@ export type AgentActivity = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** The comment that contains the content of this activity, if any. */
-  sourceComment?: Maybe<Comment>;
+  /** The comment ID this activity is linked to. */
+  sourceCommentId?: Maybe<Scalars['String']['output']>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -142,9 +142,7 @@ export type AgentActivityPayload = {
 export type AgentActivityPromptContent = {
   __typename?: 'AgentActivityPromptContent';
   /** A message requesting additional information or action from user. */
-  body?: Maybe<Scalars['String']['output']>;
-  /** The ID of the comment this prompt is sourced from. */
-  sourceCommentId?: Maybe<Scalars['String']['output']>;
+  body: Scalars['String']['output'];
   /** The type of activity. */
   type: AgentActivityType;
 };
@@ -152,8 +150,8 @@ export type AgentActivityPromptContent = {
 /** Content for a response activity. */
 export type AgentActivityResponseContent = {
   __typename?: 'AgentActivityResponseContent';
-  /** The ID of the comment this response references. */
-  sourceCommentId: Scalars['String']['output'];
+  /** The response content in Markdown format. */
+  body: Scalars['String']['output'];
   /** The type of activity. */
   type: AgentActivityType;
 };
