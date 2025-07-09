@@ -88,7 +88,10 @@ export type AgentActivityContent = AgentActivityActionContent | AgentActivityEli
 export type AgentActivityCreateInput = {
   /** The agent context this activity belongs to. */
   agentContextId: Scalars['String']['input'];
-  /** The content payload of the agent activity. */
+  /**
+   * The content payload of the agent activity. This object is not strictly typed.
+   * See https://linear.app/developers/agents for typing details.
+   */
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
@@ -3185,6 +3188,8 @@ export type EmailIntakeAddress = Node & {
 };
 
 export type EmailIntakeAddressCreateInput = {
+  /** Whether customer requests are enabled. */
+  customerRequestsEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The email address used to forward emails to the intake address. */
   forwardingEmailAddress?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
@@ -3652,6 +3657,8 @@ export type Favorite = Node & {
   projectTab?: Maybe<ProjectTab>;
   /** [DEPRECATED] The favorited team of the project. */
   projectTeam?: Maybe<Team>;
+  /** The favorited pull request. */
+  pullRequest?: Maybe<PullRequest>;
   /** The favorited roadmap. */
   roadmap?: Maybe<Roadmap>;
   /** The order of the item in the favorites list. */
@@ -3726,6 +3733,8 @@ export type FavoriteCreateInput = {
   projectLabelId?: InputMaybe<Scalars['String']['input']>;
   /** The tab of the project to favorite. */
   projectTab?: InputMaybe<ProjectTab>;
+  /** The identifier of the pull request to favorite. */
+  pullRequestId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the roadmap to favorite. */
   roadmapId?: InputMaybe<Scalars['String']['input']>;
   /** The position of the item in the favorites list. */
@@ -5873,6 +5882,8 @@ export type IssueCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] The identifier of the agent user to delegate the issue to. */
+  delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
   /** [Internal] The issue description as a Prosemirror document. */
