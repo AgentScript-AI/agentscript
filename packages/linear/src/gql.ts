@@ -53,6 +53,8 @@ export type AgentActivity = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** The comment that this activity is linked to. */
+  sourceComment?: Maybe<Comment>;
   /** The comment ID this activity is linked to. */
   sourceCommentId?: Maybe<Scalars['String']['output']>;
   /**
@@ -17239,6 +17241,8 @@ export type User = Node & {
   createdIssueCount: Scalars['Int']['output'];
   /** Issues created by the user. */
   createdIssues: IssueConnection;
+  /** [Internal] Issues delegated to this user. */
+  delegatedIssues: IssueConnection;
   /** A short description of the user, either its title or bio. */
   description?: Maybe<Scalars['String']['output']>;
   /** Reason why is the account disabled. */
@@ -17278,8 +17282,6 @@ export type User = Node & {
   statusLabel?: Maybe<Scalars['String']['output']>;
   /** A date at which the user current status should be cleared. */
   statusUntilAt?: Maybe<Scalars['DateTime']['output']>;
-  /** Issues delegated to an agent by the user. */
-  supervisedIssues: IssueConnection;
   /** Memberships associated with the user. For easier access of the same data, use `teams` query. */
   teamMemberships: TeamMembershipConnection;
   /** Teams the user is part of. */
@@ -17321,6 +17323,18 @@ export type UserCreatedIssuesArgs = {
 
 
 /** A user that has access to the the resources of an organization. */
+export type UserDelegatedIssuesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<IssueFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+/** A user that has access to the the resources of an organization. */
 export type UserDraftsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -17335,18 +17349,6 @@ export type UserDraftsArgs = {
 export type UserIssueDraftsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
-};
-
-
-/** A user that has access to the the resources of an organization. */
-export type UserSupervisedIssuesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<IssueFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
