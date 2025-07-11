@@ -5940,6 +5940,8 @@ export type IssueCreateInput = {
   templateId?: InputMaybe<Scalars['String']['input']>;
   /** The title of the issue. */
   title?: InputMaybe<Scalars['String']['input']>;
+  /** Whether to use the default template for the team. When set to true, the default template of this team based on user's membership will be applied. */
+  useDefaultTemplate?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 /** [Internal] A draft issue. */
