@@ -44,7 +44,9 @@ export type ActorBot = {
 export type AgentActivity = Node & {
   __typename?: 'AgentActivity';
   /** The agent context this activity belongs to. */
-  agentContext: AgentContext;
+  agentContext?: Maybe<AgentContext>;
+  /** The agent session this activity belongs to. */
+  agentSession: AgentSession;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The content of the activity */
@@ -53,10 +55,8 @@ export type AgentActivity = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** The comment that this activity is linked to. */
+  /** The comment this activity is linked to. */
   sourceComment?: Maybe<Comment>;
-  /** The comment ID this activity is linked to. */
-  sourceCommentId?: Maybe<Scalars['String']['output']>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -88,8 +88,8 @@ export type AgentActivityConnection = {
 export type AgentActivityContent = AgentActivityActionContent | AgentActivityElicitationContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityPromptContent | AgentActivityResponseContent;
 
 export type AgentActivityCreateInput = {
-  /** The agent context this activity belongs to. */
-  agentContextId: Scalars['String']['input'];
+  /** The agent session this activity belongs to. */
+  agentSessionId: Scalars['String']['input'];
   /**
    * The content payload of the agent activity. This object is not strictly typed.
    * See https://linear.app/developers/agents for typing details.
@@ -172,7 +172,7 @@ export const AgentActivityType = {
 } as const;
 
 export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
-/** A context for agent activities and state management. */
+/** [DEPRECATED] A context for agent activities and state management. */
 export type AgentContext = Node & {
   __typename?: 'AgentContext';
   /** Activities associated with this agent context. */
@@ -200,11 +200,11 @@ export type AgentContext = Node & {
   /** The time the agent context started working. */
   startedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The current status of the agent context. */
-  status: AgentContextStatus;
+  status: AgentSessionStatus;
   /** A summary of the activities in this context. */
   summary?: Maybe<Scalars['String']['output']>;
   /** The type of the agent context. */
-  type: AgentContextType;
+  type: AgentSessionType;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -213,7 +213,7 @@ export type AgentContext = Node & {
 };
 
 
-/** A context for agent activities and state management. */
+/** [DEPRECATED] A context for agent activities and state management. */
 export type AgentContextActivitiesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -240,7 +240,7 @@ export type AgentContextCreateInput = {
   /** URL to the external source where this agent context was created (e.g., Slack thread, GitHub comment). */
   sourceUrl: Scalars['String']['input'];
   /** The type of the agent context. */
-  type: AgentContextType;
+  type: AgentSessionType;
 };
 
 export type AgentContextEdge = {
@@ -260,28 +260,94 @@ export type AgentContextPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** The status of an agent context. */
-export const AgentContextStatus = {
-  Active: 'active',
-  AwaitingInput: 'awaitingInput',
-  Complete: 'complete',
-  Pending: 'pending'
-} as const;
-
-export type AgentContextStatus = typeof AgentContextStatus[keyof typeof AgentContextStatus];
-/** The type of an agent context. */
-export const AgentContextType = {
-  CommentThread: 'commentThread'
-} as const;
-
-export type AgentContextType = typeof AgentContextType[keyof typeof AgentContextType];
 export type AgentContextUpdateInput = {
   /** The current status of the agent context. */
-  status?: InputMaybe<AgentContextStatus>;
+  status?: InputMaybe<AgentSessionStatus>;
   /** The summary of the agent context. */
   summary?: InputMaybe<Scalars['String']['input']>;
 };
 
+/** A session for agent activities and state management. */
+export type AgentSession = Node & {
+  __typename?: 'AgentSession';
+  /** Activities associated with this agent session. */
+  activities: Array<AgentActivity>;
+  /** The agent user that is associated with this agent session. */
+  appUser: User;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The comment this agent session is associated with. */
+  comment?: Maybe<Comment>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** The user that created this agent session. */
+  creator?: Maybe<User>;
+  /** The time the agent session ended. */
+  endedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The issue this agent session is associated with. */
+  issue?: Maybe<Issue>;
+  /** External links associated with this agent session. */
+  links: Array<EntityExternalLink>;
+  /** Metadata about the external source that created this agent session. */
+  sourceMetadata?: Maybe<Scalars['JSON']['output']>;
+  /** The time the agent session started. */
+  startedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The current status of the agent session. */
+  status: AgentSessionStatus;
+  /** A summary of the activities in this session. */
+  summary?: Maybe<Scalars['String']['output']>;
+  /** The type of the agent session. */
+  type: AgentSessionType;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
+
+/** A session for agent activities and state management. */
+export type AgentSessionActivitiesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+export type AgentSessionConnection = {
+  __typename?: 'AgentSessionConnection';
+  edges: Array<AgentSessionEdge>;
+  nodes: Array<AgentSession>;
+  pageInfo: PageInfo;
+};
+
+export type AgentSessionEdge = {
+  __typename?: 'AgentSessionEdge';
+  /** Used in `before` and `after` args */
+  cursor: Scalars['String']['output'];
+  node: AgentSession;
+};
+
+/** The status of an agent session. */
+export const AgentSessionStatus = {
+  Active: 'active',
+  AwaitingInput: 'awaitingInput',
+  Complete: 'complete',
+  Error: 'error',
+  Pending: 'pending'
+} as const;
+
+export type AgentSessionStatus = typeof AgentSessionStatus[keyof typeof AgentSessionStatus];
+/** The type of an agent session. */
+export const AgentSessionType = {
+  CommentThread: 'commentThread'
+} as const;
+
+export type AgentSessionType = typeof AgentSessionType[keyof typeof AgentSessionType];
 export type AirbyteConfigurationInput = {
   /** Linear export API key. */
   apiKey: Scalars['String']['input'];
@@ -4239,6 +4305,10 @@ export type Initiative = Node & {
   creator?: Maybe<User>;
   /** The description of the initiative. */
   description?: Maybe<Scalars['String']['output']>;
+  /** The content of the initiative description. */
+  documentContent?: Maybe<DocumentContent>;
+  /** Documents associated with the initiative. */
+  documents: DocumentConnection;
   /** [Internal] Facets associated with the initiative. */
   facets: Array<Facet>;
   /** The resolution of the reminder frequency. */
@@ -4300,6 +4370,18 @@ export type Initiative = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** Initiative URL. */
   url: Scalars['String']['output'];
+};
+
+
+/** An initiative to group projects. */
+export type InitiativeDocumentsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<DocumentFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -5447,7 +5529,7 @@ export type Issue = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
-  /** [Internal] The agent that is delegated to complete this issue. */
+  /** The app user that is delegated to work on this issue. */
   delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
@@ -5780,7 +5862,7 @@ export type IssueCollectionFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** [Internal] Filters that the issues delegate must satisfy. */
+  /** Filters that the issue's delegate must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -6067,7 +6149,7 @@ export type IssueFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** [Internal] Filters that the issues delegate must satisfy. */
+  /** Filters that the issue's delegate must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -6798,7 +6880,7 @@ export type IssueSearchResult = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
-  /** [Internal] The agent that is delegated to complete this issue. */
+  /** The app user that is delegated to work on this issue. */
   delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
@@ -10489,7 +10571,7 @@ export type NullableIssueFilter = {
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** [Internal] Filters that the issues delegate must satisfy. */
+  /** Filters that the issue's delegate must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -14033,6 +14115,10 @@ export type Query = {
   agentContext: AgentContext;
   /** All agent contexts. */
   agentContexts: AgentContextConnection;
+  /** A specific agent session. */
+  agentSession: AgentSession;
+  /** All agent sessions. */
+  agentSessions: AgentSessionConnection;
   /** All API keys for the user. */
   apiKeys: ApiKeyConnection;
   /** Get basic information for an application. */
@@ -14364,6 +14450,21 @@ export type QueryAgentContextArgs = {
 
 
 export type QueryAgentContextsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryAgentSessionArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type QueryAgentSessionsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
   first?: InputMaybe<Scalars['Int']['input']>;
@@ -17243,7 +17344,7 @@ export type User = Node & {
   createdIssueCount: Scalars['Int']['output'];
   /** Issues created by the user. */
   createdIssues: IssueConnection;
-  /** [Internal] Issues delegated to this user. */
+  /** Issues delegated to this user. */
   delegatedIssues: IssueConnection;
   /** A short description of the user, either its title or bio. */
   description?: Maybe<Scalars['String']['output']>;
