@@ -2689,8 +2689,6 @@ export type Dashboard = Node & {
   slugId: Scalars['String']['output'];
   /** The sort order of the dashboard within the organization or its team. */
   sortOrder: Scalars['Float']['output'];
-  /** The team associated with the dashboard. */
-  team?: Maybe<Team>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -2854,8 +2852,6 @@ export type DocumentContent = Node & {
   __typename?: 'DocumentContent';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** Comments associated with the document content. */
-  comments: CommentConnection;
   /** The document content in markdown format. */
   content?: Maybe<Scalars['String']['output']>;
   /** The document content state as a base64 encoded string. */
@@ -2864,8 +2860,6 @@ export type DocumentContent = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The document that the content is associated with. */
   document?: Maybe<Document>;
-  /** [ALPHA] The histories of the document content. */
-  history: DocumentContentHistoryConnection;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The initiative that the content is associated with. */
@@ -2885,78 +2879,6 @@ export type DocumentContent = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
-};
-
-
-/** A document content for a project. */
-export type DocumentContentCommentsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<CommentFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
-};
-
-
-/** A document content for a project. */
-export type DocumentContentHistoryArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<DocumentContentHistoryFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
-};
-
-/** A document content history for a document. */
-export type DocumentContentHistory = Node & {
-  __typename?: 'DocumentContentHistory';
-  /** IDs of actors whose edits went into this history item. */
-  actorIds: Array<Scalars['String']['output']>;
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** [Internal] The document content as a Prosemirror document. */
-  contentData?: Maybe<Scalars['JSONObject']['output']>;
-  /** The timestamp associated with the DocumentContent when it was originally saved. */
-  contentDataSnapshotAt: Scalars['DateTime']['output'];
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The document content that this history item is associated with. */
-  documentContent: DocumentContent;
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-};
-
-export type DocumentContentHistoryConnection = {
-  __typename?: 'DocumentContentHistoryConnection';
-  edges: Array<DocumentContentHistoryEdge>;
-  nodes: Array<DocumentContentHistory>;
-  pageInfo: PageInfo;
-};
-
-export type DocumentContentHistoryEdge = {
-  __typename?: 'DocumentContentHistoryEdge';
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String']['output'];
-  node: DocumentContentHistory;
-};
-
-/** Document content history filtering options. */
-export type DocumentContentHistoryFilter = {
-  /** Comparator for the created at date. */
-  createdAt?: InputMaybe<DateComparator>;
-  /** Comparator for the identifier. */
-  id?: InputMaybe<IdComparator>;
-  /** Comparator for the updated at date. */
-  updatedAt?: InputMaybe<DateComparator>;
 };
 
 export type DocumentContentHistoryPayload = {
@@ -6131,7 +6053,6 @@ export type IssueDraft = Node & {
   id: Scalars['ID']['output'];
   /** The IDs of labels added to the draft. */
   labelIds: Array<Scalars['String']['output']>;
-  labels: IssueLabelConnection;
   /** Serialized array of JSONs representing customer needs. */
   needs?: Maybe<Scalars['JSONObject']['output']>;
   /** The parent draft of the draft. */
@@ -6167,17 +6088,6 @@ export type IssueDraft = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
-};
-
-
-/** [Internal] A draft issue. */
-export type IssueDraftLabelsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 export type IssueDraftConnection = {
@@ -7295,13 +7205,9 @@ export type IssueSuggestion = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
-  /** Whether the suggestion should be visible. */
-  isVisible: Scalars['Boolean']['output'];
   issue: Issue;
   issueId: Scalars['String']['output'];
   metadata?: Maybe<IssueSuggestionMetadata>;
-  /** The reasons for the suggestion. */
-  reasons: Array<Scalars['String']['output']>;
   state: IssueSuggestionState;
   stateChangedAt: Scalars['DateTime']['output'];
   suggestedIssue?: Maybe<Issue>;
@@ -11810,14 +11716,10 @@ export type Post = Node & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The update content summarized for audio consumption. */
   audioSummary?: Maybe<Scalars['String']['output']>;
-  /** A URL to the generated audio for the Post. */
-  audioSummaryUrl?: Maybe<Scalars['String']['output']>;
   /** The update content in markdown format. */
   body: Scalars['String']['output'];
   /** [Internal] The content of the post as a Prosemirror document. */
   bodyData: Scalars['String']['output'];
-  /** Comments associated with the post. */
-  comments: CommentConnection;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The user who wrote the post. */
@@ -11851,18 +11753,6 @@ export type Post = Node & {
   user?: Maybe<User>;
   /** [Internal] The written update data used to compose the written post. */
   writtenSummaryData?: Maybe<Scalars['JSONObject']['output']>;
-};
-
-
-/** [Internal] A generic post. */
-export type PostCommentsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  filter?: InputMaybe<CommentFilter>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 /** A post related notification. */
@@ -12301,8 +12191,6 @@ export type ProjectAttachment = Node & {
   __typename?: 'ProjectAttachment';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The body data of the attachment, if any. */
-  bodyData?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The creator of the attachment. */
@@ -12311,8 +12199,6 @@ export type ProjectAttachment = Node & {
   id: Scalars['ID']['output'];
   /** Custom metadata related to the attachment. */
   metadata: Scalars['JSONObject']['output'];
-  /** The project this attachment belongs to. */
-  project: Project;
   /** Information about the external source which created the attachment. */
   source?: Maybe<Scalars['JSONObject']['output']>;
   /** An accessor helper to source.type, defines the source type of the attachment. */
@@ -17470,8 +17356,6 @@ export type User = Node & {
   drafts: DraftConnection;
   /** The user's email address. */
   email: Scalars['String']['output'];
-  /** Enabled feature flags for the user. */
-  featureFlags: Array<Scalars['String']['output']>;
   /** The user's GitHub user ID. */
   gitHubUserId?: Maybe<Scalars['String']['output']>;
   /** Whether the user is a guest in the workspace and limited to accessing a subset of teams. */
