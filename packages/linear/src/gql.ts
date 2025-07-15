@@ -271,7 +271,7 @@ export type AgentContextUpdateInput = {
 export type AgentSession = Node & {
   __typename?: 'AgentSession';
   /** Activities associated with this agent session. */
-  activities: Array<AgentActivity>;
+  activities: AgentActivityConnection;
   /** The agent user that is associated with this agent session. */
   appUser: User;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
@@ -5966,7 +5966,7 @@ export type IssueCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] The identifier of the agent user to delegate the issue to. */
+  /** The identifier of the app user to delegate the issue to. */
   delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
@@ -6637,6 +6637,8 @@ export type IssueLabelUpdateInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   /** The description of the label. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the label is a group. */
+  isGroup?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name of the label. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the parent label. */
@@ -7285,7 +7287,7 @@ export type IssueUpdateInput = {
   autoClosedByParentClosing?: InputMaybe<Scalars['Boolean']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] The identifier of the agent user to delegate the issue to. */
+  /** The identifier of the app user to delegate the issue to. */
   delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
@@ -12657,6 +12659,8 @@ export type ProjectLabelUpdateInput = {
   color?: InputMaybe<Scalars['String']['input']>;
   /** The description of the label. */
   description?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the label is a group. */
+  isGroup?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name of the label. */
   name?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the parent label. */
