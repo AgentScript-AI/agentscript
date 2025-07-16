@@ -18328,6 +18328,8 @@ export type ZendeskSettingsInput = {
   sendNoteOnStatusChange?: InputMaybe<Scalars['Boolean']['input']>;
   /** The subdomain of the Zendesk organization being connected. */
   subdomain: Scalars['String']['input'];
+  /** [INTERNAL] Flag indicating if the integration supports OAuth refresh tokens */
+  supportsOAuthRefresh?: InputMaybe<Scalars['Boolean']['input']>;
   /** The URL of the connected Zendesk organization. */
   url: Scalars['String']['input'];
 };
