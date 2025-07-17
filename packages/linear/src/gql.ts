@@ -85,7 +85,7 @@ export type AgentActivityConnection = {
 };
 
 /** Content for different types of agent activities. */
-export type AgentActivityContent = AgentActivityActionContent | AgentActivityElicitationContent | AgentActivityErrorContent | AgentActivityObservationContent | AgentActivityPromptContent | AgentActivityResponseContent;
+export type AgentActivityContent = AgentActivityActionContent | AgentActivityElicitationContent | AgentActivityErrorContent | AgentActivityPromptContent | AgentActivityResponseContent | AgentActivityThoughtContent;
 
 export type AgentActivityCreateInput = {
   /** The agent session this activity belongs to. */
@@ -124,15 +124,6 @@ export type AgentActivityErrorContent = {
   type: AgentActivityType;
 };
 
-/** Content for an observation activity (chain of thought). */
-export type AgentActivityObservationContent = {
-  __typename?: 'AgentActivityObservationContent';
-  /** The observation content in Markdown format. */
-  body: Scalars['String']['output'];
-  /** The type of activity. */
-  type: AgentActivityType;
-};
-
 export type AgentActivityPayload = {
   __typename?: 'AgentActivityPayload';
   /** The agent activity that was created or updated. */
@@ -161,14 +152,23 @@ export type AgentActivityResponseContent = {
   type: AgentActivityType;
 };
 
+/** Content for a thought activity. */
+export type AgentActivityThoughtContent = {
+  __typename?: 'AgentActivityThoughtContent';
+  /** The thought content in Markdown format. */
+  body: Scalars['String']['output'];
+  /** The type of activity. */
+  type: AgentActivityType;
+};
+
 /** The type of an agent activity. */
 export const AgentActivityType = {
   Action: 'action',
   Elicitation: 'elicitation',
   Error: 'error',
-  Observation: 'observation',
   Prompt: 'prompt',
-  Response: 'response'
+  Response: 'response',
+  Thought: 'thought'
 } as const;
 
 export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
@@ -338,7 +338,8 @@ export const AgentSessionStatus = {
   AwaitingInput: 'awaitingInput',
   Complete: 'complete',
   Error: 'error',
-  Pending: 'pending'
+  Pending: 'pending',
+  Stale: 'stale'
 } as const;
 
 export type AgentSessionStatus = typeof AgentSessionStatus[keyof typeof AgentSessionStatus];
@@ -6283,6 +6284,8 @@ export type IssueHistory = Node & {
   fromCycle?: Maybe<Cycle>;
   /** The id of previous cycle of the issue. */
   fromCycleId?: Maybe<Scalars['String']['output']>;
+  /** The app user from whom the issue delegation was transferred. */
+  fromDelegate?: Maybe<User>;
   /** What the due date was changed from. */
   fromDueDate?: Maybe<Scalars['TimelessDate']['output']>;
   /** What the estimate was changed from. */
@@ -6331,6 +6334,8 @@ export type IssueHistory = Node & {
   toCycle?: Maybe<Cycle>;
   /** The id of new cycle of the issue. */
   toCycleId?: Maybe<Scalars['String']['output']>;
+  /** The app user to whom the issue delegation was transferred. */
+  toDelegate?: Maybe<User>;
   /** What the due date was changed to. */
   toDueDate?: Maybe<Scalars['TimelessDate']['output']>;
   /** What the estimate was changed to. */
