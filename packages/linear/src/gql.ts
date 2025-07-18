@@ -4272,6 +4272,44 @@ export type IdComparator = {
   nin?: InputMaybe<Array<Scalars['ID']['input']>>;
 };
 
+/** An identity provider. */
+export type IdentityProvider = Node & {
+  __typename?: 'IdentityProvider';
+  /** [INTERNAL] SCIM admins group push settings. */
+  adminsGroupPush?: Maybe<Scalars['JSONObject']['output']>;
+  /** Allowed authentication providers, empty array means all are allowed. */
+  allowedAuthServices: Array<Scalars['String']['output']>;
+  /** The time at which the entity was archived. Null if the entity has not been archived. */
+  archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
+  /** [INTERNAL] SCIM guests group push settings. */
+  guestsGroupPush?: Maybe<Scalars['JSONObject']['output']>;
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The issuer's custom entity ID. */
+  issuerEntityId?: Maybe<Scalars['String']['output']>;
+  /** The SAML priority used to pick default workspace in SAML SP initiated flow, when same domain is claimed for SAML by multiple workspaces. Lower priority value means higher preference. */
+  priority?: Maybe<Scalars['Float']['output']>;
+  /** Whether SAML authentication is enabled for organization. */
+  samlEnabled: Scalars['Boolean']['output'];
+  /** Whether SCIM provisioning is enabled for organization. */
+  scimEnabled: Scalars['Boolean']['output'];
+  /** Binding method for authentication call. Can be either `post` (default) or `redirect`. */
+  ssoBinding?: Maybe<Scalars['String']['output']>;
+  /** Sign in endpoint URL for the identity provider. */
+  ssoEndpoint?: Maybe<Scalars['String']['output']>;
+  /** The algorithm of the Signing Certificate. Can be one of `sha1`, `sha256` (default), or `sha512`. */
+  ssoSignAlgo?: Maybe<Scalars['String']['output']>;
+  /** X.509 Signing Certificate in string form. */
+  ssoSigningCert?: Maybe<Scalars['String']['output']>;
+  /**
+   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
+   *     been updated after creation.
+   */
+  updatedAt: Scalars['DateTime']['output'];
+};
+
 export type ImageUploadFromUrlPayload = {
   __typename?: 'ImageUploadFromUrlPayload';
   /** The identifier of the last sync operation. */
@@ -11307,6 +11345,8 @@ export type OrganizationDomain = Node & {
   disableOrganizationCreation?: Maybe<Scalars['Boolean']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** The identity provider the domain belongs to. */
+  identityProvider?: Maybe<IdentityProvider>;
   /** Domain name. */
   name: Scalars['String']['output'];
   /**
@@ -17378,8 +17418,12 @@ export type User = Node & {
    * @deprecated This hash is not in use anymore, this value will always be empty.
    */
   inviteHash: Scalars['String']['output'];
+  /** Whether the user is assignable. */
+  isAssignable: Scalars['Boolean']['output'];
   /** Whether the user is the currently authenticated user. */
   isMe: Scalars['Boolean']['output'];
+  /** Whether the user is mentionable. */
+  isMentionable: Scalars['Boolean']['output'];
   /** The user's issue drafts */
   issueDrafts: IssueDraftConnection;
   /** The last time the user was seen online. */
