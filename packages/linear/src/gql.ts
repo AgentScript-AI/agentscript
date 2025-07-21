@@ -3938,6 +3938,8 @@ export type FrontSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
+  disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
   sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
@@ -5516,6 +5518,8 @@ export type IntercomSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
+  disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
   sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
@@ -15812,6 +15816,8 @@ export type SalesforceSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
+  disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** The Salesforce case status to use to reopen cases. */
   reopenCaseStatus?: InputMaybe<Scalars['String']['input']>;
   /** Whether to restrict visibility of the integration to issues that have been either created from Salesforce or linked to Salesforce. */
@@ -18371,6 +18377,8 @@ export type ZendeskSettingsInput = {
   botUserId?: InputMaybe<Scalars['String']['input']>;
   /** [INTERNAL] Temporary flag indicating if the integration has the necessary scopes for Customers */
   canReadCustomers?: InputMaybe<Scalars['Boolean']['input']>;
+  /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
+  disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
   sendNoteOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when a Linear issue changes status (for status types except completed or canceled). */
