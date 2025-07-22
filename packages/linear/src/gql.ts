@@ -124,6 +124,26 @@ export type AgentActivityErrorContent = {
   type: AgentActivityType;
 };
 
+/** Agent activity filtering options. */
+export type AgentActivityFilter = {
+  /** Comparator for the agent session ID. */
+  agentSessionId?: InputMaybe<StringComparator>;
+  /** Compound filters, all of which need to be matched by the agent activity. */
+  and?: InputMaybe<Array<AgentActivityFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Compound filters, one of which need to be matched by the agent activity. */
+  or?: InputMaybe<Array<AgentActivityFilter>>;
+  /** Filters that the source comment must satisfy. */
+  sourceComment?: InputMaybe<NullableCommentFilter>;
+  /** Comparator for the agent activity's content type. */
+  type?: InputMaybe<StringComparator>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
+};
+
 export type AgentActivityPayload = {
   __typename?: 'AgentActivityPayload';
   /** The agent activity that was created or updated. */
@@ -284,12 +304,12 @@ export type AgentSession = Node & {
   creator?: Maybe<User>;
   /** The time the agent session ended. */
   endedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The URL of an external agent-hosted page associated with this session. */
+  externalLink?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The issue this agent session is associated with. */
   issue?: Maybe<Issue>;
-  /** External links associated with this agent session. */
-  links: Array<EntityExternalLink>;
   /** Metadata about the external source that created this agent session. */
   sourceMetadata?: Maybe<Scalars['JSON']['output']>;
   /** The time the agent session started. */
@@ -312,6 +332,7 @@ export type AgentSession = Node & {
 export type AgentSessionActivitiesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AgentActivityFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -332,6 +353,16 @@ export type AgentSessionEdge = {
   node: AgentSession;
 };
 
+export type AgentSessionPayload = {
+  __typename?: 'AgentSessionPayload';
+  /** The agent session that was created or updated. */
+  agentSession: AgentSession;
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 /** The status of an agent session. */
 export const AgentSessionStatus = {
   Active: 'active',
@@ -349,6 +380,11 @@ export const AgentSessionType = {
 } as const;
 
 export type AgentSessionType = typeof AgentSessionType[keyof typeof AgentSessionType];
+export type AgentSessionUpdateExternalUrlInput = {
+  /** The URL of an external agent-hosted page associated with this session. */
+  externalLink?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type AirbyteConfigurationInput = {
   /** Linear export API key. */
   apiKey: Scalars['String']['input'];
@@ -3914,6 +3950,14 @@ export const FeedSummarySchedule = {
 } as const;
 
 export type FeedSummarySchedule = typeof FeedSummarySchedule[keyof typeof FeedSummarySchedule];
+export type FetchDataPayload = {
+  __typename?: 'FetchDataPayload';
+  /** The fetched data based on the natural language query. */
+  data?: Maybe<Scalars['JSONObject']['output']>;
+  /** Whether the fetch operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 /** By which resolution is frequency defined. */
 export const FrequencyResolutionType = {
   Daily: 'daily',
@@ -6084,6 +6128,8 @@ export type IssueDraft = Node & {
   creator: User;
   /** The cycle associated with the draft. */
   cycleId?: Maybe<Scalars['String']['output']>;
+  /** The app user delegated to work on the issue being drafted. */
+  delegateId?: Maybe<Scalars['String']['output']>;
   /** The draft's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
   /** [Internal] The draft's description as a Prosemirror document. */
@@ -7612,6 +7658,8 @@ export type Mutation = {
   agentContextCreate: AgentContextPayload;
   /** Updates an agent context. */
   agentContextUpdate: AgentContextPayload;
+  /** Updates the externalUrl of an agent session, which is an agent-hosted page associated with this session. */
+  agentSessionUpdateExternalUrl: AgentSessionPayload;
   /** Creates an integration api key for Airbyte to connect with Linear. */
   airbyteIntegrationConnect: IntegrationPayload;
   /** [INTERNAL] Creates a new API key. */
@@ -8260,6 +8308,12 @@ export type MutationAgentContextCreateArgs = {
 export type MutationAgentContextUpdateArgs = {
   id: Scalars['String']['input'];
   input: AgentContextUpdateInput;
+};
+
+
+export type MutationAgentSessionUpdateExternalUrlArgs = {
+  id: Scalars['String']['input'];
+  input: AgentSessionUpdateExternalUrlInput;
 };
 
 
@@ -14276,6 +14330,8 @@ export type Query = {
   favorite: Favorite;
   /** The user's favorites. */
   favorites: FavoriteConnection;
+  /** [Internal] Fetch an arbitrary set of data using natural language query. Be specific about what you want including properties for each entity, sort order, filters, limit and properties. */
+  fetchData: FetchDataPayload;
   /** One specific initiative. */
   initiative: Initiative;
   /** One specific initiative relation. */
@@ -14485,6 +14541,7 @@ export type QueryAdministrableTeamsArgs = {
 export type QueryAgentActivitiesArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<AgentActivityFilter>;
   first?: InputMaybe<Scalars['Int']['input']>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
@@ -14811,6 +14868,11 @@ export type QueryFavoritesArgs = {
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryFetchDataArgs = {
+  query: Scalars['String']['input'];
 };
 
 
