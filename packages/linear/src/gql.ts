@@ -1893,6 +1893,8 @@ export type CustomerNeedNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The customer need related to the notification. */
@@ -2007,6 +2009,8 @@ export type CustomerNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The customer related to the notification. */
@@ -3013,6 +3017,8 @@ export type DocumentNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** Related comment ID. Null if the notification is not related to a comment. */
   commentId?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
@@ -3982,6 +3988,10 @@ export type FrontSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
+  automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
   disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
@@ -4323,12 +4333,12 @@ export type IdentityProvider = Node & {
   __typename?: 'IdentityProvider';
   /** [INTERNAL] SCIM admins group push settings. */
   adminsGroupPush?: Maybe<Scalars['JSONObject']['output']>;
-  /** Allowed authentication providers, empty array means all are allowed. */
-  allowedAuthServices: Array<Scalars['String']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
+  /** Whether the identity provider is the default identity provider migrated from organization level settings. */
+  defaultMigrated: Scalars['Boolean']['output'];
   /** [INTERNAL] SCIM guests group push settings. */
   guestsGroupPush?: Maybe<Scalars['JSONObject']['output']>;
   /** The unique identifier of the entity. */
@@ -4724,6 +4734,8 @@ export type InitiativeNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The comment related to the notification. */
   comment?: Maybe<Comment>;
   /** Related comment ID. Null if the notification is not related to a comment. */
@@ -5562,6 +5574,10 @@ export type IntercomSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
+  automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
   disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether an internal message should be added when someone comments on an issue. */
@@ -5616,7 +5632,7 @@ export type Issue = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
-  /** The app user that is delegated to work on this issue. */
+  /** The agent user that is delegated to work on this issue. */
   delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
@@ -5945,11 +5961,13 @@ export type IssueCollectionFilter = {
   creator?: InputMaybe<NullableUserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** Filters that the issue's delegate must satisfy. */
+  /** Filters that the issue's delegated agent must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -6053,7 +6071,7 @@ export type IssueCreateInput = {
   createdAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the app user to delegate the issue to. */
+  /** The identifier of the agent user to delegate the issue to. */
   delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
@@ -6128,7 +6146,7 @@ export type IssueDraft = Node & {
   creator: User;
   /** The cycle associated with the draft. */
   cycleId?: Maybe<Scalars['String']['output']>;
-  /** The app user delegated to work on the issue being drafted. */
+  /** The agent user delegated to work on the issue being drafted. */
   delegateId?: Maybe<Scalars['String']['output']>;
   /** The draft's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
@@ -6234,11 +6252,13 @@ export type IssueFilter = {
   creator?: InputMaybe<NullableUserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** Filters that the issue's delegate must satisfy. */
+  /** Filters that the issue's delegated agent must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -6753,6 +6773,8 @@ export type IssueNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The comment related to the notification. */
   comment?: Maybe<Comment>;
   /** Related comment ID. Null if the notification is not related to a comment. */
@@ -6975,7 +6997,7 @@ export type IssueSearchResult = Node & {
   customerTicketCount: Scalars['Int']['output'];
   /** The cycle that the issue is associated with. */
   cycle?: Maybe<Cycle>;
-  /** The app user that is delegated to work on this issue. */
+  /** The agent user that is delegated to work on this issue. */
   delegate?: Maybe<User>;
   /** The issue's description in markdown format. */
   description?: Maybe<Scalars['String']['output']>;
@@ -7339,6 +7361,7 @@ export type IssueSuggestionMetadata = {
   __typename?: 'IssueSuggestionMetadata';
   classification?: Maybe<Scalars['String']['output']>;
   evalLogId?: Maybe<Scalars['String']['output']>;
+  rank?: Maybe<Scalars['Float']['output']>;
   reasons?: Maybe<Array<Scalars['String']['output']>>;
   score?: Maybe<Scalars['Float']['output']>;
 };
@@ -7380,7 +7403,7 @@ export type IssueUpdateInput = {
   autoClosedByParentClosing?: InputMaybe<Scalars['Boolean']['input']>;
   /** The cycle associated with the issue. */
   cycleId?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the app user to delegate the issue to. */
+  /** The identifier of the agent user to delegate the issue to. */
   delegateId?: InputMaybe<Scalars['String']['input']>;
   /** The issue description in markdown format. */
   description?: InputMaybe<Scalars['String']['input']>;
@@ -8926,6 +8949,7 @@ export type MutationIntegrationCustomerDataAttributesRefreshArgs = {
 
 export type MutationIntegrationDeleteArgs = {
   id: Scalars['String']['input'];
+  skipInstallationDeletion?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
@@ -10025,6 +10049,8 @@ export type Notification = {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /**
@@ -10670,11 +10696,13 @@ export type NullableIssueFilter = {
   creator?: InputMaybe<NullableUserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Filters that the issues cycle must satisfy. */
   cycle?: InputMaybe<NullableCycleFilter>;
   /** [Internal] Cycle time (started -> completed) comparator. */
   cycleTime?: InputMaybe<NullableDurationComparator>;
-  /** Filters that the issue's delegate must satisfy. */
+  /** Filters that the issue's delegated agent must satisfy. */
   delegate?: InputMaybe<NullableUserFilter>;
   /** Comparator for the issues description. */
   description?: InputMaybe<NullableStringComparator>;
@@ -10798,6 +10826,8 @@ export type NullableProjectFilter = {
   creator?: InputMaybe<UserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -11117,6 +11147,8 @@ export type OauthClientApprovalNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /**
@@ -11437,6 +11469,8 @@ export type OrganizationDomainCreateInput = {
   authType?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** The identity provider to which to add the domain. */
+  identityProviderId?: InputMaybe<Scalars['String']['input']>;
   /** The domain name to add. */
   name: Scalars['String']['input'];
   /** The email address to which to send the verification code. */
@@ -11875,6 +11909,8 @@ export type PostNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** Related comment ID. Null if the notification is not related to a comment. */
   commentId?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
@@ -12341,6 +12377,8 @@ export type ProjectCollectionFilter = {
   creator?: InputMaybe<UserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Filters that needs to be matched by all projects. */
   every?: InputMaybe<ProjectFilter>;
   /** Comparator for filtering projects which are blocked. */
@@ -12494,6 +12532,8 @@ export type ProjectFilter = {
   creator?: InputMaybe<UserFilter>;
   /** Count of customers */
   customerCount?: InputMaybe<NumberComparator>;
+  /** Count of important customers */
+  customerImportantCount?: InputMaybe<NumberComparator>;
   /** Comparator for filtering projects which are blocked. */
   hasBlockedByRelations?: InputMaybe<RelationExistsComparator>;
   /** Comparator for filtering projects which are blocking. */
@@ -13027,6 +13067,8 @@ export type ProjectNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** The comment related to the notification. */
   comment?: Maybe<Comment>;
   /** Related comment ID. Null if the notification is not related to a comment. */
@@ -14087,6 +14129,8 @@ export type PullRequestNotification = Entity & Node & Notification & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The bot that caused the notification. */
   botActor?: Maybe<ActorBot>;
+  /** The category of the notification. */
+  category: NotificationCategory;
   /** Related comment ID. Null if the notification is not related to a comment. */
   commentId?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was created. */
@@ -15878,6 +15922,10 @@ export type SalesforceSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
+  automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
   disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** The Salesforce case status to use to reopen cases. */
@@ -18435,6 +18483,10 @@ export type ZendeskSettingsInput = {
   automateTicketReopeningOnComment?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear issue is completed. */
   automateTicketReopeningOnCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is cancelled. */
+  automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
+  automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars['Boolean']['input']>;
   /** The ID of the Linear bot user. */
   botUserId?: InputMaybe<Scalars['String']['input']>;
   /** [INTERNAL] Temporary flag indicating if the integration has the necessary scopes for Customers */
