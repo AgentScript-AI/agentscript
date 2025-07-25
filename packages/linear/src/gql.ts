@@ -57,6 +57,8 @@ export type AgentActivity = Node & {
   id: Scalars['ID']['output'];
   /** The comment this activity is linked to. */
   sourceComment?: Maybe<Comment>;
+  /** Metadata about the external source that created this agent activity. */
+  sourceMetadata?: Maybe<Scalars['JSON']['output']>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -4196,6 +4198,8 @@ export type GitHubImportSettingsInput = {
 };
 
 export type GitHubPersonalSettingsInput = {
+  /** Whether the integration has code access */
+  codeAccess?: InputMaybe<Scalars['Boolean']['input']>;
   /** The GitHub user's name. */
   login: Scalars['String']['input'];
 };
@@ -4225,6 +4229,8 @@ export type GitHubRepoMappingInput = {
 };
 
 export type GitHubSettingsInput = {
+  /** Whether the integration has code access */
+  codeAccess?: InputMaybe<Scalars['Boolean']['input']>;
   /** The avatar URL for the GitHub organization. */
   orgAvatarUrl?: InputMaybe<Scalars['String']['input']>;
   /** The GitHub organization's name. */
@@ -8984,6 +8990,7 @@ export type MutationIntegrationGitHubPersonalArgs = {
 
 export type MutationIntegrationGithubConnectArgs = {
   code: Scalars['String']['input'];
+  codeAccess?: InputMaybe<Scalars['Boolean']['input']>;
   installationId: Scalars['String']['input'];
 };
 
