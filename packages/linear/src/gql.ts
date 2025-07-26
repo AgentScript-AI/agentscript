@@ -8979,7 +8979,7 @@ export type MutationIntegrationFrontArgs = {
 
 export type MutationIntegrationGitHubEnterpriseServerConnectArgs = {
   githubUrl: Scalars['String']['input'];
-  organizationName?: InputMaybe<Scalars['String']['input']>;
+  organizationName: Scalars['String']['input'];
 };
 
 
@@ -15489,6 +15489,11 @@ export type QueryUsersArgs = {
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+};
+
+
+export type QueryVerifyGitHubEnterpriseServerInstallationArgs = {
+  integrationId: Scalars['String']['input'];
 };
 
 
