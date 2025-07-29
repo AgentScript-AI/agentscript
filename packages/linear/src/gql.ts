@@ -6741,6 +6741,19 @@ export type IssueLabelFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
+export type IssueLabelMoveToTeamLabelsInput = {
+  /** The identifier of the workspace label to convert. */
+  id: Scalars['String']['input'];
+};
+
+export type IssueLabelMoveToTeamLabelsPayload = {
+  __typename?: 'IssueLabelMoveToTeamLabelsPayload';
+  /** The identifier of the last sync operation. */
+  lastSyncId: Scalars['Float']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 export type IssueLabelPayload = {
   __typename?: 'IssueLabelPayload';
   /** The label that was created or updated. */
@@ -8032,6 +8045,8 @@ export type Mutation = {
   issueLabelCreate: IssueLabelPayload;
   /** Deletes an issue label. */
   issueLabelDelete: DeletePayload;
+  /** Converts a workspace label to team labels for teams that have issues using the workspace label. */
+  issueLabelMoveToTeamLabels: IssueLabelMoveToTeamLabelsPayload;
   /** Updates an label. */
   issueLabelUpdate: IssueLabelPayload;
   /** Creates a new issue relation. */
@@ -9334,6 +9349,11 @@ export type MutationIssueLabelCreateArgs = {
 
 export type MutationIssueLabelDeleteArgs = {
   id: Scalars['String']['input'];
+};
+
+
+export type MutationIssueLabelMoveToTeamLabelsArgs = {
+  input: IssueLabelMoveToTeamLabelsInput;
 };
 
 
