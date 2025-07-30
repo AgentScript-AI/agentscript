@@ -101,6 +101,17 @@ export type AgentActivityCreateInput = {
   id?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type AgentActivityCreatePromptInput = {
+  /** The agent session this activity belongs to. */
+  agentSessionId: Scalars['String']['input'];
+  /** The content payload of the prompt agent activity. */
+  content: Scalars['JSONObject']['input'];
+  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
+  id?: InputMaybe<Scalars['String']['input']>;
+  /** The comment that contains the content of this activity. */
+  sourceCommentId: Scalars['String']['input'];
+};
+
 export type AgentActivityEdge = {
   __typename?: 'AgentActivityEdge';
   /** Used in `before` and `after` args */
@@ -232,61 +243,6 @@ export type AgentContext = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
-};
-
-
-/** [DEPRECATED] A context for agent activities and state management. */
-export type AgentContextActivitiesArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
-};
-
-export type AgentContextConnection = {
-  __typename?: 'AgentContextConnection';
-  edges: Array<AgentContextEdge>;
-  nodes: Array<AgentContext>;
-  pageInfo: PageInfo;
-};
-
-export type AgentContextCreateInput = {
-  /** The comment this agent context is associated with. */
-  commentId: Scalars['String']['input'];
-  /** The user who created this agent context. */
-  creatorId: Scalars['String']['input'];
-  /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
-  id?: InputMaybe<Scalars['String']['input']>;
-  /** URL to the external source where this agent context was created (e.g., Slack thread, GitHub comment). */
-  sourceUrl: Scalars['String']['input'];
-  /** The type of the agent context. */
-  type: AgentSessionType;
-};
-
-export type AgentContextEdge = {
-  __typename?: 'AgentContextEdge';
-  /** Used in `before` and `after` args */
-  cursor: Scalars['String']['output'];
-  node: AgentContext;
-};
-
-export type AgentContextPayload = {
-  __typename?: 'AgentContextPayload';
-  /** The agent context that was created or updated. */
-  agentContext: AgentContext;
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
-};
-
-export type AgentContextUpdateInput = {
-  /** The current status of the agent context. */
-  status?: InputMaybe<AgentSessionStatus>;
-  /** The summary of the agent context. */
-  summary?: InputMaybe<Scalars['String']['input']>;
 };
 
 /** A session for agent activities and state management. */
@@ -3227,6 +3183,8 @@ export type Draft = Node & {
   project?: Maybe<Project>;
   /** The project update for which this is a draft comment. */
   projectUpdate?: Maybe<ProjectUpdate>;
+  /** The team for which this is a draft post. */
+  team?: Maybe<Team>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -5325,6 +5283,7 @@ export const IntegrationService = {
   FigmaPlugin: 'figmaPlugin',
   Front: 'front',
   Github: 'github',
+  GithubCodeAccessPersonal: 'githubCodeAccessPersonal',
   GithubCommit: 'githubCommit',
   GithubEnterpriseServer: 'githubEnterpriseServer',
   GithubImport: 'githubImport',
@@ -5363,6 +5322,7 @@ export type IntegrationSettingsInput = {
   gitHubImport?: InputMaybe<GitHubImportSettingsInput>;
   gitHubPersonal?: InputMaybe<GitHubPersonalSettingsInput>;
   gitLab?: InputMaybe<GitLabSettingsInput>;
+  githubCodeAccessPersonal?: InputMaybe<GitHubPersonalSettingsInput>;
   googleSheets?: InputMaybe<GoogleSheetsSettingsInput>;
   intercom?: InputMaybe<IntercomSettingsInput>;
   jira?: InputMaybe<JiraSettingsInput>;
@@ -7609,6 +7569,13 @@ export type LabelSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
+export type LabelsMergeInput = {
+  /** The identifiers of the labels to merge. */
+  fromLabelIds: Array<Scalars['String']['input']>;
+  /** The identifier of the target label. */
+  toLabelId: Scalars['String']['input'];
+};
+
 export type LaunchDarklySettingsInput = {
   /** The environment of the LaunchDarkly integration. */
   environment: Scalars['String']['input'];
@@ -7696,10 +7663,8 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Creates an agent activity. */
   agentActivityCreate: AgentActivityPayload;
-  /** Creates an agent context. */
-  agentContextCreate: AgentContextPayload;
-  /** Updates an agent context. */
-  agentContextUpdate: AgentContextPayload;
+  /** Creates a prompt agent activity from Linear user input. */
+  agentActivityCreatePrompt: AgentActivityPayload;
   /** Updates the externalUrl of an agent session, which is an agent-hosted page associated with this session. */
   agentSessionUpdateExternalUrl: AgentSessionPayload;
   /** Creates an integration api key for Airbyte to connect with Linear. */
@@ -8049,6 +8014,8 @@ export type Mutation = {
   issueLabelMoveToTeamLabels: IssueLabelMoveToTeamLabelsPayload;
   /** Updates an label. */
   issueLabelUpdate: IssueLabelPayload;
+  /** Merges multiple issue labels into a single label. */
+  issueLabelsMerge: IssueLabelPayload;
   /** Creates a new issue relation. */
   issueRelationCreate: IssueRelationPayload;
   /** Deletes an issue relation. */
@@ -8160,6 +8127,8 @@ export type Mutation = {
   projectLabelDelete: DeletePayload;
   /** Updates a project label. */
   projectLabelUpdate: ProjectLabelPayload;
+  /** Merges multiple project labels into a single label. */
+  projectLabelsMerge: ProjectLabelPayload;
   /** Creates a new project milestone. */
   projectMilestoneCreate: ProjectMilestonePayload;
   /** Deletes a project milestone. */
@@ -8344,14 +8313,8 @@ export type MutationAgentActivityCreateArgs = {
 };
 
 
-export type MutationAgentContextCreateArgs = {
-  input: AgentContextCreateInput;
-};
-
-
-export type MutationAgentContextUpdateArgs = {
-  id: Scalars['String']['input'];
-  input: AgentContextUpdateInput;
+export type MutationAgentActivityCreatePromptArgs = {
+  input: AgentActivityCreatePromptInput;
 };
 
 
@@ -9364,6 +9327,11 @@ export type MutationIssueLabelUpdateArgs = {
 };
 
 
+export type MutationIssueLabelsMergeArgs = {
+  input: LabelsMergeInput;
+};
+
+
 export type MutationIssueRelationCreateArgs = {
   input: IssueRelationCreateInput;
   overrideCreatedAt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -9623,6 +9591,11 @@ export type MutationProjectLabelDeleteArgs = {
 export type MutationProjectLabelUpdateArgs = {
   id: Scalars['String']['input'];
   input: ProjectLabelUpdateInput;
+};
+
+
+export type MutationProjectLabelsMergeArgs = {
+  input: LabelsMergeInput;
 };
 
 
@@ -14289,10 +14262,6 @@ export type Query = {
   agentActivities: AgentActivityConnection;
   /** A specific agent activity. */
   agentActivity: AgentActivity;
-  /** A specific agent context. */
-  agentContext: AgentContext;
-  /** All agent contexts. */
-  agentContexts: AgentContextConnection;
   /** A specific agent session. */
   agentSession: AgentSession;
   /** All agent sessions. */
@@ -14522,9 +14491,12 @@ export type Query = {
    * @deprecated Roadmaps are deprecated, use initiatives instead.
    */
   roadmap: Roadmap;
-  /** One specific roadmapToProject. */
+  /**
+   * One specific roadmapToProject.
+   * @deprecated RoadmapToProject is deprecated, use InitiativeToProject instead.
+   */
   roadmapToProject: RoadmapToProject;
-  /** Custom views for the user. */
+  /** @deprecated RoadmapToProject is deprecated, use InitiativeToProject instead. */
   roadmapToProjects: RoadmapToProjectConnection;
   /**
    * All roadmaps in the workspace.
@@ -14622,21 +14594,6 @@ export type QueryAgentActivitiesArgs = {
 
 export type QueryAgentActivityArgs = {
   id: Scalars['String']['input'];
-};
-
-
-export type QueryAgentContextArgs = {
-  id: Scalars['String']['input'];
-};
-
-
-export type QueryAgentContextsArgs = {
-  after?: InputMaybe<Scalars['String']['input']>;
-  before?: InputMaybe<Scalars['String']['input']>;
-  first?: InputMaybe<Scalars['Int']['input']>;
-  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
-  last?: InputMaybe<Scalars['Int']['input']>;
-  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -15712,7 +15669,7 @@ export type RevenueSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
-/** A roadmap for projects. */
+/** [Deprecated] A roadmap for projects. */
 export type Roadmap = Node & {
   __typename?: 'Roadmap';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
@@ -15749,7 +15706,7 @@ export type Roadmap = Node & {
 };
 
 
-/** A roadmap for projects. */
+/** [Deprecated] A roadmap for projects. */
 export type RoadmapProjectsArgs = {
   after?: InputMaybe<Scalars['String']['input']>;
   before?: InputMaybe<Scalars['String']['input']>;
@@ -15856,7 +15813,7 @@ export type RoadmapPayload = {
   success: Scalars['Boolean']['output'];
 };
 
-/** Join table between projects and roadmaps. */
+/** [Deprecated] Join table between projects and roadmaps. */
 export type RoadmapToProject = Node & {
   __typename?: 'RoadmapToProject';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
