@@ -43,8 +43,6 @@ export type ActorBot = {
 /** An activity within an agent context. */
 export type AgentActivity = Node & {
   __typename?: 'AgentActivity';
-  /** The agent context this activity belongs to. */
-  agentContext?: Maybe<AgentContext>;
   /** The agent session this activity belongs to. */
   agentSession: AgentSession;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
@@ -205,46 +203,6 @@ export const AgentActivityType = {
 } as const;
 
 export type AgentActivityType = typeof AgentActivityType[keyof typeof AgentActivityType];
-/** [DEPRECATED] A context for agent activities and state management. */
-export type AgentContext = Node & {
-  __typename?: 'AgentContext';
-  /** Activities associated with this agent context. */
-  activities: Array<AgentActivity>;
-  /** The agent user that is associated with this agent context. */
-  appUser: User;
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The comment this agent context is associated with. */
-  comment?: Maybe<Comment>;
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The user that created this agent context. */
-  creator?: Maybe<User>;
-  /** The time the agent context ended. */
-  endedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /** The issue this agent context is associated with. */
-  issue?: Maybe<Issue>;
-  /** External links associated with this agent context. */
-  links: Array<EntityExternalLink>;
-  /** Metadata about the external source that created this agent context. */
-  sourceMetadata?: Maybe<Scalars['JSON']['output']>;
-  /** The time the agent context started working. */
-  startedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The current status of the agent context. */
-  status: AgentSessionStatus;
-  /** A summary of the activities in this context. */
-  summary?: Maybe<Scalars['String']['output']>;
-  /** The type of the agent context. */
-  type: AgentSessionType;
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-};
-
 /** A session for agent activities and state management. */
 export type AgentSession = Node & {
   __typename?: 'AgentSession';
@@ -1255,6 +1213,10 @@ export type CustomView = Node & {
   icon?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** The filter applied to initiatives in the custom view. */
+  initiativeFilterData?: Maybe<Scalars['JSONObject']['output']>;
+  /** Initiatives associated with the custom view. */
+  initiatives: InitiativeConnection;
   /** Issues associated with the custom view. */
   issues: IssueConnection;
   /** The model name of the custom view. */
@@ -1290,6 +1252,18 @@ export type CustomView = Node & {
   userViewPreferences?: Maybe<ViewPreferences>;
   /** The calculated view preferences values for this custom view. */
   viewPreferencesValues?: Maybe<ViewPreferencesValues>;
+};
+
+
+/** A custom view that has been saved by a user. */
+export type CustomViewInitiativesArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  filter?: InputMaybe<InitiativeFilter>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
@@ -1353,6 +1327,8 @@ export type CustomViewCreateInput = {
   icon?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** [ALPHA] The initiative filter applied to issues in the custom view. */
+  initiativeFilterData?: InputMaybe<InitiativeFilter>;
   /** The id of the initiative associated with the custom view. */
   initiativeId?: InputMaybe<Scalars['String']['input']>;
   /** The name of the custom view. */
@@ -1516,6 +1492,8 @@ export type CustomViewUpdateInput = {
   filterData?: InputMaybe<IssueFilter>;
   /** The icon of the custom view. */
   icon?: InputMaybe<Scalars['String']['input']>;
+  /** [ALPHA] The initiative filter applied to issues in the custom view. */
+  initiativeFilterData?: InputMaybe<InitiativeFilter>;
   /** [Internal] The id of the initiative associated with the custom view. */
   initiativeId?: InputMaybe<Scalars['String']['input']>;
   /** The name of the custom view. */
@@ -3730,8 +3708,6 @@ export type Favorite = Node & {
   projectTeam?: Maybe<Team>;
   /** The favorited pull request. */
   pullRequest?: Maybe<PullRequest>;
-  /** The favorited roadmap. */
-  roadmap?: Maybe<Roadmap>;
   /** The order of the item in the favorites list. */
   sortOrder: Scalars['Float']['output'];
   /** [Internal] Favorite's title text (name of the favorite'd object or folder). */
@@ -3806,8 +3782,6 @@ export type FavoriteCreateInput = {
   projectTab?: InputMaybe<ProjectTab>;
   /** The identifier of the pull request to favorite. */
   pullRequestId?: InputMaybe<Scalars['String']['input']>;
-  /** The identifier of the roadmap to favorite. */
-  roadmapId?: InputMaybe<Scalars['String']['input']>;
   /** The position of the item in the favorites list. */
   sortOrder?: InputMaybe<Scalars['Float']['input']>;
   /** The identifier of the user to favorite. */
@@ -4156,8 +4130,6 @@ export type GitHubImportSettingsInput = {
 };
 
 export type GitHubPersonalSettingsInput = {
-  /** Whether the integration has code access */
-  codeAccess?: InputMaybe<Scalars['Boolean']['input']>;
   /** The GitHub user's name. */
   login: Scalars['String']['input'];
 };
@@ -4505,6 +4477,8 @@ export type InitiativeArchivePayload = ArchivePayload & {
 
 /** Initiative collection filtering options. */
 export type InitiativeCollectionFilter = {
+  /** Comparator for the initiative activity type. */
+  activityType?: InputMaybe<StringComparator>;
   /** Filters that the initiative must be an ancestor of. */
   ancestors?: InputMaybe<InitiativeCollectionFilter>;
   /** Compound filters, all of which need to be matched by the initiative. */
@@ -4512,7 +4486,7 @@ export type InitiativeCollectionFilter = {
   /** Comparator for the created at date. */
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
-  creator?: InputMaybe<UserFilter>;
+  creator?: InputMaybe<NullableUserFilter>;
   /** Filters that needs to be matched by all initiatives. */
   every?: InputMaybe<InitiativeFilter>;
   /** Comparator for the initiative health: onTrack, atRisk, offTrack */
@@ -4528,13 +4502,17 @@ export type InitiativeCollectionFilter = {
   /** Compound filters, one of which need to be matched by the initiative. */
   or?: InputMaybe<Array<InitiativeCollectionFilter>>;
   /** Filters that the initiative owner must satisfy. */
-  owner?: InputMaybe<UserFilter>;
+  owner?: InputMaybe<NullableUserFilter>;
   /** Comparator for the initiative slug ID. */
   slugId?: InputMaybe<StringComparator>;
   /** Filters that needs to be matched by some initiatives. */
   some?: InputMaybe<InitiativeFilter>;
   /** Comparator for the initiative status: Planned, Active, Completed */
   status?: InputMaybe<StringComparator>;
+  /** Comparator for the initiative target date. */
+  targetDate?: InputMaybe<NullableDateComparator>;
+  /** Filters that the initiative teams must satisfy. */
+  teams?: InputMaybe<TeamCollectionFilter>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
 };
@@ -4589,6 +4567,8 @@ export type InitiativeEdge = {
 
 /** Initiative filtering options. */
 export type InitiativeFilter = {
+  /** Comparator for the initiative activity type. */
+  activityType?: InputMaybe<StringComparator>;
   /** Filters that the initiative must be an ancestor of. */
   ancestors?: InputMaybe<InitiativeCollectionFilter>;
   /** Compound filters, all of which need to be matched by the initiative. */
@@ -4596,7 +4576,7 @@ export type InitiativeFilter = {
   /** Comparator for the created at date. */
   createdAt?: InputMaybe<DateComparator>;
   /** Filters that the initiative creator must satisfy. */
-  creator?: InputMaybe<UserFilter>;
+  creator?: InputMaybe<NullableUserFilter>;
   /** Comparator for the initiative health: onTrack, atRisk, offTrack */
   health?: InputMaybe<StringComparator>;
   /** Comparator for the initiative health (with age): onTrack, atRisk, offTrack, outdated, noUpdate */
@@ -4608,11 +4588,15 @@ export type InitiativeFilter = {
   /** Compound filters, one of which need to be matched by the initiative. */
   or?: InputMaybe<Array<InitiativeFilter>>;
   /** Filters that the initiative owner must satisfy. */
-  owner?: InputMaybe<UserFilter>;
+  owner?: InputMaybe<NullableUserFilter>;
   /** Comparator for the initiative slug ID. */
   slugId?: InputMaybe<StringComparator>;
   /** Comparator for the initiative status: Planned, Active, Completed */
   status?: InputMaybe<StringComparator>;
+  /** Comparator for the initiative target date. */
+  targetDate?: InputMaybe<NullableDateComparator>;
+  /** Filters that the initiative teams must satisfy. */
+  teams?: InputMaybe<TeamCollectionFilter>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
 };
@@ -5322,7 +5306,6 @@ export type IntegrationSettingsInput = {
   gitHubImport?: InputMaybe<GitHubImportSettingsInput>;
   gitHubPersonal?: InputMaybe<GitHubPersonalSettingsInput>;
   gitLab?: InputMaybe<GitLabSettingsInput>;
-  githubCodeAccessPersonal?: InputMaybe<GitHubPersonalSettingsInput>;
   googleSheets?: InputMaybe<GoogleSheetsSettingsInput>;
   intercom?: InputMaybe<IntercomSettingsInput>;
   jira?: InputMaybe<JiraSettingsInput>;
@@ -8963,6 +8946,7 @@ export type MutationIntegrationGitHubEnterpriseServerConnectArgs = {
 
 export type MutationIntegrationGitHubPersonalArgs = {
   code: Scalars['String']['input'];
+  codeAccess?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 
