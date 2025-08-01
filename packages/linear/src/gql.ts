@@ -2843,8 +2843,6 @@ export type DocumentContent = Node & {
   initiative?: Maybe<Initiative>;
   /** The issue that the content is associated with. */
   issue?: Maybe<Issue>;
-  /** [ALPHA] The meeting that the content is associated with. */
-  meeting?: Maybe<Meeting>;
   /** The project that the content is associated with. */
   project?: Maybe<Project>;
   /** The project milestone that the content is associated with. */
@@ -7586,52 +7584,6 @@ export type ManualSort = {
   nulls?: InputMaybe<PaginationNulls>;
   /** The order for the individual sort */
   order?: InputMaybe<PaginationSortOrder>;
-};
-
-/** [Internal] A meeting that can be attached to different entities. */
-export type Meeting = Node & {
-  __typename?: 'Meeting';
-  /** The time at which the entity was archived. Null if the entity has not been archived. */
-  archivedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The color of the icon. */
-  color?: Maybe<Scalars['String']['output']>;
-  /** The time at which the entity was created. */
-  createdAt: Scalars['DateTime']['output'];
-  /** The user who created the meeting. */
-  creator?: Maybe<User>;
-  /** The time at which the meeting is set to end. */
-  endsAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The time at which the meeting was hidden. Null if the entity has not been hidden. */
-  hiddenAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The icon of the meeting. */
-  icon?: Maybe<Scalars['String']['output']>;
-  /** The unique identifier of the entity. */
-  id: Scalars['ID']['output'];
-  /** [Internal] The initiative that the meeting is associated with. */
-  initiative?: Maybe<Initiative>;
-  /** The location of the meeting. */
-  location?: Maybe<Scalars['String']['output']>;
-  /** The meeting link of the meeting. */
-  meetingLink?: Maybe<Scalars['String']['output']>;
-  /** The project that the meeting is associated with. */
-  project?: Maybe<Project>;
-  /** Link to a recording of the meeting. */
-  recordingLink?: Maybe<Scalars['String']['output']>;
-  /** The order of the item in the resources list. */
-  sortOrder: Scalars['Float']['output'];
-  /** The time at which the meeting is set to start. */
-  startsAt?: Maybe<Scalars['DateTime']['output']>;
-  /** The meeting title. */
-  title: Scalars['String']['output'];
-  /** A flag that indicates whether the meeting is in the trash bin. */
-  trashed?: Maybe<Scalars['Boolean']['output']>;
-  /**
-   * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
-   *     been updated after creation.
-   */
-  updatedAt: Scalars['DateTime']['output'];
-  /** The user who last updated the meeting. */
-  updatedBy?: Maybe<User>;
 };
 
 /** Issue project milestone options. */
@@ -15899,6 +15851,8 @@ export type SalesforceSettingsInput = {
   automateTicketReopeningOnProjectCancellation?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether a ticket should be automatically reopened when its linked Linear project is completed. */
   automateTicketReopeningOnProjectCompletion?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The Salesforce team to use when a template doesn't specify a team. */
+  defaultTeam?: InputMaybe<Scalars['String']['input']>;
   /** [ALPHA] Whether customer and customer requests should not be automatically created when conversations are linked to a Linear issue. */
   disableCustomerRequestsAutoCreation?: InputMaybe<Scalars['Boolean']['input']>;
   /** The Salesforce case status to use to reopen cases. */
@@ -18024,8 +17978,6 @@ export type ViewPreferencesCreateInput = {
   projectId?: InputMaybe<Scalars['String']['input']>;
   /** The project label these view preferences are associated with. */
   projectLabelId?: InputMaybe<Scalars['String']['input']>;
-  /** The roadmap these view preferences are associated with. */
-  roadmapId?: InputMaybe<Scalars['String']['input']>;
   /** The team these view preferences are associated with. */
   teamId?: InputMaybe<Scalars['String']['input']>;
   /** The type of view preferences (either user or organization level preferences). */
@@ -18078,7 +18030,6 @@ export const ViewType = {
   Backlog: 'backlog',
   Board: 'board',
   CompletedCycle: 'completedCycle',
-  CustomRoadmap: 'customRoadmap',
   CustomView: 'customView',
   CustomViews: 'customViews',
   Customer: 'customer',
