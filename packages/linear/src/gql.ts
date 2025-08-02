@@ -53,6 +53,8 @@ export type AgentActivity = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
+  signal?: Maybe<AgentActivitySignal>;
   /** The comment this activity is linked to. */
   sourceComment?: Maybe<Comment>;
   /** Metadata about the external source that created this agent activity. */
@@ -183,6 +185,12 @@ export type AgentActivityResponseContent = {
   type: AgentActivityType;
 };
 
+/** A modifier that provides additional instructions on how the activity should be interpreted. */
+export const AgentActivitySignal = {
+  Stop: 'stop'
+} as const;
+
+export type AgentActivitySignal = typeof AgentActivitySignal[keyof typeof AgentActivitySignal];
 /** Content for a thought activity. */
 export type AgentActivityThoughtContent = {
   __typename?: 'AgentActivityThoughtContent';
@@ -1236,7 +1244,7 @@ export type CustomView = Node & {
   /** Whether the custom view is shared with everyone in the organization. */
   shared: Scalars['Boolean']['output'];
   /** The custom view's unique URL slug. */
-  slugId?: Maybe<Scalars['String']['output']>;
+  slugId: Scalars['String']['output'];
   /** The team associated with the custom view. */
   team?: Maybe<Team>;
   /**
@@ -3213,6 +3221,16 @@ export type EmailIntakeAddress = Node & {
   forwardingEmailAddress?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** The auto-reply message for issue canceled. If not set, the default reply will be used. */
+  issueCanceledAutoReply?: Maybe<Scalars['String']['output']>;
+  /** Whether the auto-reply for issue canceled is enabled. */
+  issueCanceledAutoReplyEnabled: Scalars['Boolean']['output'];
+  /** The auto-reply message for issue completed. If not set, the default reply will be used. */
+  issueCompletedAutoReply?: Maybe<Scalars['String']['output']>;
+  /** Whether the auto-reply for issue completed is enabled. */
+  issueCompletedAutoReplyEnabled: Scalars['Boolean']['output'];
+  /** The auto-reply message for issue created. If not set, the default reply will be used. */
+  issueCreatedAutoReply?: Maybe<Scalars['String']['output']>;
   /** The organization that the email address is associated with. */
   organization: Organization;
   /** Whether email replies are enabled. */
@@ -3232,6 +3250,8 @@ export type EmailIntakeAddress = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
+  /** Whether the commenter's name is included in the email replies. */
+  useUserNamesInReplies: Scalars['Boolean']['output'];
 };
 
 export type EmailIntakeAddressCreateInput = {
@@ -3241,6 +3261,16 @@ export type EmailIntakeAddressCreateInput = {
   forwardingEmailAddress?: InputMaybe<Scalars['String']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** The auto-reply message for issue canceled. */
+  issueCanceledAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue canceled auto-reply is enabled. */
+  issueCanceledAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The auto-reply message for issue completed. */
+  issueCompletedAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue completed auto-reply is enabled. */
+  issueCompletedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The auto-reply message for issue created. */
+  issueCreatedAutoReply?: InputMaybe<Scalars['String']['input']>;
   /** Whether email replies are enabled. */
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name to be used for outgoing emails. */
@@ -3251,6 +3281,8 @@ export type EmailIntakeAddressCreateInput = {
   templateId?: InputMaybe<Scalars['String']['input']>;
   /** The type of the email address. If not provided, the backend will default to team or template. */
   type?: InputMaybe<EmailIntakeAddressType>;
+  /** Whether the commenter's name is included in the email replies. */
+  useUserNamesInReplies?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EmailIntakeAddressPayload = {
@@ -3278,6 +3310,16 @@ export type EmailIntakeAddressUpdateInput = {
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The email address used to forward emails to the intake address. */
   forwardingEmailAddress?: InputMaybe<Scalars['String']['input']>;
+  /** Custom auto-reply message for issue canceled. */
+  issueCanceledAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue canceled auto-reply is enabled. */
+  issueCanceledAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Custom auto-reply message for issue completed. */
+  issueCompletedAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue completed auto-reply is enabled. */
+  issueCompletedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
+  /** The auto-reply message for issue created. */
+  issueCreatedAutoReply?: InputMaybe<Scalars['String']['input']>;
   /** Whether email replies are enabled. */
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name to be used for outgoing emails. */
@@ -3286,6 +3328,8 @@ export type EmailIntakeAddressUpdateInput = {
   teamId?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the template this email address will intake issues for. */
   templateId?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the commenter's name is included in the email replies. */
+  useUserNamesInReplies?: InputMaybe<Scalars['Boolean']['input']>;
 };
 
 export type EmailUnsubscribeInput = {
