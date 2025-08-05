@@ -5715,7 +5715,7 @@ export type Issue = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
-  /** [Internal] Product intelligence suggestions for the issue. */
+  /** [Internal] Product Intelligence suggestions for the issue. */
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -7095,7 +7095,7 @@ export type IssueSearchResult = Node & {
   subIssueSortOrder?: Maybe<Scalars['Float']['output']>;
   /** Users who are subscribed to the issue. */
   subscribers: UserConnection;
-  /** [Internal] Product intelligence suggestions for the issue. */
+  /** [Internal] Product Intelligence suggestions for the issue. */
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
