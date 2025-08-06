@@ -4948,7 +4948,8 @@ export type InitiativeStatus = typeof InitiativeStatus[keyof typeof InitiativeSt
 /** Different tabs available inside an initiative. */
 export const InitiativeTab = {
   Overview: 'overview',
-  Projects: 'projects'
+  Projects: 'projects',
+  Updates: 'updates'
 } as const;
 
 export type InitiativeTab = typeof InitiativeTab[keyof typeof InitiativeTab];
@@ -12307,7 +12308,7 @@ export type ProjectArchivePayload = ArchivePayload & {
   success: Scalars['Boolean']['output'];
 };
 
-/** [INTERNAL] Project attachment */
+/** Project attachment */
 export type ProjectAttachment = Node & {
   __typename?: 'ProjectAttachment';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
@@ -13785,7 +13786,8 @@ export type ProjectStatusUpdateInput = {
 export const ProjectTab = {
   Customers: 'customers',
   Documents: 'documents',
-  Issues: 'issues'
+  Issues: 'issues',
+  Updates: 'updates'
 } as const;
 
 export type ProjectTab = typeof ProjectTab[keyof typeof ProjectTab];
@@ -15446,6 +15448,7 @@ export type QueryUsersArgs = {
   includeDisabled?: InputMaybe<Scalars['Boolean']['input']>;
   last?: InputMaybe<Scalars['Int']['input']>;
   orderBy?: InputMaybe<PaginationOrderBy>;
+  sort?: InputMaybe<Array<UserSortInput>>;
 };
 
 
@@ -17706,6 +17709,14 @@ export const UserContextViewType = {
 } as const;
 
 export type UserContextViewType = typeof UserContextViewType[keyof typeof UserContextViewType];
+/** User display name sorting options. */
+export type UserDisplayNameSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 export type UserEdge = {
   __typename?: 'UserEdge';
   /** Used in `before` and `after` args */
@@ -17805,6 +17816,14 @@ export const UserFlagUpdateOperation = {
 } as const;
 
 export type UserFlagUpdateOperation = typeof UserFlagUpdateOperation[keyof typeof UserFlagUpdateOperation];
+/** User name sorting options. */
+export type UserNameSort = {
+  /** Whether nulls should be sorted first or last */
+  nulls?: InputMaybe<PaginationNulls>;
+  /** The order for the individual sort */
+  order?: InputMaybe<PaginationSortOrder>;
+};
+
 /** A user notification subscription. */
 export type UserNotificationSubscription = Entity & Node & NotificationSubscription & {
   __typename?: 'UserNotificationSubscription';
@@ -17962,6 +17981,14 @@ export type UserSettingsUpdateInput = {
   subscribedToPrivacyLegalUpdates?: InputMaybe<Scalars['Boolean']['input']>;
   /** [Internal] The user's usage warning history. */
   usageWarningHistory?: InputMaybe<Scalars['JSONObject']['input']>;
+};
+
+/** User sorting options. */
+export type UserSortInput = {
+  /** Sort by user display name */
+  displayName?: InputMaybe<UserDisplayNameSort>;
+  /** Sort by user name */
+  name?: InputMaybe<UserNameSort>;
 };
 
 export type UserUpdateInput = {
