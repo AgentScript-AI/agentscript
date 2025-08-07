@@ -64,6 +64,8 @@ export type AgentActivity = Node & {
    *     been updated after creation.
    */
   updatedAt: Scalars['DateTime']['output'];
+  /** The user who created this agent activity. */
+  user: User;
 };
 
 /** Content for an action activity (tool call or action). */
@@ -5370,6 +5372,14 @@ export type IntegrationSettingsInput = {
   zendesk?: InputMaybe<ZendeskSettingsInput>;
 };
 
+export type IntegrationSlackWorkspaceNamePayload = {
+  __typename?: 'IntegrationSlackWorkspaceNamePayload';
+  /** The current name of the Slack workspace. */
+  name: Scalars['String']['output'];
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 /** Join table between templates and integrations. */
 export type IntegrationTemplate = Node & {
   __typename?: 'IntegrationTemplate';
@@ -7932,6 +7942,8 @@ export type Mutation = {
   integrationSlackImportEmojis: IntegrationPayload;
   /** [Internal] Slack integration for initiative notifications. */
   integrationSlackInitiativePost: SlackChannelConnectPayload;
+  /** Updates the Slack team's name in Linear for an existing Slack or Asks integration. */
+  integrationSlackOrAsksUpdateSlackTeamName: IntegrationSlackWorkspaceNamePayload;
   /** [Internal] Slack integration for organization level initiative update notifications. */
   integrationSlackOrgInitiativeUpdatesPost: SlackChannelConnectPayload;
   /** Slack integration for organization level project update notifications. */
@@ -9094,6 +9106,11 @@ export type MutationIntegrationSlackInitiativePostArgs = {
   code: Scalars['String']['input'];
   initiativeId: Scalars['String']['input'];
   redirectUri: Scalars['String']['input'];
+};
+
+
+export type MutationIntegrationSlackOrAsksUpdateSlackTeamNameArgs = {
+  integrationId: Scalars['String']['input'];
 };
 
 
@@ -14077,6 +14094,8 @@ export type PullRequest = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** Merge settings for this pull request. */
+  mergeSettings?: Maybe<PullRequestMergeSettings>;
   /** The number of the pull request in the version control system. */
   number: Scalars['Float']['output'];
   /** The source branch of the pull request. */
@@ -14094,6 +14113,21 @@ export type PullRequest = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** The URL of the pull request in the version control system. */
   url: Scalars['String']['output'];
+};
+
+/** Merge settings for a pull request */
+export type PullRequestMergeSettings = {
+  __typename?: 'PullRequestMergeSettings';
+  /** Whether auto-merge is allowed for the PR's repository. */
+  autoMergeAllowed: Scalars['Boolean']['output'];
+  /** Whether merge queue is enabled for this repository. */
+  isMergeQueueEnabled: Scalars['Boolean']['output'];
+  /** Whether merge commits are allowed for pull requests PR's repository. */
+  mergeCommitAllowed: Scalars['Boolean']['output'];
+  /** Whether rebase merge is allowed for pull requests PR's repository. */
+  rebaseMergeAllowed: Scalars['Boolean']['output'];
+  /** Whether squash merge is allowed for this pull request's repository. */
+  squashMergeAllowed: Scalars['Boolean']['output'];
 };
 
 /** A pull request related notification. */
