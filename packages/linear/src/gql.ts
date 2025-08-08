@@ -101,8 +101,11 @@ export type AgentActivityCreateInput = {
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] An optional modifier that provides additional instructions on how the activity should be interpreted. */
+  signal?: InputMaybe<AgentActivitySignal>;
 };
 
+/** [Internal] Input for creating prompt-type agent activities (created by users). */
 export type AgentActivityCreatePromptInput = {
   /** The agent session this activity belongs to. */
   agentSessionId: Scalars['String']['input'];
@@ -110,8 +113,10 @@ export type AgentActivityCreatePromptInput = {
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] An optional modifier that provides additional instructions on how the activity should be interpreted. */
+  signal?: InputMaybe<AgentActivitySignal>;
   /** The comment that contains the content of this activity. */
-  sourceCommentId: Scalars['String']['input'];
+  sourceCommentId?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type AgentActivityEdge = {
@@ -327,6 +332,8 @@ export type ApiKey = Node & {
   id: Scalars['ID']['output'];
   /** The label of the API key. */
   label: Scalars['String']['output'];
+  /** When the API key was last used. */
+  lastActiveAt?: Maybe<Scalars['DateTime']['output']>;
   /** Organization the API key belongs to. */
   organization: Organization;
   /** The sync groups that this API key requests access to. If null, the API key has access to all sync groups the user has access to. The final set of sync groups is computed as the intersection of these requested groups with the user's base sync groups. */
@@ -7653,7 +7660,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   /** Creates an agent activity. */
   agentActivityCreate: AgentActivityPayload;
-  /** Creates a prompt agent activity from Linear user input. */
+  /** [Internal] Creates a prompt agent activity from Linear user input. */
   agentActivityCreatePrompt: AgentActivityPayload;
   /** Updates the externalUrl of an agent session, which is an agent-hosted page associated with this session. */
   agentSessionUpdateExternalUrl: AgentSessionPayload;
@@ -14115,15 +14122,27 @@ export type PullRequest = Node & {
   url: Scalars['String']['output'];
 };
 
-/** Merge settings for a pull request */
+/** The method used to merge a pull request. */
+export const PullRequestMergeMethod = {
+  Merge: 'MERGE',
+  Rebase: 'REBASE',
+  Squash: 'SQUASH'
+} as const;
+
+export type PullRequestMergeMethod = typeof PullRequestMergeMethod[keyof typeof PullRequestMergeMethod];
+/** [Internal] Merge settings for a pull request */
 export type PullRequestMergeSettings = {
   __typename?: 'PullRequestMergeSettings';
   /** Whether auto-merge is allowed for the PR's repository. */
   autoMergeAllowed: Scalars['Boolean']['output'];
+  /** Whether the branch will be deleted when the pull request is merged. */
+  deleteBranchOnMerge: Scalars['Boolean']['output'];
   /** Whether merge queue is enabled for this repository. */
   isMergeQueueEnabled: Scalars['Boolean']['output'];
   /** Whether merge commits are allowed for pull requests PR's repository. */
   mergeCommitAllowed: Scalars['Boolean']['output'];
+  /** The method used to merge a pull request. */
+  mergeQueueMergeMethod?: Maybe<PullRequestMergeMethod>;
   /** Whether rebase merge is allowed for pull requests PR's repository. */
   rebaseMergeAllowed: Scalars['Boolean']['output'];
   /** Whether squash merge is allowed for this pull request's repository. */
