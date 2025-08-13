@@ -101,7 +101,7 @@ export type AgentActivityCreateInput = {
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] An optional modifier that provides additional instructions on how the activity should be interpreted. */
+  /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
   signal?: InputMaybe<AgentActivitySignal>;
 };
 
@@ -113,7 +113,7 @@ export type AgentActivityCreatePromptInput = {
   content: Scalars['JSONObject']['input'];
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
-  /** [Internal] An optional modifier that provides additional instructions on how the activity should be interpreted. */
+  /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
   signal?: InputMaybe<AgentActivitySignal>;
   /** The comment that contains the content of this activity. */
   sourceCommentId?: InputMaybe<Scalars['String']['input']>;
@@ -194,6 +194,7 @@ export type AgentActivityResponseContent = {
 
 /** A modifier that provides additional instructions on how the activity should be interpreted. */
 export const AgentActivitySignal = {
+  Continue: 'continue',
   Stop: 'stop'
 } as const;
 
@@ -3945,6 +3946,10 @@ export type FetchDataPayload = {
   __typename?: 'FetchDataPayload';
   /** The fetched data based on the natural language query. */
   data?: Maybe<Scalars['JSONObject']['output']>;
+  /** The filters used to fetch the data. */
+  filters?: Maybe<Scalars['JSONObject']['output']>;
+  /** The GraphQL query used to fetch the data. */
+  query?: Maybe<Scalars['String']['output']>;
   /** Whether the fetch operation was successful. */
   success: Scalars['Boolean']['output'];
 };
@@ -6022,7 +6027,7 @@ export type IssueCollectionFilter = {
   or?: InputMaybe<Array<IssueCollectionFilter>>;
   /** Filters that the issue parent must satisfy. */
   parent?: InputMaybe<NullableIssueFilter>;
-  /** Comparator for the issues priority. */
+  /** Comparator for the issues priority. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority?: InputMaybe<NullableNumberComparator>;
   /** Filters that the issues project must satisfy. */
   project?: InputMaybe<NullableProjectFilter>;
@@ -6050,6 +6055,8 @@ export type IssueCollectionFilter = {
   state?: InputMaybe<WorkflowStateFilter>;
   /** Filters that issue subscribers must satisfy. */
   subscribers?: InputMaybe<UserCollectionFilter>;
+  /** [Internal] Filters that the issue's suggestions must satisfy. */
+  suggestions?: InputMaybe<IssueSuggestionCollectionFilter>;
   /** Filters that the issues team must satisfy. */
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
@@ -6309,7 +6316,7 @@ export type IssueFilter = {
   or?: InputMaybe<Array<IssueFilter>>;
   /** Filters that the issue parent must satisfy. */
   parent?: InputMaybe<NullableIssueFilter>;
-  /** Comparator for the issues priority. */
+  /** Comparator for the issues priority. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority?: InputMaybe<NullableNumberComparator>;
   /** Filters that the issues project must satisfy. */
   project?: InputMaybe<NullableProjectFilter>;
@@ -6335,6 +6342,8 @@ export type IssueFilter = {
   state?: InputMaybe<WorkflowStateFilter>;
   /** Filters that issue subscribers must satisfy. */
   subscribers?: InputMaybe<UserCollectionFilter>;
+  /** [Internal] Filters that the issue's suggestions must satisfy. */
+  suggestions?: InputMaybe<IssueSuggestionCollectionFilter>;
   /** Filters that the issues team must satisfy. */
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
@@ -7365,6 +7374,38 @@ export type IssueSuggestion = Node & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+/** IssueSuggestion collection filtering options. */
+export type IssueSuggestionCollectionFilter = {
+  /** Compound filters, all of which need to be matched by the suggestion. */
+  and?: InputMaybe<Array<IssueSuggestionCollectionFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Filters that needs to be matched by all suggestions. */
+  every?: InputMaybe<IssueSuggestionFilter>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Comparator for the collection length. */
+  length?: InputMaybe<NumberComparator>;
+  /** Compound filters, one of which need to be matched by the suggestion. */
+  or?: InputMaybe<Array<IssueSuggestionCollectionFilter>>;
+  /** Filters that needs to be matched by some suggestions. */
+  some?: InputMaybe<IssueSuggestionFilter>;
+  /** Comparator for the suggestion state. */
+  state?: InputMaybe<StringComparator>;
+  /** Filters that the suggested label must satisfy. */
+  suggestedLabel?: InputMaybe<IssueLabelFilter>;
+  /** Filters that the suggested project must satisfy. */
+  suggestedProject?: InputMaybe<NullableProjectFilter>;
+  /** Filters that the suggested team must satisfy. */
+  suggestedTeam?: InputMaybe<NullableTeamFilter>;
+  /** Filters that the suggested user must satisfy. */
+  suggestedUser?: InputMaybe<NullableUserFilter>;
+  /** Comparator for the suggestion type. */
+  type?: InputMaybe<StringComparator>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
+};
+
 export type IssueSuggestionConnection = {
   __typename?: 'IssueSuggestionConnection';
   edges: Array<IssueSuggestionEdge>;
@@ -7377,6 +7418,32 @@ export type IssueSuggestionEdge = {
   /** Used in `before` and `after` args */
   cursor: Scalars['String']['output'];
   node: IssueSuggestion;
+};
+
+/** IssueSuggestion filtering options. */
+export type IssueSuggestionFilter = {
+  /** Compound filters, all of which need to be matched by the suggestion. */
+  and?: InputMaybe<Array<IssueSuggestionFilter>>;
+  /** Comparator for the created at date. */
+  createdAt?: InputMaybe<DateComparator>;
+  /** Comparator for the identifier. */
+  id?: InputMaybe<IdComparator>;
+  /** Compound filters, one of which need to be matched by the suggestion. */
+  or?: InputMaybe<Array<IssueSuggestionFilter>>;
+  /** Comparator for the suggestion state. */
+  state?: InputMaybe<StringComparator>;
+  /** Filters that the suggested label must satisfy. */
+  suggestedLabel?: InputMaybe<IssueLabelFilter>;
+  /** Filters that the suggested project must satisfy. */
+  suggestedProject?: InputMaybe<NullableProjectFilter>;
+  /** Filters that the suggested team must satisfy. */
+  suggestedTeam?: InputMaybe<NullableTeamFilter>;
+  /** Filters that the suggested user must satisfy. */
+  suggestedUser?: InputMaybe<NullableUserFilter>;
+  /** Comparator for the suggestion type. */
+  type?: InputMaybe<StringComparator>;
+  /** Comparator for the updated at date. */
+  updatedAt?: InputMaybe<DateComparator>;
 };
 
 export type IssueSuggestionMetadata = {
@@ -10751,7 +10818,7 @@ export type NullableIssueFilter = {
   or?: InputMaybe<Array<NullableIssueFilter>>;
   /** Filters that the issue parent must satisfy. */
   parent?: InputMaybe<NullableIssueFilter>;
-  /** Comparator for the issues priority. */
+  /** Comparator for the issues priority. 0 = No priority, 1 = Urgent, 2 = High, 3 = Normal, 4 = Low. */
   priority?: InputMaybe<NullableNumberComparator>;
   /** Filters that the issues project must satisfy. */
   project?: InputMaybe<NullableProjectFilter>;
@@ -10777,6 +10844,8 @@ export type NullableIssueFilter = {
   state?: InputMaybe<WorkflowStateFilter>;
   /** Filters that issue subscribers must satisfy. */
   subscribers?: InputMaybe<UserCollectionFilter>;
+  /** [Internal] Filters that the issue's suggestions must satisfy. */
+  suggestions?: InputMaybe<IssueSuggestionCollectionFilter>;
   /** Filters that the issues team must satisfy. */
   team?: InputMaybe<TeamFilter>;
   /** Comparator for the issues title. */
@@ -10999,6 +11068,8 @@ export type NullableTeamFilter = {
   or?: InputMaybe<Array<NullableTeamFilter>>;
   /** Filters that the teams parent must satisfy. */
   parent?: InputMaybe<NullableTeamFilter>;
+  /** Comparator for the team privacy. */
+  private?: InputMaybe<BooleanComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
 };
@@ -16934,6 +17005,8 @@ export type TeamFilter = {
   or?: InputMaybe<Array<TeamFilter>>;
   /** Filters that the teams parent must satisfy. */
   parent?: InputMaybe<NullableTeamFilter>;
+  /** Comparator for the team privacy. */
+  private?: InputMaybe<BooleanComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
 };
@@ -18422,7 +18495,7 @@ export type WorkflowStateFilter = {
   position?: InputMaybe<NumberComparator>;
   /** Filters that the workflow states team must satisfy. */
   team?: InputMaybe<TeamFilter>;
-  /** Comparator for the workflow state type. */
+  /** Comparator for the workflow state type. Possible values are "triage", "backlog", "unstarted", "started", "completed", "canceled". */
   type?: InputMaybe<StringComparator>;
   /** Comparator for the updated at date. */
   updatedAt?: InputMaybe<DateComparator>;
