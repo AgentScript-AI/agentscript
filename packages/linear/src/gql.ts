@@ -3149,6 +3149,8 @@ export type DocumentUpdateInput = {
 /** A general purpose draft. Used for comments, project updates, etc. */
 export type Draft = Node & {
   __typename?: 'Draft';
+  /** [INTERNAL] Allows for multiple drafts per entity (currently constrained to Pull Requests). */
+  anchor?: Maybe<Scalars['String']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The text content as a Prosemirror document. */
@@ -5742,8 +5744,6 @@ export type Issue = Node & {
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** [DEPRECATED] [Internal] The user who has delegated this issue to be completed by an agent. */
-  supervisor?: Maybe<User>;
   /** The external services the issue is synced with. */
   syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** The team that the issue is associated with. */
@@ -7126,8 +7126,6 @@ export type IssueSearchResult = Node & {
   suggestions: IssueSuggestionConnection;
   /** [Internal] The time at which the most recent suggestions for this issue were generated. */
   suggestionsGeneratedAt?: Maybe<Scalars['DateTime']['output']>;
-  /** [DEPRECATED] [Internal] The user who has delegated this issue to be completed by an agent. */
-  supervisor?: Maybe<User>;
   /** The external services the issue is synced with. */
   syncedWith?: Maybe<Array<ExternalEntityInfo>>;
   /** The team that the issue is associated with. */
