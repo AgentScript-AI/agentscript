@@ -5615,6 +5615,10 @@ export type Issue = Node & {
   addedToTeamAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user who requested creation of the Asks issue on behalf of the creator. */
+  asksExternalUserRequester?: Maybe<ExternalUser>;
+  /** The internal user who requested creation of the Asks issue on behalf of the creator. */
+  asksRequester?: Maybe<User>;
   /** The user to whom the issue is assigned to. */
   assignee?: Maybe<User>;
   /** Attachments associated with the issue. */
@@ -6995,6 +6999,10 @@ export type IssueSearchResult = Node & {
   addedToTeamAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** The external user who requested creation of the Asks issue on behalf of the creator. */
+  asksExternalUserRequester?: Maybe<ExternalUser>;
+  /** The internal user who requested creation of the Asks issue on behalf of the creator. */
+  asksRequester?: Maybe<User>;
   /** The user to whom the issue is assigned to. */
   assignee?: Maybe<User>;
   /** Attachments associated with the issue. */
