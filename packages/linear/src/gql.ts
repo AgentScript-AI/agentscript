@@ -14174,6 +14174,8 @@ export type PullRequest = Node & {
   __typename?: 'PullRequest';
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
+  /** [ALPHA] The commits associated with the pull request. */
+  commits: Array<PullRequestCommit>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** The unique identifier of the entity. */
@@ -14197,6 +14199,27 @@ export type PullRequest = Node & {
   updatedAt: Scalars['DateTime']['output'];
   /** The URL of the pull request in the version control system. */
   url: Scalars['String']['output'];
+};
+
+/** [ALPHA] A pull request commit. */
+export type PullRequestCommit = {
+  __typename?: 'PullRequestCommit';
+  /** Number of additions in this commit. */
+  additions: Scalars['Float']['output'];
+  /** External user IDs for commit authors (includes co-authors). */
+  authorExternalUserIds: Array<Scalars['String']['output']>;
+  /** Linear user IDs for commit authors (includes co-authors). */
+  authorUserIds: Array<Scalars['String']['output']>;
+  /** The number of changed files if available. */
+  changedFiles?: Maybe<Scalars['Float']['output']>;
+  /** The timestamp when the commit was committed (ISO 8601 string). */
+  committedAt: Scalars['String']['output'];
+  /** Number of deletions in this commit. */
+  deletions: Scalars['Float']['output'];
+  /** The full commit message. */
+  message: Scalars['String']['output'];
+  /** The Git commit SHA. */
+  sha: Scalars['String']['output'];
 };
 
 /** The method used to merge a pull request. */
