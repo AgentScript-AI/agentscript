@@ -897,6 +897,10 @@ export type BooleanComparator = {
 /** A comment associated with an issue. */
 export type Comment = Node & {
   __typename?: 'Comment';
+  /** Agent session associated with this comment. */
+  agentSession?: Maybe<AgentSession>;
+  /** [Internal] Agent sessions associated with this comment. */
+  agentSessions: AgentSessionConnection;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The comment content in markdown format. */
@@ -954,6 +958,17 @@ export type Comment = Node & {
   url: Scalars['String']['output'];
   /** The user who wrote the comment. */
   user?: Maybe<User>;
+};
+
+
+/** A comment associated with an issue. */
+export type CommentAgentSessionsArgs = {
+  after?: InputMaybe<Scalars['String']['input']>;
+  before?: InputMaybe<Scalars['String']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  orderBy?: InputMaybe<PaginationOrderBy>;
 };
 
 
