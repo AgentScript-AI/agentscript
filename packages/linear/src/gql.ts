@@ -6789,19 +6789,6 @@ export type IssueLabelFilter = {
   updatedAt?: InputMaybe<DateComparator>;
 };
 
-export type IssueLabelMoveToTeamLabelsInput = {
-  /** The identifier of the workspace label to convert. */
-  id: Scalars['String']['input'];
-};
-
-export type IssueLabelMoveToTeamLabelsPayload = {
-  __typename?: 'IssueLabelMoveToTeamLabelsPayload';
-  /** The identifier of the last sync operation. */
-  lastSyncId: Scalars['Float']['output'];
-  /** Whether the operation was successful. */
-  success: Scalars['Boolean']['output'];
-};
-
 export type IssueLabelPayload = {
   __typename?: 'IssueLabelPayload';
   /** The label that was created or updated. */
@@ -7718,13 +7705,6 @@ export type LabelSort = {
   order?: InputMaybe<PaginationSortOrder>;
 };
 
-export type LabelsMergeInput = {
-  /** The identifiers of the labels to merge. */
-  fromLabelIds: Array<Scalars['String']['input']>;
-  /** The identifier of the target label. */
-  toLabelId: Scalars['String']['input'];
-};
-
 export type LaunchDarklySettingsInput = {
   /** The environment of the LaunchDarkly integration. */
   environment: Scalars['String']['input'];
@@ -8119,12 +8099,8 @@ export type Mutation = {
   issueLabelCreate: IssueLabelPayload;
   /** Deletes an issue label. */
   issueLabelDelete: DeletePayload;
-  /** Converts a workspace label to team labels for teams that have issues using the workspace label. */
-  issueLabelMoveToTeamLabels: IssueLabelMoveToTeamLabelsPayload;
   /** Updates an label. */
   issueLabelUpdate: IssueLabelPayload;
-  /** Merges multiple issue labels into a single label. */
-  issueLabelsMerge: IssueLabelPayload;
   /** Creates a new issue relation. */
   issueRelationCreate: IssueRelationPayload;
   /** Deletes an issue relation. */
@@ -8236,8 +8212,6 @@ export type Mutation = {
   projectLabelDelete: DeletePayload;
   /** Updates a project label. */
   projectLabelUpdate: ProjectLabelPayload;
-  /** Merges multiple project labels into a single label. */
-  projectLabelsMerge: ProjectLabelPayload;
   /** Creates a new project milestone. */
   projectMilestoneCreate: ProjectMilestonePayload;
   /** Deletes a project milestone. */
@@ -9440,20 +9414,10 @@ export type MutationIssueLabelDeleteArgs = {
 };
 
 
-export type MutationIssueLabelMoveToTeamLabelsArgs = {
-  input: IssueLabelMoveToTeamLabelsInput;
-};
-
-
 export type MutationIssueLabelUpdateArgs = {
   id: Scalars['String']['input'];
   input: IssueLabelUpdateInput;
   replaceTeamLabels?: InputMaybe<Scalars['Boolean']['input']>;
-};
-
-
-export type MutationIssueLabelsMergeArgs = {
-  input: LabelsMergeInput;
 };
 
 
@@ -9716,11 +9680,6 @@ export type MutationProjectLabelDeleteArgs = {
 export type MutationProjectLabelUpdateArgs = {
   id: Scalars['String']['input'];
   input: ProjectLabelUpdateInput;
-};
-
-
-export type MutationProjectLabelsMergeArgs = {
-  input: LabelsMergeInput;
 };
 
 
