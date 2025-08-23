@@ -7473,6 +7473,7 @@ export type IssueSuggestionFilter = {
 
 export type IssueSuggestionMetadata = {
   __typename?: 'IssueSuggestionMetadata';
+  appliedAutomationRuleId?: Maybe<Scalars['String']['output']>;
   classification?: Maybe<Scalars['String']['output']>;
   evalLogId?: Maybe<Scalars['String']['output']>;
   rank?: Maybe<Scalars['Float']['output']>;
@@ -11306,6 +11307,8 @@ export type Organization = Node & {
   allowMembersToInvite?: Maybe<Scalars['Boolean']['output']>;
   /** Allowed authentication providers, empty array means all are allowed. */
   allowedAuthServices: Array<Scalars['String']['output']>;
+  /** Allowed file upload content types */
+  allowedFileUploadContentTypes?: Maybe<Array<Scalars['String']['output']>>;
   /** The time at which the entity was archived. Null if the entity has not been archived. */
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was created. */
@@ -11777,6 +11780,8 @@ export type OrganizationUpdateInput = {
   allowMembersToInvite?: InputMaybe<Scalars['Boolean']['input']>;
   /** List of services that are allowed to be used for login. */
   allowedAuthServices?: InputMaybe<Array<Scalars['String']['input']>>;
+  /** Allowed file upload content types. */
+  allowedFileUploadContentTypes?: InputMaybe<Array<Scalars['String']['input']>>;
   /** [INTERNAL] Configuration settings for the Customers feature. */
   customersConfiguration?: InputMaybe<Scalars['JSONObject']['input']>;
   /** [INTERNAL] Whether the organization is using customers. */
