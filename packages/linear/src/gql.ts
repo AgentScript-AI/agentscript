@@ -726,6 +726,31 @@ export type AuditEntryType = {
   type: Scalars['String']['output'];
 };
 
+/** An identity provider. */
+export type AuthIdentityProvider = {
+  __typename?: 'AuthIdentityProvider';
+  /** Whether the identity provider is the default identity provider migrated from organization level settings. */
+  defaultMigrated: Scalars['Boolean']['output'];
+  /** The unique identifier of the entity. */
+  id: Scalars['ID']['output'];
+  /** The issuer's custom entity ID. */
+  issuerEntityId?: Maybe<Scalars['String']['output']>;
+  /** The SAML priority used to pick default workspace in SAML SP initiated flow, when same domain is claimed for SAML by multiple workspaces. Lower priority value means higher preference. */
+  priority?: Maybe<Scalars['Float']['output']>;
+  /** Whether SAML authentication is enabled for organization. */
+  samlEnabled: Scalars['Boolean']['output'];
+  /** Whether SCIM provisioning is enabled for organization. */
+  scimEnabled: Scalars['Boolean']['output'];
+  /** Binding method for authentication call. Can be either `post` (default) or `redirect`. */
+  ssoBinding?: Maybe<Scalars['String']['output']>;
+  /** Sign in endpoint URL for the identity provider. */
+  ssoEndpoint?: Maybe<Scalars['String']['output']>;
+  /** The algorithm of the Signing Certificate. Can be one of `sha1`, `sha256` (default), or `sha512`. */
+  ssoSignAlgo?: Maybe<Scalars['String']['output']>;
+  /** X.509 Signing Certificate in string form. */
+  ssoSigningCert?: Maybe<Scalars['String']['output']>;
+};
+
 /** [INTERNAL] An OAuth userId/createdDate tuple */
 export type AuthMembership = {
   __typename?: 'AuthMembership';
@@ -808,6 +833,8 @@ export type AuthUser = {
   /** The user's email address. */
   email: Scalars['String']['output'];
   id: Scalars['ID']['output'];
+  /** [INTERNAL] Identity provider the user is managed by. */
+  identityProvider?: Maybe<AuthIdentityProvider>;
   /** The user's full name. */
   name: Scalars['String']['output'];
   /** Organization the user belongs to. */
@@ -17663,6 +17690,8 @@ export type User = Node & {
   guest: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** [INTERNAL] Identity provider the user is managed by. */
+  identityProvider?: Maybe<IdentityProvider>;
   /** The initials of the user. */
   initials: Scalars['String']['output'];
   /**
