@@ -51,6 +51,8 @@ export type AgentActivity = Node & {
   content: AgentActivityContent;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
+  /** Whether the activity is ephemeral, and should disappear after the next agent activity. */
+  ephemeral: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
@@ -99,6 +101,8 @@ export type AgentActivityCreateInput = {
    * See https://linear.app/developers/agents for typing details.
    */
   content: Scalars['JSONObject']['input'];
+  /** Whether the activity is ephemeral, and should disappear after the next activity. Defaults to false. */
+  ephemeral?: InputMaybe<Scalars['Boolean']['input']>;
   /** The identifier in UUID v4 format. If none is provided, the backend will generate one. */
   id?: InputMaybe<Scalars['String']['input']>;
   /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
@@ -4326,6 +4330,16 @@ export const GithubOrgType = {
 } as const;
 
 export type GithubOrgType = typeof GithubOrgType[keyof typeof GithubOrgType];
+export type GongRecordingImportConfigInput = {
+  /** The team ID to create issues in for imported recordings. Set to null to disable import. */
+  teamId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GongSettingsInput = {
+  /** Configuration for recording import. */
+  importConfig?: InputMaybe<GongRecordingImportConfigInput>;
+};
+
 export type GoogleSheetsExportSettings = {
   /** Whether the export is enabled. */
   enabled?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5391,6 +5405,7 @@ export const IntegrationService = {
   GithubImport: 'githubImport',
   GithubPersonal: 'githubPersonal',
   Gitlab: 'gitlab',
+  Gong: 'gong',
   GoogleCalendarPersonal: 'googleCalendarPersonal',
   GoogleSheets: 'googleSheets',
   Intercom: 'intercom',
@@ -5424,6 +5439,7 @@ export type IntegrationSettingsInput = {
   gitHubImport?: InputMaybe<GitHubImportSettingsInput>;
   gitHubPersonal?: InputMaybe<GitHubPersonalSettingsInput>;
   gitLab?: InputMaybe<GitLabSettingsInput>;
+  gong?: InputMaybe<GongSettingsInput>;
   googleSheets?: InputMaybe<GoogleSheetsSettingsInput>;
   intercom?: InputMaybe<IntercomSettingsInput>;
   jira?: InputMaybe<JiraSettingsInput>;
@@ -8008,6 +8024,8 @@ export type Mutation = {
   integrationGithubImportRefresh: IntegrationPayload;
   /** Connects the organization with a GitLab Access Token. */
   integrationGitlabConnect: GitLabIntegrationCreatePayload;
+  /** Integrates the organization with Gong. */
+  integrationGong: IntegrationPayload;
   /** [Internal] Connects the Google Calendar to the user to this Linear account via OAuth2. */
   integrationGoogleCalendarPersonalConnect: IntegrationPayload;
   /** Integrates the organization with Google Sheets. */
@@ -9109,6 +9127,12 @@ export type MutationIntegrationGithubImportRefreshArgs = {
 export type MutationIntegrationGitlabConnectArgs = {
   accessToken: Scalars['String']['input'];
   gitlabUrl: Scalars['String']['input'];
+};
+
+
+export type MutationIntegrationGongArgs = {
+  code: Scalars['String']['input'];
+  redirectUri: Scalars['String']['input'];
 };
 
 
