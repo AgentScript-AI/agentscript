@@ -17690,6 +17690,8 @@ export type User = Node & {
   avatarUrl?: Maybe<Scalars['String']['output']>;
   /** [DEPRECATED] Hash for the user to be used in calendar URLs. */
   calendarHash?: Maybe<Scalars['String']['output']>;
+  /** Whether this user can access any public team in the organization. */
+  canAccessAnyPublicTeam: Scalars['Boolean']['output'];
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   /** Number of issues created. */
