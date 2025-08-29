@@ -4019,6 +4019,12 @@ export type FetchDataPayload = {
   success: Scalars['Boolean']['output'];
 };
 
+export type FileUploadDeletePayload = {
+  __typename?: 'FileUploadDeletePayload';
+  /** Whether the operation was successful. */
+  success: Scalars['Boolean']['output'];
+};
+
 /** By which resolution is frequency defined. */
 export const FrequencyResolutionType = {
   Daily: 'daily',
@@ -7948,6 +7954,8 @@ export type Mutation = {
   favoriteUpdate: FavoritePayload;
   /** XHR request payload to upload an images, video and other attachments directly to Linear's cloud storage. */
   fileUpload: UploadPayload;
+  /** [INTERNAL] Permanently delete an uploaded file by asset URL. This should be used as a last resort and will break comments and documents that reference the asset. */
+  fileUploadDangerouslyDelete: FileUploadDeletePayload;
   /** Creates a new automation state. */
   gitAutomationStateCreate: GitAutomationStatePayload;
   /** Archives an automation state. */
@@ -8922,6 +8930,11 @@ export type MutationFileUploadArgs = {
   makePublic?: InputMaybe<Scalars['Boolean']['input']>;
   metaData?: InputMaybe<Scalars['JSON']['input']>;
   size: Scalars['Int']['input'];
+};
+
+
+export type MutationFileUploadDangerouslyDeleteArgs = {
+  assetUrl: Scalars['String']['input'];
 };
 
 
@@ -14465,11 +14478,6 @@ export type Query = {
   applicationInfo: Application;
   /** [INTERNAL] Get basic information for a list of applications. */
   applicationInfoByIds: Array<Application>;
-  /**
-   * [DEPRECATED] [INTERNAL] Get information for a list of applications with memberships
-   * @deprecated Use more efficient `workspaceAuthorizedApplicationsWithAppUser` and `workspaceAuthorizedApplication` instead.
-   */
-  applicationInfoWithMembershipsByIds: Array<WorkspaceAuthorizedApplication>;
   /** Get information for an application and whether a user has approved it for the given scopes. */
   applicationWithAuthorization: UserAuthorizedApplication;
   /** [Internal] All archived teams of the organization. */
@@ -14753,11 +14761,6 @@ export type Query = {
   workflowStates: WorkflowStateConnection;
   /** [INTERNAL] Get a specific non-internal authorized application (with limited fields) for a workspace */
   workspaceAuthorizedApplication: WorkspaceAuthorizedApplicationWithMemberships;
-  /**
-   * [DEPRECATED] [INTERNAL] Get non-internal authorized applications (with limited fields) for a workspace
-   * @deprecated Use more efficient `workspaceAuthorizedApplicationsWithAppUser` and `workspaceAuthorizedApplication` instead.
-   */
-  workspaceAuthorizedApplications: Array<WorkspaceAuthorizedApplication>;
   /** [INTERNAL] Get non-internal authorized applications for a workspace, including each application's app user. */
   workspaceAuthorizedApplicationsWithAppUser: Array<WorkspaceAuthorizedApplicationWithAppUser>;
 };
@@ -14822,11 +14825,6 @@ export type QueryApplicationInfoArgs = {
 
 export type QueryApplicationInfoByIdsArgs = {
   ids: Array<Scalars['String']['input']>;
-};
-
-
-export type QueryApplicationInfoWithMembershipsByIdsArgs = {
-  clientIds: Array<Scalars['String']['input']>;
 };
 
 
@@ -18622,33 +18620,6 @@ export type WorkflowStateUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The position of the state. */
   position?: InputMaybe<Scalars['Float']['input']>;
-};
-
-/** [INTERNAL] Public information of the OAuth application, plus the userIds and scopes for those users. */
-export type WorkspaceAuthorizedApplication = {
-  __typename?: 'WorkspaceAuthorizedApplication';
-  /** OAuth application's ID. */
-  appId: Scalars['String']['output'];
-  /** OAuth application's client ID. */
-  clientId: Scalars['String']['output'];
-  /** Description of the application. */
-  description?: Maybe<Scalars['String']['output']>;
-  /** Developer of the application. */
-  developer?: Maybe<Scalars['String']['output']>;
-  /** Developer URL of the application. */
-  developerUrl?: Maybe<Scalars['String']['output']>;
-  /** Image of the application. */
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  /** UserIds and membership dates of everyone who has authorized the application with the set of scopes. */
-  memberships: Array<AuthMembership>;
-  /** Application name. */
-  name: Scalars['String']['output'];
-  /** Scopes that are authorized for this application for a given user. */
-  scope: Array<Scalars['String']['output']>;
-  /** Total number of members that authorized the application. */
-  totalMembers: Scalars['Float']['output'];
-  /** Whether or not webhooks are enabled for the application. */
-  webhooksEnabled: Scalars['Boolean']['output'];
 };
 
 /** [INTERNAL] Public information of the OAuth application, plus the app user and aggregate membership count. */
