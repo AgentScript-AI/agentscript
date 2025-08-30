@@ -8420,6 +8420,8 @@ export type Mutation = {
   userSettingsUpdate: UserSettingsPayload;
   /** Suspends a user. Can only be called by an admin. */
   userSuspend: UserAdminPayload;
+  /** Unlinks a guest user from their identity provider. Can only be called by an admin when SCIM is enabled. */
+  userUnlinkFromIdentityProvider: UserAdminPayload;
   /** Un-suspends a user. Can only be called by an admin. */
   userUnsuspend: UserAdminPayload;
   /** Updates a user. Only available to organization admins and the user themselves. */
@@ -10109,6 +10111,11 @@ export type MutationUserSettingsUpdateArgs = {
 
 
 export type MutationUserSuspendArgs = {
+  id: Scalars['String']['input'];
+};
+
+
+export type MutationUserUnlinkFromIdentityProviderArgs = {
   id: Scalars['String']['input'];
 };
 
