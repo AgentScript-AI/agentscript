@@ -57,6 +57,8 @@ export type AgentActivity = Node & {
   id: Scalars['ID']['output'];
   /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
   signal?: Maybe<AgentActivitySignal>;
+  /** Metadata about this agent activity's signal. */
+  signalMetadata?: Maybe<Scalars['JSON']['output']>;
   /** The comment this activity is linked to. */
   sourceComment?: Maybe<Comment>;
   /** Metadata about the external source that created this agent activity. */
@@ -107,6 +109,8 @@ export type AgentActivityCreateInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
   signal?: InputMaybe<AgentActivitySignal>;
+  /** Metadata about this agent activity's signal. */
+  signalMetadata?: InputMaybe<Scalars['JSONObject']['input']>;
 };
 
 /** [Internal] Input for creating prompt-type agent activities (created by users). */
@@ -119,6 +123,8 @@ export type AgentActivityCreatePromptInput = {
   id?: InputMaybe<Scalars['String']['input']>;
   /** An optional modifier that provides additional instructions on how the activity should be interpreted. */
   signal?: InputMaybe<AgentActivitySignal>;
+  /** Metadata about this agent activity's signal. */
+  signalMetadata?: InputMaybe<Scalars['JSONObject']['input']>;
   /** The comment that contains the content of this activity. */
   sourceCommentId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -198,6 +204,7 @@ export type AgentActivityResponseContent = {
 
 /** A modifier that provides additional instructions on how the activity should be interpreted. */
 export const AgentActivitySignal = {
+  Auth: 'auth',
   Continue: 'continue',
   Stop: 'stop'
 } as const;
@@ -14483,8 +14490,6 @@ export type Query = {
   apiKeys: ApiKeyConnection;
   /** Get basic information for an application. */
   applicationInfo: Application;
-  /** [INTERNAL] Get basic information for a list of applications. */
-  applicationInfoByIds: Array<Application>;
   /** Get information for an application and whether a user has approved it for the given scopes. */
   applicationWithAuthorization: UserAuthorizedApplication;
   /** [Internal] All archived teams of the organization. */
@@ -14518,8 +14523,6 @@ export type Query = {
   auditEntryTypes: Array<AuditEntryType>;
   /** User's active sessions. */
   authenticationSessions: Array<AuthenticationSessionResponse>;
-  /** [INTERNAL] Get all authorized applications for a user. */
-  authorizedApplications: Array<AuthorizedApplication>;
   /** Fetch users belonging to this user account. */
   availableUsers: AuthResolverResponse;
   /** A specific comment. */
@@ -14768,8 +14771,6 @@ export type Query = {
   workflowStates: WorkflowStateConnection;
   /** [INTERNAL] Get a specific non-internal authorized application (with limited fields) for a workspace */
   workspaceAuthorizedApplication: WorkspaceAuthorizedApplicationWithMemberships;
-  /** [INTERNAL] Get non-internal authorized applications for a workspace, including each application's app user. */
-  workspaceAuthorizedApplicationsWithAppUser: Array<WorkspaceAuthorizedApplicationWithAppUser>;
 };
 
 
@@ -14827,11 +14828,6 @@ export type QueryApiKeysArgs = {
 
 export type QueryApplicationInfoArgs = {
   clientId: Scalars['String']['input'];
-};
-
-
-export type QueryApplicationInfoByIdsArgs = {
-  ids: Array<Scalars['String']['input']>;
 };
 
 
@@ -15706,11 +15702,6 @@ export type QueryWorkflowStatesArgs = {
 
 export type QueryWorkspaceAuthorizedApplicationArgs = {
   clientId: Scalars['String']['input'];
-};
-
-
-export type QueryWorkspaceAuthorizedApplicationsWithAppUserArgs = {
-  clientIds?: InputMaybe<Array<Scalars['String']['input']>>;
 };
 
 export type RateLimitPayload = {
@@ -18627,33 +18618,6 @@ export type WorkflowStateUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The position of the state. */
   position?: InputMaybe<Scalars['Float']['input']>;
-};
-
-/** [INTERNAL] Public information of the OAuth application, plus the app user and aggregate membership count. */
-export type WorkspaceAuthorizedApplicationWithAppUser = {
-  __typename?: 'WorkspaceAuthorizedApplicationWithAppUser';
-  /** OAuth application's ID. */
-  appId: Scalars['String']['output'];
-  /** The app user associated with this client, if one exists. */
-  appUser?: Maybe<AuthMembership>;
-  /** OAuth application's client ID. */
-  clientId: Scalars['String']['output'];
-  /** Description of the application. */
-  description?: Maybe<Scalars['String']['output']>;
-  /** Developer of the application. */
-  developer?: Maybe<Scalars['String']['output']>;
-  /** Developer URL of the application. */
-  developerUrl?: Maybe<Scalars['String']['output']>;
-  /** Image of the application. */
-  imageUrl?: Maybe<Scalars['String']['output']>;
-  /** Application name. */
-  name: Scalars['String']['output'];
-  /** Scopes that are authorized for this application for a given user. */
-  scope: Array<Scalars['String']['output']>;
-  /** Total number of members (including the app user, if it exists) that authorized the application. */
-  totalMembers: Scalars['Float']['output'];
-  /** Whether or not webhooks are enabled for the application. */
-  webhooksEnabled: Scalars['Boolean']['output'];
 };
 
 /** [INTERNAL] Public information of the OAuth application with its memberships */
