@@ -7432,6 +7432,7 @@ export type IssueSuggestion = Node & {
   archivedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
+  dismissalReason?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   issue: Issue;
@@ -9526,6 +9527,7 @@ export type MutationIssueRemoveLabelArgs = {
 
 export type MutationIssueSubscribeArgs = {
   id: Scalars['String']['input'];
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
@@ -9537,6 +9539,7 @@ export type MutationIssueUnarchiveArgs = {
 
 export type MutationIssueUnsubscribeArgs = {
   id: Scalars['String']['input'];
+  userEmail?: InputMaybe<Scalars['String']['input']>;
   userId?: InputMaybe<Scalars['String']['input']>;
 };
 
