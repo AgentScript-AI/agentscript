@@ -3313,6 +3313,8 @@ export type EmailIntakeAddress = Node & {
   issueCompletedAutoReplyEnabled: Scalars['Boolean']['output'];
   /** The auto-reply message for issue created. If not set, the default reply will be used. */
   issueCreatedAutoReply?: Maybe<Scalars['String']['output']>;
+  /** Whether the auto-reply for issue created is enabled. */
+  issueCreatedAutoReplyEnabled: Scalars['Boolean']['output'];
   /** The organization that the email address is associated with. */
   organization: Organization;
   /** Whether email replies are enabled. */
@@ -3353,6 +3355,8 @@ export type EmailIntakeAddressCreateInput = {
   issueCompletedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The auto-reply message for issue created. */
   issueCreatedAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue created auto-reply is enabled. */
+  issueCreatedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether email replies are enabled. */
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name to be used for outgoing emails. */
@@ -3402,6 +3406,8 @@ export type EmailIntakeAddressUpdateInput = {
   issueCompletedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The auto-reply message for issue created. */
   issueCreatedAutoReply?: InputMaybe<Scalars['String']['input']>;
+  /** Whether the issue created auto-reply is enabled. */
+  issueCreatedAutoReplyEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** Whether email replies are enabled. */
   repliesEnabled?: InputMaybe<Scalars['Boolean']['input']>;
   /** The name to be used for outgoing emails. */
@@ -16097,6 +16103,12 @@ export const SlaDayCountType = {
 } as const;
 
 export type SlaDayCountType = typeof SlaDayCountType[keyof typeof SlaDayCountType];
+/** [INTERNAL] Comparator for Salesforce metadata. */
+export type SalesforceMetadataIntegrationComparator = {
+  /** Salesforce Case metadata filter */
+  caseMetadata?: InputMaybe<Scalars['JSONObject']['input']>;
+};
+
 export type SalesforceSettingsInput = {
   /** Whether a ticket should be automatically reopened when its linked Linear issue is cancelled. */
   automateTicketReopeningOnCancellation?: InputMaybe<Scalars['Boolean']['input']>;
@@ -16416,7 +16428,9 @@ export type SourceMetadataComparator = {
   nin?: InputMaybe<Array<Scalars['String']['input']>>;
   /** Null constraint. Matches any non-null values if the given value is false, otherwise it matches null values. */
   null?: InputMaybe<Scalars['Boolean']['input']>;
-  /** Compound filters, all of which need to be matched by the sub type. */
+  /** [INTERNAL] Comparator for the salesforce metadata. */
+  salesforceMetadata?: InputMaybe<SalesforceMetadataIntegrationComparator>;
+  /** Comparator for the sub type. */
   subType?: InputMaybe<SubTypeComparator>;
 };
 
