@@ -11424,6 +11424,8 @@ export type Organization = Node & {
   gitLinkbackMessagesEnabled: Scalars['Boolean']['output'];
   /** Whether the Git integration linkback messages should be sent to public repositories. */
   gitPublicLinkbackMessagesEnabled: Scalars['Boolean']['output'];
+  /** Whether HIPAA compliance is enabled for organization. */
+  hipaaComplianceEnabled: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
   /** The n-weekly frequency at which to prompt for initiative updates. When not set, reminders are off. */
