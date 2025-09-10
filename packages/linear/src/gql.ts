@@ -8378,8 +8378,6 @@ export type Mutation = {
   triageResponsibilityUpdate: TriageResponsibilityPayload;
   /** [Internal] Updates existing Slack integration scopes. */
   updateIntegrationSlackScopes: IntegrationPayload;
-  /** [INTERNAL] Updates the summary of an issue. */
-  updateIssueSummary: IssuePayload;
   /** Makes user a regular user. Can only be called by an admin. */
   userDemoteAdmin: UserAdminPayload;
   /** Makes user a guest. Can only be called by an admin. */
@@ -10039,11 +10037,6 @@ export type MutationUpdateIntegrationSlackScopesArgs = {
 };
 
 
-export type MutationUpdateIssueSummaryArgs = {
-  id: Scalars['String']['input'];
-};
-
-
 export type MutationUserDemoteAdminArgs = {
   id: Scalars['String']['input'];
 };
@@ -11204,6 +11197,8 @@ export type NullableUserFilter = {
   id?: InputMaybe<IdComparator>;
   /** Comparator for the user's invited status. */
   invited?: InputMaybe<BooleanComparator>;
+  /** Comparator for the user's invited status. */
+  isInvited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the user's name. */
@@ -17874,6 +17869,8 @@ export type UserCollectionFilter = {
   id?: InputMaybe<IdComparator>;
   /** Comparator for the user's invited status. */
   invited?: InputMaybe<BooleanComparator>;
+  /** Comparator for the user's invited status. */
+  isInvited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the collection length. */
@@ -17937,6 +17934,8 @@ export type UserFilter = {
   id?: InputMaybe<IdComparator>;
   /** Comparator for the user's invited status. */
   invited?: InputMaybe<BooleanComparator>;
+  /** Comparator for the user's invited status. */
+  isInvited?: InputMaybe<BooleanComparator>;
   /** Filter based on the currently authenticated user. Set to true to filter for the authenticated user, false for any other user. */
   isMe?: InputMaybe<BooleanComparator>;
   /** Comparator for the user's name. */
