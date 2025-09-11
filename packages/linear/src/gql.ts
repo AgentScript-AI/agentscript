@@ -740,6 +740,8 @@ export type AuditEntryType = {
 /** An identity provider. */
 export type AuthIdentityProvider = {
   __typename?: 'AuthIdentityProvider';
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** Whether the identity provider is the default identity provider migrated from organization level settings. */
   defaultMigrated: Scalars['Boolean']['output'];
   /** The unique identifier of the entity. */
@@ -767,6 +769,8 @@ export type AuthOrganization = {
   __typename?: 'AuthOrganization';
   /** Allowed authentication providers, empty array means all are allowed */
   allowedAuthServices: Array<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The time at which deletion of the organization was requested. */
   deletionRequestedAt?: Maybe<Scalars['DateTime']['output']>;
   /** Whether the organization is enabled. Used as a superuser tool to lock down the org. */
@@ -828,6 +832,8 @@ export type AuthUser = {
   active: Scalars['Boolean']['output'];
   /** An URL to the user's avatar image. */
   avatarUrl?: Maybe<Scalars['String']['output']>;
+  /** The time at which the entity was created. */
+  createdAt: Scalars['DateTime']['output'];
   /** The user's display (nick) name. Unique within each organization. */
   displayName: Scalars['String']['output'];
   /** The user's email address. */
@@ -854,7 +860,7 @@ export type AuthenticationSessionResponse = {
   client?: Maybe<Scalars['String']['output']>;
   /** Country codes of all seen locations. */
   countryCodes: Array<Scalars['String']['output']>;
-  /** Date when the session was created. */
+  /** The time at which the entity was created. */
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   /** IP address. */
@@ -14692,10 +14698,7 @@ export type Query = {
   searchIssues: IssueSearchPayload;
   /** Search projects. */
   searchProjects: ProjectSearchPayload;
-  /**
-   * [INTERNAL] Search for various resources using natural language.
-   * @deprecated Use specific search endpoints like searchIssues, searchProjects, searchDocuments instead.
-   */
+  /** Search for various resources using natural language. */
   semanticSearch: SemanticSearchPayload;
   /** Fetch SSO login URL for the email provided. */
   ssoUrlFromEmail: SsoUrlFromEmailResponse;
@@ -15527,6 +15530,7 @@ export type QuerySearchProjectsArgs = {
 
 
 export type QuerySemanticSearchArgs = {
+  filters?: InputMaybe<SemanticSearchFilters>;
   includeArchived?: InputMaybe<Scalars['Boolean']['input']>;
   maxResults?: InputMaybe<Scalars['Int']['input']>;
   query: Scalars['String']['input'];
@@ -16094,14 +16098,30 @@ export type SalesforceSettingsInput = {
   url?: InputMaybe<Scalars['String']['input']>;
 };
 
-/** [INTERNAL] Payload returned by semantic search. */
+/** Filters for semantic search results. */
+export type SemanticSearchFilters = {
+  /** Filters applied to documents. */
+  documents?: InputMaybe<DocumentFilter>;
+  /** Filters applied to initiatives. */
+  initiatives?: InputMaybe<InitiativeFilter>;
+  /** Filters applied to issues. */
+  issues?: InputMaybe<IssueFilter>;
+  /** Filters applied to projects. */
+  projects?: InputMaybe<ProjectFilter>;
+};
+
+/** Payload returned by semantic search. */
 export type SemanticSearchPayload = {
   __typename?: 'SemanticSearchPayload';
+  /**
+   * Whether the semantic search is enabled.
+   * @deprecated Always true.
+   */
   enabled: Scalars['Boolean']['output'];
   results: Array<SemanticSearchResult>;
 };
 
-/** [INTERNAL] A semantic search result reference. */
+/** A semantic search result reference. */
 export type SemanticSearchResult = Node & {
   __typename?: 'SemanticSearchResult';
   /** The document related to the semantic search result. */
@@ -16118,7 +16138,7 @@ export type SemanticSearchResult = Node & {
   type: SemanticSearchResultType;
 };
 
-/** [INTERNAL] The type of the semantic search result. */
+/** The type of the semantic search result. */
 export const SemanticSearchResultType = {
   Document: 'document',
   Initiative: 'initiative',
