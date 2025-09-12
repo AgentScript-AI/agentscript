@@ -206,6 +206,7 @@ export type AgentActivityResponseContent = {
 export const AgentActivitySignal = {
   Auth: 'auth',
   Continue: 'continue',
+  Select: 'select',
   Stop: 'stop'
 } as const;
 
