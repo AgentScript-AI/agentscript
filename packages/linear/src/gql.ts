@@ -8118,6 +8118,8 @@ export type Mutation = {
   issueDelete: IssueArchivePayload;
   /** [INTERNAL] Updates an issue description from the Front app to handle Front attachments correctly. */
   issueDescriptionUpdateFromFront: IssuePayload;
+  /** Disables external sync on an issue. */
+  issueExternalSyncDisable: IssuePayload;
   /** Kicks off an Asana import job. */
   issueImportCreateAsana: IssueImportPayload;
   /** Kicks off a Jira import job from a CSV. */
@@ -9373,6 +9375,11 @@ export type MutationIssueDeleteArgs = {
 export type MutationIssueDescriptionUpdateFromFrontArgs = {
   description: Scalars['String']['input'];
   id: Scalars['String']['input'];
+};
+
+
+export type MutationIssueExternalSyncDisableArgs = {
+  attachmentId: Scalars['String']['input'];
 };
 
 
