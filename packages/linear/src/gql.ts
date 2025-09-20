@@ -11264,6 +11264,8 @@ export type OauthClientApproval = Node & {
   denyReason?: Maybe<Scalars['String']['output']>;
   /** The unique identifier of the entity. */
   id: Scalars['ID']['output'];
+  /** New scopes that were requested for approval after the initial request. */
+  newlyRequestedScopes?: Maybe<Array<Scalars['String']['output']>>;
   /** The uuid of the OAuth client being requested for installation. */
   oauthClientId: Scalars['String']['output'];
   /** The reason the person wants to install this OAuth client. */
@@ -11272,7 +11274,7 @@ export type OauthClientApproval = Node & {
   requesterId: Scalars['String']['output'];
   /** The person who responded to the request to install the OAuth client. */
   responderId?: Maybe<Scalars['String']['output']>;
-  /** The scopes the app has requested. */
+  /** The scopes the app has been approved for. */
   scopes: Array<Scalars['String']['output']>;
   /** The status for the OAuth client approval request. */
   status: OAuthClientApprovalStatus;
