@@ -100,7 +100,7 @@ export type AgentActivityCreateInput = {
   agentSessionId: Scalars['String']['input'];
   /**
    * The content payload of the agent activity. This object is not strictly typed.
-   * See https://linear.app/developers/agents for typing details.
+   * See https://linear.app/developers/agent-interaction#activity-content-payload for typing details.
    */
   content: Scalars['JSONObject']['input'];
   /** Whether the activity is ephemeral, and should disappear after the next activity. Defaults to false. */
@@ -763,6 +763,8 @@ export type AuthIdentityProvider = {
   ssoSignAlgo?: Maybe<Scalars['String']['output']>;
   /** X.509 Signing Certificate in string form. */
   ssoSigningCert?: Maybe<Scalars['String']['output']>;
+  /** The type of identity provider. */
+  type: IdentityProviderType;
 };
 
 /** An organization. Organizations are root-level objects that contain users and teams. */
@@ -940,6 +942,8 @@ export type Comment = Node & {
   createdAt: Scalars['DateTime']['output'];
   /** The document content that the comment is associated with. */
   documentContent?: Maybe<DocumentContent>;
+  /** The ID of the document content that the comment is associated with. */
+  documentContentId?: Maybe<Scalars['String']['output']>;
   /** The time user edited the comment. */
   editedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The external thread that the comment is synced with. */
@@ -950,14 +954,22 @@ export type Comment = Node & {
   id: Scalars['ID']['output'];
   /** The initiative update that the comment is associated with. */
   initiativeUpdate?: Maybe<InitiativeUpdate>;
+  /** The ID of the initiative update that the comment is associated with. */
+  initiativeUpdateId?: Maybe<Scalars['String']['output']>;
   /** The issue that the comment is associated with. */
   issue?: Maybe<Issue>;
+  /** The ID of the issue that the comment is associated with. */
+  issueId?: Maybe<Scalars['String']['output']>;
   /** The parent comment under which the current comment is nested. */
   parent?: Maybe<Comment>;
+  /** The ID of the parent comment under which the current comment is nested. */
+  parentId?: Maybe<Scalars['String']['output']>;
   /** The post that the comment is associated with. */
   post?: Maybe<Post>;
   /** The project update that the comment is associated with. */
   projectUpdate?: Maybe<ProjectUpdate>;
+  /** The ID of the project update that the comment is associated with. */
+  projectUpdateId?: Maybe<Scalars['String']['output']>;
   /** The text that this comment references. Only defined for inline comments. */
   quotedText?: Maybe<Scalars['String']['output']>;
   /** Emoji reaction summary, grouped by emoji type. */
@@ -968,6 +980,8 @@ export type Comment = Node & {
   resolvedAt?: Maybe<Scalars['DateTime']['output']>;
   /** The comment that resolved the thread. */
   resolvingComment?: Maybe<Comment>;
+  /** The ID of the comment that resolved the thread. */
+  resolvingCommentId?: Maybe<Scalars['String']['output']>;
   /** The user that resolved the thread. */
   resolvingUser?: Maybe<User>;
   /** The external services the comment is synced with. */
@@ -4418,6 +4432,8 @@ export type IdentityProvider = Node & {
   ssoSignAlgo?: Maybe<Scalars['String']['output']>;
   /** X.509 Signing Certificate in string form. */
   ssoSigningCert?: Maybe<Scalars['String']['output']>;
+  /** The type of identity provider. */
+  type: IdentityProviderType;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -4425,6 +4441,13 @@ export type IdentityProvider = Node & {
   updatedAt: Scalars['DateTime']['output'];
 };
 
+/** The type of identity provider. */
+export const IdentityProviderType = {
+  General: 'general',
+  WebForms: 'webForms'
+} as const;
+
+export type IdentityProviderType = typeof IdentityProviderType[keyof typeof IdentityProviderType];
 export type ImageUploadFromUrlPayload = {
   __typename?: 'ImageUploadFromUrlPayload';
   /** The identifier of the last sync operation. */
@@ -6704,6 +6727,8 @@ export type IssueLabel = Node & {
   organization: Organization;
   /** The parent label. */
   parent?: Maybe<IssueLabel>;
+  /** [Internal] When the label was retired. */
+  retiredAt?: Maybe<Scalars['DateTime']['output']>;
   /** The team that the label is associated with. If null, the label is associated with the global workspace. */
   team?: Maybe<Team>;
   /**
@@ -6789,6 +6814,8 @@ export type IssueLabelCreateInput = {
   name: Scalars['String']['input'];
   /** The identifier of the parent label. */
   parentId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] When the label was retired. */
+  retiredAt?: InputMaybe<Scalars['DateTime']['input']>;
   /** The team associated with the label. If not given, the label will be associated with the entire workspace. */
   teamId?: InputMaybe<Scalars['String']['input']>;
 };
@@ -6845,6 +6872,8 @@ export type IssueLabelUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the parent label. */
   parentId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] When the label was retired. */
+  retiredAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 /** An issue related notification. */
@@ -12833,6 +12862,8 @@ export type ProjectLabel = Node & {
   parent?: Maybe<ProjectLabel>;
   /** Projects associated with the label. */
   projects: ProjectConnection;
+  /** [Internal] When the label was retired. */
+  retiredAt?: Maybe<Scalars['DateTime']['output']>;
   /**
    * The last time at which the entity was meaningfully updated. This is the same as the creation time if the entity hasn't
    *     been updated after creation.
@@ -12967,6 +12998,8 @@ export type ProjectLabelUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
   /** The identifier of the parent label. */
   parentId?: InputMaybe<Scalars['String']['input']>;
+  /** [Internal] When the label was retired. */
+  retiredAt?: InputMaybe<Scalars['DateTime']['input']>;
 };
 
 /** Project lead sorting options. */
@@ -15551,6 +15584,7 @@ export type QuerySemanticSearchArgs = {
 export type QuerySsoUrlFromEmailArgs = {
   email: Scalars['String']['input'];
   isDesktop?: InputMaybe<Scalars['Boolean']['input']>;
+  type?: IdentityProviderType;
 };
 
 
