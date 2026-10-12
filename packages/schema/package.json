@@ -41,7 +41,7 @@
         "smoke:mjs": "node tests/smoke.test.mjs"
     },
     "dependencies": {
-        "@nzyme/utils": "^0.14.0",
+        "@nzyme/utils": "^0.15.0",
         "@nzyme/zchema": "^0.14.0"
     },
     "devDependencies": {
